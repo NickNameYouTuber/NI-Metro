@@ -6,10 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.button.MaterialButton;
 
 public class StationInfoDialogFragment extends DialogFragment {
 
@@ -47,6 +51,9 @@ public class StationInfoDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_station_info, container, false);
 
+        // Set view width to match parent
+        view.setMinimumWidth(LinearLayout.LayoutParams.MATCH_PARENT);
+
         TextView stationName = view.findViewById(R.id.stationName);
         stationName.setText(station.getName());
 
@@ -82,10 +89,21 @@ public class StationInfoDialogFragment extends DialogFragment {
             dismiss();
         });
 
-        Button closeButton = view.findViewById(R.id.closeButton);
+        MaterialButton closeButton = view.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> dismiss());
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            dialog.getWindow().setLayout(width, height);
+        }
     }
 
     public void setOnStationInfoListener(OnStationInfoListener listener) {

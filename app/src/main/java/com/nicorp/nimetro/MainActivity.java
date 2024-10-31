@@ -62,11 +62,27 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 lines.add(line);
             }
 
-            // Add neighbors
+            // Add neighbors within the same line
             for (Line line : lines) {
                 for (int i = 0; i < line.getStations().size() - 1; i++) {
                     Station station1 = line.getStations().get(i);
                     Station station2 = line.getStations().get(i + 1);
+                    station1.addNeighbor(station2);
+                    station2.addNeighbor(station1);
+                }
+            }
+
+            // Add transfers between different lines
+            JSONArray transfersArray = jsonObject.getJSONArray("transfers");
+            for (int i = 0; i < transfersArray.length(); i++) {
+                JSONObject transferObject = transfersArray.getJSONObject(i);
+                int station1Id = transferObject.getInt("station1");
+                int station2Id = transferObject.getInt("station2");
+
+                Station station1 = findStationById(station1Id);
+                Station station2 = findStationById(station2Id);
+
+                if (station1 != null && station2 != null) {
                     station1.addNeighbor(station2);
                     station2.addNeighbor(station1);
                 }
@@ -103,6 +119,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             return null;
         }
         return json;
+    }
+
+    private Station findStationById(int id) {
+        for (Station station : stations) {
+            if (station.getId() == id) {
+                return station;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -1,56 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/stationName"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardCornerRadius="28dp"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:id="@+id/scheduleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-    <TextView
-        android:id="@+id/escalatorsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+            <!-- Station Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
 
-    <TextView
-        android:id="@+id/elevatorsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/stationName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"/>
 
-    <TextView
-        android:id="@+id/exitsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/closeButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cornerRadius="24dp"
+                    android:layout_marginStart="8dp"
+                    app:iconPadding="0dp"
+                    app:icon="@drawable/ic_close"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"/>
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/fromButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Отсюда" />
+            <!-- Info Cards -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutline"
+                app:cardCornerRadius="20dp">
 
-    <Button
-        android:id="@+id/toButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Сюда" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-    <Button
-        android:id="@+id/closeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="✕" />
+                    <TextView
+                        android:id="@+id/scheduleText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:drawableStart="@drawable/ic_schedule"
+                        android:drawablePadding="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp"/>
 
-</LinearLayout>
+                    <TextView
+                        android:id="@+id/escalatorsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:drawableStart="@drawable/ic_escalator"
+                        android:drawablePadding="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/elevatorsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:drawableStart="@drawable/ic_elevator"
+                        android:drawablePadding="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/exitsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:drawableStart="@drawable/ic_exit"
+                        android:drawablePadding="16dp"
+                        android:gravity="center_vertical"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fromButton"
+                    android:layout_width="0dp"
+                    android:layout_height="64dp"
+                    android:layout_weight="1"
+                    android:text="Отсюда"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="16dp"
+                    style="@style/Widget.Material3.Button.ElevatedButton"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toButton"
+                    android:layout_width="0dp"
+                    android:layout_height="64dp"
+                    android:layout_weight="1"
+                    android:text="Сюда"
+                    android:textSize="16sp"
+                    app:cornerRadius="16dp"
+                    style="@style/Widget.Material3.Button"/>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
