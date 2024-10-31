@@ -18,11 +18,11 @@ public class MetroMapView extends View {
     private List<Line> lines;
     private List<Station> stations;
     private List<Station> route;
-    private List<Station> selectedStations; // Добавляем список выбранных станций
+    private List<Station> selectedStations;
 
     private Paint linePaint;
     private Paint stationPaint;
-    private Paint selectedStationPaint; // Добавляем Paint для выбранных станций
+    private Paint selectedStationPaint;
     private Paint routePaint;
     private Paint textPaint;
     private Paint whitePaint;
@@ -62,10 +62,10 @@ public class MetroMapView extends View {
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
         stationPaint.setStyle(Paint.Style.STROKE);
-        stationPaint.setStrokeWidth(3);
+        stationPaint.setStrokeWidth(6);
 
         selectedStationPaint = new Paint();
-        selectedStationPaint.setColor(Color.GREEN); // Цвет для выбранных станций
+        selectedStationPaint.setColor(Color.GREEN);
         selectedStationPaint.setStyle(Paint.Style.STROKE);
         selectedStationPaint.setStrokeWidth(5);
 
@@ -140,6 +140,14 @@ public class MetroMapView extends View {
                     canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
                             station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
                 }
+
+                // Draw circle line if isCircle is true
+                if (line.isCircle() && line.getStations().size() > 1) {
+                    Station firstStation = line.getStations().get(0);
+                    Station lastStation = line.getStations().get(line.getStations().size() - 1);
+                    canvas.drawLine(firstStation.getX() * COORDINATE_SCALE_FACTOR, firstStation.getY() * COORDINATE_SCALE_FACTOR,
+                            lastStation.getX() * COORDINATE_SCALE_FACTOR, lastStation.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+                }
             }
 
             // Draw stations
@@ -147,14 +155,14 @@ public class MetroMapView extends View {
                 float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
                 float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-                // Рисуем белый центр станции
-                canvas.drawCircle(stationX, stationY, 8, whitePaint);
+                // Draw white center of the station
+                canvas.drawCircle(stationX, stationY, 10, whitePaint);
 
-                // Рисуем цветную обводку станции
+                // Draw colored outline of the station
                 stationPaint.setColor(Color.parseColor(station.getColor()));
-                canvas.drawCircle(stationX, stationY, 15, stationPaint);
+                canvas.drawCircle(stationX, stationY, 14, stationPaint);
 
-                // Если станция выбрана, рисуем дополнительную обводку
+                // Draw additional outline if the station is selected
                 if (selectedStations != null && selectedStations.contains(station)) {
                     canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
                 }

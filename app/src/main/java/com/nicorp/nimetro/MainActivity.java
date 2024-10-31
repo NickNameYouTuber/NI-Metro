@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONArray linesArray = jsonObject.getJSONArray("lines");
             for (int i = 0; i < linesArray.length(); i++) {
                 JSONObject lineObject = linesArray.getJSONObject(i);
-                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"));
+                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), lineObject.getBoolean("isCircle"));
                 JSONArray stationsArray = lineObject.getJSONArray("stations");
                 for (int j = 0; j < stationsArray.length(); j++) {
                     JSONObject stationObject = stationsArray.getJSONObject(j);

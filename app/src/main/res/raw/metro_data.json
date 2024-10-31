@@ -4,6 +4,7 @@
       "id": 1,
       "name": "Сокольническая линия",
       "color": "#E40520",
+      "isCircle": false,
       "stations": [
         {
           "id": 1,
@@ -277,6 +278,7 @@
       "id": 2,
       "name": "Замоскворецкая линия",
       "color": "#46AF50",
+      "isCircle": false,
       "stations": [
         {
           "id": 200,
@@ -620,6 +622,7 @@
       "id": 3,
       "name": "Арбатско-Покровская линия",
       "color": "#0072BB",
+      "isCircle": false,
       "stations": [
         {
           "id": 42,
@@ -935,6 +938,7 @@
       "id": 4,
       "name": "Филевская линия",
       "color": "#27BCEF",
+      "isCircle": false,
       "stations": [
         {
           "id": 64,
@@ -1096,6 +1100,7 @@
       "id": 5,
       "name": "Кольцевая линия",
       "color": "#915133",
+      "isCircle": true,
       "stations": [
         {
           "id": 87,

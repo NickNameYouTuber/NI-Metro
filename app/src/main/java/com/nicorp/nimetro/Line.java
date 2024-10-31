@@ -9,11 +9,13 @@ public class Line implements Serializable {
     private String name;
     private String color;
     private List<Station> stations;
+    private boolean isCircle; // Добавляем параметр isCircle
 
-    public Line(int id, String name, String color) {
+    public Line(int id, String name, String color, boolean isCircle) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.isCircle = isCircle;
         this.stations = new ArrayList<>();
     }
 
@@ -31,5 +33,9 @@ public class Line implements Serializable {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public boolean isCircle() {
+        return isCircle;
     }
 }
