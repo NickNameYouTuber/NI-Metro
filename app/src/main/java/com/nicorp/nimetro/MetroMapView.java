@@ -33,6 +33,9 @@ public class MetroMapView extends View {
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
 
+    private static final float COORDINATE_SCALE_FACTOR = 2.0f;
+    private static final float CLICK_RADIUS = 30.0f; // Увеличенный радиус области клика
+
     public MetroMapView(Context context) {
         super(context);
         init();
@@ -51,14 +54,14 @@ public class MetroMapView extends View {
     private void init() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(5);
+        linePaint.setStrokeWidth(7);
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
 
         routePaint = new Paint();
         routePaint.setColor(Color.YELLOW);
-        routePaint.setStrokeWidth(8);
+        routePaint.setStrokeWidth(9);
 
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
@@ -115,14 +118,15 @@ public class MetroMapView extends View {
                 for (int i = 0; i < line.getStations().size() - 1; i++) {
                     Station station1 = line.getStations().get(i);
                     Station station2 = line.getStations().get(i + 1);
-                    canvas.drawLine(station1.getX() * 2, station1.getY() * 2, station2.getX() * 2, station2.getY() * 2, linePaint);
+                    canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+                            station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
                 }
             }
 
             // Draw stations
             for (Station station : stations) {
-                canvas.drawCircle(station.getX() * 2, station.getY() * 2, 10, stationPaint);
-                drawTextCentered(canvas, station.getName(), station.getX() * 2, station.getY() * 2 + 30, textPaint);
+                canvas.drawCircle(station.getX() * COORDINATE_SCALE_FACTOR, station.getY() * COORDINATE_SCALE_FACTOR, 12, stationPaint);
+                drawTextCentered(canvas, station.getName(), station.getX() * COORDINATE_SCALE_FACTOR, station.getY() * COORDINATE_SCALE_FACTOR + 30, textPaint);
             }
 
             // Draw route
@@ -130,7 +134,8 @@ public class MetroMapView extends View {
                 for (int i = 0; i < route.size() - 1; i++) {
                     Station station1 = route.get(i);
                     Station station2 = route.get(i + 1);
-                    canvas.drawLine(station1.getX() * 2, station1.getY() * 2, station2.getX() * 2, station2.getY() * 2, routePaint);
+                    canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+                            station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
                 }
             }
         }
@@ -150,9 +155,9 @@ public class MetroMapView extends View {
         result = gestureDetector.onTouchEvent(event) || result;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float x = event.getX() * 2 / scaleFactor - translateX;
-            float y = event.getY() * 2 / scaleFactor - translateY;
-            Station clickedStation = findStationAt(x, y);
+            float x = event.getX() / scaleFactor - translateX;
+            float y = event.getY() / scaleFactor - translateY;
+            Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
             if (clickedStation != null && listener != null) {
                 listener.onStationClick(clickedStation);
                 return true;
@@ -164,7 +169,7 @@ public class MetroMapView extends View {
 
     private Station findStationAt(float x, float y) {
         for (Station station : stations) {
-            if (Math.abs(station.getX() * 2 - x) < 20 && Math.abs(station.getY() * 2 - y) < 20) {
+            if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
                 return station;
             }
         }
