@@ -6,7 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import java.util.List;
@@ -23,6 +25,13 @@ public class MetroMapView extends View {
     private Paint textPaint;
 
     private OnStationClickListener listener;
+
+    private float scaleFactor = 1.0f;
+    private float translateX = 0.0f;
+    private float translateY = 0.0f;
+
+    private GestureDetector gestureDetector;
+    private ScaleGestureDetector scaleGestureDetector;
 
     public MetroMapView(Context context) {
         super(context);
@@ -54,6 +63,26 @@ public class MetroMapView extends View {
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(30);
+
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                translateX -= distanceX / scaleFactor;
+                translateY -= distanceY / scaleFactor;
+                invalidate();
+                return true;
+            }
+        });
+
+        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                scaleFactor *= detector.getScaleFactor();
+                scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+                invalidate();
+                return true;
+            }
+        });
     }
 
     public void setData(List<Line> lines, List<Station> stations) {
@@ -74,6 +103,10 @@ public class MetroMapView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        canvas.save();
+        canvas.translate(translateX, translateY);
+        canvas.scale(scaleFactor, scaleFactor);
 
         if (lines != null && stations != null) {
             // Draw lines
@@ -101,6 +134,8 @@ public class MetroMapView extends View {
                 }
             }
         }
+
+        canvas.restore();
     }
 
     private void drawTextCentered(Canvas canvas, String text, float cx, float cy, Paint paint) {
@@ -111,16 +146,20 @@ public class MetroMapView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            float x = event.getX();
-            float y = event.getY();
+        boolean result = scaleGestureDetector.onTouchEvent(event);
+        result = gestureDetector.onTouchEvent(event) || result;
+
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            float x = event.getX() / scaleFactor - translateX;
+            float y = event.getY() / scaleFactor - translateY;
             Station clickedStation = findStationAt(x, y);
             if (clickedStation != null && listener != null) {
                 listener.onStationClick(clickedStation);
                 return true;
             }
         }
-        return super.onTouchEvent(event);
+
+        return result || super.onTouchEvent(event);
     }
 
     private Station findStationAt(float x, float y) {

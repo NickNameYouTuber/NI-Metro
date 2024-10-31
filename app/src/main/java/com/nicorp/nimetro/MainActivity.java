@@ -8,8 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoDialogFragment.OnStationInfoListener {
 
@@ -61,6 +60,16 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     line.getStations().add(station);
                 }
                 lines.add(line);
+            }
+
+            // Add neighbors
+            for (Line line : lines) {
+                for (int i = 0; i < line.getStations().size() - 1; i++) {
+                    Station station1 = line.getStations().get(i);
+                    Station station2 = line.getStations().get(i + 1);
+                    station1.addNeighbor(station2);
+                    station2.addNeighbor(station1);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -119,11 +128,37 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private List<Station> findOptimalRoute(Station start, Station end) {
-        // Implement your route finding algorithm here
-        // This is a placeholder implementation
+        Map<Station, Station> previous = new HashMap<>();
+        Map<Station, Double> distances = new HashMap<>();
+        PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
+
+        for (Station station : stations) {
+            distances.put(station, Double.POSITIVE_INFINITY);
+        }
+        distances.put(start, 0.0);
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
+            Station current = queue.poll();
+            if (current == end) {
+                break;
+            }
+
+            for (Station neighbor : current.getNeighbors()) {
+                double distance = distances.get(current) + 1; // Assuming each station is 1 unit away
+                if (distance < distances.get(neighbor)) {
+                    distances.put(neighbor, distance);
+                    previous.put(neighbor, current);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
         List<Station> route = new ArrayList<>();
-        route.add(start);
-        route.add(end);
+        for (Station station = end; station != null; station = previous.get(station)) {
+            route.add(station);
+        }
+        Collections.reverse(route);
         return route;
     }
 
