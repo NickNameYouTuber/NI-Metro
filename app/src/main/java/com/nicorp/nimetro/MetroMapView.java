@@ -18,11 +18,14 @@ public class MetroMapView extends View {
     private List<Line> lines;
     private List<Station> stations;
     private List<Station> route;
+    private List<Station> selectedStations; // Добавляем список выбранных станций
 
     private Paint linePaint;
     private Paint stationPaint;
+    private Paint selectedStationPaint; // Добавляем Paint для выбранных станций
     private Paint routePaint;
     private Paint textPaint;
+    private Paint whitePaint;
 
     private OnStationClickListener listener;
 
@@ -34,7 +37,7 @@ public class MetroMapView extends View {
     private ScaleGestureDetector scaleGestureDetector;
 
     private static final float COORDINATE_SCALE_FACTOR = 2.0f;
-    private static final float CLICK_RADIUS = 30.0f; // Увеличенный радиус области клика
+    private static final float CLICK_RADIUS = 30.0f;
 
     public MetroMapView(Context context) {
         super(context);
@@ -58,6 +61,17 @@ public class MetroMapView extends View {
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
+        stationPaint.setStyle(Paint.Style.STROKE);
+        stationPaint.setStrokeWidth(3);
+
+        selectedStationPaint = new Paint();
+        selectedStationPaint.setColor(Color.GREEN); // Цвет для выбранных станций
+        selectedStationPaint.setStyle(Paint.Style.STROKE);
+        selectedStationPaint.setStrokeWidth(5);
+
+        whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        whitePaint.setStyle(Paint.Style.FILL);
 
         routePaint = new Paint();
         routePaint.setColor(Color.YELLOW);
@@ -99,6 +113,11 @@ public class MetroMapView extends View {
         invalidate();
     }
 
+    public void setSelectedStations(List<Station> selectedStations) {
+        this.selectedStations = selectedStations;
+        invalidate();
+    }
+
     public void setOnStationClickListener(OnStationClickListener listener) {
         this.listener = listener;
     }
@@ -125,8 +144,22 @@ public class MetroMapView extends View {
 
             // Draw stations
             for (Station station : stations) {
-                canvas.drawCircle(station.getX() * COORDINATE_SCALE_FACTOR, station.getY() * COORDINATE_SCALE_FACTOR, 12, stationPaint);
-                drawTextCentered(canvas, station.getName(), station.getX() * COORDINATE_SCALE_FACTOR, station.getY() * COORDINATE_SCALE_FACTOR + 30, textPaint);
+                float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
+                float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
+
+                // Рисуем белый центр станции
+                canvas.drawCircle(stationX, stationY, 10, whitePaint);
+
+                // Рисуем цветную обводку станции
+                stationPaint.setColor(Color.parseColor(station.getColor()));
+                canvas.drawCircle(stationX, stationY, 15, stationPaint);
+
+                // Если станция выбрана, рисуем дополнительную обводку
+                if (selectedStations != null && selectedStations.contains(station)) {
+                    canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
+                }
+
+                drawTextCentered(canvas, station.getName(), stationX, stationY + 30, textPaint);
             }
 
             // Draw route

@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private List<Line> lines;
     private Station selectedStartStation;
     private Station selectedEndStation;
+    private List<Station> selectedStations; // Добавляем список выбранных станций
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         metroMapView = findViewById(R.id.metroMapView);
         stations = new ArrayList<>();
         lines = new ArrayList<>();
+        selectedStations = new ArrayList<>(); // Инициализируем список выбранных станций
 
         loadMetroData();
         metroMapView.setData(lines, stations);
@@ -140,11 +142,16 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     @Override
     public void onSetStart(Station station) {
         selectedStartStation = station;
+        selectedStations.add(station); // Добавляем выбранную станцию в список
+        metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
     }
 
     @Override
     public void onSetEnd(Station station) {
         selectedEndStation = station;
+        selectedStations.add(station); // Добавляем выбранную станцию в список
+        metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
+
         if (selectedStartStation != null) {
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
             metroMapView.setRoute(route);
