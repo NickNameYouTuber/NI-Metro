@@ -148,7 +148,7 @@ public class MetroMapView extends View {
                 float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
                 // Рисуем белый центр станции
-                canvas.drawCircle(stationX, stationY, 10, whitePaint);
+                canvas.drawCircle(stationX, stationY, 8, whitePaint);
 
                 // Рисуем цветную обводку станции
                 stationPaint.setColor(Color.parseColor(station.getColor()));

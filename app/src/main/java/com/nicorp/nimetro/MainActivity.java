@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private List<Line> lines;
     private Station selectedStartStation;
     private Station selectedEndStation;
-    private List<Station> selectedStations; // Добавляем список выбранных станций
+    private List<Station> selectedStations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         metroMapView = findViewById(R.id.metroMapView);
         stations = new ArrayList<>();
         lines = new ArrayList<>();
-        selectedStations = new ArrayList<>(); // Инициализируем список выбранных станций
+        selectedStations = new ArrayList<>();
 
         loadMetroData();
         metroMapView.setData(lines, stations);
@@ -141,15 +141,21 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     @Override
     public void onSetStart(Station station) {
+        if (selectedStartStation != null) {
+            selectedStations.remove(selectedStartStation); // Удаляем предыдущую выбранную станцию
+        }
         selectedStartStation = station;
-        selectedStations.add(station); // Добавляем выбранную станцию в список
+        selectedStations.add(station); // Добавляем новую выбранную станцию
         metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
     }
 
     @Override
     public void onSetEnd(Station station) {
+        if (selectedEndStation != null) {
+            selectedStations.remove(selectedEndStation); // Удаляем предыдущую выбранную станцию
+        }
         selectedEndStation = station;
-        selectedStations.add(station); // Добавляем выбранную станцию в список
+        selectedStations.add(station); // Добавляем новую выбранную станцию
         metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
 
         if (selectedStartStation != null) {
