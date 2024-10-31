@@ -115,14 +115,14 @@ public class MetroMapView extends View {
                 for (int i = 0; i < line.getStations().size() - 1; i++) {
                     Station station1 = line.getStations().get(i);
                     Station station2 = line.getStations().get(i + 1);
-                    canvas.drawLine(station1.getX(), station1.getY(), station2.getX(), station2.getY(), linePaint);
+                    canvas.drawLine(station1.getX() * 2, station1.getY() * 2, station2.getX() * 2, station2.getY() * 2, linePaint);
                 }
             }
 
             // Draw stations
             for (Station station : stations) {
-                canvas.drawCircle(station.getX(), station.getY(), 10, stationPaint);
-                drawTextCentered(canvas, station.getName(), station.getX(), station.getY() + 30, textPaint);
+                canvas.drawCircle(station.getX() * 2, station.getY() * 2, 10, stationPaint);
+                drawTextCentered(canvas, station.getName(), station.getX() * 2, station.getY() * 2 + 30, textPaint);
             }
 
             // Draw route
@@ -130,7 +130,7 @@ public class MetroMapView extends View {
                 for (int i = 0; i < route.size() - 1; i++) {
                     Station station1 = route.get(i);
                     Station station2 = route.get(i + 1);
-                    canvas.drawLine(station1.getX(), station1.getY(), station2.getX(), station2.getY(), routePaint);
+                    canvas.drawLine(station1.getX() * 2, station1.getY() * 2, station2.getX() * 2, station2.getY() * 2, routePaint);
                 }
             }
         }
@@ -150,8 +150,8 @@ public class MetroMapView extends View {
         result = gestureDetector.onTouchEvent(event) || result;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float x = event.getX() / scaleFactor - translateX;
-            float y = event.getY() / scaleFactor - translateY;
+            float x = event.getX() * 2 / scaleFactor - translateX;
+            float y = event.getY() * 2 / scaleFactor - translateY;
             Station clickedStation = findStationAt(x, y);
             if (clickedStation != null && listener != null) {
                 listener.onStationClick(clickedStation);
@@ -164,7 +164,7 @@ public class MetroMapView extends View {
 
     private Station findStationAt(float x, float y) {
         for (Station station : stations) {
-            if (Math.abs(station.getX() - x) < 20 && Math.abs(station.getY() - y) < 20) {
+            if (Math.abs(station.getX() * 2 - x) < 20 && Math.abs(station.getY() * 2 - y) < 20) {
                 return station;
             }
         }

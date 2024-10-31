@@ -1,284 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
+    android:layout_gravity="bottom"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="8dp"
-        app:cardCornerRadius="32dp"
-        android:layout_marginHorizontal="0dp"
-        app:cardBackgroundColor="@color/white">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#EEEEEE">
 
-            <!-- Header -->
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp">
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Маршрут"
-                    android:textSize="28sp"
-                    android:textColor="#1A365D"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="-0.02"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/closeButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentEnd="true"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:padding="0dp"
-                    app:icon="@drawable/ic_close"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:cornerRadius="20dp"
-                    style="@style/Widget.Material3.Button.TonalButton"/>
-            </RelativeLayout>
-
-            <!-- Stats Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline">
-
-                <LinearLayout
+                    android:id="@+id/routeTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="20dp">
+                    android:drawableStart="@android:drawable/ic_menu_recent_history"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#424242"
+                    android:text="Время: "
+                    android:textColor="#1F1F1F"
+                    android:gravity="center_vertical"
+                    android:textSize="15sp" />
 
-                    <!-- Time -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/timeValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="24sp"
-                            android:textColor="#1A365D"
-                            android:textStyle="bold"
-                            android:text="25"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#4A5568"
-                            android:text="минут"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#71809640"/>
-
-                    <!-- Stations -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/stationsValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="24sp"
-                            android:textColor="#1A365D"
-                            android:textStyle="bold"
-                            android:text="8"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#4A5568"
-                            android:text="станций"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#71809640"/>
-
-                    <!-- Transfers -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/transfersValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="24sp"
-                            android:textColor="#1A365D"
-                            android:textStyle="bold"
-                            android:text="1"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#4A5568"
-                            android:text="переход"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Route Details -->
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxHeight="500dp"
-                android:paddingHorizontal="24dp"
-                android:paddingBottom="24dp"
-                android:clipToPadding="false">
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/routeStationsCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginTop="12dp"
+                    android:drawableStart="@android:drawable/ic_menu_mylocation"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#424242"
+                    android:text="Количество станций: "
+                    android:gravity="center_vertical"
+                    android:textColor="#1F1F1F"
+                    android:textSize="15sp" />
 
-                    <!-- Start Station -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="2dp">
+                <TextView
+                    android:id="@+id/routeTransfersCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:drawableStart="@android:drawable/ic_menu_send"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#424242"
+                    android:text="Количество пересадок: "
+                    android:gravity="center_vertical"
+                    android:textColor="#1F1F1F"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="16dp">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+            <TextView
+                android:id="@+id/departureStation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E8F5E9"
+                android:padding="16dp"
+                android:text="Станция отправления: "
+                android:textColor="#2E7D32"
+                android:textSize="15sp"
+                android:letterSpacing="0.01"
+                android:fontFamily="sans-serif-medium" />
+        </com.google.android.material.card.MaterialCardView>
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Станция отправления"
-                                    android:textSize="14sp"
-                                    android:textColor="#4A5568"/>
+        <LinearLayout
+            android:id="@+id/intermediateStationsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginVertical="12dp" />
 
-                                <TextView
-                                    android:id="@+id/startStationName"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="18sp"
-                                    android:textColor="#1A365D"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="4dp"/>
-                            </LinearLayout>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
 
-                            <FrameLayout
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:background="@drawable/circle_background"
-                                android:layout_gravity="center_vertical">
+            <TextView
+                android:id="@+id/arrivalStation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFEBEE"
+                android:padding="16dp"
+                android:text="Станция прибытия: "
+                android:textColor="#C62828"
+                android:textSize="15sp"
+                android:letterSpacing="0.01"
+                android:fontFamily="sans-serif-medium" />
+        </com.google.android.material.card.MaterialCardView>
 
-                                <View
-                                    android:id="@+id/startStationDot"
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:layout_gravity="center"
-                                    android:background="@drawable/station_dot"/>
-                            </FrameLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
-                    <!-- Intermediate Stations (Collapsible Sections) will be added dynamically -->
-                    <include layout="@layout/collapsible_section"/>
-
-                    <!-- End Station -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="2dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="16dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Станция прибытия"
-                                    android:textSize="14sp"
-                                    android:textColor="#4A5568"/>
-
-                                <TextView
-                                    android:id="@+id/endStationName"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="18sp"
-                                    android:textColor="#1A365D"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="4dp"/>
-                            </LinearLayout>
-
-                            <FrameLayout
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:background="@drawable/circle_background"
-                                android:layout_gravity="center_vertical">
-
-                                <View
-                                    android:id="@+id/endStationDot"
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:layout_gravity="center"
-                                    android:background="@drawable/station_dot"/>
-                            </FrameLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</com.google.android.material.card.MaterialCardView>

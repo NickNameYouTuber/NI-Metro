@@ -5,13 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RouteInfoDialogFragment extends DialogFragment {
 
@@ -73,16 +77,49 @@ public class RouteInfoDialogFragment extends DialogFragment {
             // Display departure station
             departureStation.setText("Станция отправления: " + route.get(0).getName());
 
-            // Display intermediate stations and transfers
-            for (int i = 1; i < route.size() - 1; i++) {
-                TextView intermediateStation = new TextView(getContext());
-                intermediateStation.setText(route.get(i).getName());
-                intermediateStationsContainer.addView(intermediateStation);
+            // Prepare data for ExpandableListView
+            List<String> groupNames = new ArrayList<>();
+            Map<String, List<String>> childNames = new HashMap<>();
 
-                if (i < route.size() - 2 && route.get(i).getColor() != route.get(i + 1).getColor()) {
-                    TextView transfer = new TextView(getContext());
-                    transfer.setText("= Переход =");
-                    intermediateStationsContainer.addView(transfer);
+            String currentGroupName = "";
+            List<String> currentChildNames = new ArrayList<>();
+
+            for (int i = 1; i < route.size() - 1; i++) {
+                if (route.get(i).getColor() != route.get(i - 1).getColor()) {
+                    if (!currentGroupName.isEmpty()) {
+                        groupNames.add(currentGroupName);
+                        childNames.put(currentGroupName, currentChildNames);
+                    }
+                    currentGroupName = currentChildNames.size() + " станций";
+                    currentChildNames = new ArrayList<>();
+                }
+                currentChildNames.add(route.get(i).getName());
+            }
+
+            if (!currentGroupName.isEmpty()) {
+                groupNames.add(currentGroupName);
+                childNames.put(currentGroupName, currentChildNames);
+            }
+
+            // Dynamically create ExpandableListView and transferInfo for each group
+            for (int i = 0; i < groupNames.size(); i++) {
+                String groupName = groupNames.get(i);
+                List<String> childList = childNames.get(groupName);
+
+                // Create ExpandableListView
+                ExpandableListView expandableListView = new ExpandableListView(getContext());
+                RouteExpandableListAdapter adapter = new RouteExpandableListAdapter(getContext(), new ArrayList<String>() {{ add(groupName); }}, new HashMap<String, List<String>>() {{ put(groupName, childList); }});
+                expandableListView.setAdapter(adapter);
+                intermediateStationsContainer.addView(expandableListView);
+
+                // Create transferInfo if not the last group
+                if (i < groupNames.size() - 1) {
+                    TextView transferInfo = new TextView(getContext());
+                    transferInfo.setText("Переход на другую линию");
+                    transferInfo.setTextColor(getResources().getColor(R.color.text_primary));
+                    transferInfo.setTextSize(15);
+                    transferInfo.setPadding(0, 12, 0, 12);
+                    intermediateStationsContainer.addView(transferInfo);
                 }
             }
 
