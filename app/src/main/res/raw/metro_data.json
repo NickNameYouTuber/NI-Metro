@@ -1,0 +1,1321 @@
+{
+  "lines": [
+    {
+      "id": 1,
+      "name": "Сокольническая линия",
+      "color": "#E40520",
+      "stations": [
+        {
+          "id": 1,
+          "name": "Бульвар Рокоссовского",
+          "x": 930,
+          "y": 150,
+          "neighbors": [2],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["пр. Мира", "ул. Рокоссовского"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Черкизовская",
+          "x": 930,
+          "y": 200,
+          "neighbors": [1, 3],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Черкизовская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 3,
+          "name": "Преображенская площадь",
+          "x": 930,
+          "y": 250,
+          "neighbors": [2, 4],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Большая Черкизовская"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 4,
+          "name": "Сокольники",
+          "x": 910,
+          "y": 290,
+          "neighbors": [3, 5],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["Сокольническая пл."],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 5,
+          "name": "Красносельская",
+          "x": 870,
+          "y": 330,
+          "neighbors": [4, 6],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Красносельская"],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 6,
+          "name": "Комсомольская",
+          "x": 830,
+          "y": 370,
+          "neighbors": [5, 7, 80],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["Красная пл.", "Ленинградский пр."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 7,
+          "name": "Красные ворота",
+          "x": 800,
+          "y": 400,
+          "neighbors": [6, 8],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Краснопрудная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 8,
+          "name": "Чистые пруды",
+          "x": 750,
+          "y": 450,
+          "neighbors": [7, 9],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Солянка"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 9,
+          "name": "Лубянка",
+          "x": 700,
+          "y": 500,
+          "neighbors": [8, 10],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Ильинка"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 10,
+          "name": "Охотный ряд",
+          "x": 650,
+          "y": 550,
+          "neighbors": [9, 11],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["Театральный пр."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 11,
+          "name": "Библиотека имени Ленина",
+          "x": 600,
+          "y": 600,
+          "neighbors": [10, 12, 55, 29],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Воздвиженка"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 12,
+          "name": "Кропоткинская",
+          "x": 500,
+          "y": 650,
+          "neighbors": [11, 13],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Большая Дмитровка"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 13,
+          "name": "Парк культуры",
+          "x": 450,
+          "y": 700,
+          "neighbors": [12, 14, 82],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Арбат"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 14,
+          "name": "Фрунзенская",
+          "x": 400,
+          "y": 750,
+          "neighbors": [13, 15],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Фрунзенская наб."],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 15,
+          "name": "Спортивная",
+          "x": 350,
+          "y": 800,
+          "neighbors": [14, 16],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["Ленинский пр."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 16,
+          "name": "Воробьёвы горы",
+          "x": 300,
+          "y": 900,
+          "neighbors": [15, 17],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Косыгина"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 17,
+          "name": "Университет",
+          "x": 300,
+          "y": 1000,
+          "neighbors": [16, 18],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Ломоносовский пр."],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 18,
+          "name": "Проспект Вернадского",
+          "x": 300,
+          "y": 1100,
+          "neighbors": [17, 19],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["пр. Вернадского"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 19,
+          "name": "Юго-Западная",
+          "x": 300,
+          "y": 1200,
+          "neighbors": [18],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:30 - 0:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Замоскворецкая линия",
+      "color": "#46AF50",
+      "stations": [
+        {
+          "id": 200,
+          "name": "Ховрино",
+          "x": 350,
+          "y": 50,
+          "neighbors": [201],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Ленинградское шоссе"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 201,
+          "name": "Беломорская",
+          "x": 350,
+          "y": 100,
+          "neighbors": [200, 20],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Беломорская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 20,
+          "name": "Речной вокзал",
+          "x": 350,
+          "y": 150,
+          "neighbors": [201, 21],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Дыбенко"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 21,
+          "name": "Водный стадион",
+          "x": 350,
+          "y": 200,
+          "neighbors": [20, 22],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Пятницкое шоссе"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 22,
+          "name": "Войковская",
+          "x": 350,
+          "y": 250,
+          "neighbors": [21, 23],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Балтийская"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 23,
+          "name": "Сокол",
+          "x": 350,
+          "y": 300,
+          "neighbors": [22, 24],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["ул. Космонавтов"],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 24,
+          "name": "Аэропорт",
+          "x": 350,
+          "y": 350,
+          "neighbors": [23, 25],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Ленинградский пр."],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 25,
+          "name": "Динамо",
+          "x": 400,
+          "y": 400,
+          "neighbors": [24, 26],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Белорусская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 26,
+          "name": "Белорусская",
+          "x": 450,
+          "y": 450,
+          "neighbors": [25, 27, 89],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Белорусская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 27,
+          "name": "Маяковская",
+          "x": 500,
+          "y": 500,
+          "neighbors": [26, 28],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Тверская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 28,
+          "name": "Тверская",
+          "x": 550,
+          "y": 550,
+          "neighbors": [27, 29],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Тверская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 29,
+          "name": "Театральная",
+          "x": 600,
+          "y": 600,
+          "neighbors": [28, 30, 55, 11],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Театральный пр."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 30,
+          "name": "Новокузнецкая",
+          "x": 650,
+          "y": 650,
+          "neighbors": [29, 31],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Кузнецкий Мост"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 31,
+          "name": "Павелецкая",
+          "x": 700,
+          "y": 700,
+          "neighbors": [30, 32, 85],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Космодамианская наб."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 32,
+          "name": "Автозаводская",
+          "x": 700,
+          "y": 750,
+          "neighbors": [31, 33],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Автозаводская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 33,
+          "name": "Технопарк",
+          "x": 700,
+          "y": 800,
+          "neighbors": [32, 34],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Ленинская Слобода"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 34,
+          "name": "Коломенская",
+          "x": 700,
+          "y": 850,
+          "neighbors": [33, 35],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Андропова"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 35,
+          "name": "Каширская",
+          "x": 700,
+          "y": 900,
+          "neighbors": [34, 36],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Каширское шоссе"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 36,
+          "name": "Кантемировская",
+          "x": 750,
+          "y": 950,
+          "neighbors": [35, 37],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Кантемировская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 37,
+          "name": "Царицыно",
+          "x": 800,
+          "y": 1000,
+          "neighbors": [36, 38],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Орехово-Борисово"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 38,
+          "name": "Орехово",
+          "x": 850,
+          "y": 1050,
+          "neighbors": [37, 39],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Орехово-Борисово"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 39,
+          "name": "Домодедовская",
+          "x": 900,
+          "y": 1100,
+          "neighbors": [38, 40],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Домодедовская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 40,
+          "name": "Красногвардейская",
+          "x": 950,
+          "y": 1150,
+          "neighbors": [39, 41],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Красногвардейская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 41,
+          "name": "Зябликово",
+          "x": 950,
+          "y": 1200,
+          "neighbors": [40],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Зябликово"],
+            "schedule": "5:30 - 0:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Арбатско-Покровская линия",
+      "color": "#0072BB",
+      "stations": [
+        {
+          "id": 42,
+          "name": "Пятницкое шоссе",
+          "x": 100,
+          "y": 150,
+          "neighbors": [43],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Пятницкое шоссе"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 43,
+          "name": "Митино",
+          "x": 100,
+          "y": 200,
+          "neighbors": [42, 44],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Митинская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 44,
+          "name": "Волоколамская",
+          "x": 100,
+          "y": 250,
+          "neighbors": [43, 45],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Волоколамское шоссе"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 45,
+          "name": "Мякинино",
+          "x": 100,
+          "y": 300,
+          "neighbors": [44, 46],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["ул. Мякинино"],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 46,
+          "name": "Строгино",
+          "x": 100,
+          "y": 350,
+          "neighbors": [45, 47],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Строгинское шоссе"],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 47,
+          "name": "Крылатское",
+          "x": 100,
+          "y": 400,
+          "neighbors": [46, 48],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Крылатская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 48,
+          "name": "Молодёжная",
+          "x": 100,
+          "y": 500,
+          "neighbors": [47, 49],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Молодёжная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 49,
+          "name": "Кунцевская",
+          "x": 100,
+          "y": 700,
+          "neighbors": [48, 50],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Кунцевская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 50,
+          "name": "Славянский бульвар",
+          "x": 200,
+          "y": 700,
+          "neighbors": [49, 51],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Славянский бульвар"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 51,
+          "name": "Парк Победы",
+          "x": 250,
+          "y": 700,
+          "neighbors": [50, 52],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Поклонная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 52,
+          "name": "Киевская",
+          "x": 370,
+          "y": 620,
+          "neighbors": [51, 53, 81, 71],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Киевская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 53,
+          "name": "Смоленская",
+          "x": 650,
+          "y": 600,
+          "neighbors": [52, 54],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Смоленская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 54,
+          "name": "Арбатская",
+          "x": 700,
+          "y": 600,
+          "neighbors": [53, 55],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Арбат"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 55,
+          "name": "Площадь Революции",
+          "x": 750,
+          "y": 600,
+          "neighbors": [54, 56, 11, 29],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Тверская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 56,
+          "name": "Курская",
+          "x": 870,
+          "y": 500,
+          "neighbors": [55, 57, 87],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 57,
+          "name": "Бауманская",
+          "x": 950,
+          "y": 500,
+          "neighbors": [56, 58],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Бауманская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 58,
+          "name": "Электрозаводская",
+          "x": 900,
+          "y": 600,
+          "neighbors": [57, 59],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Электрозаводская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 59,
+          "name": "Семёновская",
+          "x": 950,
+          "y": 600,
+          "neighbors": [58, 60],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Семёновская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 60,
+          "name": "Партизанская",
+          "x": 1000,
+          "y": 600,
+          "neighbors": [59, 61],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Партизанская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 61,
+          "name": "Измайловская",
+          "x": 1050,
+          "y": 600,
+          "neighbors": [60, 62],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Измайловский пр."],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 62,
+          "name": "Первомайская",
+          "x": 1100,
+          "y": 600,
+          "neighbors": [61, 63],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Первомайская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 63,
+          "name": "Щёлковская",
+          "x": 1150,
+          "y": 600,
+          "neighbors": [62],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Щёлковское шоссе"],
+            "schedule": "5:30 - 0:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Филевская линия",
+      "color": "#27BCEF",
+      "stations": [
+        {
+          "id": 64,
+          "name": "Кунцевская",
+          "x": 100,
+          "y": 700,
+          "neighbors": [65],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Кунцевская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 65,
+          "name": "Пионерская",
+          "x": 120,
+          "y": 680,
+          "neighbors": [64, 66],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Пионерская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 66,
+          "name": "Филёвский парк",
+          "x": 140,
+          "y": 660,
+          "neighbors": [65, 67],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Филёвский бульвар"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 67,
+          "name": "Багратионовская",
+          "x": 160,
+          "y": 640,
+          "neighbors": [66, 68],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Багратионовская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 68,
+          "name": "Фили",
+          "x": 200,
+          "y": 600,
+          "neighbors": [67, 69],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Новоясеневский пр."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 69,
+          "name": "Кутузовская",
+          "x": 250,
+          "y": 600,
+          "neighbors": [68, 70],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Кутузовский пр."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 70,
+          "name": "Студенческая",
+          "x": 300,
+          "y": 600,
+          "neighbors": [69, 71],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Комсомольский пр."],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 71,
+          "name": "Киевская",
+          "x": 370,
+          "y": 600,
+          "neighbors": [70, 72, 52, 81],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Киевская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 72,
+          "name": "Смоленская",
+          "x": 460,
+          "y": 580,
+          "neighbors": [71, 73],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Смоленская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 73,
+          "name": "Арбатская",
+          "x": 520,
+          "y": 580,
+          "neighbors": [72, 74],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Арбат"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 74,
+          "name": "Площадь Революции",
+          "x": 600,
+          "y": 600,
+          "neighbors": [73, 75],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Тверская"],
+            "schedule": "5:40 - 0:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Кольцевая линия",
+      "color": "#915133",
+      "stations": [
+        {
+          "id": 87,
+          "name": "Курская",
+          "x": 870,
+          "y": 500,
+          "neighbors": [86, 80, 56],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 80,
+          "name": "Комсомольская",
+          "x": 830,
+          "y": 370,
+          "neighbors": [87, 91, 6],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["Красная пл.", "Ленинградский пр."],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 91,
+          "name": "Проспект Мира",
+          "x": 700,
+          "y": 310,
+          "neighbors": [80, 88],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 88,
+          "name": "Новослободская",
+          "x": 580,
+          "y": 310,
+          "neighbors": [91, 89],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 89,
+          "name": "Белорусская",
+          "x": 450,
+          "y": 450,
+          "neighbors": [88, 90, 26],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 90,
+          "name": "Краснопресненская",
+          "x": 370,
+          "y": 550,
+          "neighbors": [89, 81],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Курская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 81,
+          "name": "Киевская",
+          "x": 390,
+          "y": 600,
+          "neighbors": [90, 82, 52, 71],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Киевская"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 82,
+          "name": "Парк культуры",
+          "x": 450,
+          "y": 700,
+          "neighbors": [81, 83, 13],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["ул. Арбат"],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 83,
+          "name": "Октябрьская",
+          "x": 500,
+          "y": 720,
+          "neighbors": [82, 84],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Октябрьская"],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 84,
+          "name": "Добрынинская",
+          "x": 600,
+          "y": 720,
+          "neighbors": [83, 85],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Большая Тульская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 85,
+          "name": "Павелецкая",
+          "x": 700,
+          "y": 700,
+          "neighbors": [84, 86, 31],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Космодамианская наб."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 86,
+          "name": "Таганская",
+          "x": 850,
+          "y": 600,
+          "neighbors": [85, 87],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Таганская"],
+            "schedule": "5:35 - 0:00"
+          }
+        }
+      ]
+    }
+  ],
+  "transfers": [
+    {
+      "station1": 6,
+      "station2": 80,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 82,
+      "station2": 13,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 81,
+      "station2": 71,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 81,
+      "station2": 52,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 71,
+      "station2": 52,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 87,
+      "station2": 56,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 85,
+      "station2": 31,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    },
+    {
+      "station1": 89,
+      "station2": 26,
+      "time": "TRANSFER_TIME",
+      "type": "regular"
+    }
+  ]
+}
