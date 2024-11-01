@@ -1,6 +1,8 @@
 package com.nicorp.nimetro;
 
 import android.os.Bundle;
+import android.widget.EditText;
+
 import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,12 +21,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private Station selectedEndStation;
     private List<Station> selectedStations;
 
+    private EditText startStationInput;
+    private EditText endStationInput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         metroMapView = findViewById(R.id.metroMapView);
+        startStationInput = findViewById(R.id.startStationInput);
+        endStationInput = findViewById(R.id.endStationInput);
+
         stations = new ArrayList<>();
         lines = new ArrayList<>();
         selectedStations = new ArrayList<>();
@@ -32,6 +40,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         loadMetroData();
         metroMapView.setData(lines, stations);
         metroMapView.setOnStationClickListener(this);
+
+        startStationInput.setOnEditorActionListener((v, actionId, event) -> {
+            String startStationName = startStationInput.getText().toString();
+            Station startStation = findStationByName(startStationName);
+            if (startStation != null) {
+                onSetStart(startStation);
+            }
+            return true;
+        });
+
+        endStationInput.setOnEditorActionListener((v, actionId, event) -> {
+            String endStationName = endStationInput.getText().toString();
+            Station endStation = findStationByName(endStationName);
+            if (endStation != null) {
+                onSetEnd(endStation);
+            }
+            return true;
+        });
     }
 
     private void loadMetroData() {
@@ -149,6 +175,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return null;
     }
 
+    private Station findStationByName(String name) {
+        for (Station station : stations) {
+            if (station.getName().equalsIgnoreCase(name)) {
+                return station;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onStationClick(Station station) {
         StationInfoDialogFragment dialogFragment = StationInfoDialogFragment.newInstance(station);
@@ -164,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStartStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
+        startStationInput.setText(station.getName());
     }
 
     @Override
@@ -174,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedEndStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
+        endStationInput.setText(station.getName());
 
         if (selectedStartStation != null) {
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
@@ -199,10 +236,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 break;
             }
 
-            System.out.println(current.getName() + ": ");
             for (Station.Neighbor neighbor : current.getNeighbors()) {
-                System.out.println(neighbor.toString());
-
                 int distance = distances.get(current) + neighbor.getTime();
 //                if (neighbor.getStation().getLineId() != current.getLineId()) {
 //                    // Если станция на другой линии, добавляем время перехода
@@ -223,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Collections.reverse(route);
         return route;
     }
+
     private void showRouteInfo(List<Station> route) {
         RouteInfoDialogFragment dialogFragment = RouteInfoDialogFragment.newInstance(route);
         dialogFragment.show(getSupportFragmentManager(), "route_info");
