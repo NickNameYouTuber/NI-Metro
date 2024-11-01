@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONArray linesArray = jsonObject.getJSONArray("lines");
             for (int i = 0; i < linesArray.length(); i++) {
                 JSONObject lineObject = linesArray.getJSONObject(i);
-                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), lineObject.getBoolean("isCircle"));
+                boolean isCircle = lineObject.optBoolean("isCircle", false);
+                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle);
                 JSONArray stationsArray = lineObject.getJSONArray("stations");
                 for (int j = 0; j < stationsArray.length(); j++) {
                     JSONObject stationObject = stationsArray.getJSONObject(j);
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     int escalators = stationObject.optInt("escalators", 0);
                     int elevators = stationObject.optInt("elevators", 0);
                     String[] exits = toStringArray(stationObject.optJSONArray("exits"));
+                    int textPosition = stationObject.optInt("textPosition", 0); // Устанавливаем значение по умолчанию 0
 
                     Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                     Station station = new Station(
@@ -56,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                             stationObject.getInt("x"),
                             stationObject.getInt("y"),
                             line.getColor(),
-                            facilities
+                            facilities,
+                            textPosition
                     );
                     stations.add(station);
                     line.getStations().add(station);
@@ -142,21 +145,21 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     @Override
     public void onSetStart(Station station) {
         if (selectedStartStation != null) {
-            selectedStations.remove(selectedStartStation); // Удаляем предыдущую выбранную станцию
+            selectedStations.remove(selectedStartStation);
         }
         selectedStartStation = station;
-        selectedStations.add(station); // Добавляем новую выбранную станцию
-        metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
+        selectedStations.add(station);
+        metroMapView.setSelectedStations(selectedStations);
     }
 
     @Override
     public void onSetEnd(Station station) {
         if (selectedEndStation != null) {
-            selectedStations.remove(selectedEndStation); // Удаляем предыдущую выбранную станцию
+            selectedStations.remove(selectedEndStation);
         }
         selectedEndStation = station;
-        selectedStations.add(station); // Добавляем новую выбранную станцию
-        metroMapView.setSelectedStations(selectedStations); // Обновляем выбранные станции на карте
+        selectedStations.add(station);
+        metroMapView.setSelectedStations(selectedStations);
 
         if (selectedStartStation != null) {
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);

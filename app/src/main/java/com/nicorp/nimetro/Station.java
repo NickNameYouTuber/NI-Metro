@@ -12,8 +12,10 @@ public class Station implements Serializable {
     private String color;
     private Facilities facilities;
     private List<Station> neighbors;
+    private int textPosition; // Добавляем параметр textPosition
 
-    public Station(int id, String name, int x, int y, String color, Facilities facilities) {
+
+    public Station(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
         this.name = name;
         this.x = x;
@@ -21,6 +23,15 @@ public class Station implements Serializable {
         this.color = color;
         this.facilities = facilities;
         this.neighbors = new ArrayList<>();
+        this.textPosition = textPosition;
+    }
+
+    public int getTextPosition() {
+        return textPosition;
+    }
+
+    public void setTextPosition(int textPosition) {
+        this.textPosition = textPosition;
     }
 
     public int getId() {

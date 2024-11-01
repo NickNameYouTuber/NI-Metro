@@ -167,7 +167,8 @@ public class MetroMapView extends View {
                     canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
                 }
 
-                drawTextCentered(canvas, station.getName(), stationX, stationY + 30, textPaint);
+                // Draw text label based on textPosition
+                drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
             }
 
             // Draw route
@@ -184,10 +185,54 @@ public class MetroMapView extends View {
         canvas.restore();
     }
 
-    private void drawTextCentered(Canvas canvas, String text, float cx, float cy, Paint paint) {
+    private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
-        canvas.drawText(text, cx - bounds.exactCenterX(), cy - bounds.exactCenterY(), paint);
+        float textWidth = bounds.width();
+        float textHeight = bounds.height();
+
+        float offsetX = 0;
+        float offsetY = 0;
+
+        switch (textPosition) {
+            case 1: // Top
+                offsetX = -textWidth / 2;
+                offsetY = -textHeight - 10;
+                break;
+            case 2: // Top Right
+                offsetX = 20;
+                offsetY = -textHeight - 10;
+                break;
+            case 3: // Right
+                offsetX = 30;
+                offsetY = 8;
+                break;
+            case 4: // Bottom Right
+                offsetX = 20;
+                offsetY = textHeight + 10;
+                break;
+            case 5: // Bottom
+                offsetY = textHeight + 10;
+                offsetX = -textWidth / 2;
+                break;
+            case 6: // Bottom Left
+                offsetX = -textWidth / 2 - 10;
+                offsetY = textHeight + 10;
+                break;
+            case 7: // Left
+                offsetX = -textWidth - 10;
+                break;
+            case 8: // Top Left
+                offsetX = -textWidth / 2 - 10;
+                offsetY = -textHeight - 10;
+                break;
+            default: // Center (textPosition == 0)
+                offsetX = -textWidth / 2;
+                offsetY = textHeight / 2;
+                break;
+        }
+
+        canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
     }
 
     @Override
