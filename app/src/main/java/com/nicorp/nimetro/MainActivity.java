@@ -1,9 +1,15 @@
 package com.nicorp.nimetro;
 
 import android.os.Bundle;
-import android.widget.EditText;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoDialogFragment.OnStationInfoListener {
+public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoDialogFragment.OnStationInfoListener, StationsAdapter.OnStationClickListener {
 
     private MetroMapView metroMapView;
     private List<Station> stations;
@@ -21,8 +27,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private Station selectedEndStation;
     private List<Station> selectedStations;
 
-    private EditText startStationInput;
-    private EditText endStationInput;
+    private TextInputLayout startStationLayout;
+    private TextInputLayout endStationLayout;
+    private TextInputEditText startStationEditText;
+    private TextInputEditText endStationEditText;
+    private RecyclerView stationsRecyclerView;
+    private StationsAdapter stationsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +40,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         setContentView(R.layout.activity_main);
 
         metroMapView = findViewById(R.id.metroMapView);
-        startStationInput = findViewById(R.id.startStationInput);
-        endStationInput = findViewById(R.id.endStationInput);
+        startStationLayout = findViewById(R.id.startStationLayout);
+        endStationLayout = findViewById(R.id.endStationLayout);
+        startStationEditText = findViewById(R.id.startStationEditText);
+        endStationEditText = findViewById(R.id.endStationEditText);
+        stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
 
         stations = new ArrayList<>();
         lines = new ArrayList<>();
@@ -41,22 +54,50 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         metroMapView.setData(lines, stations);
         metroMapView.setOnStationClickListener(this);
 
-        startStationInput.setOnEditorActionListener((v, actionId, event) -> {
-            String startStationName = startStationInput.getText().toString();
-            Station startStation = findStationByName(startStationName);
-            if (startStation != null) {
-                onSetStart(startStation);
+        stationsAdapter = new StationsAdapter(stations, this);
+        stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        stationsRecyclerView.setAdapter(stationsAdapter);
+
+        startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                showStationsList(stations);
+            } else {
+                hideStationsList();
             }
-            return true;
         });
 
-        endStationInput.setOnEditorActionListener((v, actionId, event) -> {
-            String endStationName = endStationInput.getText().toString();
-            Station endStation = findStationByName(endStationName);
-            if (endStation != null) {
-                onSetEnd(endStation);
+        endStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                showStationsList(stations);
+            } else {
+                hideStationsList();
             }
-            return true;
+        });
+
+        startStationEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterStations(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        endStationEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterStations(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -175,15 +216,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return null;
     }
 
-    private Station findStationByName(String name) {
-        for (Station station : stations) {
-            if (station.getName().equalsIgnoreCase(name)) {
-                return station;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void onStationClick(Station station) {
         StationInfoDialogFragment dialogFragment = StationInfoDialogFragment.newInstance(station);
@@ -199,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStartStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
-        startStationInput.setText(station.getName());
+        startStationEditText.setText(station.getName());
     }
 
     @Override
@@ -210,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedEndStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
-        endStationInput.setText(station.getName());
+        endStationEditText.setText(station.getName());
 
         if (selectedStartStation != null) {
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
@@ -261,5 +293,36 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void showRouteInfo(List<Station> route) {
         RouteInfoDialogFragment dialogFragment = RouteInfoDialogFragment.newInstance(route);
         dialogFragment.show(getSupportFragmentManager(), "route_info");
+    }
+
+    private void showStationsList(List<Station> stations) {
+        stationsRecyclerView.setVisibility(View.VISIBLE);
+        stationsAdapter.setStations(stations);
+    }
+
+    private void hideStationsList() {
+        stationsRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void filterStations(String query) {
+        List<Station> filteredStations = new ArrayList<>();
+        for (Station station : stations) {
+            if (station.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredStations.add(station);
+            }
+        }
+        stationsAdapter.setStations(filteredStations);
+    }
+
+    @Override
+    public void onStationSelected(Station station) {
+        if (startStationEditText.hasFocus()) {
+            startStationEditText.setText(station.getName());
+            onSetStart(station);
+        } else if (endStationEditText.hasFocus()) {
+            endStationEditText.setText(station.getName());
+            onSetEnd(station);
+        }
+        hideStationsList();
     }
 }
