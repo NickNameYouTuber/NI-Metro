@@ -175,7 +175,7 @@ public class MetroMapView extends View {
                 for (int i = 0; i < route.size() - 1; i++) {
                     Station station1 = route.get(i);
                     Station station2 = route.get(i + 1);
-                    drawLineWithIntermediatePoints(canvas, station1, station2);
+                    drawRouteWithIntermediatePoints(canvas, station1, station2);
                 }
             }
         }
@@ -201,6 +201,26 @@ public class MetroMapView extends View {
             canvas.drawLine(startX, startY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
         }
     }
+
+    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
+        List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+                    station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+        } else {
+            float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
+            float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
+            for (Point point : intermediatePoints) {
+                float endX = point.x * COORDINATE_SCALE_FACTOR;
+                float endY = point.y * COORDINATE_SCALE_FACTOR;
+                canvas.drawLine(startX, startY, endX, endY, routePaint);
+                startX = endX;
+                startY = endY;
+            }
+            canvas.drawLine(startX, startY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+        }
+    }
+
 
     private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {
         Rect bounds = new Rect();
