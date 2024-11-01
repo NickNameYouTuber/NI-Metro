@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
             JSONArray linesArray = jsonObject.getJSONArray("lines");
+
+            // First, load all stations and lines
             for (int i = 0; i < linesArray.length(); i++) {
                 JSONObject lineObject = linesArray.getJSONObject(i);
                 boolean isCircle = lineObject.optBoolean("isCircle", false);
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     int escalators = stationObject.optInt("escalators", 0);
                     int elevators = stationObject.optInt("elevators", 0);
                     String[] exits = toStringArray(stationObject.optJSONArray("exits"));
-                    int textPosition = stationObject.optInt("textPosition", 0); // Устанавливаем значение по умолчанию 0
+                    int textPosition = stationObject.optInt("textPosition", 0);
 
                     Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                     Station station = new Station(
@@ -67,13 +69,25 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 lines.add(line);
             }
 
-            // Add neighbors within the same line
-            for (Line line : lines) {
-                for (int i = 0; i < line.getStations().size() - 1; i++) {
-                    Station station1 = line.getStations().get(i);
-                    Station station2 = line.getStations().get(i + 1);
-                    station1.addNeighbor(station2);
-                    station2.addNeighbor(station1);
+            // Now, add neighbors and transfers
+            for (int i = 0; i < linesArray.length(); i++) {
+                JSONObject lineObject = linesArray.getJSONObject(i);
+                JSONArray stationsArray = lineObject.getJSONArray("stations");
+                for (int j = 0; j < stationsArray.length(); j++) {
+                    JSONObject stationObject = stationsArray.getJSONObject(j);
+                    Station station = findStationById(stationObject.getInt("id"));
+                    if (station != null) {
+                        JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
+                        for (int k = 0; k < neighborsArray.length(); k++) {
+                            JSONArray neighborArray = neighborsArray.getJSONArray(k);
+                            int neighborId = neighborArray.getInt(0);
+                            int time = neighborArray.getInt(1);
+                            Station neighborStation = findStationById(neighborId);
+                            if (neighborStation != null) {
+                                station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -88,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 Station station2 = findStationById(station2Id);
 
                 if (station1 != null && station2 != null) {
-                    station1.addNeighbor(station2);
-                    station2.addNeighbor(station1);
+                    station1.addNeighbor(new Station.Neighbor(station2, 3)); // Assuming transfer time is 3 minutes
+                    station2.addNeighbor(new Station.Neighbor(station1, 3));
                 }
             }
         } catch (JSONException e) {
@@ -170,13 +184,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Station> findOptimalRoute(Station start, Station end) {
         Map<Station, Station> previous = new HashMap<>();
-        Map<Station, Double> distances = new HashMap<>();
-        PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
+        Map<Station, Integer> distances = new HashMap<>();
+        PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
         for (Station station : stations) {
-            distances.put(station, Double.POSITIVE_INFINITY);
+            distances.put(station, Integer.MAX_VALUE);
         }
-        distances.put(start, 0.0);
+        distances.put(start, 0);
         queue.add(start);
 
         while (!queue.isEmpty()) {
@@ -185,12 +199,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 break;
             }
 
-            for (Station neighbor : current.getNeighbors()) {
-                double distance = distances.get(current) + 1; // Assuming each station is 1 unit away
-                if (distance < distances.get(neighbor)) {
-                    distances.put(neighbor, distance);
-                    previous.put(neighbor, current);
-                    queue.add(neighbor);
+            System.out.println(current.getName() + ": ");
+            for (Station.Neighbor neighbor : current.getNeighbors()) {
+                System.out.println(neighbor.toString());
+
+                int distance = distances.get(current) + neighbor.getTime();
+//                if (neighbor.getStation().getLineId() != current.getLineId()) {
+//                    // Если станция на другой линии, добавляем время перехода
+//                    distance += 3; // Предположим, что время перехода 3 минуты
+//                }
+                if (distance < distances.get(neighbor.getStation())) {
+                    distances.put(neighbor.getStation(), distance);
+                    previous.put(neighbor.getStation(), current);
+                    queue.add(neighbor.getStation());
                 }
             }
         }
@@ -202,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Collections.reverse(route);
         return route;
     }
-
     private void showRouteInfo(List<Station> route) {
         RouteInfoDialogFragment dialogFragment = RouteInfoDialogFragment.newInstance(route);
         dialogFragment.show(getSupportFragmentManager(), "route_info");

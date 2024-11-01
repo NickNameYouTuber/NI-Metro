@@ -11,9 +11,8 @@ public class Station implements Serializable {
     private int y;
     private String color;
     private Facilities facilities;
-    private List<Station> neighbors;
-    private int textPosition; // Добавляем параметр textPosition
-
+    private List<Neighbor> neighbors;
+    private int textPosition;
 
     public Station(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
@@ -23,14 +22,6 @@ public class Station implements Serializable {
         this.color = color;
         this.facilities = facilities;
         this.neighbors = new ArrayList<>();
-        this.textPosition = textPosition;
-    }
-
-    public int getTextPosition() {
-        return textPosition;
-    }
-
-    public void setTextPosition(int textPosition) {
         this.textPosition = textPosition;
     }
 
@@ -58,11 +49,53 @@ public class Station implements Serializable {
         return facilities;
     }
 
-    public List<Station> getNeighbors() {
+    public List<Neighbor> getNeighbors() {
         return neighbors;
     }
 
-    public void addNeighbor(Station neighbor) {
+    public void addNeighbor(Neighbor neighbor) {
         neighbors.add(neighbor);
+    }
+
+    public int getTextPosition() {
+        return textPosition;
+    }
+
+    public static class Neighbor implements Serializable {
+        private Station station;
+        private int time;
+
+        public Neighbor(Station station, int time) {
+            this.station = station;
+            this.time = time;
+        }
+
+        public Station getStation() {
+            return station;
+        }
+
+        public int getTime() {
+            return time;
+        }
+
+        @Override
+        public String toString() {
+            return "Neighbor{" +
+                    "station=" + station +
+                    ", time=" + time +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", color='" + color + '\'' +
+                ", textPosition=" + textPosition +
+                '}';
     }
 }

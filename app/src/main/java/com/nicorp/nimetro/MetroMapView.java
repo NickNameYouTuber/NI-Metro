@@ -79,7 +79,7 @@ public class MetroMapView extends View {
 
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
-        textPaint.setTextSize(30);
+        textPaint.setTextSize(20);
 
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override

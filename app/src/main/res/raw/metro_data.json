@@ -12,7 +12,7 @@
           "x": 930,
           "y": 150,
           "textPosition": 1,
-          "neighbors": [2],
+          "neighbors": [[2, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -27,7 +27,7 @@
           "x": 930,
           "y": 200,
           "textPosition": 3,
-          "neighbors": [1, 3],
+          "neighbors": [[1, 2], [3, 4]],
           "distance": 2.1,
           "facilities": {
             "escalators": 2,
@@ -42,7 +42,7 @@
           "x": 930,
           "y": 250,
           "textPosition": 3,
-          "neighbors": [2, 4],
+          "neighbors": [[2, 4], [4, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 4,
@@ -57,7 +57,7 @@
           "x": 910,
           "y": 290,
           "textPosition": 3,
-          "neighbors": [3, 5],
+          "neighbors": [[3, 3], [5, 5]],
           "distance": 2.3,
           "facilities": {
             "escalators": 5,
@@ -72,7 +72,7 @@
           "x": 870,
           "y": 330,
           "textPosition": 3,
-          "neighbors": [4, 6],
+          "neighbors": [[4, 5], [6, 4]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -87,7 +87,7 @@
           "x": 830,
           "y": 370,
           "textPosition": 3,
-          "neighbors": [5, 7, 80],
+          "neighbors": [[5, 4], [7, 3], [80, 5]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -102,7 +102,7 @@
           "x": 800,
           "y": 400,
           "textPosition": 4,
-          "neighbors": [6, 8],
+          "neighbors": [[6, 3], [8, 4]],
           "distance": 1.6,
           "facilities": {
             "escalators": 3,
@@ -117,7 +117,7 @@
           "x": 750,
           "y": 450,
           "textPosition": 4,
-          "neighbors": [7, 9],
+          "neighbors": [[7, 4], [9, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
@@ -132,7 +132,7 @@
           "x": 700,
           "y": 500,
           "textPosition": 3,
-          "neighbors": [8, 10],
+          "neighbors": [[8, 3], [10, 4]],
           "distance": 2.0,
           "facilities": {
             "escalators": 2,
@@ -147,7 +147,7 @@
           "x": 650,
           "y": 550,
           "textPosition": 3,
-          "neighbors": [9, 11],
+          "neighbors": [[9, 4], [11, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -161,7 +161,7 @@
           "name": "Библиотека имени Ленина",
           "x": 600,
           "y": 600,
-          "neighbors": [10, 12, 55, 29],
+          "neighbors": [[10, 3], [12, 4], [55, 5], [29, 5]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -175,7 +175,7 @@
           "name": "Кропоткинская",
           "x": 500,
           "y": 650,
-          "neighbors": [11, 13],
+          "neighbors": [[11, 4], [13, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -189,7 +189,7 @@
           "name": "Парк культуры",
           "x": 450,
           "y": 700,
-          "neighbors": [12, 14, 82],
+          "neighbors": [[12, 3], [14, 4], [82, 5]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -203,7 +203,7 @@
           "name": "Фрунзенская",
           "x": 400,
           "y": 750,
-          "neighbors": [13, 15],
+          "neighbors": [[13, 4], [15, 3]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -217,7 +217,7 @@
           "name": "Спортивная",
           "x": 350,
           "y": 800,
-          "neighbors": [14, 16],
+          "neighbors": [[14, 3], [16, 4]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -231,7 +231,7 @@
           "name": "Воробьёвы горы",
           "x": 300,
           "y": 900,
-          "neighbors": [15, 17],
+          "neighbors": [[15, 4], [17, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -245,7 +245,7 @@
           "name": "Университет",
           "x": 300,
           "y": 1000,
-          "neighbors": [16, 18],
+          "neighbors": [[16, 3], [18, 4]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -259,7 +259,7 @@
           "name": "Проспект Вернадского",
           "x": 300,
           "y": 1100,
-          "neighbors": [17, 19],
+          "neighbors": [[17, 4], [19, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -273,7 +273,7 @@
           "name": "Юго-Западная",
           "x": 300,
           "y": 1200,
-          "neighbors": [18],
+          "neighbors": [[18, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -295,7 +295,7 @@
           "name": "Ховрино",
           "x": 350,
           "y": 50,
-          "neighbors": [201],
+          "neighbors": [[201, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -309,7 +309,7 @@
           "name": "Беломорская",
           "x": 350,
           "y": 100,
-          "neighbors": [200, 20],
+          "neighbors": [[200, 2], [20, 4]],
           "distance": 2.1,
           "facilities": {
             "escalators": 2,
@@ -323,7 +323,7 @@
           "name": "Речной вокзал",
           "x": 350,
           "y": 150,
-          "neighbors": [201, 21],
+          "neighbors": [[201, 4], [21, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -337,7 +337,7 @@
           "name": "Водный стадион",
           "x": 350,
           "y": 200,
-          "neighbors": [20, 22],
+          "neighbors": [[20, 3], [22, 4]],
           "distance": 2.1,
           "facilities": {
             "escalators": 2,
@@ -351,7 +351,7 @@
           "name": "Войковская",
           "x": 350,
           "y": 250,
-          "neighbors": [21, 23],
+          "neighbors": [[21, 4], [23, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 4,
@@ -365,7 +365,7 @@
           "name": "Сокол",
           "x": 350,
           "y": 300,
-          "neighbors": [22, 24],
+          "neighbors": [[22, 3], [24, 4]],
           "distance": 2.3,
           "facilities": {
             "escalators": 5,
@@ -379,7 +379,7 @@
           "name": "Аэропорт",
           "x": 350,
           "y": 350,
-          "neighbors": [23, 25],
+          "neighbors": [[23, 4], [25, 3]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -393,7 +393,7 @@
           "name": "Динамо",
           "x": 400,
           "y": 400,
-          "neighbors": [24, 26],
+          "neighbors": [[24, 3], [26, 4]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -407,7 +407,7 @@
           "name": "Белорусская",
           "x": 450,
           "y": 450,
-          "neighbors": [25, 27, 89],
+          "neighbors": [[25, 4], [27, 3], [89, 5]],
           "distance": 1.6,
           "facilities": {
             "escalators": 3,
@@ -421,7 +421,7 @@
           "name": "Маяковская",
           "x": 500,
           "y": 500,
-          "neighbors": [26, 28],
+          "neighbors": [[26, 3], [28, 4]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
@@ -435,7 +435,7 @@
           "name": "Тверская",
           "x": 550,
           "y": 550,
-          "neighbors": [27, 29],
+          "neighbors": [[27, 4], [29, 3]],
           "distance": 2.0,
           "facilities": {
             "escalators": 2,
@@ -449,7 +449,7 @@
           "name": "Театральная",
           "x": 600,
           "y": 600,
-          "neighbors": [28, 30, 55, 11],
+          "neighbors": [[28, 3], [30, 4], [55, 5], [11, 5]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -463,7 +463,7 @@
           "name": "Новокузнецкая",
           "x": 650,
           "y": 650,
-          "neighbors": [29, 31],
+          "neighbors": [[29, 4], [31, 3]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -477,7 +477,7 @@
           "name": "Павелецкая",
           "x": 700,
           "y": 700,
-          "neighbors": [30, 32, 85],
+          "neighbors": [[30, 3], [32, 4], [85, 5]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -491,7 +491,7 @@
           "name": "Автозаводская",
           "x": 700,
           "y": 750,
-          "neighbors": [31, 33],
+          "neighbors": [[31, 4], [33, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -505,7 +505,7 @@
           "name": "Технопарк",
           "x": 700,
           "y": 800,
-          "neighbors": [32, 34],
+          "neighbors": [[32, 3], [34, 4]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -519,7 +519,7 @@
           "name": "Коломенская",
           "x": 700,
           "y": 850,
-          "neighbors": [33, 35],
+          "neighbors": [[33, 4], [35, 3]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -533,7 +533,7 @@
           "name": "Каширская",
           "x": 700,
           "y": 900,
-          "neighbors": [34, 36],
+          "neighbors": [[34, 3], [36, 4]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -547,7 +547,7 @@
           "name": "Кантемировская",
           "x": 750,
           "y": 950,
-          "neighbors": [35, 37],
+          "neighbors": [[35, 4], [37, 3]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -561,7 +561,7 @@
           "name": "Царицыно",
           "x": 800,
           "y": 1000,
-          "neighbors": [36, 38],
+          "neighbors": [[36, 3], [38, 4]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -575,7 +575,7 @@
           "name": "Орехово",
           "x": 850,
           "y": 1050,
-          "neighbors": [37, 39],
+          "neighbors": [[37, 4], [39, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -589,7 +589,7 @@
           "name": "Домодедовская",
           "x": 900,
           "y": 1100,
-          "neighbors": [38, 40],
+          "neighbors": [[38, 3], [40, 4]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -603,7 +603,7 @@
           "name": "Красногвардейская",
           "x": 950,
           "y": 1150,
-          "neighbors": [39, 41],
+          "neighbors": [[39, 4], [41, 3]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -617,7 +617,7 @@
           "name": "Зябликово",
           "x": 950,
           "y": 1200,
-          "neighbors": [40],
+          "neighbors": [[40, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -639,7 +639,7 @@
           "name": "Пятницкое шоссе",
           "x": 100,
           "y": 150,
-          "neighbors": [43],
+          "neighbors": [[43, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -653,7 +653,7 @@
           "name": "Митино",
           "x": 100,
           "y": 200,
-          "neighbors": [42, 44],
+          "neighbors": [[42, 2], [44, 4]],
           "distance": 2.1,
           "facilities": {
             "escalators": 2,
@@ -667,7 +667,7 @@
           "name": "Волоколамская",
           "x": 100,
           "y": 250,
-          "neighbors": [43, 45],
+          "neighbors": [[43, 4], [45, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 4,
@@ -681,7 +681,7 @@
           "name": "Мякинино",
           "x": 100,
           "y": 300,
-          "neighbors": [44, 46],
+          "neighbors": [[44, 3], [46, 4]],
           "distance": 2.3,
           "facilities": {
             "escalators": 5,
@@ -695,7 +695,7 @@
           "name": "Строгино",
           "x": 100,
           "y": 350,
-          "neighbors": [45, 47],
+          "neighbors": [[45, 4], [47, 3]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -709,7 +709,7 @@
           "name": "Крылатское",
           "x": 100,
           "y": 400,
-          "neighbors": [46, 48],
+          "neighbors": [[46, 3], [48, 4]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -723,7 +723,7 @@
           "name": "Молодёжная",
           "x": 100,
           "y": 500,
-          "neighbors": [47, 49],
+          "neighbors": [[47, 4], [49, 3]],
           "distance": 1.6,
           "facilities": {
             "escalators": 3,
@@ -737,7 +737,7 @@
           "name": "Кунцевская",
           "x": 100,
           "y": 700,
-          "neighbors": [48, 50],
+          "neighbors": [[48, 3], [50, 4]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
@@ -751,7 +751,7 @@
           "name": "Славянский бульвар",
           "x": 200,
           "y": 700,
-          "neighbors": [49, 51],
+          "neighbors": [[49, 4], [51, 3]],
           "distance": 2.0,
           "facilities": {
             "escalators": 2,
@@ -765,7 +765,7 @@
           "name": "Парк Победы",
           "x": 250,
           "y": 700,
-          "neighbors": [50, 52],
+          "neighbors": [[50, 3], [52, 4]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -779,7 +779,7 @@
           "name": "Киевская",
           "x": 370,
           "y": 620,
-          "neighbors": [51, 53, 81, 71],
+          "neighbors": [[51, 4], [53, 3], [81, 5], [71, 5]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -793,7 +793,7 @@
           "name": "Смоленская",
           "x": 650,
           "y": 600,
-          "neighbors": [52, 54],
+          "neighbors": [[52, 3], [54, 4]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -807,7 +807,7 @@
           "name": "Арбатская",
           "x": 700,
           "y": 600,
-          "neighbors": [53, 55],
+          "neighbors": [[53, 4], [55, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -821,7 +821,7 @@
           "name": "Площадь Революции",
           "x": 750,
           "y": 600,
-          "neighbors": [54, 56, 11, 29],
+          "neighbors": [[54, 3], [56, 4], [11, 5], [29, 5]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -835,7 +835,7 @@
           "name": "Курская",
           "x": 870,
           "y": 500,
-          "neighbors": [55, 57, 87],
+          "neighbors": [[55, 4], [57, 3], [87, 5]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -849,7 +849,7 @@
           "name": "Бауманская",
           "x": 950,
           "y": 500,
-          "neighbors": [56, 58],
+          "neighbors": [[56, 3], [58, 4]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -863,7 +863,7 @@
           "name": "Электрозаводская",
           "x": 900,
           "y": 600,
-          "neighbors": [57, 59],
+          "neighbors": [[57, 4], [59, 3]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -877,7 +877,7 @@
           "name": "Семёновская",
           "x": 950,
           "y": 600,
-          "neighbors": [58, 60],
+          "neighbors": [[58, 3], [60, 4]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -891,7 +891,7 @@
           "name": "Партизанская",
           "x": 1000,
           "y": 600,
-          "neighbors": [59, 61],
+          "neighbors": [[59, 4], [61, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -905,7 +905,7 @@
           "name": "Измайловская",
           "x": 1050,
           "y": 600,
-          "neighbors": [60, 62],
+          "neighbors": [[60, 3], [62, 4]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -919,7 +919,7 @@
           "name": "Первомайская",
           "x": 1100,
           "y": 600,
-          "neighbors": [61, 63],
+          "neighbors": [[61, 4], [63, 3]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -933,7 +933,7 @@
           "name": "Щёлковская",
           "x": 1150,
           "y": 600,
-          "neighbors": [62],
+          "neighbors": [[62, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -955,7 +955,7 @@
           "name": "Кунцевская",
           "x": 100,
           "y": 700,
-          "neighbors": [65],
+          "neighbors": [[65, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
@@ -969,7 +969,7 @@
           "name": "Пионерская",
           "x": 120,
           "y": 680,
-          "neighbors": [64, 66],
+          "neighbors": [[64, 2], [66, 4]],
           "distance": 2.0,
           "facilities": {
             "escalators": 2,
@@ -983,7 +983,7 @@
           "name": "Филёвский парк",
           "x": 140,
           "y": 660,
-          "neighbors": [65, 67],
+          "neighbors": [[65, 4], [67, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -997,7 +997,7 @@
           "name": "Багратионовская",
           "x": 160,
           "y": 640,
-          "neighbors": [66, 68],
+          "neighbors": [[66, 3], [68, 4]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -1011,7 +1011,7 @@
           "name": "Фили",
           "x": 200,
           "y": 600,
-          "neighbors": [67, 69],
+          "neighbors": [[67, 4], [69, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -1025,7 +1025,7 @@
           "name": "Кутузовская",
           "x": 250,
           "y": 600,
-          "neighbors": [68, 70],
+          "neighbors": [[68, 3], [70, 4]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1039,7 +1039,7 @@
           "name": "Студенческая",
           "x": 300,
           "y": 600,
-          "neighbors": [69, 71],
+          "neighbors": [[69, 4], [71, 3]],
           "distance": 2.0,
           "facilities": {
             "escalators": 4,
@@ -1053,7 +1053,7 @@
           "name": "Киевская",
           "x": 370,
           "y": 600,
-          "neighbors": [70, 72, 52, 81],
+          "neighbors": [[70, 3], [72, 4], [52, 5], [81, 5]],
           "distance": 1.6,
           "facilities": {
             "escalators": 2,
@@ -1067,7 +1067,7 @@
           "name": "Смоленская",
           "x": 460,
           "y": 580,
-          "neighbors": [71, 73],
+          "neighbors": [[71, 4], [73, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -1081,7 +1081,7 @@
           "name": "Арбатская",
           "x": 520,
           "y": 580,
-          "neighbors": [72, 74],
+          "neighbors": [[72, 3], [74, 4]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -1095,7 +1095,7 @@
           "name": "Площадь Революции",
           "x": 600,
           "y": 600,
-          "neighbors": [73, 75],
+          "neighbors": [[73, 4], [75, 3]],
           "distance": 1.5,
           "facilities": {
             "escalators": 2,
@@ -1117,7 +1117,7 @@
           "name": "Курская",
           "x": 870,
           "y": 500,
-          "neighbors": [86, 80, 56],
+          "neighbors": [[86, 2], [80, 4], [56, 5]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1131,7 +1131,7 @@
           "name": "Комсомольская",
           "x": 830,
           "y": 370,
-          "neighbors": [87, 91, 6],
+          "neighbors": [[87, 4], [91, 3], [6, 5]],
           "distance": 2.1,
           "facilities": {
             "escalators": 2,
@@ -1145,7 +1145,7 @@
           "name": "Проспект Мира",
           "x": 700,
           "y": 310,
-          "neighbors": [80, 88],
+          "neighbors": [[80, 3], [88, 4]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1159,7 +1159,7 @@
           "name": "Новослободская",
           "x": 580,
           "y": 310,
-          "neighbors": [91, 89],
+          "neighbors": [[91, 4], [89, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1173,7 +1173,7 @@
           "name": "Белорусская",
           "x": 450,
           "y": 450,
-          "neighbors": [88, 90, 26],
+          "neighbors": [[88, 3], [90, 4], [26, 5]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1187,7 +1187,7 @@
           "name": "Краснопресненская",
           "x": 370,
           "y": 550,
-          "neighbors": [89, 81],
+          "neighbors": [[89, 4], [81, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1201,7 +1201,7 @@
           "name": "Киевская",
           "x": 390,
           "y": 600,
-          "neighbors": [90, 82, 52, 71],
+          "neighbors": [[90, 3], [82, 4], [52, 5], [71, 5]],
           "distance": 1.5,
           "facilities": {
             "escalators": 4,
@@ -1215,7 +1215,7 @@
           "name": "Парк культуры",
           "x": 450,
           "y": 700,
-          "neighbors": [81, 83, 13],
+          "neighbors": [[81, 4], [83, 3], [13, 5]],
           "distance": 2.3,
           "facilities": {
             "escalators": 5,
@@ -1229,7 +1229,7 @@
           "name": "Октябрьская",
           "x": 500,
           "y": 720,
-          "neighbors": [82, 84],
+          "neighbors": [[82, 3], [84, 4]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -1243,7 +1243,7 @@
           "name": "Добрынинская",
           "x": 600,
           "y": 720,
-          "neighbors": [83, 85],
+          "neighbors": [[83, 4], [85, 3]],
           "distance": 1.7,
           "facilities": {
             "escalators": 3,
@@ -1257,7 +1257,7 @@
           "name": "Павелецкая",
           "x": 700,
           "y": 700,
-          "neighbors": [84, 86, 31],
+          "neighbors": [[84, 3], [86, 4], [31, 5]],
           "distance": 1.6,
           "facilities": {
             "escalators": 3,
@@ -1271,7 +1271,7 @@
           "name": "Таганская",
           "x": 850,
           "y": 600,
-          "neighbors": [85, 87],
+          "neighbors": [[85, 4], [87, 3]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
