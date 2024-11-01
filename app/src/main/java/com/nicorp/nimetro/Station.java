@@ -1,8 +1,12 @@
 package com.nicorp.nimetro;
 
+import android.graphics.Point;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Station implements Serializable {
     private int id;
@@ -97,5 +101,15 @@ public class Station implements Serializable {
                 ", color='" + color + '\'' +
                 ", textPosition=" + textPosition +
                 '}';
+    }
+
+    private Map<Station, List<Point>> intermediatePointsMap = new HashMap<>();
+
+    public void addIntermediatePoints(Station neighbor, List<Point> points) {
+        intermediatePointsMap.put(neighbor, points);
+    }
+
+    public List<Point> getIntermediatePoints(Station neighbor) {
+        return intermediatePointsMap.get(neighbor);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -137,16 +138,14 @@ public class MetroMapView extends View {
                 for (int i = 0; i < line.getStations().size() - 1; i++) {
                     Station station1 = line.getStations().get(i);
                     Station station2 = line.getStations().get(i + 1);
-                    canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
-                            station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+                    drawLineWithIntermediatePoints(canvas, station1, station2);
                 }
 
                 // Draw circle line if isCircle is true
                 if (line.isCircle() && line.getStations().size() > 1) {
                     Station firstStation = line.getStations().get(0);
                     Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                    canvas.drawLine(firstStation.getX() * COORDINATE_SCALE_FACTOR, firstStation.getY() * COORDINATE_SCALE_FACTOR,
-                            lastStation.getX() * COORDINATE_SCALE_FACTOR, lastStation.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation);
                 }
             }
 
@@ -176,13 +175,31 @@ public class MetroMapView extends View {
                 for (int i = 0; i < route.size() - 1; i++) {
                     Station station1 = route.get(i);
                     Station station2 = route.get(i + 1);
-                    canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
-                            station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+                    drawLineWithIntermediatePoints(canvas, station1, station2);
                 }
             }
         }
 
         canvas.restore();
+    }
+
+    private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
+        List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+                    station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+        } else {
+            float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
+            float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
+            for (Point point : intermediatePoints) {
+                float endX = point.x * COORDINATE_SCALE_FACTOR;
+                float endY = point.y * COORDINATE_SCALE_FACTOR;
+                canvas.drawLine(startX, startY, endX, endY, linePaint);
+                startX = endX;
+                startY = endY;
+            }
+            canvas.drawLine(startX, startY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+        }
     }
 
     private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {

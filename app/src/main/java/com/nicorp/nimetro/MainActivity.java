@@ -1,5 +1,6 @@
 package com.nicorp.nimetro;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -171,6 +172,29 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 if (station1 != null && station2 != null) {
                     station1.addNeighbor(new Station.Neighbor(station2, 3)); // Assuming transfer time is 3 minutes
                     station2.addNeighbor(new Station.Neighbor(station1, 3));
+                }
+            }
+
+            // Load intermediate points
+            JSONArray intermediatePointsArray = jsonObject.getJSONArray("intermediatePoints");
+            for (int i = 0; i < intermediatePointsArray.length(); i++) {
+                JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
+                JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
+                int station1Id = neighborsIdArray.getInt(0);
+                int station2Id = neighborsIdArray.getInt(1);
+
+                Station station1 = findStationById(station1Id);
+                Station station2 = findStationById(station2Id);
+
+                if (station1 != null && station2 != null) {
+                    JSONArray pointsArray = intermediatePointObject.getJSONArray("points");
+                    List<Point> intermediatePoints = new ArrayList<>();
+                    for (int j = 0; j < pointsArray.length(); j++) {
+                        JSONObject pointObject = pointsArray.getJSONObject(j);
+                        Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                        intermediatePoints.add(point);
+                    }
+                    station1.addIntermediatePoints(station2, intermediatePoints);
                 }
             }
         } catch (JSONException e) {

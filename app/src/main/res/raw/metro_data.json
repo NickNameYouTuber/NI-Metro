@@ -1332,5 +1332,7 @@
       "time": "TRANSFER_TIME",
       "type": "regular"
     }
+  ],
+  "intermediatePoints": [
   ]
 }
