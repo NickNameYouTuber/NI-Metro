@@ -45,9 +45,9 @@ public class MetroMapView extends View {
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
 
-    private static final float COORDINATE_SCALE_FACTOR = 2.0f;
+    private static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
-    private static final float TRANSFER_CAPSULE_WIDTH = 20.0f;
+    private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
 
     public MetroMapView(Context context) {
         super(context);
@@ -92,7 +92,7 @@ public class MetroMapView extends View {
         textPaint.setTextSize(20);
 
         transferPaint = new Paint();
-        transferPaint.setColor(Color.GRAY);
+        transferPaint.setColor(Color.DKGRAY);
         transferPaint.setStrokeWidth(5);
         transferPaint.setStyle(Paint.Style.STROKE);
 
@@ -280,7 +280,7 @@ public class MetroMapView extends View {
                 offsetY = textHeight + 10;
                 break;
             case 5: // Bottom
-                offsetY = textHeight + 10;
+                offsetY = textHeight + 30;
                 offsetX = -textWidth / 2;
                 break;
             case 6: // Bottom Left
@@ -288,11 +288,13 @@ public class MetroMapView extends View {
                 offsetY = textHeight + 10;
                 break;
             case 7: // Left
-                offsetX = -textWidth - 10;
+                offsetX = -textWidth - 30;
                 break;
             case 8: // Top Left
-                offsetX = -textWidth / 2 - 10;
+                offsetX = -textWidth - 10;
                 offsetY = -textHeight - 10;
+                break;
+            case 9: // Invisible
                 break;
             default: // Center (textPosition == 0)
                 offsetX = -textWidth / 2;
@@ -300,7 +302,9 @@ public class MetroMapView extends View {
                 break;
         }
 
-        canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
+        if (textPosition != 9) {
+            canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
+        }
     }
 
     @Override
@@ -336,7 +340,64 @@ public class MetroMapView extends View {
         float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
         float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
 
-        canvas.drawLine(x1, y1, x2, y2, transferPaint);
+        System.out.println("drawTransferConnection: " + x1 + " " + y1 + " " + x2 + " " + y2);
+
+        // Вычисляем вектор направления и его длину
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+
+        // Нормализуем вектор и создаем перпендикулярный вектор для смещения
+        float nx = dx / length;
+        float ny = dy / length;
+        float perpX = -ny * (TRANSFER_CAPSULE_WIDTH / 2);
+        float perpY = nx * (TRANSFER_CAPSULE_WIDTH / 2);
+
+        // Создаем путь для капсулы
+        Path capsulePath = new Path();
+
+        // Начинаем с верхней точки первой станции
+        capsulePath.moveTo(x1 + perpX, y1 + perpY);
+
+        // Рисуем верхнюю линию
+        capsulePath.lineTo(x2 + perpX, y2 + perpY);
+
+        // Вычисляем угол направления линии в градусах
+        float angle = (float) Math.toDegrees(Math.atan2(dy, dx));
+
+        // Рисуем полукруг на конце
+        RectF endCircle = new RectF(
+                x2 - TRANSFER_CAPSULE_WIDTH/2,
+                y2 - TRANSFER_CAPSULE_WIDTH/2,
+                x2 + TRANSFER_CAPSULE_WIDTH/2,
+                y2 + TRANSFER_CAPSULE_WIDTH/2
+        );
+        capsulePath.arcTo(endCircle, angle - 90, 180, false);
+
+        capsulePath.moveTo(x2 - perpX, y2 - perpY);
+        // Рисуем нижнюю линию обратно
+        capsulePath.lineTo(x1 - perpX, y1 - perpY);
+
+        // Рисуем полукруг на начале
+        RectF startCircle = new RectF(
+                x1 - TRANSFER_CAPSULE_WIDTH/2,
+                y1 - TRANSFER_CAPSULE_WIDTH/2,
+                x1 + TRANSFER_CAPSULE_WIDTH/2,
+                y1 + TRANSFER_CAPSULE_WIDTH/2
+        );
+        capsulePath.arcTo(startCircle, angle + 90, 180, false);
+
+        // Закрываем путь
+        capsulePath.close();
+
+        // Создаем Paint для заливки капсулы
+        Paint capsuleFillPaint = new Paint(transferPaint);
+        capsuleFillPaint.setStyle(Paint.Style.FILL);
+        capsuleFillPaint.setColor(Color.WHITE);
+
+        // Рисуем заливку и обводку
+        canvas.drawPath(capsulePath, capsuleFillPaint);
+        canvas.drawPath(capsulePath, transferPaint);
     }
 
     private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
@@ -416,80 +477,11 @@ public class MetroMapView extends View {
         drawShiftedLine(canvas, x4, y4, x1, y1, centerX, centerY);
 
         // Draw partial circles at each station
-//        drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x1, y1, x2, y2), getAngle(x1, y1, x4, y4));
-//        drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x2, y2, x3, y3), getAngle(x2, y2, x1, y1));
-//        drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x3, y3, x4, y4), getAngle(x3, y3, x2, y2));
-//        drawPartialCircle(canvas, x4, y4, 20, 5, getAngle(x4, y4, x1, y1), getAngle(x4, y4, x3, y3));
+        drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x4, y4, x1, y1, x2, y2));
+        drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
+        drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x4, y4));
+        drawPartialCircle(canvas, x4, y4, 20, 5, getAngle(x3, y3, x4, y4, x1, y1));
     }
-
-    private float getAnglePoints(float x1, float y1, float x2, float y2) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 20;
-        float shiftY = -(dx / length) * 20;
-
-        // Смещение наружу от центра
-        shiftX = -shiftX;
-        shiftY = -shiftY;
-
-        float x1_shift = x1 + shiftX;
-        float y1_shift = y1 + shiftY;
-
-        System.out.println("x1: " + x1);
-        System.out.println("y1: " + y1);
-        System.out.println("x2: " + x2);
-        System.out.println("y2: " + y2);
-        System.out.println("x1_shift: " + x1_shift);
-        System.out.println("y1_shift: " + y1_shift);
-
-        System.out.println("Angle: " + (float) Math.toDegrees(Math.atan2(y1_shift - y1, x1_shift - x1)));
-
-        return (float) Math.toDegrees(Math.atan2(y1_shift - y1, x1_shift - x1));
-    }
-
-//    public static float getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
-//        double dx1 = x2 - x1;
-//        double dy1 = y2 - y1;
-//        double dx2 = x3 - x2;
-//        double dy2 = y3 - y2;
-//        double dx3 = x1 - x3;
-//        double dy3 = y1 - y3;
-//
-//        float length1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
-//        float length2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
-//        float length3 = (float) Math.sqrt(dx3 * dx3 + dy3 * dy3);
-//
-//        double shiftX1 = -(dy1 / length1) * 20;
-//        double shiftY1 = (dx1 / length1) * 20;
-//        double shiftX2 = -(dy2 / length2) * 20;
-//        double shiftY2 = (dx2 / length2) * 20;
-//        double shiftX3 = -(dy3 / length3) * 20;
-//        double shiftY3 = (dx3 / length3) * 20;
-//
-//        System.out.println("x1: " + x1);
-//        System.out.println("y1: " + y1);
-//        System.out.println("x2: " + x2);
-//        System.out.println("y2: " + y2);
-//        System.out.println("x3: " + x3);
-//        System.out.println("y3: " + y3);
-//
-//        double a_x = x2 + shiftX1;
-//        double a_y = y2 + shiftY1;
-//        double b_x = x2;
-//        double b_y = y2;
-//        double c_x = x2 + shiftX3;
-//        double c_y = y2 + shiftY3;
-//
-//        System.out.println("a_x: " + a_x);
-//        System.out.println("a_y: " + a_y);
-//        System.out.println("b_x: " + b_x);
-//        System.out.println("b_y: " + b_y);
-//        System.out.println("c_x: " + c_x);
-//        System.out.println("c_y: " + c_y);
-//
-//        return (float) ((float) Math.atan2(c_y - a_y, c_x - a_x) - Math.atan2(b_y - a_y, b_x - a_x));
-//    }
 
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
         // Векторы между точками
