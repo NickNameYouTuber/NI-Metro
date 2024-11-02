@@ -38,4 +38,11 @@ public class Line implements Serializable {
     public boolean isCircle() {
         return isCircle;
     }
+
+    public int getLineIdForStation(Station station) {
+        if (stations.contains(station)) {
+            return id;
+        }
+        return -1; // Return -1 if the station is not found in this line
+    }
 }

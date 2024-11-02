@@ -791,8 +791,8 @@
         {
           "id": 53,
           "name": "Смоленская",
-          "x": 650,
-          "y": 600,
+          "x": 460,
+          "y": 610,
           "neighbors": [[52, 3], [54, 4]],
           "distance": 1.5,
           "facilities": {
@@ -805,8 +805,8 @@
         {
           "id": 54,
           "name": "Арбатская",
-          "x": 700,
-          "y": 600,
+          "x": 520,
+          "y": 610,
           "neighbors": [[53, 4], [55, 3]],
           "distance": 1.8,
           "facilities": {
@@ -819,7 +819,7 @@
         {
           "id": 55,
           "name": "Площадь Революции",
-          "x": 750,
+          "x": 600,
           "y": 600,
           "neighbors": [[54, 3], [56, 4], [11, 5], [29, 5]],
           "distance": 2.0,
@@ -1285,52 +1285,22 @@
   ],
   "transfers": [
     {
-      "station1": 6,
-      "station2": 80,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [6, 80]
     },
     {
-      "station1": 82,
-      "station2": 13,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [82, 13]
     },
     {
-      "station1": 81,
-      "station2": 71,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [81, 71, 52]
     },
     {
-      "station1": 81,
-      "station2": 52,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [87, 56]
     },
     {
-      "station1": 71,
-      "station2": 52,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [85, 31]
     },
     {
-      "station1": 87,
-      "station2": 56,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
-    },
-    {
-      "station1": 85,
-      "station2": 31,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
-    },
-    {
-      "station1": 89,
-      "station2": 26,
-      "time": "TRANSFER_TIME",
-      "type": "regular"
+      "stations": [89, 26]
     }
   ],
   "intermediatePoints": [

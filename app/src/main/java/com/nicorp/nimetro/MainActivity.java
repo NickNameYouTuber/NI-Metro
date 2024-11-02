@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations = new ArrayList<>();
 
         loadMetroData();
-        metroMapView.setData(lines, stations);
+        metroMapView.setData(lines, stations, transfers);
         metroMapView.setOnStationClickListener(this);
 
         stationsAdapter = new StationsAdapter(stations, this);
@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             public void afterTextChanged(Editable s) {}
         });
     }
+
+    private List<Transfer> transfers;
 
     private void loadMetroData() {
         try {
@@ -159,20 +161,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 }
             }
 
-            // Add transfers between different lines
+            // Load transfers between different lines
             JSONArray transfersArray = jsonObject.getJSONArray("transfers");
+            transfers = new ArrayList<>();
             for (int i = 0; i < transfersArray.length(); i++) {
                 JSONObject transferObject = transfersArray.getJSONObject(i);
-                int station1Id = transferObject.getInt("station1");
-                int station2Id = transferObject.getInt("station2");
-
-                Station station1 = findStationById(station1Id);
-                Station station2 = findStationById(station2Id);
-
-                if (station1 != null && station2 != null) {
-                    station1.addNeighbor(new Station.Neighbor(station2, 3)); // Assuming transfer time is 3 minutes
-                    station2.addNeighbor(new Station.Neighbor(station1, 3));
+                System.out.println(transferObject.toString());
+                JSONArray stationsArray = transferObject.getJSONArray("stations");
+                List<Station> transferStations = new ArrayList<>();
+                for (int j = 0; j < stationsArray.length(); j++) {
+                    int stationId = stationsArray.getInt(j);
+                    Station station = findStationById(stationId);
+                    if (station != null) {
+                        transferStations.add(station);
+                    }
                 }
+                int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
+                String type = transferObject.optString("type", "regular");
+                transfers.add(new Transfer(transferStations, time, type));
             }
 
             // Load intermediate points

@@ -1,21 +1,23 @@
 package com.nicorp.nimetro;
 
+import java.util.List;
+
 public class Transfer {
-    private int station1;
-    private int station2;
-    private double time;
+    private List<Station> stations;
+    private int time;
     private String type;
 
-    // Геттеры и сеттеры
-    public int getStation1() {
-        return station1;
+    public Transfer(List<Station> stations, int time, String type) {
+        this.stations = stations;
+        this.time = time;
+        this.type = type;
     }
 
-    public int getStation2() {
-        return station2;
+    public List<Station> getStations() {
+        return stations;
     }
 
-    public double getTime() {
+    public int getTime() {
         return time;
     }
 
