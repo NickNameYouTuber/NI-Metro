@@ -117,7 +117,7 @@
           "x": 750,
           "y": 450,
           "textPosition": 4,
-          "neighbors": [[7, 4], [9, 3]],
+          "neighbors": [[7, 4], [9, 3], [109, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 4,
@@ -129,8 +129,8 @@
         {
           "id": 9,
           "name": "Лубянка",
-          "x": 700,
-          "y": 500,
+          "x": 670,
+          "y": 510,
           "textPosition": 3,
           "neighbors": [[8, 3], [10, 4]],
           "distance": 2.0,
@@ -144,8 +144,8 @@
         {
           "id": 10,
           "name": "Охотный ряд",
-          "x": 650,
-          "y": 550,
+          "x": 610,
+          "y": 560,
           "textPosition": 3,
           "neighbors": [[9, 4], [11, 3]],
           "distance": 1.7,
@@ -450,8 +450,8 @@
         {
           "id": 29,
           "name": "Театральная",
-          "x": 600,
-          "y": 600,
+          "x": 610,
+          "y": 580,
           "neighbors": [[28, 3], [30, 4], [54, 5], [11, 5], [74, 3]],
           "distance": 1.7,
           "facilities": {
@@ -466,7 +466,7 @@
           "name": "Новокузнецкая",
           "x": 650,
           "y": 650,
-          "neighbors": [[29, 4], [31, 3]],
+          "neighbors": [[29, 4], [31, 3], [111, 2]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -618,7 +618,7 @@
         },
         {
           "id": 41,
-          "name": "Зябликово",
+          "name": "Алма-атинская",
           "x": 950,
           "y": 1200,
           "neighbors": [[40, 3]],
@@ -824,7 +824,7 @@
         {
           "id": 55,
           "name": "Площадь Революции",
-          "x": 700,
+          "x": 610,
           "y": 600,
           "neighbors": [[54, 3], [56, 4]],
           "distance": 2.0,
@@ -853,8 +853,8 @@
         {
           "id": 57,
           "name": "Бауманская",
-          "x": 950,
-          "y": 500,
+          "x": 930,
+          "y": 460,
           "neighbors": [[56, 3], [58, 4]],
           "distance": 1.7,
           "facilities": {
@@ -867,8 +867,8 @@
         {
           "id": 58,
           "name": "Электрозаводская",
-          "x": 900,
-          "y": 600,
+          "x": 960,
+          "y": 430,
           "neighbors": [[57, 4], [59, 3]],
           "distance": 1.9,
           "facilities": {
@@ -881,8 +881,8 @@
         {
           "id": 59,
           "name": "Семёновская",
-          "x": 950,
-          "y": 600,
+          "x": 990,
+          "y": 400,
           "neighbors": [[58, 3], [60, 4]],
           "distance": 1.5,
           "facilities": {
@@ -895,8 +895,8 @@
         {
           "id": 60,
           "name": "Партизанская",
-          "x": 1000,
-          "y": 600,
+          "x": 1010,
+          "y": 360,
           "neighbors": [[59, 4], [61, 3]],
           "distance": 1.8,
           "facilities": {
@@ -909,8 +909,8 @@
         {
           "id": 61,
           "name": "Измайловская",
-          "x": 1050,
-          "y": 600,
+          "x": 1010,
+          "y": 290,
           "neighbors": [[60, 3], [62, 4]],
           "distance": 2.0,
           "facilities": {
@@ -923,8 +923,8 @@
         {
           "id": 62,
           "name": "Первомайская",
-          "x": 1100,
-          "y": 600,
+          "x": 1010,
+          "y": 220,
           "neighbors": [[61, 4], [63, 3]],
           "distance": 1.6,
           "facilities": {
@@ -937,8 +937,8 @@
         {
           "id": 63,
           "name": "Щёлковская",
-          "x": 1150,
-          "y": 600,
+          "x": 1010,
+          "y": 160,
           "neighbors": [[62, 3]],
           "distance": 1.7,
           "facilities": {
@@ -1152,9 +1152,9 @@
         {
           "id": 91,
           "name": "Проспект Мира",
-          "x": 700,
-          "y": 310,
-          "neighbors": [[80, 3], [88, 4]],
+          "x": 730,
+          "y": 320,
+          "neighbors": [[80, 3], [88, 4], [107, 2]],
           "distance": 1.8,
           "facilities": {
             "escalators": 3,
@@ -1167,7 +1167,7 @@
           "id": 88,
           "name": "Новослободская",
           "x": 580,
-          "y": 310,
+          "y": 320,
           "neighbors": [[91, 4], [89, 3]],
           "distance": 1.8,
           "facilities": {
@@ -1241,7 +1241,7 @@
           "name": "Октябрьская",
           "x": 510,
           "y": 720,
-          "neighbors": [[82, 3], [84, 4]],
+          "neighbors": [[82, 3], [84, 4], [112, 2]],
           "distance": 1.9,
           "facilities": {
             "escalators": 4,
@@ -1253,7 +1253,7 @@
         {
           "id": 84,
           "name": "Добрынинская",
-          "x": 600,
+          "x": 610,
           "y": 720,
           "neighbors": [[83, 4], [85, 3]],
           "distance": 1.7,
@@ -1294,6 +1294,350 @@
           }
         }
       ]
+    },
+    {
+      "id": 6,
+      "name": "Калужско-Рижская линия",
+      "color": "#FF8C00",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 100,
+          "name": "Медведково",
+          "x": 750,
+          "y": 50,
+          "neighbors": [[101, 2]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Медведковская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 101,
+          "name": "Бабушкинская",
+          "x": 750,
+          "y": 90,
+          "neighbors": [[100, 2], [102, 4]],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Менжинского"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 102,
+          "name": "Свиблово",
+          "x": 750,
+          "y": 130,
+          "neighbors": [[101, 4], [103, 3]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Свибловский вал"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 103,
+          "name": "Ботанический сад",
+          "x": 750,
+          "y": 170,
+          "neighbors": [[102, 3], [104, 4]],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["ул. Ботаническая"],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 104,
+          "name": "ВДНХ",
+          "x": 750,
+          "y": 210,
+          "neighbors": [[103, 4], [105, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["пр. Мира"],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 105,
+          "name": "Алексеевская",
+          "x": 750,
+          "y": 240,
+          "neighbors": [[104, 3], [106, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Менделеевская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 106,
+          "name": "Рижская",
+          "x": 750,
+          "y": 270,
+          "neighbors": [[105, 4], [107, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Рижская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 107,
+          "name": "Проспект Мира",
+          "x": 750,
+          "y": 320,
+          "neighbors": [[106, 3], [108, 4], [91, 2]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["пр. Мира"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 108,
+          "name": "Сухаревская",
+          "x": 750,
+          "y": 400,
+          "neighbors": [[107, 4], [109, 3]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Сухаревская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 109,
+          "name": "Тургеневская",
+          "x": 750,
+          "y": 470,
+          "neighbors": [[108, 3], [110, 4], [8, 2]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Большая Лубянка"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 110,
+          "name": "Китай-город",
+          "x": 750,
+          "y": 550,
+          "neighbors": [[109, 4], [111, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Китай-город"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 111,
+          "name": "Третьяковская",
+          "x": 630,
+          "y": 650,
+          "neighbors": [[110, 3], [112, 4], [30, 2]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Лаврушинский пер."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 112,
+          "name": "Октябрьская",
+          "x": 530,
+          "y": 720,
+          "neighbors": [[111, 4], [113, 3], [83, 2]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Октябрьская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 113,
+          "name": "Шаболовская",
+          "x": 530,
+          "y": 750,
+          "neighbors": [[112, 3], [114, 4]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Шаболовская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 114,
+          "name": "Ленинский проспект",
+          "x": 530,
+          "y": 800,
+          "neighbors": [[113, 4], [115, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["Ленинский пр."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 115,
+          "name": "Академическая",
+          "x": 530,
+          "y": 850,
+          "neighbors": [[114, 3], [116, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 116,
+          "name": "Профсоюзная",
+          "x": 530,
+          "y": 900,
+          "neighbors": [[115, 4], [117, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 117,
+          "name": "Новые Черёмушки",
+          "x": 530,
+          "y": 950,
+          "neighbors": [[116, 3], [118, 4]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Вавилова"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 118,
+          "name": "Калужская",
+          "x": 530,
+          "y": 1000,
+          "neighbors": [[117, 4], [119, 3]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Калужская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 119,
+          "name": "Беляево",
+          "x": 530,
+          "y": 1050,
+          "neighbors": [[118, 3], [120, 4]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Миклухо-Маклая"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 120,
+          "name": "Коньково",
+          "x": 530,
+          "y": 1100,
+          "neighbors": [[119, 4], [121, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 121,
+          "name": "Тёплый стан",
+          "x": 530,
+          "y": 1150,
+          "neighbors": [[120, 3], [122, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 122,
+          "name": "Ясенево",
+          "x": 530,
+          "y": 1200,
+          "neighbors": [[121, 4], [123, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Профсоюзная"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 123,
+          "name": "Новоясеневская",
+          "x": 530,
+          "y": 1250,
+          "neighbors": [[122, 3]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Новоясеневская"],
+            "schedule": "5:40 - 0:00"
+          }
+        }
+      ]
     }
   ],
   "transfers": [
@@ -1317,8 +1661,29 @@
     },
     {
       "stations": [54, 11, 74]
+    },
+    {
+      "stations": [107, 91]
+    },
+    {
+      "stations": [112, 83]
+    },
+    {
+      "stations": [109, 8]
+    },
+    {
+      "stations": [30, 111]
     }
   ],
   "intermediatePoints": [
+    {
+      "neighborsId": [55, 56],
+      "points": [
+        {
+          "x": 750,
+          "y": 600
+        }
+      ]
+    }
   ]
 }
