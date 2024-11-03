@@ -45,7 +45,7 @@ public class MetroMapView extends View {
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
 
-    private static final float COORDINATE_SCALE_FACTOR = 2.5f;
+    static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
     private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
 
@@ -62,6 +62,18 @@ public class MetroMapView extends View {
     public MetroMapView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public float getScaleFactor() {
+        return scaleFactor;
+    }
+
+    public float getTranslateX() {
+        return translateX;
+    }
+
+    public float getTranslateY() {
+        return translateY;
     }
 
     private void init() {
@@ -325,7 +337,7 @@ public class MetroMapView extends View {
         return result || super.onTouchEvent(event);
     }
 
-    private Station findStationAt(float x, float y) {
+    Station findStationAt(float x, float y) {
         for (Station station : stations) {
             if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
                 return station;
@@ -527,6 +539,15 @@ public class MetroMapView extends View {
         return new ArrayList<>(Arrays.asList((float) (360 - (angle * 180 / Math.PI)), (float) ((Math.atan2(vector2Y, vector2X) * 180 / Math.PI))));
     }
 
+    public void setTranslateX(float v) {
+        translateX = v;
+        invalidate();
+    }
+
+    public void setTranslateY(float v) {
+        translateY = v;
+        invalidate();
+    }
 
     public interface OnStationClickListener {
         void onStationClick(Station station);

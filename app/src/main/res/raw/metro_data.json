@@ -437,7 +437,7 @@
           "id": 28,
           "name": "Тверская",
           "x": 550,
-          "y": 550,
+          "y": 540,
           "neighbors": [[27, 4], [29, 3]],
           "distance": 2.0,
           "facilities": {
@@ -1195,8 +1195,8 @@
         {
           "id": 90,
           "name": "Краснопресненская",
-          "x": 370,
-          "y": 550,
+          "x": 390,
+          "y": 540,
           "neighbors": [[89, 4], [81, 3]],
           "distance": 1.8,
           "facilities": {
@@ -1635,6 +1635,336 @@
             "elevators": 1,
             "exits": ["ул. Новоясеневская"],
             "schedule": "5:40 - 0:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Таганско-Краснопресненская линия",
+      "color": "#8B008B",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 200,
+          "name": "Планерная",
+          "x": 200,
+          "y": 100,
+          "neighbors": [[201, 2]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Планерная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 201,
+          "name": "Сходненская",
+          "x": 200,
+          "y": 150,
+          "neighbors": [[200, 2], [202, 4]],
+          "distance": 2.1,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 0,
+            "exits": ["ул. Сходненская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 202,
+          "name": "Тушинская",
+          "x": 200,
+          "y": 200,
+          "neighbors": [[201, 4], [203, 3]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Тушинская"],
+            "schedule": "5:32 - 0:00"
+          }
+        },
+        {
+          "id": 203,
+          "name": "Спартак",
+          "x": 200,
+          "y": 250,
+          "neighbors": [[202, 3], [204, 4]],
+          "distance": 2.3,
+          "facilities": {
+            "escalators": 5,
+            "elevators": 2,
+            "exits": ["ул. Спартак"],
+            "schedule": "5:30 - 0:30"
+          }
+        },
+        {
+          "id": 204,
+          "name": "Щукинская",
+          "x": 200,
+          "y": 300,
+          "neighbors": [[203, 4], [205, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 1,
+            "exits": ["ул. Щукинская"],
+            "schedule": "5:35 - 0:15"
+          }
+        },
+        {
+          "id": 205,
+          "name": "Октябрьское Поле",
+          "x": 200,
+          "y": 350,
+          "neighbors": [[204, 3], [206, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Октябрьское Поле"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 206,
+          "name": "Полежаевская",
+          "x": 200,
+          "y": 400,
+          "neighbors": [[205, 4], [207, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Полежаевская"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 207,
+          "name": "Беговая",
+          "x": 270,
+          "y": 450,
+          "neighbors": [[206, 3], [208, 4]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Беговая"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 208,
+          "name": "Улица 1905 года",
+          "x": 330,
+          "y": 500,
+          "neighbors": [[207, 4], [209, 3]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Улица 1905 года"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 209,
+          "name": "Баррикадная",
+          "x": 410,
+          "y": 540,
+          "neighbors": [[208, 3], [210, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Баррикадная"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 210,
+          "name": "Пушкинская",
+          "x": 530,
+          "y": 540,
+          "neighbors": [[209, 4], [211, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Пушкинская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 211,
+          "name": "Кузнецкий мост",
+          "x": 670,
+          "y": 540,
+          "neighbors": [[210, 3], [212, 4]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Кузнецкий мост"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 212,
+          "name": "Китай-город",
+          "x": 750,
+          "y": 570,
+          "neighbors": [[211, 4], [213, 3]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Китай-город"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 213,
+          "name": "Таганская",
+          "x": 850,
+          "y": 620,
+          "neighbors": [[212, 3], [214, 4]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Таганская"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 214,
+          "name": "Пролетарская",
+          "x": 1200,
+          "y": 800,
+          "neighbors": [[213, 4], [215, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Пролетарская"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 215,
+          "name": "Волгоградский проспект",
+          "x": 1200,
+          "y": 850,
+          "neighbors": [[214, 3], [216, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Волгоградский пр."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 216,
+          "name": "Текстильщики",
+          "x": 1200,
+          "y": 900,
+          "neighbors": [[215, 4], [217, 3]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Текстильщики"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 217,
+          "name": "Кузьминки",
+          "x": 1200,
+          "y": 950,
+          "neighbors": [[216, 3], [218, 4]],
+          "distance": 1.5,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Кузьминки"],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 218,
+          "name": "Рязанский проспект",
+          "x": 1200,
+          "y": 1000,
+          "neighbors": [[217, 4], [219, 3]],
+          "distance": 1.8,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Рязанский пр."],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 219,
+          "name": "Выхино",
+          "x": 1200,
+          "y": 1050,
+          "neighbors": [[218, 3], [220, 4]],
+          "distance": 2.0,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Выхино"],
+            "schedule": "5:35 - 0:00"
+          }
+        },
+        {
+          "id": 220,
+          "name": "Лермонтовский проспект",
+          "x": 1200,
+          "y": 1100,
+          "neighbors": [[219, 4], [221, 3]],
+          "distance": 1.6,
+          "facilities": {
+            "escalators": 2,
+            "elevators": 1,
+            "exits": ["ул. Лермонтовский пр."],
+            "schedule": "5:40 - 0:00"
+          }
+        },
+        {
+          "id": 221,
+          "name": "Жулебино",
+          "x": 1200,
+          "y": 1150,
+          "neighbors": [[220, 3], [222, 4]],
+          "distance": 1.7,
+          "facilities": {
+            "escalators": 3,
+            "elevators": 1,
+            "exits": ["ул. Жулебино"],
+            "schedule": "5:30 - 0:00"
+          }
+        },
+        {
+          "id": 222,
+          "name": "Котельники",
+          "x": 1200,
+          "y": 1200,
+          "neighbors": [[221, 4]],
+          "distance": 1.9,
+          "facilities": {
+            "escalators": 4,
+            "elevators": 2,
+            "exits": ["ул. Котельники"],
+            "schedule": "5:35 - 0:00"
           }
         }
       ]

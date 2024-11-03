@@ -112,4 +112,12 @@ public class Station implements Serializable {
     public List<Point> getIntermediatePoints(Station neighbor) {
         return intermediatePointsMap.get(neighbor);
     }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
 }
