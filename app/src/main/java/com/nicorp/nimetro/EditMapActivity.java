@@ -3,7 +3,8 @@ package com.nicorp.nimetro;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,7 +12,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,7 @@ public class EditMapActivity extends AppCompatActivity {
         Button addStationButton = findViewById(R.id.addStationButton);
         Button removeStationButton = findViewById(R.id.removeStationButton);
         Button saveChangesButton = findViewById(R.id.saveChangesButton);
+        Button addTransferButton = findViewById(R.id.addTransferButton); // Добавляем кнопку для создания переходов
 
         // Load and set metro data
         loadMetroData();
@@ -62,6 +65,7 @@ public class EditMapActivity extends AppCompatActivity {
         addStationButton.setOnClickListener(v -> showAddStationDialog());
         removeStationButton.setOnClickListener(v -> removeSelectedStation());
         saveChangesButton.setOnClickListener(v -> saveMetroData());
+        addTransferButton.setOnClickListener(v -> showAddTransferDialog()); // Обработчик для создания переходов
 
         // Touch handling
         metroMapView.setOnTouchListener((v, event) -> {
@@ -397,5 +401,108 @@ public class EditMapActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Ошибка сохранения", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showAddTransferDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_transfer, null);
+        builder.setView(dialogView);
+
+        TextView transferListLabel = dialogView.findViewById(R.id.transferListLabel);
+        LinearLayout transferListContainer = dialogView.findViewById(R.id.transferListContainer);
+        Button addStationButton = dialogView.findViewById(R.id.addStationButton);
+        Button saveTransferButton = dialogView.findViewById(R.id.saveTransferButton);
+
+        // Initialize AlertDialog instance
+        AlertDialog alertDialog = builder.create();
+
+        // Set up add station button
+        addStationButton.setOnClickListener(v -> {
+            AlertDialog.Builder stationPickerBuilder = new AlertDialog.Builder(this);
+            stationPickerBuilder.setTitle("Выберите станцию");
+
+            StationListAdapter stationAdapter = new StationListAdapter(this, stations);
+            stationPickerBuilder.setAdapter(stationAdapter, (dialog, which) -> {
+                Station selectedStation = stations.get(which);
+                View stationItemView = LayoutInflater.from(this).inflate(R.layout.item_station_list, null);
+                TextView stationNameTextView = stationItemView.findViewById(R.id.stationNameTextView);
+                TextView stationIdTextView = stationItemView.findViewById(R.id.stationIdTextView);
+
+                stationNameTextView.setText(selectedStation.getName());
+                stationIdTextView.setText(String.valueOf(selectedStation.getId()));
+
+                transferListContainer.addView(stationItemView);
+            });
+
+            // Add search functionality
+            EditText searchEditText = new EditText(this);
+            searchEditText.setHint("Поиск станции");
+            stationPickerBuilder.setView(searchEditText);
+
+            stationPickerBuilder.setPositiveButton("ОК", null);
+            stationPickerBuilder.setNegativeButton("Отмена", null);
+
+            AlertDialog stationPickerDialog = stationPickerBuilder.create();
+            stationPickerDialog.setOnShowListener(dialog -> {
+                searchEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        stationAdapter.filter(s.toString());
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+            });
+
+            stationPickerDialog.show();
+        });
+
+        // Set up save transfer button
+        saveTransferButton.setOnClickListener(v -> {
+            List<Station> selectedStations = new ArrayList<>();
+            for (int i = 0; i < transferListContainer.getChildCount(); i++) {
+                View stationItemView = transferListContainer.getChildAt(i);
+                TextView stationIdTextView = stationItemView.findViewById(R.id.stationIdTextView);
+                int stationId = Integer.parseInt(stationIdTextView.getText().toString());
+
+                for (Station station : stations) {
+                    if (station.getId() == stationId) {
+                        selectedStations.add(station);
+                        break;
+                    }
+                }
+            }
+
+            if (selectedStations.size() < 2) {
+                Toast.makeText(this, "Выберите хотя бы две станции для создания перехода", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Create new transfer
+            Transfer newTransfer = new Transfer(selectedStations, 2, "regular");
+            transfers.add(newTransfer);
+
+            // Add neighbor relationships
+            for (int i = 0; i < selectedStations.size(); i++) {
+                for (int j = i + 1; j < selectedStations.size(); j++) {
+                    selectedStations.get(i).addNeighbor(new Station.Neighbor(selectedStations.get(j), 2));
+                    selectedStations.get(j).addNeighbor(new Station.Neighbor(selectedStations.get(i), 2));
+                }
+            }
+
+            metroMapView.setData(lines, stations, transfers);
+            metroMapView.invalidate();
+
+            // Dismiss the dialog safely
+            alertDialog.dismiss();
+        });
+
+        // Show the dialog
+        alertDialog.show();
     }
 }
