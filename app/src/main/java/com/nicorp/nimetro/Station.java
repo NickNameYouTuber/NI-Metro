@@ -120,4 +120,10 @@ public class Station implements Serializable {
     public void setY(int y) {
         this.y = y;
     }
+
+    public void snapToGrid() {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+    }
+
 }

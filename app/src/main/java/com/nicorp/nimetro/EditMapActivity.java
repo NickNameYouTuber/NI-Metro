@@ -1,11 +1,17 @@
 package com.nicorp.nimetro;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,14 +20,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EditMapActivity extends AppCompatActivity {
 
+    private static final String EDITED_DATA_FILENAME = "metro_data_edited.json";
     private MetroMapView metroMapView;
     private List<Station> stations;
     private List<Line> lines;
@@ -49,7 +59,7 @@ public class EditMapActivity extends AppCompatActivity {
         metroMapView.setData(lines, stations, transfers);
 
         // Button click handlers
-        addStationButton.setOnClickListener(v -> addNewStation());
+        addStationButton.setOnClickListener(v -> showAddStationDialog());
         removeStationButton.setOnClickListener(v -> removeSelectedStation());
         saveChangesButton.setOnClickListener(v -> saveMetroData());
 
@@ -87,14 +97,17 @@ public class EditMapActivity extends AppCompatActivity {
                     return true;
 
                 case MotionEvent.ACTION_UP:
+                    if (selectedStation != null) {
+                        selectedStation.snapToGrid();
+                    }
                     selectedStation = null;
                     isMovingMap = false;
+                    metroMapView.invalidate(); // Redraw map view
                     return true;
             }
             return false;
         });
     }
-
 
     private void loadMetroData() {
         try {
@@ -217,19 +230,90 @@ public class EditMapActivity extends AppCompatActivity {
         return null;
     }
 
-    private void addNewStation() {
-        // Добавление новой станции на карту
-        Station newStation = new Station(
-                stations.size() + 1, // Уникальный ID
-                "Новая станция",
-                0, 0, // Начальные координаты
-                "#000000", // Цвет станции
-                new Facilities("5:30 - 0:00", 0, 0, new String[]{}),
-                0
-        );
-        stations.add(newStation);
-        metroMapView.setData(lines, stations, transfers);
-        metroMapView.invalidate();
+    private void showAddStationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_station, null);
+        builder.setView(dialogView);
+
+        EditText stationNameEditText = dialogView.findViewById(R.id.stationNameEditText);
+        Spinner lineSpinner = dialogView.findViewById(R.id.lineSpinner);
+        Spinner stationSpinner = dialogView.findViewById(R.id.stationSpinner);
+        Button createButton = dialogView.findViewById(R.id.createButton);
+
+        // Initialize AlertDialog instance
+        AlertDialog alertDialog = builder.create();
+
+        // Set up line spinner
+        List<String> lineNames = new ArrayList<>();
+        for (Line line : lines) {
+            lineNames.add(line.getName());
+        }
+        ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lineNames);
+        lineAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lineSpinner.setAdapter(lineAdapter);
+
+        // Set up station spinner
+        lineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Line selectedLine = lines.get(position);
+                List<String> stationNames = new ArrayList<>();
+                for (Station station : selectedLine.getStations()) {
+                    stationNames.add(station.getName());
+                }
+                ArrayAdapter<String> stationAdapter = new ArrayAdapter<>(EditMapActivity.this, android.R.layout.simple_spinner_item, stationNames);
+                stationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                stationSpinner.setAdapter(stationAdapter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        // Create button click handler
+        createButton.setOnClickListener(v -> {
+            String stationName = stationNameEditText.getText().toString();
+            int selectedLineIndex = lineSpinner.getSelectedItemPosition();
+            int selectedStationIndex = stationSpinner.getSelectedItemPosition();
+
+            if (stationName.isEmpty()) {
+                Toast.makeText(this, "Введите название станции", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Line selectedLine = lines.get(selectedLineIndex);
+            Station selectedStation = selectedLine.getStations().get(selectedStationIndex);
+
+            Station newStation = new Station(
+                    stations.size() + 1, // Unique ID
+                    stationName,
+                    selectedStation.getX() + 20,
+                    selectedStation.getY() + 20,
+                    selectedLine.getColor(),
+                    new Facilities("5:30 - 0:00", 0, 0, new String[]{}),
+                    0
+            );
+
+            // Add new station to the list
+            stations.add(newStation);
+            selectedLine.getStations().add(newStation);
+
+            // Add neighbor relationship
+            newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
+            selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
+
+            metroMapView.setData(lines, stations, transfers);
+            metroMapView.invalidate();
+
+            // Dismiss the dialog safely
+            alertDialog.dismiss();
+        });
+
+        // Show the dialog
+        alertDialog.show();
     }
 
     private void removeSelectedStation() {
@@ -303,8 +387,8 @@ public class EditMapActivity extends AppCompatActivity {
 
             jsonObject.put("transfers", transfersArray);
 
-            // Save to file
-            OutputStream os = openFileOutput("metro_data_edited.json", MODE_PRIVATE);
+            // Save JSON data to internal storage file
+            OutputStream os = new FileOutputStream(new File(getFilesDir(), EDITED_DATA_FILENAME));
             os.write(jsonObject.toString().getBytes());
             os.close();
 
