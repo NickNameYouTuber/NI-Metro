@@ -1,10 +1,14 @@
 package com.nicorp.nimetro;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +44,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Кнопка настроек
+        ImageView settingsButton = findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(v -> {
+            Log.d("MainActivity", "Settings button clicked");
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
+        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
+        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
+
         metroMapView = findViewById(R.id.metroMapView);
         startStationLayout = findViewById(R.id.startStationLayout);
         endStationLayout = findViewById(R.id.endStationLayout);
@@ -51,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         lines = new ArrayList<>();
         selectedStations = new ArrayList<>();
 
-        loadMetroData();
+        loadMetroData(selectedMapFileName);
         metroMapView.setData(lines, stations, transfers);
         metroMapView.setOnStationClickListener(this);
 
@@ -104,9 +120,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Transfer> transfers;
 
-    private void loadMetroData() {
+    private void loadMetroData(String mapFileName) {
         try {
-            JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
+            JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
             JSONArray linesArray = jsonObject.getJSONArray("lines");
 
             // First, load all stations and lines
@@ -221,10 +237,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return result;
     }
 
-    private String loadJSONFromAsset() {
+    private String loadJSONFromAsset(String mapFileName) {
         String json = null;
         try {
-            InputStream is = getResources().openRawResource(R.raw.metro_data);
+            InputStream is = getAssets().open("raw/" + mapFileName);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

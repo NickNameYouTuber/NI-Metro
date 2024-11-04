@@ -1,0 +1,189 @@
+{
+  "info": {
+    "version": "1.0",
+    "author": "Nicorp",
+    "country": "Россия",
+    "name": "Самара",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Samara_Metro_logo.svg/351px-Samara_Metro_logo.svg.png"
+  },
+  "lines": [
+    {
+      "id": 1,
+      "name": "Первая линия",
+      "color": "#E40520",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 1,
+          "name": "Юнгородок",
+          "x": 100,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [2, 3]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 2,
+          "name": "Кировская",
+          "x": 200,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [1, 3],
+            [3, 4]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 3,
+          "name": "Безымянка",
+          "x": 300,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [2, 4],
+            [4, 3]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 4,
+          "name": "Победа",
+          "x": 400,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [3, 3],
+            [5, 5]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 5,
+          "name": "Советская",
+          "x": 500,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [4, 5],
+            [6, 4]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 6,
+          "name": "Спортивная",
+          "x": 600,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [5, 4],
+            [7, 3]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 7,
+          "name": "Гагаринская",
+          "x": 700,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [6, 3],
+            [8, 4]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 8,
+          "name": "Московская",
+          "x": 800,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [7, 4],
+            [9, 3]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 9,
+          "name": "Российская",
+          "x": 900,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [8, 3],
+            [10, 4]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        },
+        {
+          "id": 10,
+          "name": "Алабинская",
+          "x": 1000,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [9, 4]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 1,
+            "elevators": 1,
+            "exits": []
+          }
+        }
+      ]
+    }
+  ],
+  "transfers": [],
+  "intermediatePoints": []
+}
