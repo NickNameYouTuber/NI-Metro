@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations = new ArrayList<>();
 
         loadMetroData(selectedMapFileName);
-        metroMapView.setData(lines, stations, transfers);
+        metroMapView.setData(lines, stations, transfers, rivers);
         metroMapView.setOnStationClickListener(this);
 
         stationsAdapter = new StationsAdapter(stations, this);
@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private List<Transfer> transfers;
+    private List<River> rivers;
 
     private void loadMetroData(String mapFileName) {
         try {
@@ -195,6 +196,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
                 String type = transferObject.optString("type", "regular");
                 transfers.add(new Transfer(transferStations, time, type));
+            }
+
+            // Load rivers
+            JSONArray riversArray = jsonObject.getJSONArray("rivers");
+            rivers = new ArrayList<>();
+            for (int i = 0; i < riversArray.length(); i++) {
+                JSONObject riverObject = riversArray.getJSONObject(i);
+                JSONArray pointsArray = riverObject.getJSONArray("points");
+                List<Point> riverPoints = new ArrayList<>();
+                for (int j = 0; j < pointsArray.length(); j++) {
+                    JSONObject pointObject = pointsArray.getJSONObject(j);
+                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                    riverPoints.add(point);
+                }
+                int width = riverObject.optInt("width", 10); // Default width is 10
+                rivers.add(new River(riverPoints, width));
             }
 
             // Load intermediate points

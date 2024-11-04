@@ -3,18 +3,21 @@ package com.nicorp.nimetro;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ComposeShader;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +29,7 @@ public class MetroMapView extends View {
     private List<Station> route;
     private List<Station> selectedStations;
     private List<Transfer> transfers;
+    private List<River> rivers; // Добавлен список рек
 
     private Paint linePaint;
     private Paint stationPaint;
@@ -34,7 +38,8 @@ public class MetroMapView extends View {
     private Paint textPaint;
     private Paint whitePaint;
     private Paint transferPaint;
-    private Paint stationCenterPaint; // Добавленный Paint для центра станции
+    private Paint stationCenterPaint;
+    private Paint riverPaint; // Добавлен Paint для рек
 
     private OnStationClickListener listener;
 
@@ -108,10 +113,15 @@ public class MetroMapView extends View {
         transferPaint.setStrokeWidth(5);
         transferPaint.setStyle(Paint.Style.STROKE);
 
-        stationCenterPaint = new Paint(); // Инициализация Paint для центра станции
-        stationCenterPaint.setColor(Color.parseColor("#00000000")); // Прозрачный цвет
+        stationCenterPaint = new Paint();
+        stationCenterPaint.setColor(Color.parseColor("#00000000"));
         stationCenterPaint.setStyle(Paint.Style.STROKE);
         stationCenterPaint.setStrokeWidth(5);
+
+        riverPaint = new Paint(); // Инициализация Paint для рек
+        riverPaint.setColor(Color.parseColor("#CCE0EA")); // Бледно-голубой цвет
+        riverPaint.setStyle(Paint.Style.STROKE);
+        riverPaint.setStrokeWidth(10); // Ширина реки
 
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -134,10 +144,11 @@ public class MetroMapView extends View {
         });
     }
 
-    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers) {
+    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers) {
         this.lines = lines;
         this.stations = stations;
         this.transfers = transfers;
+        this.rivers = rivers; // Установка списка рек
         invalidate();
     }
 
@@ -164,6 +175,13 @@ public class MetroMapView extends View {
         canvas.scale(scaleFactor, scaleFactor);
 
         if (lines != null && stations != null) {
+            // Draw rivers first
+            if (rivers != null) {
+                for (River river : rivers) {
+                    drawRiver(canvas, river);
+                }
+            }
+
             // Draw lines
             for (Line line : lines) {
                 linePaint.setColor(Color.parseColor(line.getColor()));
@@ -204,8 +222,6 @@ public class MetroMapView extends View {
                 stationPaint.setColor(Color.parseColor(station.getColor()));
                 canvas.drawCircle(stationX, stationY, 14, stationPaint);
 
-
-
                 if (selectedStations != null && selectedStations.contains(station)) {
                     canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
                 }
@@ -225,6 +241,48 @@ public class MetroMapView extends View {
         }
 
         canvas.restore();
+    }
+
+    private void drawRiver(Canvas canvas, River river) {
+        List<Point> points = river.getPoints();
+        int width = river.getWidth();
+
+        if (points.size() < 2) {
+            return;
+        }
+
+        // Create the river path
+        Path riverPath = new Path();
+        riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR, points.get(0).y * COORDINATE_SCALE_FACTOR);
+        for (int i = 1; i < points.size(); i++) {
+            riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR, points.get(i).y * COORDINATE_SCALE_FACTOR);
+        }
+
+        // Calculate the river length
+        float riverLength = 0;
+        for (int i = 1; i < points.size(); i++) {
+            Point p1 = points.get(i - 1);
+            Point p2 = points.get(i);
+            riverLength += Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        }
+
+        // Set up a symmetrical fade-out gradient on both ends
+        Point startPoint = points.get(0);
+        Point endPoint = points.get(points.size() - 1);
+        int[] fadeColors = {Color.parseColor("#00000000"), Color.parseColor("#ADD8E6"), Color.parseColor("#ADD8E6"), Color.parseColor("#00000000")};
+        float fadeMargin = 20 / riverLength; // Margin for fade-out at both ends
+        float[] fadePositions = {0.0f, fadeMargin, 1.0f - fadeMargin, 1.0f};
+
+        LinearGradient fadeGradient = new LinearGradient(
+                startPoint.x * COORDINATE_SCALE_FACTOR, startPoint.y * COORDINATE_SCALE_FACTOR,
+                endPoint.x * COORDINATE_SCALE_FACTOR, endPoint.y * COORDINATE_SCALE_FACTOR,
+                fadeColors, fadePositions, Shader.TileMode.CLAMP);
+
+        riverPaint.setShader(fadeGradient);
+        riverPaint.setStrokeWidth(width);
+
+        // Draw the river path with the gradient
+        canvas.drawPath(riverPath, riverPaint);
     }
 
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {

@@ -2,6 +2,7 @@ package com.nicorp.nimetro;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -59,7 +60,7 @@ public class EditMapActivity extends AppCompatActivity {
 
         // Load and set metro data
         loadMetroData();
-        metroMapView.setData(lines, stations, transfers);
+        metroMapView.setData(lines, stations, transfers, rivers);
 
         // Button click handlers
         addStationButton.setOnClickListener(v -> showAddStationDialog());
@@ -113,6 +114,7 @@ public class EditMapActivity extends AppCompatActivity {
         });
     }
 
+    private List<River> rivers;
     private void loadMetroData() {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
@@ -172,6 +174,22 @@ public class EditMapActivity extends AppCompatActivity {
                         }
                     }
                 }
+            }
+
+            // Load rivers
+            JSONArray riversArray = jsonObject.getJSONArray("rivers");
+            rivers = new ArrayList<>();
+            for (int i = 0; i < riversArray.length(); i++) {
+                JSONObject riverObject = riversArray.getJSONObject(i);
+                JSONArray pointsArray = riverObject.getJSONArray("points");
+                List<Point> riverPoints = new ArrayList<>();
+                for (int j = 0; j < pointsArray.length(); j++) {
+                    JSONObject pointObject = pointsArray.getJSONObject(j);
+                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                    riverPoints.add(point);
+                }
+                int width = riverObject.optInt("width", 10); // Default width is 10
+                rivers.add(new River(riverPoints, width));
             }
 
             // Load transfers between different lines
@@ -309,7 +327,7 @@ public class EditMapActivity extends AppCompatActivity {
             newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
             selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
 
-            metroMapView.setData(lines, stations, transfers);
+            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
@@ -324,7 +342,7 @@ public class EditMapActivity extends AppCompatActivity {
         if (selectedStation != null) {
             stations.remove(selectedStation);
             selectedStation = null;
-            metroMapView.setData(lines, stations, transfers);
+            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
         } else {
             Toast.makeText(this, "Выберите станцию для удаления", Toast.LENGTH_SHORT).show();
@@ -495,7 +513,7 @@ public class EditMapActivity extends AppCompatActivity {
                 }
             }
 
-            metroMapView.setData(lines, stations, transfers);
+            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
