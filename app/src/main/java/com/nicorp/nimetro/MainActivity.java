@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations = new ArrayList<>();
 
         loadMetroData(selectedMapFileName);
-        metroMapView.setData(lines, stations, transfers, rivers);
+        metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
         metroMapView.setOnStationClickListener(this);
 
         stationsAdapter = new StationsAdapter(stations, this);
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Transfer> transfers;
     private List<River> rivers;
+    private List<MapObject> mapObjects; // Добавлен список объектов
 
     private void loadMetroData(String mapFileName) {
         try {
@@ -183,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             transfers = new ArrayList<>();
             for (int i = 0; i < transfersArray.length(); i++) {
                 JSONObject transferObject = transfersArray.getJSONObject(i);
-                System.out.println(transferObject.toString());
                 JSONArray stationsArray = transferObject.getJSONArray("stations");
                 List<Station> transferStations = new ArrayList<>();
                 for (int j = 0; j < stationsArray.length(); j++) {
@@ -235,6 +235,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     }
                     station1.addIntermediatePoints(station2, intermediatePoints);
                 }
+            }
+
+            // Load map objects
+            JSONArray objectsArray = jsonObject.getJSONArray("objects");
+            mapObjects = new ArrayList<>();
+            for (int i = 0; i < objectsArray.length(); i++) {
+                JSONObject objectObject = objectsArray.getJSONObject(i);
+                String name = objectObject.getString("name");
+                String displayName = objectObject.getString("displayName");
+                String type = objectObject.getString("type");
+                JSONObject positionObject = objectObject.getJSONObject("position");
+                Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
+                mapObjects.add(new MapObject(name, type, position, displayName));
             }
         } catch (JSONException e) {
             e.printStackTrace();

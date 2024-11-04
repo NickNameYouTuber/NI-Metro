@@ -60,7 +60,7 @@ public class EditMapActivity extends AppCompatActivity {
 
         // Load and set metro data
         loadMetroData();
-        metroMapView.setData(lines, stations, transfers, rivers);
+//        metroMapView.setData(lines, stations, transfers, rivers);
 
         // Button click handlers
         addStationButton.setOnClickListener(v -> showAddStationDialog());
@@ -327,7 +327,7 @@ public class EditMapActivity extends AppCompatActivity {
             newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
             selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
 
-            metroMapView.setData(lines, stations, transfers, rivers);
+//            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
@@ -342,7 +342,7 @@ public class EditMapActivity extends AppCompatActivity {
         if (selectedStation != null) {
             stations.remove(selectedStation);
             selectedStation = null;
-            metroMapView.setData(lines, stations, transfers, rivers);
+//            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
         } else {
             Toast.makeText(this, "Выберите станцию для удаления", Toast.LENGTH_SHORT).show();
@@ -513,7 +513,7 @@ public class EditMapActivity extends AppCompatActivity {
                 }
             }
 
-            metroMapView.setData(lines, stations, transfers, rivers);
+//            metroMapView.setData(lines, stations, transfers, rivers);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely

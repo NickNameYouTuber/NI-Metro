@@ -30,6 +30,7 @@ public class MetroMapView extends View {
     private List<Station> selectedStations;
     private List<Transfer> transfers;
     private List<River> rivers; // Добавлен список рек
+    private List<MapObject> mapObjects; // Добавлен список объектов
 
     private Paint linePaint;
     private Paint stationPaint;
@@ -144,14 +145,14 @@ public class MetroMapView extends View {
         });
     }
 
-    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers) {
+    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) {
         this.lines = lines;
         this.stations = stations;
         this.transfers = transfers;
-        this.rivers = rivers; // Установка списка рек
+        this.rivers = rivers;
+        this.mapObjects = mapObjects; // Установка списка объектов
         invalidate();
     }
-
     public void setRoute(List<Station> route) {
         this.route = route;
         invalidate();
@@ -238,9 +239,36 @@ public class MetroMapView extends View {
                     drawRouteWithIntermediatePoints(canvas, station1, station2);
                 }
             }
+
+            // Draw map objects
+            if (mapObjects != null) {
+                for (MapObject mapObject : mapObjects) {
+                    drawMapObject(canvas, mapObject);
+                }
+            }
         }
 
         canvas.restore();
+    }
+
+    private void drawMapObject(Canvas canvas, MapObject mapObject) {
+        float objectX = mapObject.getPosition().x * COORDINATE_SCALE_FACTOR;
+        float objectY = mapObject.getPosition().y * COORDINATE_SCALE_FACTOR;
+
+        Paint objectPaint = new Paint();
+        objectPaint.setColor(Color.BLACK);
+        objectPaint.setStyle(Paint.Style.FILL);
+        objectPaint.setTextSize(24);
+
+        // Draw the object icon based on its type
+        if (mapObject.getType().equals("airport")) {
+            canvas.drawText("✈", objectX - 12, objectY + 12, objectPaint);
+        } else if (mapObject.getType().equals("train_station")) {
+            canvas.drawText("🚂", objectX - 12, objectY + 12, objectPaint);
+        }
+
+        // Draw the object name
+        canvas.drawText(mapObject.getDisplayName(), objectX + 20, objectY, objectPaint);
     }
 
     private void drawRiver(Canvas canvas, River river) {

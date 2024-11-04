@@ -251,9 +251,30 @@
     {
       "points": [
         {"x": -50, "y": 50},
-        {"x": 500, "y": 50}
+        {"x": 280, "y": 50},
+        {"x": 430, "y": -30}
       ],
       "width": 45
+    }
+  ],
+  "objects": [
+    {
+      "name": "Самара-Аэропорт",
+      "displayName": "KUF",
+      "type": "airport",
+      "position": {
+        "x": 350,
+        "y": 50
+      }
+    },
+    {
+      "name": "Самарский вокзал",
+      "displayName": "Самарский вокзал",
+      "type": "train_station",
+      "position": {
+        "x": 100,
+        "y": 900
+      }
     }
   ]
 }
