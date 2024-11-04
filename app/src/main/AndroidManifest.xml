@@ -19,7 +19,7 @@
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".EditMapActivity"
+                android:name=".EditMapActivity"
             android:exported="false" />
         <activity
             android:name=".SplashScreenActivity"

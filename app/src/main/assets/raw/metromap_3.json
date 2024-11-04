@@ -16,8 +16,8 @@
         {
           "id": 1,
           "name": "Arafat 1",
-          "x": 100,
-          "y": 100,
+          "x": 57,
+          "y": 95,
           "textPosition": 0,
           "neighbors": [
             [
@@ -35,8 +35,8 @@
         {
           "id": 2,
           "name": "Arafat 2",
-          "x": 161,
-          "y": 159,
+          "x": 101,
+          "y": 153,
           "textPosition": 0,
           "neighbors": [
             [
@@ -58,8 +58,8 @@
         {
           "id": 3,
           "name": "Arafat 3",
-          "x": 204,
-          "y": 205,
+          "x": 147,
+          "y": 210,
           "textPosition": 0,
           "neighbors": [
             [
@@ -81,8 +81,8 @@
         {
           "id": 4,
           "name": "Muzdalifah 1",
-          "x": 204,
-          "y": 271,
+          "x": 151,
+          "y": 277,
           "textPosition": 0,
           "neighbors": [
             [
@@ -104,8 +104,8 @@
         {
           "id": 5,
           "name": "Muzdalifah 2",
-          "x": 249,
-          "y": 316,
+          "x": 193,
+          "y": 325,
           "textPosition": 0,
           "neighbors": [
             [
@@ -127,8 +127,8 @@
         {
           "id": 6,
           "name": "Muzdalifah 3",
-          "x": 298,
-          "y": 344,
+          "x": 255,
+          "y": 343,
           "textPosition": 0,
           "neighbors": [
             [
@@ -150,8 +150,8 @@
         {
           "id": 7,
           "name": "Mina 1",
-          "x": 326,
-          "y": 496,
+          "x": 299,
+          "y": 503,
           "textPosition": 0,
           "neighbors": [
             [
@@ -173,8 +173,8 @@
         {
           "id": 8,
           "name": "Mina 2",
-          "x": 359,
-          "y": 540,
+          "x": 321,
+          "y": 567,
           "textPosition": 0,
           "neighbors": [
             [
@@ -196,8 +196,8 @@
         {
           "id": 9,
           "name": "Mina 3",
-          "x": 390,
-          "y": 589,
+          "x": 348,
+          "y": 627,
           "textPosition": 0,
           "neighbors": [
             [

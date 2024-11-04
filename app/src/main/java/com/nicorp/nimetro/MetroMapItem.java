@@ -28,4 +28,14 @@ public class MetroMapItem {
     public String getFileName() {
         return fileName;
     }
+
+    @Override
+    public String toString() {
+        return "MetroMapItem{" +
+                "country='" + country + '\'' +
+                ", name='" + name + '\'' +
+                ", iconUrl='" + iconUrl + '\'' +
+                ", fileName='" + fileName + '\'' +
+                '}';
+    }
 }
