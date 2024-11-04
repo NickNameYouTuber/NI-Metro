@@ -5,10 +5,12 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -18,84 +20,103 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private Spinner metroMapSpinner;
-    private Button saveSettingsButton;
+    private TextView currentMetroMapName;
+    private ImageView currentMetroMapIcon;
+    private RadioGroup themeRadioGroup;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        metroMapSpinner = findViewById(R.id.metroMapSpinner);
-        saveSettingsButton = findViewById(R.id.saveSettingsButton);
+        currentMetroMapName = findViewById(R.id.currentMetroMapName);
+        currentMetroMapIcon = findViewById(R.id.currentMetroMapIcon);
+        themeRadioGroup = findViewById(R.id.themeRadioGroup);
 
-        // Загрузка имен карт метро из JSON-файлов
-        List<MetroMapItem> metroMapItems = null;
-        try {
-            metroMapItems = loadMetroMapItems();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+
+        // Загрузка текущей выбранной карты метро
+        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
+        MetroMapItem currentMapItem = loadMetroMapItem(selectedMapFileName);
+        if (currentMapItem != null) {
+            currentMetroMapName.setText(currentMapItem.getName());
+            Glide.with(this).load(currentMapItem.getIconUrl()).into(currentMetroMapIcon);
         }
 
-        // Настройка Spinner
-        MetroMapAdapter adapter = new MetroMapAdapter(this, metroMapItems);
-        metroMapSpinner.setAdapter(adapter);
+        // Загрузка текущей выбранной темы
+        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
+        if (selectedTheme.equals("light")) {
+            themeRadioGroup.check(R.id.lightThemeRadioButton);
+        } else {
+            themeRadioGroup.check(R.id.darkThemeRadioButton);
+        }
 
-        saveSettingsButton.setOnClickListener(v -> {
-            // Получение выбранной карты метро
-            MetroMapItem selectedMapItem = (MetroMapItem) metroMapSpinner.getSelectedItem();
-
-            // Получение выбранной темы
-            RadioGroup themeRadioGroup = findViewById(R.id.themeRadioGroup);
-            int selectedThemeId = themeRadioGroup.getCheckedRadioButtonId();
-            String selectedTheme = selectedThemeId == R.id.lightThemeRadioButton ? "light" : "dark";
-
-            // Сохранение настроек (например, в SharedPreferences)
-            SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("selected_map", selectedMapItem.getName());
-            editor.putString("selected_theme", selectedTheme);
-
-            // Сохранение названия файла карты
-            editor.putString("selected_map_file", selectedMapItem.getFileName());
-
-            editor.apply();
-
-            // Возврат на предыдущую активность
-            Log.d("MainActivity", "Settings button clicked");
-            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-            startActivity(intent);
+        // Установка слушателя для изменения темы
+        themeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            String theme = checkedId == R.id.lightThemeRadioButton ? "light" : "dark";
+            saveTheme(theme);
         });
     }
 
-    private List<MetroMapItem> loadMetroMapItems() throws IOException {
-        List<MetroMapItem> metroMapItems = new ArrayList<>();
-        AssetManager assetManager = getAssets();
-        String[] jsonFiles = assetManager.list("raw"); // Получаем список файлов в папке assets/raw
+    public void onCurrentMetroMapClick(View view) {
+        // Открытие диалога для выбора карты метро
+        SelectMetroMapDialog dialog = new SelectMetroMapDialog(this);
+        dialog.show();
+    }
 
-        if (jsonFiles != null) {
-            for (String fileName : jsonFiles) {
-                if (fileName.startsWith("metromap_") && fileName.endsWith(".json")) {
-                    try (InputStream is = assetManager.open("raw/" + fileName)) {
-                        int size = is.available();
-                        byte[] buffer = new byte[size];
-                        is.read(buffer);
+    public void updateCurrentMetroMap(MetroMapItem selectedItem) {
+        if (selectedItem != null) {
+            currentMetroMapName.setText(selectedItem.getName());
+            Glide.with(this).load(selectedItem.getIconUrl()).into(currentMetroMapIcon);
 
-                        String json = new String(buffer, "UTF-8");
-                        JSONObject jsonObject = new JSONObject(json);
-                        JSONObject infoObject = jsonObject.getJSONObject("info");
-                        String mapName = infoObject.getString("name");
-                        String country = infoObject.getString("country");
-                        String iconUrl = infoObject.getString("icon");
-
-                        metroMapItems.add(new MetroMapItem(country, mapName, iconUrl, fileName));
-                    } catch (IOException | JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            // Сохранение выбранной карты метро в SharedPreferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("selected_map", selectedItem.getName());
+            editor.putString("selected_map_file", selectedItem.getFileName());
+            editor.apply();
         }
+    }
 
-        return metroMapItems;
+    private void saveTheme(String theme) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("selected_theme", theme);
+        editor.apply();
+    }
+
+    private MetroMapItem loadMetroMapItem(String fileName) {
+        try (InputStream is = getAssets().open("raw/" + fileName)) {
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            String json = new String(buffer, "UTF-8");
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject infoObject = jsonObject.getJSONObject("info");
+            String mapName = infoObject.getString("name");
+            String country = infoObject.getString("country");
+            String iconUrl = infoObject.getString("icon");
+            return new MetroMapItem(country, mapName, iconUrl, fileName);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Возврат на предыдущую активность
+        super.onBackPressed();
+        Log.d("MainActivity", "Settings button clicked");
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void onBackButtonClick(View view) {
+        // Возврат на предыдущую активность
+        Log.d("MainActivity", "Settings button clicked");
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
