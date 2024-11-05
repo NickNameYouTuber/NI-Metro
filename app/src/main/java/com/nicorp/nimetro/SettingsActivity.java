@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
     private ImageView currentMetroMapIcon;
     private RadioGroup themeRadioGroup;
     private SharedPreferences sharedPreferences;
+    private LinearLayout currentMetroMapLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
         currentMetroMapName = findViewById(R.id.currentMetroMapName);
         currentMetroMapIcon = findViewById(R.id.currentMetroMapIcon);
         themeRadioGroup = findViewById(R.id.themeRadioGroup);
+        currentMetroMapLayout = findViewById(R.id.currentMetroMapLayout);
 
         sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
 
@@ -57,6 +60,8 @@ public class SettingsActivity extends AppCompatActivity {
             String theme = checkedId == R.id.lightThemeRadioButton ? "light" : "dark";
             saveTheme(theme);
         });
+
+        currentMetroMapLayout.setOnClickListener(v -> onCurrentMetroMapClick(v));
     }
 
     public void onCurrentMetroMapClick(View view) {

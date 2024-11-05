@@ -1,103 +1,117 @@
 package com.nicorp.nimetro;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MetroMapAdapter extends ArrayAdapter<MetroMapItem> {
+public class MetroMapAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_ITEM = 1;
 
     private Context context;
-    private List<MetroMapItem> metroMapItems;
-    private List<MetroMapItem> filteredMetroMapItems;
+    private List<Object> items;
+    private OnItemClickListener listener;
 
-    public MetroMapAdapter(Context context, List<MetroMapItem> metroMapItems) {
-        super(context, 0, metroMapItems);
+    public MetroMapAdapter(Context context, List<Object> items) {
         this.context = context;
-        this.metroMapItems = metroMapItems;
-        this.filteredMetroMapItems = new ArrayList<>(metroMapItems);
+        this.items = items;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void updateData(List<Object> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_metro_map, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        if (viewType == VIEW_TYPE_HEADER) {
+            View view = inflater.inflate(R.layout.item_metro_map_group, parent, false);
+            return new HeaderViewHolder(view);
+        } else {
+            View view = inflater.inflate(R.layout.item_metro_map, parent, false);
+            return new ItemViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof HeaderViewHolder) {
+            String country = (String) items.get(position);
+            ((HeaderViewHolder) holder).bind(country);
+        } else if (holder instanceof ItemViewHolder) {
+            MetroMapItem item = (MetroMapItem) items.get(position);
+            ((ItemViewHolder) holder).bind(item);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (items.get(position) instanceof String) {
+            return VIEW_TYPE_HEADER;
+        } else {
+            return VIEW_TYPE_ITEM;
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, MetroMapItem item);
+    }
+
+    public class HeaderViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView countryTextView;
+
+        public HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            countryTextView = itemView.findViewById(R.id.countryTextView);
         }
 
-        ImageView iconImageView = convertView.findViewById(R.id.iconImageView);
-        TextView nameTextView = convertView.findViewById(R.id.nameTextView);
-        TextView countryTextView = convertView.findViewById(R.id.countryTextView);
-
-        MetroMapItem currentItem = filteredMetroMapItems.get(position);
-
-        if (currentItem != null) {
-            // Загрузка изображения с помощью Glide
-            Glide.with(context)
-                    .load(currentItem.getIconUrl()) // Glide автоматически обрабатывает URL с русскими символами
-                    .into(iconImageView);
-
-            nameTextView.setText(currentItem.getName());
-            countryTextView.setText(currentItem.getCountry());
-            Log.d("MetroMapAdapter", "Country: " + currentItem.getCountry());
+        public void bind(String country) {
+            countryTextView.setText(country);
         }
-
-        return convertView;
     }
 
-    @Override
-    public int getCount() {
-        return filteredMetroMapItems.size();
-    }
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-    @Nullable
-    @Override
-    public MetroMapItem getItem(int position) {
-        return filteredMetroMapItems.get(position);
-    }
+        private ImageView iconImageView;
+        private TextView nameTextView;
 
-    @NonNull
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-                List<MetroMapItem> filteredList = new ArrayList<>();
+        public ItemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            iconImageView = itemView.findViewById(R.id.iconImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
 
-                if (constraint == null || constraint.length() == 0) {
-                    filteredList.addAll(metroMapItems);
-                } else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-
-                    for (MetroMapItem item : metroMapItems) {
-                        if (item.getName().toLowerCase().contains(filterPattern) || item.getCountry().toLowerCase().contains(filterPattern)) {
-                            filteredList.add(item);
-                        }
-                    }
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(position, (MetroMapItem) items.get(position));
                 }
+            });
+        }
 
-                results.values = filteredList;
-                results.count = filteredList.size();
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredMetroMapItems.clear();
-                filteredMetroMapItems.addAll((List) results.values);
-                notifyDataSetChanged();
-            }
-        };
+        public void bind(MetroMapItem item) {
+            Glide.with(context).load(item.getIconUrl()).into(iconImageView);
+            nameTextView.setText(item.getName());
+        }
     }
 }

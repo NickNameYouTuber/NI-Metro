@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -20,13 +21,14 @@ import java.util.Map;
 public class SelectMetroMapDialog extends Dialog {
 
     private Context context;
-    private ExpandableListView metroMapListView;
+    private RecyclerView metroMapRecyclerView;
     private EditText searchEditText;
-    private MetroMapExpandableListAdapter adapter;
-    private List<MetroMapGroup> metroMapGroups;
+    private MetroMapAdapter adapter;
+    private List<MetroMapItem> metroMapItems;
+    private Map<String, List<MetroMapItem>> groupedMetroMapItems;
 
     public SelectMetroMapDialog(@NonNull Context context) {
-        super(context);
+        super(context, R.style.FullScreenDialogStyle);
         this.context = context;
     }
 
@@ -35,26 +37,32 @@ public class SelectMetroMapDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_select_metro_map);
 
-        metroMapListView = findViewById(R.id.metroMapListView);
+        metroMapRecyclerView = findViewById(R.id.metroMapRecyclerView);
         searchEditText = findViewById(R.id.searchEditText);
 
         try {
-            metroMapGroups = loadMetroMapGroups();
+            metroMapItems = loadMetroMapItems();
+            groupedMetroMapItems = groupMetroMapItemsByCountry(metroMapItems);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        adapter = new MetroMapExpandableListAdapter(context, metroMapGroups);
-        metroMapListView.setAdapter(adapter);
+        List<Object> items = new ArrayList<>();
+        for (Map.Entry<String, List<MetroMapItem>> entry : groupedMetroMapItems.entrySet()) {
+            items.add(entry.getKey());
+            items.addAll(entry.getValue());
+        }
 
-        metroMapListView.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
-            MetroMapItem selectedItem = (MetroMapItem) adapter.getChild(groupPosition, childPosition);
-            if (selectedItem != null) {
+        adapter = new MetroMapAdapter(context, items);
+        metroMapRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        metroMapRecyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener((position, item) -> {
+            if (item != null) {
                 // Обновление текущей выбранной карты метро
-                ((SettingsActivity) context).updateCurrentMetroMap(selectedItem);
+                ((SettingsActivity) context).updateCurrentMetroMap(item);
                 dismiss();
             }
-            return false;
         });
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -71,9 +79,8 @@ public class SelectMetroMapDialog extends Dialog {
         });
     }
 
-    private List<MetroMapGroup> loadMetroMapGroups() throws IOException {
-        List<MetroMapGroup> metroMapGroups = new ArrayList<>();
-        Map<String, List<MetroMapItem>> countryMap = new HashMap<>();
+    private List<MetroMapItem> loadMetroMapItems() throws IOException {
+        List<MetroMapItem> metroMapItems = new ArrayList<>();
 
         String[] jsonFiles = context.getAssets().list("raw");
         for (String fileName : jsonFiles) {
@@ -90,36 +97,45 @@ public class SelectMetroMapDialog extends Dialog {
                     String iconUrl = infoObject.getString("icon");
 
                     MetroMapItem metroMapItem = new MetroMapItem(country, mapName, iconUrl, fileName);
-                    countryMap.computeIfAbsent(country, k -> new ArrayList<>()).add(metroMapItem);
+                    metroMapItems.add(metroMapItem);
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        for (Map.Entry<String, List<MetroMapItem>> entry : countryMap.entrySet()) {
-            metroMapGroups.add(new MetroMapGroup(entry.getKey(), entry.getValue()));
+        return metroMapItems;
+    }
+
+    private Map<String, List<MetroMapItem>> groupMetroMapItemsByCountry(List<MetroMapItem> metroMapItems) {
+        Map<String, List<MetroMapItem>> groupedItems = new HashMap<>();
+
+        for (MetroMapItem item : metroMapItems) {
+            String country = item.getCountry();
+            if (!groupedItems.containsKey(country)) {
+                groupedItems.put(country, new ArrayList<>());
+            }
+            groupedItems.get(country).add(item);
         }
 
-        return metroMapGroups;
+        return groupedItems;
     }
 
     private void filterMetroMaps(String query) {
-        List<MetroMapGroup> filteredGroups = new ArrayList<>();
+        List<MetroMapItem> filteredItems = new ArrayList<>();
 
-        for (MetroMapGroup group : metroMapGroups) {
-            List<MetroMapItem> filteredItems = new ArrayList<>();
-            for (MetroMapItem item : group.getMetroMapItems()) {
-                if (item.getName().toLowerCase().contains(query.toLowerCase()) || item.getCountry().toLowerCase().contains(query.toLowerCase())) {
-                    filteredItems.add(item);
-                }
-            }
-            if (!filteredItems.isEmpty()) {
-                filteredGroups.add(new MetroMapGroup(group.getCountry(), filteredItems));
+        for (MetroMapItem item : metroMapItems) {
+            if (item.getName().toLowerCase().contains(query.toLowerCase()) || item.getCountry().toLowerCase().contains(query.toLowerCase())) {
+                filteredItems.add(item);
             }
         }
 
-        adapter = new MetroMapExpandableListAdapter(context, filteredGroups);
-        metroMapListView.setAdapter(adapter);
+        groupedMetroMapItems = groupMetroMapItemsByCountry(filteredItems);
+        List<Object> items = new ArrayList<>();
+        for (Map.Entry<String, List<MetroMapItem>> entry : groupedMetroMapItems.entrySet()) {
+            items.add(entry.getKey());
+            items.addAll(entry.getValue());
+        }
+        adapter.updateData(items);
     }
 }

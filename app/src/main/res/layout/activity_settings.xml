@@ -1,76 +1,105 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Текущая карта метро:"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:id="@+id/currentMetroMapLayout"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:background="@drawable/rounded_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="onCurrentMetroMapClick">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/currentMetroMapIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-             />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="Настройки карты метро"
+            android:elevation="4dp"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/currentMetroMapName"
-            android:layout_width="0dp"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Выберите тему:"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/currentMetroMapCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
 
-    <RadioGroup
-        android:id="@+id/themeRadioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-        <RadioButton
-            android:id="@+id/lightThemeRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Светлая" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Текущая карта метро"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:layout_marginBottom="12dp"/>
 
-        <RadioButton
-            android:id="@+id/darkThemeRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Темная" />
-    </RadioGroup>
+                    <LinearLayout
+                        android:id="@+id/currentMetroMapLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Назад"
-        android:onClick="onBackButtonClick" />
-</LinearLayout>
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/currentMetroMapIcon"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"/>
+
+                        <TextView
+                            android:id="@+id/currentMetroMapName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:textAppearance="?attr/textAppearanceBody1"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Оформление"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginBottom="12dp"/>
+
+            <RadioGroup
+                android:id="@+id/themeRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/lightThemeRadioButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Светлая тема"
+                    android:padding="12dp"/>
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/darkThemeRadioButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Темная тема"
+                    android:padding="12dp"/>
+            </RadioGroup>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

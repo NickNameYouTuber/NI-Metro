@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.NIMetro" parent="Base.Theme.NIMetro" />
+
+    <style name="FullScreenDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
 </resources>
