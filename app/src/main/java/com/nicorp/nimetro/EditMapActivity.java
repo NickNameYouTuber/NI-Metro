@@ -39,6 +39,8 @@ public class EditMapActivity extends AppCompatActivity {
     private List<Station> stations;
     private List<Line> lines;
     private List<Transfer> transfers;
+    private List<River> rivers;
+    private List<MapObject> mapObjects;
 
     private Station selectedStation;
 
@@ -60,7 +62,7 @@ public class EditMapActivity extends AppCompatActivity {
 
         // Load and set metro data
         loadMetroData();
-//        metroMapView.setData(lines, stations, transfers, rivers);
+        metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
 
         // Button click handlers
         addStationButton.setOnClickListener(v -> showAddStationDialog());
@@ -114,7 +116,6 @@ public class EditMapActivity extends AppCompatActivity {
         });
     }
 
-    private List<River> rivers;
     private void loadMetroData() {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
@@ -123,6 +124,8 @@ public class EditMapActivity extends AppCompatActivity {
             stations = new ArrayList<>();
             lines = new ArrayList<>();
             transfers = new ArrayList<>();
+            rivers = new ArrayList<>();
+            mapObjects = new ArrayList<>();
 
             // First, load all stations and lines
             for (int i = 0; i < linesArray.length(); i++) {
@@ -178,7 +181,6 @@ public class EditMapActivity extends AppCompatActivity {
 
             // Load rivers
             JSONArray riversArray = jsonObject.getJSONArray("rivers");
-            rivers = new ArrayList<>();
             for (int i = 0; i < riversArray.length(); i++) {
                 JSONObject riverObject = riversArray.getJSONObject(i);
                 JSONArray pointsArray = riverObject.getJSONArray("points");
@@ -208,6 +210,18 @@ public class EditMapActivity extends AppCompatActivity {
                 int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
                 String type = transferObject.optString("type", "regular");
                 transfers.add(new Transfer(transferStations, time, type));
+            }
+
+            // Load map objects
+            JSONArray mapObjectsArray = jsonObject.getJSONArray("mapObjects");
+            for (int i = 0; i < mapObjectsArray.length(); i++) {
+                JSONObject mapObjectObject = mapObjectsArray.getJSONObject(i);
+                String name = mapObjectObject.getString("name");
+                String type = mapObjectObject.getString("type");
+                String displayName = mapObjectObject.getString("displayName");
+                JSONObject positionObject = mapObjectObject.getJSONObject("position");
+                Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
+                mapObjects.add(new MapObject(type, displayName, position, name));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -327,7 +341,7 @@ public class EditMapActivity extends AppCompatActivity {
             newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
             selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
 
-//            metroMapView.setData(lines, stations, transfers, rivers);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
@@ -342,7 +356,7 @@ public class EditMapActivity extends AppCompatActivity {
         if (selectedStation != null) {
             stations.remove(selectedStation);
             selectedStation = null;
-//            metroMapView.setData(lines, stations, transfers, rivers);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
             metroMapView.invalidate();
         } else {
             Toast.makeText(this, "Выберите станцию для удаления", Toast.LENGTH_SHORT).show();
@@ -513,7 +527,7 @@ public class EditMapActivity extends AppCompatActivity {
                 }
             }
 
-//            metroMapView.setData(lines, stations, transfers, rivers);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
             metroMapView.invalidate();
 
             // Dismiss the dialog safely

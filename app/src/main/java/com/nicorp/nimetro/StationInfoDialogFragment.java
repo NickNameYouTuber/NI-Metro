@@ -30,9 +30,11 @@ public class StationInfoDialogFragment extends DialogFragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.TransparentDialog);
         if (getArguments() != null) {
             station = (Station) getArguments().getSerializable(ARG_STATION);
         }
@@ -43,8 +45,15 @@ public class StationInfoDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.setTitle(station.getName());
+
+        // Устанавливаем прозрачный фон
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
         return dialog;
     }
+
 
     @Nullable
     @Override

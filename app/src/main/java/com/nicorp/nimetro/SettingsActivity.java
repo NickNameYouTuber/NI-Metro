@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import org.json.JSONException;
@@ -26,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioGroup themeRadioGroup;
     private SharedPreferences sharedPreferences;
     private LinearLayout currentMetroMapLayout;
+    private androidx.appcompat.widget.Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,13 @@ public class SettingsActivity extends AppCompatActivity {
         currentMetroMapIcon = findViewById(R.id.currentMetroMapIcon);
         themeRadioGroup = findViewById(R.id.themeRadioGroup);
         currentMetroMapLayout = findViewById(R.id.currentMetroMapLayout);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            startActivity(intent);});
 
         sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
 

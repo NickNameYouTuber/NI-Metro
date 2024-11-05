@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@android:color/transparent"
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="0dp"
-        app:strokeWidth="0dp"
+        android:layout_margin="16dp"
         app:cardCornerRadius="28dp"
-        android:layout_margin="16dp">
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,8 +28,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/stationName"
@@ -32,17 +37,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/closeButton"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    app:cornerRadius="24dp"
                     android:layout_marginStart="8dp"
-                    app:iconPadding="0dp"
+                    app:cornerRadius="24dp"
                     app:icon="@drawable/ic_close"
-                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"/>
+                    app:iconPadding="0dp" />
             </LinearLayout>
 
             <!-- Info Cards -->
@@ -50,10 +55,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
                 app:strokeColor="?attr/colorOutline"
-                app:cardCornerRadius="20dp">
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,40 +70,40 @@
                         android:id="@+id/scheduleText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:layout_marginBottom="16dp"
                         android:drawableStart="@drawable/ic_schedule"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp"/>
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
                         android:id="@+id/escalatorsText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:layout_marginBottom="16dp"
                         android:drawableStart="@drawable/ic_escalator"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp"/>
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
                         android:id="@+id/elevatorsText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:layout_marginBottom="16dp"
                         android:drawableStart="@drawable/ic_elevator"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp"/>
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
                         android:id="@+id/exitsText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:drawableStart="@drawable/ic_exit"
                         android:drawablePadding="16dp"
-                        android:gravity="center_vertical"/>
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -110,25 +115,25 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/fromButton"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="0dp"
                     android:layout_height="64dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="Отсюда"
                     android:textSize="16sp"
-                    android:layout_marginEnd="8dp"
-                    app:cornerRadius="16dp"
-                    style="@style/Widget.Material3.Button.ElevatedButton"/>
+                    app:cornerRadius="16dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/toButton"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="0dp"
                     android:layout_height="64dp"
                     android:layout_weight="1"
                     android:text="Сюда"
                     android:textSize="16sp"
-                    app:cornerRadius="16dp"
-                    style="@style/Widget.Material3.Button"/>
+                    app:cornerRadius="16dp" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
