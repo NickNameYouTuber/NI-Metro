@@ -1,0 +1,33 @@
+{
+  "name": "ni-metro",
+  "version": "1.0.0",
+  "description": "NI Metro - глобальное приложение для навигации по метро с картами более 200 городов мира, умной навигацией и дополненной реальностью",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NickNameYouTuber/ni-metro.git"
+  },
+  "keywords": [
+    "metro",
+    "subway",
+    "navigation",
+    "maps",
+    "public-transport",
+    "react-native",
+    "ar-navigation"
+  ],
+  "author": "NickNameYouTuber",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NickNameYouTuber/ni-metro/issues"
+  },
+  "homepage": "https://nimetro.app",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "jest",
+    "lint": "eslint ."
+  }
+}
