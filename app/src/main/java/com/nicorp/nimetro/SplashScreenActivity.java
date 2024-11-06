@@ -2,9 +2,12 @@ package com.nicorp.nimetro;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import pl.droidsonroids.gif.GifImageView;
 
 @SuppressLint("CustomSplashScreen")
@@ -17,7 +20,14 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
+        if (selectedTheme.equals("light")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         GifImageView gifImageView = findViewById(R.id.gifImageView);
 
         // Загружаем GIF-анимацию
@@ -26,6 +36,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Создаем обработчик для перехода на главную страницу после завершения анимации
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }, SPLASH_TIME_OUT);

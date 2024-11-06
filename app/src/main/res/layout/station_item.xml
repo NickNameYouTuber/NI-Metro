@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingVertical="8dp"
+    android:background="?attr/colorSurface">
 
     <View
-        android:id="@+id/colorCircle"
-        android:layout_width="24dp"
+        android:id="@+id/stationIndicator"
+        android:layout_width="4dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:clickable="false"
-        android:focusable="false"
-        android:foregroundGravity="center"
-        android:gravity="center"
-        android:minWidth="24dp"
-        android:minHeight="24dp"
-        android:padding="4dp"
-        android:shape="oval" />
+        android:layout_marginEnd="12dp" />
 
     <TextView
         android:id="@+id/stationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textColor="?attr/colorOnSurface" />
 
 </LinearLayout>

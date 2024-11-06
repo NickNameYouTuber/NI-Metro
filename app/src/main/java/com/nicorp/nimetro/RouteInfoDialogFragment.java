@@ -120,15 +120,6 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
         for (int i = 0; i < route.size(); i++) {
             Station station = route.get(i);
 
-            // Add line header if color changes
-//            if (!station.getColor().equals(currentColor)) {
-//                View lineHeader = inflater.inflate(R.layout.item_line_header, container, false);
-////                View lineIndicator = lineHeader.findViewById(R.id.lineIndicator);
-////                lineIndicator.setBackgroundColor(android.graphics.Color.parseColor(station.getColor()));
-//                container.addView(lineHeader);
-//                currentColor = station.getColor();
-//            }
-
             // Add station
             View stationView = inflater.inflate(R.layout.item_route_station, container, false);
             TextView stationName = stationView.findViewById(R.id.stationName);

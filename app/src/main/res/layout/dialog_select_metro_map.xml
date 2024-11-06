@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -12,7 +13,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Выбор карты метро"/>
+            app:title="Выбор карты метро"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -26,14 +30,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             app:startIconDrawable="@drawable/ic_search"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:background="?attr/colorSurface"
+            android:theme="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/searchEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Поиск города"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:textColor="?attr/colorOnSurface"
+                android:background="?attr/colorSurface" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -42,6 +50,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:background="?attr/colorSurface" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

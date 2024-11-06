@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +62,11 @@ public class SettingsActivity extends AppCompatActivity {
         // Загрузка текущей выбранной темы
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
         if (selectedTheme.equals("light")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        if (selectedTheme.equals("light")) {
             themeRadioGroup.check(R.id.lightThemeRadioButton);
         } else {
             themeRadioGroup.check(R.id.darkThemeRadioButton);
@@ -95,6 +102,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void saveTheme(String theme) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (theme.equals("light")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         editor.putString("selected_theme", theme);
         editor.apply();
     }
