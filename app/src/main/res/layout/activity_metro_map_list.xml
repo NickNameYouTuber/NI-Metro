@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="?attr/colorBackground"
     android:padding="16dp">
 
     <EditText
@@ -13,7 +14,7 @@
         android:inputType="text"
         android:padding="8dp"
         android:textColor="?attr/colorOnBackground"
-        android:background="?attr/colorSurface" />
+        android:background="?attr/colorBackground" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/metroMapRecyclerView"

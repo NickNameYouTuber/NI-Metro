@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.google.android.material.color.MaterialColors;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,8 +107,10 @@ public class MetroMapView extends View {
         routePaint.setColor(Color.YELLOW);
         routePaint.setStrokeWidth(9);
 
+        int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
+
         textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(colorOnSurface);
         textPaint.setTextSize(20);
 
         transferPaint = new Paint();

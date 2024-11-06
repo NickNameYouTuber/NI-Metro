@@ -3,18 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorBackground"
     >
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorBackground">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Выбор карты метро"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorBackground"
+            app:titleTextColor="?attr/colorOnSurface"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -23,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="?attr/colorBackground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -41,7 +45,7 @@
                 android:hint="Поиск города"
                 android:inputType="text"
                 android:textColor="?attr/colorOnSurface"
-                android:background="?attr/colorSurface" />
+                android:background="?attr/colorBackground" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -51,6 +55,6 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:padding="8dp"
-            android:background="?attr/colorSurface" />
+            android:background="?attr/colorBackground" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
