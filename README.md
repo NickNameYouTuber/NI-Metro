@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://your-logo-url.png" alt="NI Metro Logo" width="200"/>
+  <img src="https://live.staticflickr.com/65535/54120363184_a41661ae66_n.jpg" alt="NI Metro Logo" width="200"/>
 
   # 🚇 NI Metro
   ### Все метро мира в вашем кармане
