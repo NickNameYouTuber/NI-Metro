@@ -1,45 +1,35 @@
 package com.nicorp.nimetro;
 
+import android.app.Dialog;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.color.MaterialColors;
 
 import java.util.List;
 
-public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
+public class BottomFragment extends BottomSheetDialogFragment {
 
-    private static final String ARG_ROUTE = "route";
     private static final int COLLAPSED_HEIGHT = 228;
-
     private List<Station> route;
-    private BottomSheetBehavior<FrameLayout> behavior;
+    private BottomSheetBehavior<View> behavior;
 
-    private TextView routeTime;
-    private TextView routeStationsCount;
-    private TextView routeTransfersCount;
-    private TextView routeTitle;
-    private TextView routeTimeTitle;
-    private TextView routeStationsCountTitle;
-    private TextView routeTransfersCountTitle;
-    private LinearLayout routeDetailsContainer;
-    private LinearLayout layoutCollapsed;
-    private LinearLayout layoutExpanded;
-
-    public static RouteInfoDialogFragment newInstance(List<Station> route) {
-        RouteInfoDialogFragment fragment = new RouteInfoDialogFragment();
+    public static BottomFragment newInstance(List<Station> route) {
+        BottomFragment fragment = new BottomFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ROUTE, new Route(route));
+        args.putSerializable("route", new Route(route));
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,29 +38,28 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            route = ((Route) getArguments().getSerializable(ARG_ROUTE)).getStations();
+            route = ((Route) getArguments().getSerializable("route")).getStations();
         }
-        setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme);
+        setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.bottom_sheet_route_info, container, false);
+        View view = inflater.inflate(R.layout.bottom_sheet_layout, container, false);
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
         // Initialize views
-        routeTime = view.findViewById(R.id.routeTime);
-        routeStationsCount = view.findViewById(R.id.routeStationsCount);
-        routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
-        routeTitle = view.findViewById(R.id.routeTitle);
-        routeTimeTitle = view.findViewById(R.id.routeTimeTitle);
-        routeStationsCountTitle = view.findViewById(R.id.routeStationsTitle);
-        routeTransfersCountTitle = view.findViewById(R.id.routeTransfersTitle);
-        routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
-        layoutCollapsed = view.findViewById(R.id.layoutCollapsed);
-        layoutExpanded = view.findViewById(R.id.layoutExpanded);
+        TextView routeTime = view.findViewById(R.id.routeTime);
+        TextView routeStationsCount = view.findViewById(R.id.routeStationsCount);
+        TextView routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
+        TextView routeTitle = view.findViewById(R.id.routeTitle);
+        TextView routeTimeTitle = view.findViewById(R.id.routeTimeTitle);
+        TextView routeStationsCountTitle = view.findViewById(R.id.routeStationsTitle);
+        TextView routeTransfersCountTitle = view.findViewById(R.id.routeTransfersTitle);
+        LinearLayout routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
+        View bottomSheetInternal = view.findViewById(R.id.bottom_sheet_internal);
 
         // Set text view colors to colorOnSurface
         routeTime.setTextColor(colorOnSurface);
@@ -80,6 +69,10 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
         routeTimeTitle.setTextColor(colorOnSurface);
         routeStationsCountTitle.setTextColor(colorOnSurface);
         routeTransfersCountTitle.setTextColor(colorOnSurface);
+
+        // Setup BottomSheetBehavior
+        behavior = BottomSheetBehavior.from(bottomSheetInternal);
+        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         // Calculate route statistics
         if (route != null && !route.isEmpty()) {
@@ -96,6 +89,25 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
             populateRouteDetails(routeDetailsContainer);
         }
 
+        // Handle BottomSheet state changes
+        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    routeTitle.setText("Информация о маршруте");
+                    routeDetailsContainer.setVisibility(View.VISIBLE);
+                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    routeTitle.setText("Краткая информация");
+                    routeDetailsContainer.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // Optional: Implement animations during sliding
+            }
+        });
+
         return view;
     }
 
@@ -107,43 +119,34 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
 
         if (getDialog() != null) {
             FrameLayout bottomSheet = getDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            behavior = BottomSheetBehavior.from(bottomSheet);
+            BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
 
             behavior.setPeekHeight((int) (COLLAPSED_HEIGHT * density));
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-            behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                @Override
-                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        routeTitle.setText("Информация о маршруте");
-                        routeDetailsContainer.setVisibility(View.VISIBLE);
-                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        routeTitle.setText("Краткая информация");
-                        routeDetailsContainer.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                    if (slideOffset > 0) {
-                        layoutCollapsed.setAlpha(1 - 2 * slideOffset);
-                        layoutExpanded.setAlpha(slideOffset * slideOffset);
-
-                        if (slideOffset > 0.5) {
-                            layoutCollapsed.setVisibility(View.GONE);
-                            layoutExpanded.setVisibility(View.VISIBLE);
-                        }
-
-                        if (slideOffset < 0.5 && layoutExpanded.getVisibility() == View.VISIBLE) {
-                            layoutCollapsed.setVisibility(View.VISIBLE);
-                            layoutExpanded.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
-            });
         }
     }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+
+        // Allow outside touch to dismiss the dialog
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        // Set the background to be transparent
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+        });
+
+        return dialog;
+    }
+
 
     private int calculateTotalTime() {
         int totalTime = 0;
@@ -175,7 +178,6 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
 
         for (int i = 0; i < route.size(); i++) {
             Station station = route.get(i);
-            Log.d("RouteInfoDialogFragment", station.getName());
 
             // Add station
             View stationView = inflater.inflate(R.layout.item_route_station, container, false);

@@ -5,18 +5,19 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="?attr/colorBackground"
-    android:paddingVertical="8dp">
+    >
 
     <View
         android:id="@+id/stationIndicator"
         android:layout_width="4dp"
-        android:layout_height="24dp"
+        android:layout_height="match_parent"
         android:layout_marginEnd="12dp" />
 
     <TextView
         android:id="@+id/stationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
         android:textColor="?attr/colorOnSurface"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 

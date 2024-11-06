@@ -6,6 +6,10 @@ android {
     namespace 'com.nicorp.nimetro'
     compileSdk 34
 
+    viewBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.nicorp.nimetro"
         minSdk 26

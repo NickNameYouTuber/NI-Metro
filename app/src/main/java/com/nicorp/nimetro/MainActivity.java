@@ -367,8 +367,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private void showRouteInfo(List<Station> route) {
-        RouteInfoDialogFragment dialogFragment = RouteInfoDialogFragment.newInstance(route);
-        dialogFragment.show(getSupportFragmentManager(), "route_info");
+        BottomFragment bottomFragment = BottomFragment.newInstance(route);
+        bottomFragment.show(getSupportFragmentManager(), "bottom_fragment");
+//        BottomFragment bottomFragment = new BottomFragment();
+//        bottomFragment.show(getSupportFragmentManager(), "route_info");
     }
 
     private void showStationsList(List<Station> stations) {
