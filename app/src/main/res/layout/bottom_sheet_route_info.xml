@@ -10,7 +10,7 @@
         android:id="@+id/bottom_sheet_internal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="?attr/colorBackground"
         android:orientation="vertical"
         app:behavior_peekHeight="180dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -29,7 +29,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="Краткая информация"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+             />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,9 +47,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/routeTimeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Время"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
 
                 <TextView
@@ -55,6 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -66,16 +71,19 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/routeStationsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Станции"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    android:textColor="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/routeStationsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -87,9 +95,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/routeTransfersTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Пересадки"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
 
                 <TextView
@@ -97,6 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:textStyle="bold" />
             </LinearLayout>

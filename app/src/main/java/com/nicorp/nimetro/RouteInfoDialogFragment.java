@@ -1,5 +1,6 @@
 package com.nicorp.nimetro;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.color.MaterialColors;
+
 import java.util.List;
 
 public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
@@ -40,13 +43,27 @@ public class RouteInfoDialogFragment extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_route_info, container, false);
 
+        int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
+
         // Initialize views
         TextView routeTime = view.findViewById(R.id.routeTime);
         TextView routeStationsCount = view.findViewById(R.id.routeStationsCount);
         TextView routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
         TextView routeTitle = view.findViewById(R.id.routeTitle);
+        TextView routeTimeTitle = view.findViewById(R.id.routeTimeTitle);
+        TextView routeStationsCountTitle = view.findViewById(R.id.routeStationsTitle);
+        TextView routeTransfersCountTitle = view.findViewById(R.id.routeTransfersTitle);
         LinearLayout routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
         View bottomSheetInternal = view.findViewById(R.id.bottom_sheet_internal);
+
+        // Set text view colors to colorOnSurface
+        routeTime.setTextColor(colorOnSurface);
+        routeStationsCount.setTextColor(colorOnSurface);
+        routeTransfersCount.setTextColor(colorOnSurface);
+        routeTitle.setTextColor(colorOnSurface);
+        routeTimeTitle.setTextColor(colorOnSurface);
+        routeStationsCountTitle.setTextColor(colorOnSurface);
+        routeTransfersCountTitle.setTextColor(colorOnSurface);
 
         // Setup BottomSheetBehavior
         behavior = BottomSheetBehavior.from(bottomSheetInternal);

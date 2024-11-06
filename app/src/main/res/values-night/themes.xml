@@ -8,6 +8,7 @@
         <item name="colorSecondary">@color/my_dark_secondary</item>
         <item name="colorSecondaryVariant">@color/my_dark_secondary_variant</item>
         <item name="colorOnSecondary">@color/my_dark_on_secondary</item>
+        <item name="colorBackground">@color/my_dark_background</item>
         <item name="colorSurface">@color/my_dark_surface</item>
         <item name="colorOnSurface">@color/my_dark_on_surface</item>
         <item name="colorError">@color/my_dark_error</item>

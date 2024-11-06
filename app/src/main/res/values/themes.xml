@@ -8,7 +8,7 @@
         <item name="colorSecondary">@color/my_light_secondary</item>
         <item name="colorSecondaryVariant">@color/my_light_secondary_variant</item>
         <item name="colorOnSecondary">@color/my_light_on_secondary</item>
-<!--        <item name="colorBackground">@color/my_light_background</item>-->
+        <item name="colorBackground">@color/my_light_background</item>
         <item name="colorSurface">@color/my_light_surface</item>
         <item name="colorOnSurface">@color/my_light_on_surface</item>
         <item name="colorError">@color/my_light_error</item>
