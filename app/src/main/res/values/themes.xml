@@ -18,4 +18,9 @@
         <item name="android:backgroundDimEnabled">true</item> <!-- затемняет фон за диалогом -->
     </style>
 
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
 </resources>
