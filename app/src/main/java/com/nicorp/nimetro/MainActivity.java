@@ -12,6 +12,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -24,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoDialogFragment.OnStationInfoListener, StationsAdapter.OnStationClickListener {
+public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoFragment.OnStationInfoListener, StationsAdapter.OnStationClickListener {
 
     private MetroMapView metroMapView;
     private List<Station> stations;
@@ -295,9 +297,47 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     @Override
     public void onStationClick(Station station) {
-        StationInfoDialogFragment dialogFragment = StationInfoDialogFragment.newInstance(station);
-        dialogFragment.setOnStationInfoListener(this);
-        dialogFragment.show(getSupportFragmentManager(), "station_info");
+        Station prevStation = null;
+        Station nextStation = null;
+        Line curline = null;
+
+        // Найдите предыдущую и следующую станции на той же линии
+        for (Line line : lines) {
+            List<Station> lineStations = line.getStations();
+            for (int i = 0; i < lineStations.size(); i++) {
+                if (lineStations.get(i).equals(station)) {
+                    if (i > 0) {
+                        prevStation = lineStations.get(i - 1);
+                    }
+                    if (i < lineStations.size() - 1) {
+                        nextStation = lineStations.get(i + 1);
+                    }
+                    curline = line;
+                    break;
+                }
+            }
+        }
+
+        // Очистите FrameLayout перед добавлением нового фрагмента
+        clearFrameLayout();
+
+        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation);
+        fragment.setOnStationInfoListener(this);
+
+        // Добавьте новый фрагмент в FrameLayout
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.frameLayout, fragment)
+                .commit();
+    }
+
+    private void clearFrameLayout() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.frameLayout);
+        if (fragment != null) {
+            fragmentManager.beginTransaction()
+                    .remove(fragment)
+                    .commit();
+        }
     }
 
     @Override
