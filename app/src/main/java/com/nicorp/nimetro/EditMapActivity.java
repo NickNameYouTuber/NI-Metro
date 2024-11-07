@@ -105,7 +105,7 @@ public class EditMapActivity extends AppCompatActivity {
 
                 case MotionEvent.ACTION_UP:
                     if (selectedStation != null) {
-                        selectedStation.snapToGrid();
+//                        selectedStation.snapToGrid();
                     }
                     selectedStation = null;
                     isMovingMap = false;

@@ -1,5 +1,7 @@
 package com.nicorp.nimetro;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,11 @@ public class Line implements Serializable {
     }
 
     public int getLineIdForStation(Station station) {
+        Log.d("Line", "Searching for station in this line " + station.getName());
+        Log.d("Line", "Stations in this line: " + stations);
         if (stations.contains(station)) {
+            Log.d("Line", "Found station in this line " + station.getName());
+            Log.d("Line", "Line ID: " + id);
             return id;
         }
         return -1; // Return -1 if the station is not found in this line

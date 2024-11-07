@@ -4,9 +4,7 @@ import android.graphics.Point;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Station implements Serializable {
     private int id;
@@ -15,8 +13,9 @@ public class Station implements Serializable {
     private int y;
     private String color;
     private Facilities facilities;
-    private List<Neighbor> neighbors;
     private int textPosition;
+    private List<Neighbor> neighbors;
+    private List<Point> intermediatePoints;
 
     public Station(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
@@ -25,8 +24,9 @@ public class Station implements Serializable {
         this.y = y;
         this.color = color;
         this.facilities = facilities;
-        this.neighbors = new ArrayList<>();
         this.textPosition = textPosition;
+        this.neighbors = new ArrayList<>();
+        this.intermediatePoints = new ArrayList<>();
     }
 
     public int getId() {
@@ -53,6 +53,10 @@ public class Station implements Serializable {
         return facilities;
     }
 
+    public int getTextPosition() {
+        return textPosition;
+    }
+
     public List<Neighbor> getNeighbors() {
         return neighbors;
     }
@@ -61,8 +65,12 @@ public class Station implements Serializable {
         neighbors.add(neighbor);
     }
 
-    public int getTextPosition() {
-        return textPosition;
+    public List<Point> getIntermediatePoints(Station station2) {
+        return intermediatePoints;
+    }
+
+    public void addIntermediatePoints(Station station2, List<Point> points) {
+        intermediatePoints.addAll(points);
     }
 
     public static class Neighbor implements Serializable {
@@ -81,36 +89,14 @@ public class Station implements Serializable {
         public int getTime() {
             return time;
         }
-
-        @Override
-        public String toString() {
-            return "Neighbor{" +
-                    "station=" + station +
-                    ", time=" + time +
-                    '}';
-        }
     }
 
-    @Override
-    public String toString() {
-        return "Station{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", x=" + x +
-                ", y=" + y +
-                ", color='" + color + '\'' +
-                ", textPosition=" + textPosition +
-                '}';
+    public void setId(int id) {
+        this.id = id;
     }
 
-    private Map<Station, List<Point>> intermediatePointsMap = new HashMap<>();
-
-    public void addIntermediatePoints(Station neighbor, List<Point> points) {
-        intermediatePointsMap.put(neighbor, points);
-    }
-
-    public List<Point> getIntermediatePoints(Station neighbor) {
-        return intermediatePointsMap.get(neighbor);
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setX(int x) {
@@ -121,9 +107,37 @@ public class Station implements Serializable {
         this.y = y;
     }
 
-    public void snapToGrid() {
-        this.x = Math.round(this.x);
-        this.y = Math.round(this.y);
+    public void setColor(String color) {
+        this.color = color;
     }
 
+    public void setFacilities(Facilities facilities) {
+        this.facilities = facilities;
+    }
+
+    public void setTextPosition(int textPosition) {
+        this.textPosition = textPosition;
+    }
+
+    public void setNeighbors(List<Neighbor> neighbors) {
+        this.neighbors = neighbors;
+    }
+
+    public List<Point> getIntermediatePoints() {
+        return intermediatePoints;
+    }
+
+    public void setIntermediatePoints(List<Point> intermediatePoints) {
+        this.intermediatePoints = intermediatePoints;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

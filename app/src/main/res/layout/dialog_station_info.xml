@@ -34,17 +34,13 @@
         app:layout_constraintStart_toEndOf="@+id/lineNumber"
         app:layout_constraintTop_toTopOf="@+id/lineNumber" />
 
-    <!-- Круг с номером второй линии метро -->
-    <TextView
-        android:id="@+id/second_line_number"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <!-- Контейнер для кругов переходов -->
+    <LinearLayout
+        android:id="@+id/transferCirclesContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/circle_background_brown"
-        android:gravity="center"
-        android:text="5"
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="@+id/lineNumber"
         app:layout_constraintStart_toStartOf="@+id/lineNumber"
         app:layout_constraintTop_toBottomOf="@+id/lineNumber" />
@@ -54,14 +50,14 @@
         android:id="@+id/prevStationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
         android:drawableStart="@drawable/ic_arrow_up"
         android:drawablePadding="4dp"
         android:text="Преображенская площадь"
         android:textColor="@android:color/black"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/second_line_number"
-        app:layout_constraintTop_toTopOf="@+id/second_line_number" />
+        app:layout_constraintStart_toStartOf="@+id/stationName"
+        app:layout_constraintTop_toBottomOf="@+id/stationName" />
 
     <!-- Название следующей станции вниз -->
     <TextView

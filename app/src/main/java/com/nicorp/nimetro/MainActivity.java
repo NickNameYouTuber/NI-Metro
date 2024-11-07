@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         // Очистите FrameLayout перед добавлением нового фрагмента
         clearFrameLayout();
 
-        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation);
+        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation, transfers, lines);
         fragment.setOnStationInfoListener(this);
 
         // Добавьте новый фрагмент в FrameLayout

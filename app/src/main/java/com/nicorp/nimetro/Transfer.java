@@ -1,8 +1,9 @@
 package com.nicorp.nimetro;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Transfer {
+public class Transfer implements Serializable {
     private List<Station> stations;
     private int time;
     private String type;
@@ -23,5 +24,14 @@ public class Transfer {
 
     public String getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return "Transfer{" +
+                "stations=" + stations +
+                ", time=" + time +
+                ", type='" + type + '\'' +
+                '}';
     }
 }
