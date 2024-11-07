@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         setContentView(R.layout.activity_main);
 
         // Кнопка настроек
-        ImageView settingsButton = findViewById(R.id.settingsButton);
+        ConstraintLayout settingsButton = findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(v -> {
             Log.d("MainActivity", "Settings button clicked");
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -57,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         metroMapView = findViewById(R.id.metroMapView);
-        startStationLayout = findViewById(R.id.startStationLayout);
-        endStationLayout = findViewById(R.id.endStationLayout);
+//        startStationLayout = findViewById(R.id.startStationLayout);
+//        endStationLayout = findViewById(R.id.endStationLayout);
         startStationEditText = findViewById(R.id.startStationEditText);
         endStationEditText = findViewById(R.id.endStationEditText);
-        stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
+//        stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
 
         stations = new ArrayList<>();
         lines = new ArrayList<>();
@@ -71,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
         metroMapView.setOnStationClickListener(this);
 
-        stationsAdapter = new StationsAdapter(stations, this);
-        stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        stationsRecyclerView.setAdapter(stationsAdapter);
+//        stationsAdapter = new StationsAdapter(stations, this);
+//        stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        stationsRecyclerView.setAdapter(stationsAdapter);
 
         startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
