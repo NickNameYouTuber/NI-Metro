@@ -43,7 +43,7 @@ public class RouteInfoFragment extends Fragment {
     public static RouteInfoFragment newInstance(List<Station> route) {
         RouteInfoFragment fragment = new RouteInfoFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ROUTE, new Route(route));
+        args.putParcelable(ARG_ROUTE, new Route(route));
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,7 +52,10 @@ public class RouteInfoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            route = ((Route) getArguments().getSerializable(ARG_ROUTE)).getStations();
+            Route routeParcelable = getArguments().getParcelable(ARG_ROUTE);
+            if (routeParcelable != null) {
+                route = routeParcelable.getStations();
+            }
         }
     }
 

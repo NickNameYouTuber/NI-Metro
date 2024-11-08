@@ -1,14 +1,13 @@
 package com.nicorp.nimetro.domain.entities;
 
 import android.graphics.Point;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import com.nicorp.nimetro.domain.entities.Facilities;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Station implements Serializable {
+public class Station implements Parcelable {
     private int id;
     private String name;
     private int x;
@@ -29,6 +28,49 @@ public class Station implements Serializable {
         this.textPosition = textPosition;
         this.neighbors = new ArrayList<>();
         this.intermediatePoints = new ArrayList<>();
+    }
+
+    protected Station(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        x = in.readInt();
+        y = in.readInt();
+        color = in.readString();
+        facilities = in.readParcelable(Facilities.class.getClassLoader());
+        textPosition = in.readInt();
+        neighbors = in.createTypedArrayList(Neighbor.CREATOR);
+        intermediatePoints = new ArrayList<>();
+        in.readList(intermediatePoints, Point.class.getClassLoader());
+    }
+
+    public static final Creator<Station> CREATOR = new Creator<Station>() {
+        @Override
+        public Station createFromParcel(Parcel in) {
+            return new Station(in);
+        }
+
+        @Override
+        public Station[] newArray(int size) {
+            return new Station[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeInt(x);
+        dest.writeInt(y);
+        dest.writeString(color);
+        dest.writeParcelable(facilities, flags);
+        dest.writeInt(textPosition);
+        dest.writeTypedList(neighbors);
+        dest.writeList(intermediatePoints);
     }
 
     public int getId() {
@@ -75,13 +117,41 @@ public class Station implements Serializable {
         intermediatePoints.addAll(points);
     }
 
-    public static class Neighbor implements Serializable {
+    public static class Neighbor implements Parcelable {
         private Station station;
         private int time;
 
         public Neighbor(Station station, int time) {
             this.station = station;
             this.time = time;
+        }
+
+        protected Neighbor(Parcel in) {
+            station = in.readParcelable(Station.class.getClassLoader());
+            time = in.readInt();
+        }
+
+        public static final Creator<Neighbor> CREATOR = new Creator<Neighbor>() {
+            @Override
+            public Neighbor createFromParcel(Parcel in) {
+                return new Neighbor(in);
+            }
+
+            @Override
+            public Neighbor[] newArray(int size) {
+                return new Neighbor[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeParcelable(station, flags);
+            dest.writeInt(time);
         }
 
         public Station getStation() {

@@ -22,6 +22,7 @@ import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BottomFragment extends BottomSheetDialogFragment {
 
@@ -32,7 +33,7 @@ public class BottomFragment extends BottomSheetDialogFragment {
     public static BottomFragment newInstance(List<Station> route) {
         BottomFragment fragment = new BottomFragment();
         Bundle args = new Bundle();
-        args.putSerializable("route", new Route(route));
+        args.putParcelable("route", new Route(route));
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,7 +42,8 @@ public class BottomFragment extends BottomSheetDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            route = ((Route) getArguments().getSerializable("route")).getStations();
+            Route route1 = requireArguments().getParcelable("route");
+            route = route1.getStations();
         }
         setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme);
     }

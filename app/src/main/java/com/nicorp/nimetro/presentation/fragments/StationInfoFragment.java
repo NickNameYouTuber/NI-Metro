@@ -44,10 +44,10 @@ public class StationInfoFragment extends Fragment {
     public static StationInfoFragment newInstance(Line line, Station station, Station prevStation, Station nextStation, List<Transfer> transfers, List<Line> lines) {
         StationInfoFragment fragment = new StationInfoFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_STATION, station);
-        args.putSerializable(ARG_PREV_STATION, prevStation);
-        args.putSerializable(ARG_NEXT_STATION, nextStation);
-        args.putSerializable(ARG_LINE, line);
+        args.putParcelable(ARG_STATION, station);
+        args.putParcelable(ARG_PREV_STATION, prevStation);
+        args.putParcelable(ARG_NEXT_STATION, nextStation);
+        args.putParcelable(ARG_LINE, line);
         args.putSerializable(ARG_TRANSFER, (Serializable) transfers);
         args.putSerializable(ARG_LINES, (Serializable) lines);
         fragment.setArguments(args);
@@ -58,10 +58,10 @@ public class StationInfoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            station = (Station) getArguments().getSerializable(ARG_STATION);
-            prevStation = (Station) getArguments().getSerializable(ARG_PREV_STATION);
-            nextStation = (Station) getArguments().getSerializable(ARG_NEXT_STATION);
-            line = (Line) getArguments().getSerializable(ARG_LINE);
+            station = getArguments().getParcelable(ARG_STATION);
+            prevStation = getArguments().getParcelable(ARG_PREV_STATION);
+            nextStation = getArguments().getParcelable(ARG_NEXT_STATION);
+            line = getArguments().getParcelable(ARG_LINE);
             transfers = (List<Transfer>) getArguments().getSerializable(ARG_TRANSFER);
             lines = (List<Line>) getArguments().getSerializable(ARG_LINES);
         }
