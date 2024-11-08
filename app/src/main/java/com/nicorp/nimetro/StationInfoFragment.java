@@ -77,7 +77,7 @@ public class StationInfoFragment extends Fragment {
 
         TextView prevStationName = view.findViewById(R.id.prevStationName);
         if (prevStation != null) {
-            prevStationName.setText("Предыдущая: " + prevStation.getName());
+            prevStationName.setText("" + prevStation.getName());
             prevStationName.setVisibility(View.VISIBLE);
         } else {
             prevStationName.setVisibility(View.GONE);
@@ -85,7 +85,7 @@ public class StationInfoFragment extends Fragment {
 
         TextView nextStationName = view.findViewById(R.id.nextStationName);
         if (nextStation != null) {
-            nextStationName.setText("Следующая: " + nextStation.getName());
+            nextStationName.setText("" + nextStation.getName());
             nextStationName.setVisibility(View.VISIBLE);
         } else {
             nextStationName.setVisibility(View.GONE);
