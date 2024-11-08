@@ -60,11 +60,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         metroMapView = findViewById(R.id.metroMapView);
-//        startStationLayout = findViewById(R.id.startStationLayout);
-//        endStationLayout = findViewById(R.id.endStationLayout);
         startStationEditText = findViewById(R.id.startStationEditText);
         endStationEditText = findViewById(R.id.endStationEditText);
-//        stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
+        stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
 
         stations = new ArrayList<>();
         lines = new ArrayList<>();
@@ -74,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
         metroMapView.setOnStationClickListener(this);
 
-//        stationsAdapter = new StationsAdapter(stations, this);
-//        stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        stationsRecyclerView.setAdapter(stationsAdapter);
+        stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
+        stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        stationsRecyclerView.setAdapter(stationsAdapter);
 
         startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
