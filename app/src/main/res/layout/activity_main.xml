@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white">
 
-    <com.nicorp.nimetro.MetroMapView
+    <com.nicorp.nimetro.presentation.views.MetroMapView
         android:id="@+id/metroMapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

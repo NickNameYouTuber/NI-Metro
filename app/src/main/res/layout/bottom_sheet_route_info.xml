@@ -2,117 +2,102 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent">
+<FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:id="@+id/bottomSheet">
 
     <LinearLayout
-        android:id="@+id/bottom_sheet_internal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorBackground"
         android:orientation="vertical"
-        app:behavior_peekHeight="180dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:padding="16dp">
 
-        <View
-            android:layout_width="32dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bottom_sheet_handle" />
+        <TextView
+            android:id="@+id/routeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Краткая информация"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/layoutCollapsed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/routeTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Краткая информация"
-                android:textColor="?attr/colorOnSurface"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+            android:paddingTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/routeTimeTitle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Время:"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/routeTimeTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Время"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
-
-                    <TextView
-                        android:id="@+id/routeTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/routeTime"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="0 мин"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/routeStationsTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Станции"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                        android:textColor="?attr/colorOnSurface" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp">
 
-                    <TextView
-                        android:id="@+id/routeStationsCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/routeStationsTitle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Станций:"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/routeTransfersTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Пересадки"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+                <TextView
+                    android:id="@+id/routeStationsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/routeTransfersCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textStyle="bold" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/routeTransfersTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Пересадок:"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/routeTransfersCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -121,34 +106,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/routeDetailsTitle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/routeDetailsContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Информация о маршруте"
-                android:textColor="?attr/colorOnSurface"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="?android:attr/listDivider" />
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/routeDetailsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="16dp" />
-            </ScrollView>
+                android:orientation="vertical"
+                android:paddingTop="16dp" />
         </LinearLayout>
     </LinearLayout>
+</FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
