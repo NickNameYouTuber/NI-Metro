@@ -1,11 +1,21 @@
 package com.nicorp.nimetro.presentation.fragments;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.Transformation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,21 +23,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
+import com.nicorp.nimetro.presentation.activities.MainActivity;
+import com.nicorp.nimetro.presentation.views.MetroMapView;
 
 import java.util.List;
 
 public class RouteInfoFragment extends Fragment {
 
     private static final String ARG_ROUTE = "route";
-    private static final int COLLAPSED_HEIGHT = 228;
+    private static final int COLLAPSED_HEIGHT = 178;
 
     private List<Station> route;
-    private BottomSheetBehavior<FrameLayout> behavior;
+    private boolean isExpanded = false;
 
     private TextView routeTime;
     private TextView routeStationsCount;
@@ -39,11 +50,17 @@ public class RouteInfoFragment extends Fragment {
     private LinearLayout routeDetailsContainer;
     private LinearLayout layoutCollapsed;
     private LinearLayout layoutExpanded;
+    private FrameLayout routeInfoContainer;
+    private MetroMapView metroMapView;
+    private MainActivity mainActivity;
 
-    public static RouteInfoFragment newInstance(List<Station> route) {
+
+    public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ROUTE, new Route(route));
+        fragment.metroMapView = metroMapView;
+        fragment.mainActivity = mainActivity;
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,6 +94,7 @@ public class RouteInfoFragment extends Fragment {
         routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
         layoutCollapsed = view.findViewById(R.id.layoutCollapsed);
         layoutExpanded = view.findViewById(R.id.layoutExpanded);
+        routeInfoContainer = view.findViewById(R.id.routeInfoContainer);
 
         // Set text view colors to colorOnSurface
         routeTime.setTextColor(colorOnSurface);
@@ -102,83 +120,97 @@ public class RouteInfoFragment extends Fragment {
             populateRouteDetails(routeDetailsContainer);
         }
 
-        // Initialize BottomSheetBehavior
-        FrameLayout bottomSheet = view.findViewById(R.id.bottomSheet);
-        behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setPeekHeight((int) (COLLAPSED_HEIGHT * getResources().getDisplayMetrics().density));
-        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        ImageView closeButton =  view.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(v -> dismiss());
 
-        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            private boolean isExpanding = false;
-
+        // Set up swipe gesture detector
+        GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_EXPANDED:
-                        isExpanding = true;
-                        routeTitle.setText("Информация о маршруте");
-                        layoutCollapsed.setVisibility(View.GONE);
-                        layoutExpanded.setVisibility(View.VISIBLE);
-
-                        // Post the visibility change with a delay to ensure proper layout
-                        bottomSheet.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                routeDetailsContainer.setVisibility(View.VISIBLE);
-                                // Force a layout pass
-                                bottomSheet.requestLayout();
-                            }
-                        });
-                        break;
-
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-                        isExpanding = false;
-                        routeTitle.setText("Краткая информация");
-                        layoutCollapsed.setVisibility(View.VISIBLE);
-                        layoutExpanded.setVisibility(View.GONE);
-                        routeDetailsContainer.setVisibility(View.GONE);
-                        break;
-
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        // If we're dragging from collapsed state, make sure expanded layout is ready
-                        if (!isExpanding && behavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                            layoutExpanded.setVisibility(View.VISIBLE);
-                            layoutExpanded.setAlpha(0);
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (Math.abs(velocityY) > Math.abs(velocityX)) {
+                    if (velocityY > 0) {
+                        // Swipe down to collapse
+                        if (isExpanded) {
+                            collapse();
                         }
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                if (slideOffset >= 0) {
-                    // Update alpha values for smooth transition
-                    layoutCollapsed.setAlpha(1 - slideOffset);
-                    layoutExpanded.setAlpha(slideOffset);
-
-                    // Show route details gradually as we pass halfway point
-                    if (slideOffset > 0.5) {
-                        if (routeDetailsContainer.getVisibility() != View.VISIBLE) {
-                            routeDetailsContainer.setVisibility(View.VISIBLE);
-                            routeDetailsContainer.setAlpha(0);
-                        }
-                        routeDetailsContainer.setAlpha((slideOffset - 0.5f) * 2);
                     } else {
-                        routeDetailsContainer.setVisibility(View.GONE);
+                        // Swipe up to expand
+                        if (!isExpanded) {
+                            expand();
+                        }
                     }
                 }
+                return super.onFling(e1, e2, velocityX, velocityY);
             }
         });
 
-        // Set initial state after a short delay to ensure proper layout
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
+        routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         return view;
+    }
+
+    private void dismiss() {
+        if (getActivity() != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .remove(this)
+                    .commit();
+            if (metroMapView != null) {
+                metroMapView.clearRoute(); // Очищаем маршрут на карте
+                metroMapView.clearSelectedStations(); // Очищаем выбранные станции
+            }
+            if (mainActivity != null) {
+                mainActivity.clearRouteInputs(); // Очищаем поля ввода
+            }
+        }
+    }
+
+    private void expand() {
+        isExpanded = true;
+        routeTitle.setText("Информация о маршруте");
+        layoutCollapsed.setVisibility(View.GONE);
+        layoutExpanded.setVisibility(View.VISIBLE);
+
+        // Calculate the height of the expanded content
+        layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        float expandedHeight = layoutExpanded.getMeasuredHeight();
+        float density = getResources().getDisplayMetrics().density; // Get the density
+        Log.d("RouteInfoFragment", "Expanded height: " + expandedHeight);
+        if (expandedHeight > 500 * density) {
+            expandedHeight = 500 * density;
+        }
+
+        // Animate the height change
+        animateHeightChange(routeInfoContainer, COLLAPSED_HEIGHT, expandedHeight);
+    }
+
+    private void collapse() {
+        isExpanded = false;
+        routeTitle.setText("Краткая информация");
+        layoutCollapsed.setVisibility(View.VISIBLE);
+        layoutExpanded.setVisibility(View.GONE);
+
+        float density = getResources().getDisplayMetrics().density; // Get the density
+        // Animate the height change
+        animateHeightChange(routeInfoContainer, routeInfoContainer.getHeight(), COLLAPSED_HEIGHT * density);
+    }
+
+    private void animateHeightChange(final View view, final int startHeight, final float endHeight) {
+        Animation animation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                int newHeight = (int) (startHeight + (endHeight - startHeight) * interpolatedTime);
+                view.getLayoutParams().height = newHeight;
+                view.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        animation.setDuration(300); // Set the duration of the animation
+        view.startAnimation(animation);
     }
 
     private int calculateTotalTime() {
@@ -228,8 +260,13 @@ public class RouteInfoFragment extends Fragment {
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                     );
-                    params.setMargins(0, 8, 0, 8); // Add some vertical spacing
+                    params.setMargins(0, 0, 0, 0); // Add some vertical spacing
                     stationView.setLayoutParams(params);
+
+                    if (i == 0 || i == route.size() - 1) {
+                        // Set station name bold
+                        stationName.setTypeface(null, Typeface.BOLD);
+                    }
 
                     container.addView(stationView);
 

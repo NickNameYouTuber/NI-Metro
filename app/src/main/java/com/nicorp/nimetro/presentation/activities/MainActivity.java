@@ -423,9 +423,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 ////        bottomFragment.show(getSupportFragmentManager(), "route_info");
 //    }
 
+    public void clearRouteInputs() {
+        startStationEditText.setText("");
+        endStationEditText.setText("");
+    }
+
     private void showRouteInfo(List<Station> route) {
         clearFrameLayout();
-        RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(route);
+        RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(route, metroMapView, this);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, routeInfoFragment)
                 .commit();

@@ -152,6 +152,16 @@ public class MetroMapView extends View {
         });
     }
 
+    public void clearRoute() {
+        this.route = null;
+        invalidate();
+    }
+
+    public void clearSelectedStations() {
+        this.selectedStations = null;
+        invalidate();
+    }
+
     public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) {
         this.lines = lines;
         this.stations = stations;
