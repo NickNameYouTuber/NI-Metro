@@ -428,8 +428,8 @@ public class MetroMapView extends View {
         result = gestureDetector.onTouchEvent(event) || result;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float x = event.getX() / scaleFactor - translateX;
-            float y = event.getY() / scaleFactor - translateY;
+            float x = (event.getX() - translateX) / scaleFactor;
+            float y = (event.getY() - translateY) / scaleFactor;
             Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
             if (clickedStation != null && listener != null) {
                 listener.onStationClick(clickedStation);

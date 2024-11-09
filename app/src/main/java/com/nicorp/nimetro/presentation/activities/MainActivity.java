@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             Log.d("MainActivity", "Settings button clicked");
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+            finish();
         });
 
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
