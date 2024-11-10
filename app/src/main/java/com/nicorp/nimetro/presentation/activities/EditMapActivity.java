@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EditMapActivity extends AppCompatActivity {
 
@@ -53,6 +54,7 @@ public class EditMapActivity extends AppCompatActivity {
     private List<MapObject> mapObjects;
 
     private Station selectedStation;
+    private Point selectedIntermediatePoint; // Добавляем переменную для выбранной промежуточной точки
 
     private float initialTouchX;
     private float initialTouchY;
@@ -88,15 +90,20 @@ public class EditMapActivity extends AppCompatActivity {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     selectedStation = metroMapView.findStationAt(x / MetroMapView.COORDINATE_SCALE_FACTOR, y / MetroMapView.COORDINATE_SCALE_FACTOR);
+                    if (selectedStation == null) {
+                        selectedIntermediatePoint = findIntermediatePointAt(x / MetroMapView.COORDINATE_SCALE_FACTOR, y / MetroMapView.COORDINATE_SCALE_FACTOR);
+                    }
                     initialTouchX = event.getX();
                     initialTouchY = event.getY();
-                    isMovingMap = (selectedStation == null); // Only move map if no station is selected
+                    isMovingMap = (selectedStation == null && selectedIntermediatePoint == null); // Only move map if no station or intermediate point is selected
                     return true;
 
                 case MotionEvent.ACTION_MOVE:
                     if (selectedStation != null) {
                         selectedStation.setX((int) (x / MetroMapView.COORDINATE_SCALE_FACTOR));
                         selectedStation.setY((int) (y / MetroMapView.COORDINATE_SCALE_FACTOR));
+                    } else if (selectedIntermediatePoint != null) {
+                        selectedIntermediatePoint.set((int) (x / MetroMapView.COORDINATE_SCALE_FACTOR), (int) (y / MetroMapView.COORDINATE_SCALE_FACTOR));
                     } else if (isMovingMap) {
                         // Calculate movement offsets
                         float deltaX = (event.getX() - initialTouchX) / metroMapView.getScaleFactor();
@@ -118,12 +125,29 @@ public class EditMapActivity extends AppCompatActivity {
 //                        selectedStation.snapToGrid();
                     }
                     selectedStation = null;
+                    selectedIntermediatePoint = null;
                     isMovingMap = false;
                     metroMapView.invalidate(); // Redraw map view
                     return true;
             }
             return false;
         });
+    }
+
+    private Point findIntermediatePointAt(float x, float y) {
+        for (Station station : stations) {
+            if (station.getIntermediatePoints() != null) {
+                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                    List<Point> intermediatePoints = entry.getValue();
+                    for (Point point : intermediatePoints) {
+                        if (Math.abs(point.x - x) < 10 / MetroMapView.COORDINATE_SCALE_FACTOR && Math.abs(point.y - y) < 10 / MetroMapView.COORDINATE_SCALE_FACTOR) {
+                            return point;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void loadMetroData() {
@@ -433,6 +457,29 @@ public class EditMapActivity extends AppCompatActivity {
 
             jsonObject.put("transfers", transfersArray);
 
+            // Save intermediate points
+            JSONArray intermediatePointsArray = new JSONArray();
+            for (Station station : stations) {
+                if (station.getIntermediatePoints() != null) {
+                    for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                        JSONObject intermediatePointObject = new JSONObject();
+                        intermediatePointObject.put("station1Id", station.getId());
+                        intermediatePointObject.put("station2Id", entry.getKey().getId());
+
+                        JSONArray pointsArray = new JSONArray();
+                        for (Point point : entry.getValue()) {
+                            JSONObject pointObject = new JSONObject();
+                            pointObject.put("x", point.x);
+                            pointObject.put("y", point.y);
+                            pointsArray.put(pointObject);
+                        }
+                        intermediatePointObject.put("points", pointsArray);
+                        intermediatePointsArray.put(intermediatePointObject);
+                    }
+                }
+            }
+            jsonObject.put("intermediatePoints", intermediatePointsArray);
+
             // Save JSON data to internal storage file
             OutputStream os = new FileOutputStream(new File(getFilesDir(), EDITED_DATA_FILENAME));
             os.write(jsonObject.toString().getBytes());
@@ -444,7 +491,6 @@ public class EditMapActivity extends AppCompatActivity {
             Toast.makeText(this, "Ошибка сохранения", Toast.LENGTH_SHORT).show();
         }
     }
-
     private void showAddTransferDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();

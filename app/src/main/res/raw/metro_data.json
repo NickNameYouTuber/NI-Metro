@@ -2,607 +2,502 @@
   "info": {
     "version": "1.0",
     "author": "Nicorp",
-    "country": "Saudi Arabia",
-    "name": "Dubai",
-    "icon": "https://lh3.googleusercontent.com/LrRUIktCzQbduZM5BhphEo0AowJSGm3R3CyUnEccx9pgSnYyq1IEKSycn0kECR6RMw"
+    "country": "Россия",
+    "name": "Москва",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg/330px-%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg.png"
   },
   "lines": [
     {
       "id": 1,
-      "name": "Красная линия",
+      "name": "Сокольническая линия",
       "color": "#E40520",
       "isCircle": false,
       "stations": [
         {
           "id": 1,
-          "name": "Centrepoint",
-          "x": 100,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Бульвар Рокоссовского",
+          "x": 930,
+          "y": 150,
+          "textPosition": 1,
           "neighbors": [
-            [2, 3]
+            [
+              2,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 2,
-          "name": "Emirates",
-          "x": 200,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Черкизовская",
+          "x": 930,
+          "y": 200,
+          "textPosition": 3,
           "neighbors": [
-            [1, 3],
-            [3, 4]
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 3,
-          "name": "Airport Terminal 3",
-          "x": 300,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Преображенская площадь",
+          "x": 930,
+          "y": 250,
+          "textPosition": 3,
           "neighbors": [
-            [2, 4],
-            [4, 3]
+            [
+              2,
+              4
+            ],
+            [
+              4,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 4,
-          "name": "Airport Terminal 1",
-          "x": 400,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Сокольники",
+          "x": 910,
+          "y": 290,
+          "textPosition": 3,
           "neighbors": [
-            [3, 3],
-            [5, 5]
+            [
+              3,
+              3
+            ],
+            [
+              5,
+              5
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 5,
-          "name": "GGICO",
-          "x": 500,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Красносельская",
+          "x": 870,
+          "y": 330,
+          "textPosition": 3,
           "neighbors": [
-            [4, 5],
-            [6, 4]
+            [
+              4,
+              5
+            ],
+            [
+              6,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 6,
-          "name": "City Centre Deira",
-          "x": 600,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Комсомольская",
+          "x": 845,
+          "y": 355,
+          "textPosition": 3,
           "neighbors": [
-            [5, 4],
-            [7, 3]
+            [
+              5,
+              4
+            ],
+            [
+              7,
+              3
+            ],
+            [
+              80,
+              5
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 7,
-          "name": "Al Rigga",
-          "x": 700,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Красные ворота",
+          "x": 800,
+          "y": 400,
+          "textPosition": 4,
           "neighbors": [
-            [6, 3],
-            [8, 4]
+            [
+              6,
+              3
+            ],
+            [
+              8,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 8,
-          "name": "Union",
-          "x": 800,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Чистые пруды",
+          "x": 750,
+          "y": 450,
+          "textPosition": 4,
           "neighbors": [
-            [7, 4],
-            [9, 3]
+            [
+              7,
+              4
+            ],
+            [
+              9,
+              3
+            ],
+            [
+              109,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 9,
-          "name": "Burjuman",
-          "x": 900,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Лубянка",
+          "x": 670,
+          "y": 519,
+          "textPosition": 3,
           "neighbors": [
-            [8, 3],
-            [10, 4]
+            [
+              8,
+              3
+            ],
+            [
+              10,
+              4
+            ],
+            [
+              211,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 10,
-          "name": "ADCB",
-          "x": 1000,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Охотный ряд",
+          "x": 610,
+          "y": 560,
+          "textPosition": 3,
           "neighbors": [
-            [9, 4],
-            [11, 3]
+            [
+              9,
+              4
+            ],
+            [
+              11,
+              3
+            ],
+            [
+              29,
+              2
+            ],
+            [
+              55,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 11,
-          "name": "Max",
-          "x": 1100,
-          "y": 100,
+          "name": "Библиотека имени Ленина",
+          "x": 540,
+          "y": 620,
           "textPosition": 0,
           "neighbors": [
-            [10, 3],
-            [12, 4]
+            [
+              10,
+              3
+            ],
+            [
+              12,
+              4
+            ],
+            [
+              54,
+              5
+            ],
+            [
+              74,
+              3
+            ],
+            [
+              313,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 12,
-          "name": "World Trade Center",
-          "x": 1200,
-          "y": 100,
+          "name": "Кропоткинская",
+          "x": 492,
+          "y": 664,
           "textPosition": 0,
           "neighbors": [
-            [11, 4],
-            [13, 3]
+            [
+              11,
+              4
+            ],
+            [
+              13,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 13,
-          "name": "Emirates Towers",
-          "x": 1300,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Парк культуры",
+          "x": 450,
+          "y": 720,
+          "textPosition": 7,
           "neighbors": [
-            [12, 3],
-            [14, 4]
+            [
+              12,
+              3
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              82,
+              5
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 14,
-          "name": "Financial Centre",
-          "x": 1400,
-          "y": 100,
-          "textPosition": 0,
+          "name": "Фрунзенская",
+          "x": 400,
+          "y": 750,
+          "textPosition": 7,
           "neighbors": [
-            [13, 4],
-            [15, 3]
+            [
+              13,
+              4
+            ],
+            [
+              15,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 15,
-          "name": "Burj Khalifa / Dubai Mall",
-          "x": 1500,
-          "y": 100,
+          "name": "Спортивная",
+          "x": 350,
+          "y": 800,
           "textPosition": 0,
           "neighbors": [
-            [14, 3],
-            [16, 4]
+            [
+              14,
+              3
+            ],
+            [
+              16,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 16,
-          "name": "Business Bay",
-          "x": 1600,
-          "y": 100,
+          "name": "Воробьёвы горы",
+          "x": 300,
+          "y": 900,
           "textPosition": 0,
           "neighbors": [
-            [15, 4],
-            [17, 3]
+            [
+              15,
+              4
+            ],
+            [
+              17,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 17,
-          "name": "ONPASSIVE",
-          "x": 1700,
-          "y": 100,
+          "name": "Университет",
+          "x": 300,
+          "y": 1000,
           "textPosition": 0,
           "neighbors": [
-            [16, 3],
-            [18, 4]
+            [
+              16,
+              3
+            ],
+            [
+              18,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 18,
-          "name": "Equiti",
-          "x": 1800,
-          "y": 100,
+          "name": "Проспект Вернадского",
+          "x": 300,
+          "y": 1100,
           "textPosition": 0,
           "neighbors": [
-            [17, 4],
-            [19, 3]
+            [
+              17,
+              4
+            ],
+            [
+              19,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 19,
-          "name": "Mall of the Emirates",
-          "x": 1900,
-          "y": 100,
+          "name": "Юго-Западная",
+          "x": 300,
+          "y": 1200,
           "textPosition": 0,
           "neighbors": [
-            [18, 3],
-            [20, 4]
+            [
+              18,
+              3
+            ],
+            [
+              136,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
-          "id": 20,
-          "name": "InsuranceMarket",
-          "x": 2000,
-          "y": 100,
+          "id": 136,
+          "name": "Тропарево",
+          "x": 300,
+          "y": 1263,
           "textPosition": 0,
           "neighbors": [
-            [19, 4],
-            [21, 3]
+            [
+              19,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 21,
-          "name": "Dubai Internet City",
-          "x": 2100,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [20, 3],
-            [22, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 22,
-          "name": "Al Khail",
-          "x": 2200,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [21, 4],
-            [23, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 23,
-          "name": "Sobha Realty",
-          "x": 2300,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [22, 3],
-            [24, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 24,
-          "name": "DMCC",
-          "x": 2400,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [23, 4],
-            [25, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 25,
-          "name": "Jabal Ali",
-          "x": 2500,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [24, 3],
-            [26, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 26,
-          "name": "Ibn Battuta",
-          "x": 2600,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [25, 4],
-            [27, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 27,
-          "name": "Energy",
-          "x": 2700,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [26, 3],
-            [28, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 28,
-          "name": "Danube",
-          "x": 2800,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [27, 4],
-            [29, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 29,
-          "name": "UAE Exchange",
-          "x": 2900,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [28, 3],
-            [30, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 30,
-          "name": "The Gardens",
-          "x": 3000,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [29, 4],
-            [31, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 31,
-          "name": "Discovery Gardens",
-          "x": 3100,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [30, 3],
-            [32, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 32,
-          "name": "Al Furjan",
-          "x": 3200,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [31, 4],
-            [33, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 33,
-          "name": "Jumeirah Golf Estates",
-          "x": 3300,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [32, 3],
-            [34, 4]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 34,
-          "name": "Dubai Investment Park",
-          "x": 3400,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [33, 4],
-            [35, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
-            "exits": []
-          }
-        },
-        {
-          "id": 35,
-          "name": "EXPO 2020",
-          "x": 3500,
-          "y": 100,
-          "textPosition": 0,
-          "neighbors": [
-            [34, 3]
-          ],
-          "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         }
@@ -610,345 +505,3454 @@
     },
     {
       "id": 2,
-      "name": "Зеленая линия",
-      "color": "#008000",
+      "name": "Замоскворецкая линия",
+      "color": "#46AF50",
       "isCircle": false,
       "stations": [
         {
-          "id": 36,
-          "name": "Etisalat by e&",
-          "x": 100,
+          "id": 200,
+          "name": "Ховрино",
+          "x": 350,
+          "y": 50,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              201,
+              2
+            ],
+            [
+              201,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 201,
+          "name": "Беломорская",
+          "x": 350,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              200,
+              2
+            ],
+            [
+              20,
+              4
+            ],
+            [
+              200,
+              2
+            ],
+            [
+              202,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 20,
+          "name": "Речной вокзал",
+          "x": 350,
+          "y": 150,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              201,
+              4
+            ],
+            [
+              21,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 21,
+          "name": "Водный стадион",
+          "x": 350,
           "y": 200,
           "textPosition": 0,
           "neighbors": [
-            [37, 3]
+            [
+              20,
+              3
+            ],
+            [
+              22,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 22,
+          "name": "Войковская",
+          "x": 350,
+          "y": 250,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              21,
+              4
+            ],
+            [
+              23,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 23,
+          "name": "Сокол",
+          "x": 350,
+          "y": 300,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              22,
+              3
+            ],
+            [
+              24,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 24,
+          "name": "Аэропорт",
+          "x": 350,
+          "y": 350,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              23,
+              4
+            ],
+            [
+              25,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 25,
+          "name": "Динамо",
+          "x": 400,
+          "y": 400,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              24,
+              3
+            ],
+            [
+              26,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 26,
+          "name": "Белорусская",
+          "x": 465,
+          "y": 465,
+          "textPosition": 3,
+          "neighbors": [
+            [
+              25,
+              4
+            ],
+            [
+              27,
+              3
+            ],
+            [
+              89,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 27,
+          "name": "Маяковская",
+          "x": 500,
+          "y": 500,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              26,
+              3
+            ],
+            [
+              28,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 28,
+          "name": "Тверская",
+          "x": 550,
+          "y": 540,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              27,
+              4
+            ],
+            [
+              29,
+              3
+            ],
+            [
+              210,
+              2
+            ],
+            [
+              314,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 29,
+          "name": "Театральная",
+          "x": 610,
+          "y": 580,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              28,
+              3
+            ],
+            [
+              30,
+              4
+            ],
+            [
+              54,
+              5
+            ],
+            [
+              11,
+              5
+            ],
+            [
+              74,
+              3
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              55,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 30,
+          "name": "Новокузнецкая",
+          "x": 650,
+          "y": 650,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              29,
+              4
+            ],
+            [
+              31,
+              3
+            ],
+            [
+              111,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 31,
+          "name": "Павелецкая",
+          "x": 700,
+          "y": 720,
+          "textPosition": 3,
+          "neighbors": [
+            [
+              30,
+              3
+            ],
+            [
+              32,
+              4
+            ],
+            [
+              85,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 32,
+          "name": "Автозаводская",
+          "x": 700,
+          "y": 750,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              31,
+              4
+            ],
+            [
+              33,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 33,
+          "name": "Технопарк",
+          "x": 700,
+          "y": 800,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              32,
+              3
+            ],
+            [
+              34,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 34,
+          "name": "Коломенская",
+          "x": 700,
+          "y": 850,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              33,
+              4
+            ],
+            [
+              35,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 35,
+          "name": "Каширская",
+          "x": 700,
+          "y": 900,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              34,
+              3
+            ],
+            [
+              36,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 36,
+          "name": "Кантемировская",
+          "x": 750,
+          "y": 950,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              35,
+              4
+            ],
+            [
+              37,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 37,
-          "name": "Al Qusais",
-          "x": 200,
-          "y": 200,
+          "name": "Царицыно",
+          "x": 800,
+          "y": 1000,
           "textPosition": 0,
           "neighbors": [
-            [36, 3],
-            [38, 4]
+            [
+              36,
+              3
+            ],
+            [
+              38,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 38,
-          "name": "Dubai Airport Free Zone",
-          "x": 300,
-          "y": 200,
+          "name": "Орехово",
+          "x": 850,
+          "y": 1050,
           "textPosition": 0,
           "neighbors": [
-            [37, 4],
-            [39, 3]
+            [
+              37,
+              4
+            ],
+            [
+              39,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 39,
-          "name": "Al Nahda",
-          "x": 400,
-          "y": 200,
+          "name": "Домодедовская",
+          "x": 900,
+          "y": 1100,
           "textPosition": 0,
           "neighbors": [
-            [38, 3],
-            [40, 4]
+            [
+              38,
+              3
+            ],
+            [
+              40,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 40,
-          "name": "Stadium",
-          "x": 500,
-          "y": 200,
+          "name": "Красногвардейская",
+          "x": 950,
+          "y": 1150,
           "textPosition": 0,
           "neighbors": [
-            [39, 4],
-            [41, 3]
+            [
+              39,
+              4
+            ],
+            [
+              41,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 41,
-          "name": "Al Qiyadah",
-          "x": 600,
-          "y": 200,
+          "name": "Алма-атинская",
+          "x": 950,
+          "y": 1200,
           "textPosition": 0,
           "neighbors": [
-            [40, 3],
-            [42, 4]
+            [
+              40,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
-        },
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Арбатско-Покровская линия",
+      "color": "#0072BB",
+      "isCircle": false,
+      "stations": [
         {
           "id": 42,
-          "name": "Abu Hail",
-          "x": 700,
-          "y": 200,
+          "name": "Пятницкое шоссе",
+          "x": 100,
+          "y": 150,
           "textPosition": 0,
           "neighbors": [
-            [41, 4],
-            [43, 3]
+            [
+              43,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 43,
-          "name": "Abu Baker Al Siddique",
-          "x": 800,
+          "name": "Митино",
+          "x": 100,
           "y": 200,
           "textPosition": 0,
           "neighbors": [
-            [42, 3],
-            [44, 4]
+            [
+              42,
+              2
+            ],
+            [
+              44,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 44,
-          "name": "Salah Al Din",
-          "x": 900,
-          "y": 200,
+          "name": "Волоколамская",
+          "x": 100,
+          "y": 250,
           "textPosition": 0,
           "neighbors": [
-            [43, 4],
-            [45, 3]
+            [
+              43,
+              4
+            ],
+            [
+              45,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 45,
-          "name": "Union",
-          "x": 1000,
-          "y": 200,
+          "name": "Мякинино",
+          "x": 100,
+          "y": 300,
           "textPosition": 0,
           "neighbors": [
-            [44, 3],
-            [46, 4]
+            [
+              44,
+              3
+            ],
+            [
+              46,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 46,
-          "name": "Baniyas Square",
-          "x": 1100,
-          "y": 200,
+          "name": "Строгино",
+          "x": 100,
+          "y": 350,
           "textPosition": 0,
           "neighbors": [
-            [45, 4],
-            [47, 3]
+            [
+              45,
+              4
+            ],
+            [
+              47,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 47,
-          "name": "Gold Souq",
-          "x": 1200,
-          "y": 200,
+          "name": "Крылатское",
+          "x": 100,
+          "y": 400,
           "textPosition": 0,
           "neighbors": [
-            [46, 3],
-            [48, 4]
+            [
+              46,
+              3
+            ],
+            [
+              48,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 48,
-          "name": "Al Ras",
-          "x": 1300,
-          "y": 200,
+          "name": "Молодёжная",
+          "x": 100,
+          "y": 500,
           "textPosition": 0,
           "neighbors": [
-            [47, 4],
-            [49, 3]
+            [
+              47,
+              4
+            ],
+            [
+              49,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 49,
-          "name": "Al Gubaiba",
-          "x": 1400,
-          "y": 200,
+          "name": "Кунцевская",
+          "x": 100,
+          "y": 700,
           "textPosition": 0,
           "neighbors": [
-            [48, 3],
-            [50, 4]
+            [
+              48,
+              3
+            ],
+            [
+              50,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 50,
-          "name": "Sharaf DG",
-          "x": 1500,
-          "y": 200,
+          "name": "Славянский бульвар",
+          "x": 200,
+          "y": 700,
           "textPosition": 0,
           "neighbors": [
-            [49, 4],
-            [51, 3]
+            [
+              49,
+              4
+            ],
+            [
+              51,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 51,
-          "name": "Burjuman",
-          "x": 1600,
-          "y": 200,
+          "name": "Парк Победы",
+          "x": 250,
+          "y": 700,
           "textPosition": 0,
           "neighbors": [
-            [50, 3],
-            [52, 4]
+            [
+              50,
+              3
+            ],
+            [
+              52,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 52,
-          "name": "Oud Metha",
-          "x": 1700,
-          "y": 200,
-          "textPosition": 0,
+          "name": "Киевская",
+          "x": 370,
+          "y": 620,
+          "textPosition": 5,
           "neighbors": [
-            [51, 4],
-            [53, 3]
+            [
+              51,
+              4
+            ],
+            [
+              53,
+              3
+            ],
+            [
+              81,
+              5
+            ],
+            [
+              71,
+              5
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 53,
-          "name": "Dubai Healthcare City",
-          "x": 1800,
-          "y": 200,
+          "name": "Смоленская",
+          "x": 460,
+          "y": 620,
           "textPosition": 0,
           "neighbors": [
-            [52, 3],
-            [54, 4]
+            [
+              52,
+              3
+            ],
+            [
+              54,
+              4
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 54,
-          "name": "Al Jadaf",
-          "x": 1900,
-          "y": 200,
+          "name": "Арбатская",
+          "x": 520,
+          "y": 620,
           "textPosition": 0,
           "neighbors": [
-            [53, 4],
-            [55, 3]
+            [
+              53,
+              4
+            ],
+            [
+              55,
+              3
+            ],
+            [
+              11,
+              5
+            ],
+            [
+              74,
+              3
+            ],
+            [
+              313,
+              2
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         },
         {
           "id": 55,
-          "name": "Creek",
-          "x": 2000,
+          "name": "Площадь Революции",
+          "x": 610,
+          "y": 600,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              54,
+              3
+            ],
+            [
+              56,
+              4
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              29,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 56,
+          "name": "Курская",
+          "x": 850,
+          "y": 500,
+          "textPosition": 8,
+          "neighbors": [
+            [
+              55,
+              4
+            ],
+            [
+              57,
+              3
+            ],
+            [
+              87,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 57,
+          "name": "Бауманская",
+          "x": 930,
+          "y": 460,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              56,
+              3
+            ],
+            [
+              58,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 58,
+          "name": "Электрозаводская",
+          "x": 960,
+          "y": 430,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              57,
+              4
+            ],
+            [
+              59,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 59,
+          "name": "Семёновская",
+          "x": 990,
+          "y": 400,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              58,
+              3
+            ],
+            [
+              60,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 60,
+          "name": "Партизанская",
+          "x": 1010,
+          "y": 360,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              59,
+              4
+            ],
+            [
+              61,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 61,
+          "name": "Измайловская",
+          "x": 1010,
+          "y": 290,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              60,
+              3
+            ],
+            [
+              62,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 62,
+          "name": "Первомайская",
+          "x": 1010,
+          "y": 220,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              61,
+              4
+            ],
+            [
+              63,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 63,
+          "name": "Щёлковская",
+          "x": 1010,
+          "y": 160,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              62,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Филевская линия",
+      "color": "#27BCEF",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 64,
+          "name": "Кунцевская",
+          "x": 100,
+          "y": 700,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              65,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 65,
+          "name": "Пионерская",
+          "x": 120,
+          "y": 680,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              64,
+              2
+            ],
+            [
+              66,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 66,
+          "name": "Филёвский парк",
+          "x": 140,
+          "y": 660,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              65,
+              4
+            ],
+            [
+              67,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 67,
+          "name": "Багратионовская",
+          "x": 160,
+          "y": 640,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              66,
+              3
+            ],
+            [
+              68,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 68,
+          "name": "Фили",
+          "x": 200,
+          "y": 600,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              67,
+              4
+            ],
+            [
+              69,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 69,
+          "name": "Кутузовская",
+          "x": 250,
+          "y": 600,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              68,
+              3
+            ],
+            [
+              70,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 70,
+          "name": "Студенческая",
+          "x": 300,
+          "y": 600,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              69,
+              4
+            ],
+            [
+              71,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 71,
+          "name": "Киевская",
+          "x": 370,
+          "y": 600,
+          "textPosition": 8,
+          "neighbors": [
+            [
+              70,
+              3
+            ],
+            [
+              72,
+              4
+            ],
+            [
+              52,
+              5
+            ],
+            [
+              81,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 72,
+          "name": "Смоленская",
+          "x": 460,
+          "y": 580,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              71,
+              4
+            ],
+            [
+              73,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 73,
+          "name": "Арбатская",
+          "x": 510,
+          "y": 580,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              72,
+              3
+            ],
+            [
+              74,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 74,
+          "name": "Александровский сад",
+          "x": 530,
+          "y": 605,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              73,
+              4
+            ],
+            [
+              73,
+              3
+            ],
+            [
+              11,
+              5
+            ],
+            [
+              54,
+              5
+            ],
+            [
+              313,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Кольцевая линия",
+      "color": "#915133",
+      "isCircle": true,
+      "stations": [
+        {
+          "id": 87,
+          "name": "Курская",
+          "x": 870,
+          "y": 500,
+          "textPosition": 2,
+          "neighbors": [
+            [
+              86,
+              2
+            ],
+            [
+              80,
+              4
+            ],
+            [
+              56,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 80,
+          "name": "Комсомольская",
+          "x": 830,
+          "y": 370,
+          "textPosition": 4,
+          "neighbors": [
+            [
+              87,
+              4
+            ],
+            [
+              91,
+              3
+            ],
+            [
+              6,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 91,
+          "name": "Проспект Мира",
+          "x": 730,
+          "y": 320,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              80,
+              3
+            ],
+            [
+              88,
+              4
+            ],
+            [
+              107,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 88,
+          "name": "Новослободская",
+          "x": 580,
+          "y": 320,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              91,
+              4
+            ],
+            [
+              89,
+              3
+            ],
+            [
+              316,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 89,
+          "name": "Белорусская",
+          "x": 450,
+          "y": 450,
+          "textPosition": 7,
+          "neighbors": [
+            [
+              88,
+              3
+            ],
+            [
+              90,
+              4
+            ],
+            [
+              26,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 90,
+          "name": "Краснопресненская",
+          "x": 390,
+          "y": 540,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              89,
+              4
+            ],
+            [
+              81,
+              3
+            ],
+            [
+              209,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 81,
+          "name": "Киевская",
+          "x": 390,
+          "y": 600,
+          "textPosition": 2,
+          "neighbors": [
+            [
+              90,
+              3
+            ],
+            [
+              82,
+              4
+            ],
+            [
+              52,
+              5
+            ],
+            [
+              71,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 82,
+          "name": "Парк культуры",
+          "x": 450,
+          "y": 700,
+          "textPosition": 7,
+          "neighbors": [
+            [
+              81,
+              4
+            ],
+            [
+              83,
+              3
+            ],
+            [
+              13,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 83,
+          "name": "Октябрьская",
+          "x": 510,
+          "y": 720,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              82,
+              3
+            ],
+            [
+              84,
+              4
+            ],
+            [
+              112,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 84,
+          "name": "Добрынинская",
+          "x": 610,
+          "y": 720,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              83,
+              4
+            ],
+            [
+              85,
+              3
+            ],
+            [
+              311,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 85,
+          "name": "Павелецкая",
+          "x": 700,
+          "y": 700,
+          "textPosition": 3,
+          "neighbors": [
+            [
+              84,
+              3
+            ],
+            [
+              86,
+              4
+            ],
+            [
+              31,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 86,
+          "name": "Таганская",
+          "x": 850,
+          "y": 600,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              85,
+              4
+            ],
+            [
+              87,
+              3
+            ],
+            [
+              213,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Калужско-Рижская линия",
+      "color": "#FF8C00",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 100,
+          "name": "Медведково",
+          "x": 750,
+          "y": 50,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              101,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 101,
+          "name": "Бабушкинская",
+          "x": 750,
+          "y": 90,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              100,
+              2
+            ],
+            [
+              102,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 102,
+          "name": "Свиблово",
+          "x": 750,
+          "y": 130,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              101,
+              4
+            ],
+            [
+              103,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 103,
+          "name": "Ботанический сад",
+          "x": 750,
+          "y": 170,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              102,
+              3
+            ],
+            [
+              104,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 104,
+          "name": "ВДНХ",
+          "x": 750,
+          "y": 210,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              103,
+              4
+            ],
+            [
+              105,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 105,
+          "name": "Алексеевская",
+          "x": 750,
+          "y": 240,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              104,
+              3
+            ],
+            [
+              106,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 106,
+          "name": "Рижская",
+          "x": 750,
+          "y": 270,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              105,
+              4
+            ],
+            [
+              107,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 107,
+          "name": "Проспект Мира",
+          "x": 750,
+          "y": 320,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              106,
+              3
+            ],
+            [
+              108,
+              4
+            ],
+            [
+              91,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 108,
+          "name": "Сухаревская",
+          "x": 750,
+          "y": 400,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              107,
+              4
+            ],
+            [
+              109,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 109,
+          "name": "Тургеневская",
+          "x": 750,
+          "y": 470,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              108,
+              3
+            ],
+            [
+              110,
+              4
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 110,
+          "name": "Китай-город",
+          "x": 750,
+          "y": 550,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              109,
+              4
+            ],
+            [
+              111,
+              3
+            ],
+            [
+              212,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 111,
+          "name": "Третьяковская",
+          "x": 630,
+          "y": 650,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              110,
+              3
+            ],
+            [
+              112,
+              4
+            ],
+            [
+              30,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 112,
+          "name": "Октябрьская",
+          "x": 530,
+          "y": 720,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              111,
+              4
+            ],
+            [
+              113,
+              3
+            ],
+            [
+              83,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 113,
+          "name": "Шаболовская",
+          "x": 530,
+          "y": 750,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              112,
+              3
+            ],
+            [
+              114,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 114,
+          "name": "Ленинский проспект",
+          "x": 530,
+          "y": 800,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              113,
+              4
+            ],
+            [
+              115,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 115,
+          "name": "Академическая",
+          "x": 530,
+          "y": 850,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              114,
+              3
+            ],
+            [
+              116,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 116,
+          "name": "Профсоюзная",
+          "x": 530,
+          "y": 900,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              115,
+              4
+            ],
+            [
+              117,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 117,
+          "name": "Новые Черёмушки",
+          "x": 530,
+          "y": 950,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              116,
+              3
+            ],
+            [
+              118,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 118,
+          "name": "Калужская",
+          "x": 530,
+          "y": 1000,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              117,
+              4
+            ],
+            [
+              119,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 119,
+          "name": "Беляево",
+          "x": 530,
+          "y": 1050,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              118,
+              3
+            ],
+            [
+              120,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 120,
+          "name": "Коньково",
+          "x": 530,
+          "y": 1100,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              119,
+              4
+            ],
+            [
+              121,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 121,
+          "name": "Тёплый стан",
+          "x": 530,
+          "y": 1150,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              120,
+              3
+            ],
+            [
+              122,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 122,
+          "name": "Ясенево",
+          "x": 530,
+          "y": 1200,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              121,
+              4
+            ],
+            [
+              123,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 123,
+          "name": "Новоясеневская",
+          "x": 530,
+          "y": 1250,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              122,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Таганско-Краснопресненская линия",
+      "color": "#8B008B",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 200,
+          "name": "Планерная",
+          "x": 200,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 201,
+          "name": "Сходненская",
+          "x": 200,
+          "y": 150,
+          "textPosition": 0,
+          "neighbors": [],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 202,
+          "name": "Тушинская",
+          "x": 200,
           "y": 200,
           "textPosition": 0,
           "neighbors": [
-            [54, 3]
+            [
+              201,
+              4
+            ],
+            [
+              203,
+              3
+            ]
           ],
           "facilities": {
-            "schedule": "5:00 - 0:00",
-            "escalators": 2,
-            "elevators": 2,
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 203,
+          "name": "Спартак",
+          "x": 200,
+          "y": 250,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              202,
+              3
+            ],
+            [
+              204,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 204,
+          "name": "Щукинская",
+          "x": 200,
+          "y": 300,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              203,
+              4
+            ],
+            [
+              205,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 205,
+          "name": "Октябрьское Поле",
+          "x": 200,
+          "y": 350,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              204,
+              3
+            ],
+            [
+              206,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 206,
+          "name": "Полежаевская",
+          "x": 200,
+          "y": 400,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              205,
+              4
+            ],
+            [
+              207,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 207,
+          "name": "Беговая",
+          "x": 264,
+          "y": 450,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              206,
+              3
+            ],
+            [
+              208,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 208,
+          "name": "Улица 1905 года",
+          "x": 330,
+          "y": 500,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              207,
+              4
+            ],
+            [
+              209,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 209,
+          "name": "Баррикадная",
+          "x": 410,
+          "y": 540,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              208,
+              3
+            ],
+            [
+              210,
+              4
+            ],
+            [
+              90,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 210,
+          "name": "Пушкинская",
+          "x": 530,
+          "y": 540,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              209,
+              4
+            ],
+            [
+              211,
+              3
+            ],
+            [
+              28,
+              2
+            ],
+            [
+              314,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 211,
+          "name": "Кузнецкий мост",
+          "x": 670,
+          "y": 540,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              210,
+              3
+            ],
+            [
+              212,
+              4
+            ],
+            [
+              9,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 212,
+          "name": "Китай-город",
+          "x": 750,
+          "y": 570,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              211,
+              4
+            ],
+            [
+              213,
+              3
+            ],
+            [
+              110,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 213,
+          "name": "Таганская",
+          "x": 850,
+          "y": 620,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              212,
+              3
+            ],
+            [
+              214,
+              4
+            ],
+            [
+              86,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 214,
+          "name": "Пролетарская",
+          "x": 912,
+          "y": 656,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              213,
+              4
+            ],
+            [
+              215,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 215,
+          "name": "Волгоградский проспект",
+          "x": 976,
+          "y": 713,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              214,
+              3
+            ],
+            [
+              216,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 216,
+          "name": "Текстильщики",
+          "x": 1038,
+          "y": 767,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              215,
+              4
+            ],
+            [
+              217,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 217,
+          "name": "Кузьминки",
+          "x": 1074,
+          "y": 805,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              216,
+              3
+            ],
+            [
+              218,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 218,
+          "name": "Рязанский проспект",
+          "x": 1114,
+          "y": 851,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              217,
+              4
+            ],
+            [
+              219,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 219,
+          "name": "Выхино",
+          "x": 1150,
+          "y": 891,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              218,
+              3
+            ],
+            [
+              220,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 220,
+          "name": "Лермонтовский проспект",
+          "x": 1184,
+          "y": 935,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              219,
+              4
+            ],
+            [
+              221,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 221,
+          "name": "Жулебино",
+          "x": 1193,
+          "y": 967,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              220,
+              3
+            ],
+            [
+              222,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 222,
+          "name": "Котельники",
+          "x": 1193,
+          "y": 1017,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              221,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Серпуховско-Тимирязевская линия",
+      "color": "#808080",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 300,
+          "name": "Бульвар Дмитрия Донского",
+          "x": 611,
+          "y": 1250,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              301,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 301,
+          "name": "Аннино",
+          "x": 612,
+          "y": 1203,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              300,
+              2
+            ],
+            [
+              302,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 302,
+          "name": "Улица академика Янгеля",
+          "x": 612,
+          "y": 1151,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              301,
+              4
+            ],
+            [
+              303,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 303,
+          "name": "Пражская",
+          "x": 612,
+          "y": 1101,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              302,
+              3
+            ],
+            [
+              304,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 304,
+          "name": "Южная",
+          "x": 612,
+          "y": 1049,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              303,
+              4
+            ],
+            [
+              305,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 305,
+          "name": "Чертановская",
+          "x": 612,
+          "y": 998,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              304,
+              3
+            ],
+            [
+              306,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 306,
+          "name": "Севастопольская",
+          "x": 612,
+          "y": 952,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              305,
+              4
+            ],
+            [
+              307,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 307,
+          "name": "Нахимовский проспект",
+          "x": 612,
+          "y": 899,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              306,
+              3
+            ],
+            [
+              308,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 308,
+          "name": "Нагорная",
+          "x": 612,
+          "y": 851,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              307,
+              4
+            ],
+            [
+              309,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 309,
+          "name": "Нагатинская",
+          "x": 612,
+          "y": 810,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              308,
+              3
+            ],
+            [
+              310,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 310,
+          "name": "Тульская",
+          "x": 612,
+          "y": 772,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              309,
+              4
+            ],
+            [
+              311,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 311,
+          "name": "Серпуховская",
+          "x": 612,
+          "y": 739,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              310,
+              3
+            ],
+            [
+              312,
+              4
+            ],
+            [
+              84,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 312,
+          "name": "Полянка",
+          "x": 563,
+          "y": 665,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              311,
+              4
+            ],
+            [
+              313,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 313,
+          "name": "Боровицкая",
+          "x": 526,
+          "y": 638,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              312,
+              3
+            ],
+            [
+              314,
+              4
+            ],
+            [54, 2],
+            [11,
+              2],
+            [74, 2]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 314,
+          "name": "Чеховская",
+          "x": 537,
+          "y": 558,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              313,
+              4
+            ],
+            [
+              315,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 315,
+          "name": "Цветной бульвар",
+          "x": 602,
+          "y": 422,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              314,
+              3
+            ],
+            [
+              316,
+              4
+            ],
+            [28, 2],
+            [210, 2]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 316,
+          "name": "Менделеевская",
+          "x": 602,
+          "y": 319,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              315,
+              4
+            ],
+            [
+              317,
+              3
+            ],
+            [
+              88,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 317,
+          "name": "Савёловская",
+          "x": 601,
+          "y": 289,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              316,
+              3
+            ],
+            [
+              318,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 318,
+          "name": "Дмитровская",
+          "x": 598,
+          "y": 261,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              317,
+              4
+            ],
+            [
+              319,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 319,
+          "name": "Тимирязевская",
+          "x": 598,
+          "y": 230,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              318,
+              3
+            ],
+            [
+              320,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 320,
+          "name": "Петровско-Разумовская",
+          "x": 598,
+          "y": 197,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              319,
+              4
+            ],
+            [
+              321,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 321,
+          "name": "Владыкино",
+          "x": 598,
+          "y": 165,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              320,
+              3
+            ],
+            [
+              322,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 322,
+          "name": "Отрадное",
+          "x": 598,
+          "y": 125,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              321,
+              4
+            ],
+            [
+              323,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 323,
+          "name": "Бибирево",
+          "x": 599,
+          "y": 87,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              322,
+              3
+            ],
+            [
+              324,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 324,
+          "name": "Алтуфьево",
+          "x": 600,
+          "y": 50,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              323,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
             "exits": []
           }
         }
@@ -957,16 +3961,232 @@
   ],
   "transfers": [
     {
-      "stations": [8, 45],
+      "stations": [
+        6,
+        80
+      ],
       "time": 3,
       "type": "regular"
     },
     {
-      "stations": [9, 51],
+      "stations": [
+        82,
+        13
+      ],
       "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        81,
+        71,
+        52
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        87,
+        56
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        85,
+        31
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        89,
+        26
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        54,
+        11,
+        74,
+        313
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        107,
+        91
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        112,
+        83
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        109,
+        8
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        30,
+        111
+      ],
+      "time": 3,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        86,
+        213
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        110,
+        212
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        9,
+        211
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        10,
+        29,
+        55
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        90,
+        209
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        28,
+        210,
+        314
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        84,
+        311
+      ],
+      "time": 2,
+      "type": "regular"
+    },
+    {
+      "stations": [
+        88,
+        316
+      ],
+      "time": 2,
       "type": "regular"
     }
   ],
-  "intermediatePoints": [],
+  "intermediatePoints": [
+    {
+      "neighborsId": [88, 89],
+      "points": [
+        {
+          "x": 300,
+          "y": 300
+        },
+        {
+          "x": 400,
+          "y": 320
+        }
+      ]
+    }
+  ],
+  "rivers": [
+    {
+      "points": [
+        {
+          "x": 0,
+          "y": 250
+        },
+        {
+          "x": 150,
+          "y": 250
+        },
+        {
+          "x": 150,
+          "y": 500
+        },
+        {
+          "x": 420,
+          "y": 580
+        },
+        {
+          "x": 420,
+          "y": 650
+        },
+        {
+          "x": 260,
+          "y": 800
+        },
+        {
+          "x": 260,
+          "y": 900
+        },
+        {
+          "x": 350,
+          "y": 900
+        },
+        {
+          "x": 600,
+          "y": 630
+        },
+        {
+          "x": 670,
+          "y": 630
+        },
+        {
+          "x": 800,
+          "y": 730
+        },
+        {
+          "x": 1200,
+          "y": 1200
+        }
+      ],
+      "width": 30
+    }
+  ],
   "objects": []
 }

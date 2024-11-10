@@ -23,9 +23,13 @@ import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MetroMapView extends View {
 
@@ -246,6 +250,14 @@ public class MetroMapView extends View {
 
                 drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY,
                         station.getTextPosition(), textPaint);
+
+                // Draw intermediate points
+                if (station.getIntermediatePoints() != null) {
+                    for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                        List<Point> intermediatePoints = entry.getValue();
+                        drawIntermediatePoints(canvas, intermediatePoints, stationPaint);
+                    }
+                }
             }
 
             // Draw route
@@ -335,17 +347,19 @@ public class MetroMapView extends View {
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
             canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
                     station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
-        } else {
+        } else if (intermediatePoints.size() == 1) {
             float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
             float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
-            for (Point point : intermediatePoints) {
-                float endX = point.x * COORDINATE_SCALE_FACTOR;
-                float endY = point.y * COORDINATE_SCALE_FACTOR;
-                canvas.drawLine(startX, startY, endX, endY, linePaint);
-                startX = endX;
-                startY = endY;
-            }
-            canvas.drawLine(startX, startY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
+            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+            canvas.drawLine(startX, startY, endX, endY, linePaint);
+            canvas.drawLine(endX, endY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+        } else if (intermediatePoints.size() == 2) {
+            Point start = new Point(station1.getX(), station1.getY());
+            Point control1 = intermediatePoints.get(0);
+            Point control2 = intermediatePoints.get(1);
+            Point end = new Point(station2.getX(), station2.getY());
+            drawBezierCurve(canvas, start, control1, control2, end, linePaint);
         }
     }
 
@@ -354,18 +368,62 @@ public class MetroMapView extends View {
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
             canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
                     station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
-        } else {
+        } else if (intermediatePoints.size() == 1) {
             float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
             float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
-            for (Point point : intermediatePoints) {
-                float endX = point.x * COORDINATE_SCALE_FACTOR;
-                float endY = point.y * COORDINATE_SCALE_FACTOR;
-                canvas.drawLine(startX, startY, endX, endY, routePaint);
-                startX = endX;
-                startY = endY;
-            }
-            canvas.drawLine(startX, startY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
+            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+            canvas.drawLine(startX, startY, endX, endY, routePaint);
+            canvas.drawLine(endX, endY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+        } else if (intermediatePoints.size() == 2) {
+            Point start = new Point(station1.getX(), station1.getY());
+            Point control1 = intermediatePoints.get(0);
+            Point control2 = intermediatePoints.get(1);
+            Point end = new Point(station2.getX(), station2.getY());
+            drawBezierCurve(canvas, start, control1, control2, end, routePaint);
         }
+    }
+
+    private List<Point> interpolatePoints(List<Point> points) {
+        int n = points.size();
+        double[] x = new double[n];
+        double[] y = new double[n];
+
+        for (int i = 0; i < n; i++) {
+            x[i] = i;
+            y[i] = points.get(i).y;
+        }
+
+        SplineInterpolator interpolator = new SplineInterpolator();
+        PolynomialSplineFunction splineX = interpolator.interpolate(x, x);
+        PolynomialSplineFunction splineY = interpolator.interpolate(x, y);
+
+        List<Point> interpolatedPoints = new ArrayList<>();
+        for (double t = 0; t <= n - 1; t += 0.1) {
+            double interpolatedX = splineX.value(t);
+            double interpolatedY = splineY.value(t);
+            interpolatedPoints.add(new Point((int) interpolatedX, (int) interpolatedY));
+        }
+
+        return interpolatedPoints;
+    }
+
+    private void drawIntermediatePoints(Canvas canvas, List<Point> intermediatePoints, Paint paint) {
+        for (Point point : intermediatePoints) {
+            canvas.drawCircle(point.x * COORDINATE_SCALE_FACTOR, point.y * COORDINATE_SCALE_FACTOR, 10, paint);
+        }
+    }
+
+    private void drawBezierCurve(Canvas canvas, Point start, Point control1, Point control2, Point end, Paint paint) {
+        Path path = new Path();
+        paint.setStyle(Paint.Style.STROKE);
+        path.moveTo(start.x * COORDINATE_SCALE_FACTOR, start.y * COORDINATE_SCALE_FACTOR);
+        path.cubicTo(
+                control1.x * COORDINATE_SCALE_FACTOR, control1.y * COORDINATE_SCALE_FACTOR,
+                control2.x * COORDINATE_SCALE_FACTOR, control2.y * COORDINATE_SCALE_FACTOR,
+                end.x * COORDINATE_SCALE_FACTOR, end.y * COORDINATE_SCALE_FACTOR
+        );
+        canvas.drawPath(path, paint);
     }
 
     private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {

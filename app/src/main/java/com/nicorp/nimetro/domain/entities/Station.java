@@ -5,7 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Station implements Parcelable {
     private int id;
@@ -16,7 +18,7 @@ public class Station implements Parcelable {
     private Facilities facilities;
     private int textPosition;
     private List<Neighbor> neighbors;
-    private List<Point> intermediatePoints;
+    private Map<Station, List<Point>> intermediatePoints; // Изменение структуры данных
 
     public Station(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
@@ -27,7 +29,7 @@ public class Station implements Parcelable {
         this.facilities = facilities;
         this.textPosition = textPosition;
         this.neighbors = new ArrayList<>();
-        this.intermediatePoints = new ArrayList<>();
+        this.intermediatePoints = new HashMap<>(); // Инициализация новой структуры данных
     }
 
     protected Station(Parcel in) {
@@ -39,8 +41,8 @@ public class Station implements Parcelable {
         facilities = in.readParcelable(Facilities.class.getClassLoader());
         textPosition = in.readInt();
         neighbors = in.createTypedArrayList(Neighbor.CREATOR);
-        intermediatePoints = new ArrayList<>();
-        in.readList(intermediatePoints, Point.class.getClassLoader());
+        intermediatePoints = new HashMap<>();
+        in.readMap(intermediatePoints, Station.class.getClassLoader());
     }
 
     public static final Creator<Station> CREATOR = new Creator<Station>() {
@@ -70,7 +72,7 @@ public class Station implements Parcelable {
         dest.writeParcelable(facilities, flags);
         dest.writeInt(textPosition);
         dest.writeTypedList(neighbors);
-        dest.writeList(intermediatePoints);
+        dest.writeMap(intermediatePoints);
     }
 
     public int getId() {
@@ -110,11 +112,11 @@ public class Station implements Parcelable {
     }
 
     public List<Point> getIntermediatePoints(Station station2) {
-        return intermediatePoints;
+        return intermediatePoints.get(station2);
     }
 
     public void addIntermediatePoints(Station station2, List<Point> points) {
-        intermediatePoints.addAll(points);
+        intermediatePoints.put(station2, points);
     }
 
     public static class Neighbor implements Parcelable {
@@ -195,11 +197,11 @@ public class Station implements Parcelable {
         this.neighbors = neighbors;
     }
 
-    public List<Point> getIntermediatePoints() {
+    public Map<Station, List<Point>> getIntermediatePoints() {
         return intermediatePoints;
     }
 
-    public void setIntermediatePoints(List<Point> intermediatePoints) {
+    public void setIntermediatePoints(Map<Station, List<Point>> intermediatePoints) {
         this.intermediatePoints = intermediatePoints;
     }
 
