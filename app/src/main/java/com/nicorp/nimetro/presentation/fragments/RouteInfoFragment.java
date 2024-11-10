@@ -10,10 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.view.animation.Transformation;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +29,11 @@ import com.nicorp.nimetro.presentation.views.MetroMapView;
 
 import java.util.List;
 
+/**
+ * A fragment that displays detailed information about a metro route.
+ * This includes the route's total time, number of stations, number of transfers,
+ * and a detailed list of stations with transfer indicators.
+ */
 public class RouteInfoFragment extends Fragment {
 
     private static final String ARG_ROUTE = "route";
@@ -54,7 +56,14 @@ public class RouteInfoFragment extends Fragment {
     private MetroMapView metroMapView;
     private MainActivity mainActivity;
 
-
+    /**
+     * Creates a new instance of RouteInfoFragment with the necessary arguments.
+     *
+     * @param route The route to display information about.
+     * @param metroMapView The MetroMapView instance.
+     * @param mainActivity The MainActivity instance.
+     * @return A new instance of RouteInfoFragment.
+     */
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
         Bundle args = new Bundle();
@@ -83,7 +92,22 @@ public class RouteInfoFragment extends Fragment {
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
-        // Initialize views
+        initializeViews(view, colorOnSurface);
+        setViewColors(colorOnSurface);
+        calculateAndSetRouteStatistics();
+        setupCloseButton(view);
+        setupSwipeGestureDetector(view);
+
+        return view;
+    }
+
+    /**
+     * Initializes the views used in the fragment.
+     *
+     * @param view The root view of the fragment.
+     * @param colorOnSurface The color to use for text views.
+     */
+    private void initializeViews(View view, int colorOnSurface) {
         routeTime = view.findViewById(R.id.routeTime);
         routeStationsCount = view.findViewById(R.id.routeStationsCount);
         routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
@@ -95,8 +119,14 @@ public class RouteInfoFragment extends Fragment {
         layoutCollapsed = view.findViewById(R.id.layoutCollapsed);
         layoutExpanded = view.findViewById(R.id.layoutExpanded);
         routeInfoContainer = view.findViewById(R.id.routeInfoContainer);
+    }
 
-        // Set text view colors to colorOnSurface
+    /**
+     * Sets the text colors for the views.
+     *
+     * @param colorOnSurface The color to use for text views.
+     */
+    private void setViewColors(int colorOnSurface) {
         routeTime.setTextColor(colorOnSurface);
         routeStationsCount.setTextColor(colorOnSurface);
         routeTransfersCount.setTextColor(colorOnSurface);
@@ -104,37 +134,50 @@ public class RouteInfoFragment extends Fragment {
         routeTimeTitle.setTextColor(colorOnSurface);
         routeStationsCountTitle.setTextColor(colorOnSurface);
         routeTransfersCountTitle.setTextColor(colorOnSurface);
+    }
 
-        // Calculate route statistics
+    /**
+     * Calculates and sets the route statistics (total time, number of stations, number of transfers).
+     */
+    private void calculateAndSetRouteStatistics() {
         if (route != null && !route.isEmpty()) {
             int totalTime = calculateTotalTime();
             int stationsCount = route.size();
             int transfersCount = calculateTransfersCount();
 
-            // Update summary information
             routeTime.setText(String.format("%d мин", totalTime));
             routeStationsCount.setText(String.format("%d", stationsCount));
             routeTransfersCount.setText(String.format("%d", transfersCount));
 
-            // Populate route details
             populateRouteDetails(routeDetailsContainer);
         }
+    }
 
-        ImageView closeButton =  view.findViewById(R.id.closeButton);
+    /**
+     * Sets up the close button to dismiss the fragment.
+     *
+     * @param view The root view of the fragment.
+     */
+    private void setupCloseButton(View view) {
+        ImageView closeButton = view.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> dismiss());
+    }
 
-        // Set up swipe gesture detector
+    /**
+     * Sets up the swipe gesture detector to handle expand and collapse actions.
+     *
+     * @param view The root view of the fragment.
+     */
+    private void setupSwipeGestureDetector(View view) {
         GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (Math.abs(velocityY) > Math.abs(velocityX)) {
                     if (velocityY > 0) {
-                        // Swipe down to collapse
                         if (isExpanded) {
                             collapse();
                         }
                     } else {
-                        // Swipe up to expand
                         if (!isExpanded) {
                             expand();
                         }
@@ -145,55 +188,59 @@ public class RouteInfoFragment extends Fragment {
         });
 
         routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
-        return view;
     }
 
+    /**
+     * Dismisses the fragment and clears the route and selected stations on the map.
+     */
     private void dismiss() {
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
                     .remove(this)
                     .commit();
             if (metroMapView != null) {
-                metroMapView.clearRoute(); // Очищаем маршрут на карте
-                metroMapView.clearSelectedStations(); // Очищаем выбранные станции
+                metroMapView.clearRoute();
+                metroMapView.clearSelectedStations();
             }
             if (mainActivity != null) {
-                mainActivity.clearRouteInputs(); // Очищаем поля ввода
+                mainActivity.clearRouteInputs();
             }
         }
     }
 
+    /**
+     * Expands the fragment to show detailed route information.
+     */
     private void expand() {
         isExpanded = true;
         routeTitle.setText("Информация о маршруте");
         layoutCollapsed.setVisibility(View.GONE);
         layoutExpanded.setVisibility(View.VISIBLE);
 
-        // Calculate the height of the expanded content
-        layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        float expandedHeight = layoutExpanded.getMeasuredHeight();
-        float density = getResources().getDisplayMetrics().density; // Get the density
-        Log.d("RouteInfoFragment", "Expanded height: " + expandedHeight);
-        if (expandedHeight > 500 * density) {
-            expandedHeight = 500 * density;
-        }
-
-        // Animate the height change
+        float expandedHeight = getExpandedHeight();
         animateHeightChange(routeInfoContainer, COLLAPSED_HEIGHT, expandedHeight);
     }
 
+    /**
+     * Collapses the fragment to show only summary route information.
+     */
     private void collapse() {
         isExpanded = false;
         routeTitle.setText("Краткая информация");
         layoutCollapsed.setVisibility(View.VISIBLE);
         layoutExpanded.setVisibility(View.GONE);
 
-        float density = getResources().getDisplayMetrics().density; // Get the density
-        // Animate the height change
+        float density = getResources().getDisplayMetrics().density;
         animateHeightChange(routeInfoContainer, routeInfoContainer.getHeight(), COLLAPSED_HEIGHT * density);
     }
 
+    /**
+     * Animates the height change of the view.
+     *
+     * @param view The view to animate.
+     * @param startHeight The starting height of the view.
+     * @param endHeight The ending height of the view.
+     */
     private void animateHeightChange(final View view, final int startHeight, final float endHeight) {
         Animation animation = new Animation() {
             @Override
@@ -209,24 +256,32 @@ public class RouteInfoFragment extends Fragment {
             }
         };
 
-        animation.setDuration(300); // Set the duration of the animation
+        animation.setDuration(300);
         view.startAnimation(animation);
     }
 
+    /**
+     * Calculates the total time for the route.
+     *
+     * @return The total time in minutes.
+     */
     private int calculateTotalTime() {
         int totalTime = 0;
-        // Base time between stations
-        totalTime += (route.size() - 1) * 2; // 2 minutes between stations
+        totalTime += (route.size() - 1) * 2;
 
-        // Add transfer times
         for (int i = 1; i < route.size(); i++) {
             if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
-                totalTime += 3; // 3 minutes for transfer
+                totalTime += 3;
             }
         }
         return totalTime;
     }
 
+    /**
+     * Calculates the number of transfers in the route.
+     *
+     * @return The number of transfers.
+     */
     private int calculateTransfersCount() {
         int transfers = 0;
         for (int i = 1; i < route.size(); i++) {
@@ -237,55 +292,69 @@ public class RouteInfoFragment extends Fragment {
         return transfers;
     }
 
+    /**
+     * Populates the route details container with station and transfer information.
+     *
+     * @param container The container to populate.
+     */
     private void populateRouteDetails(LinearLayout container) {
-        container.post(new Runnable() {
-            @Override
-            public void run() {
-                container.removeAllViews();
+        container.post(() -> {
+            container.removeAllViews();
 
-                LayoutInflater inflater = LayoutInflater.from(getContext());
+            LayoutInflater inflater = LayoutInflater.from(getContext());
 
-                for (int i = 0; i < route.size(); i++) {
-                    Station station = route.get(i);
+            for (int i = 0; i < route.size(); i++) {
+                Station station = route.get(i);
 
-                    // Add station view
-                    View stationView = inflater.inflate(R.layout.item_route_station, container, false);
-                    TextView stationName = stationView.findViewById(R.id.stationName);
-                    View stationIndicator = stationView.findViewById(R.id.stationIndicator);
+                View stationView = inflater.inflate(R.layout.item_route_station, container, false);
+                TextView stationName = stationView.findViewById(R.id.stationName);
+                View stationIndicator = stationView.findViewById(R.id.stationIndicator);
 
-                    stationName.setText(station.getName());
-                    stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+                stationName.setText(station.getName());
+                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0, 0, 0, 0);
+                stationView.setLayoutParams(params);
+
+                if (i == 0 || i == route.size() - 1) {
+                    stationName.setTypeface(null, Typeface.BOLD);
+                }
+
+                container.addView(stationView);
+
+                if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
+                    View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
+                    LinearLayout.LayoutParams transferParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                     );
-                    params.setMargins(0, 0, 0, 0); // Add some vertical spacing
-                    stationView.setLayoutParams(params);
-
-                    if (i == 0 || i == route.size() - 1) {
-                        // Set station name bold
-                        stationName.setTypeface(null, Typeface.BOLD);
-                    }
-
-                    container.addView(stationView);
-
-                    // Add transfer indicator if needed
-                    if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
-                        View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
-                        LinearLayout.LayoutParams transferParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        transferParams.setMargins(0, 8, 0, 8);
-                        transferView.setLayoutParams(transferParams);
-                        container.addView(transferView);
-                    }
+                    transferParams.setMargins(0, 8, 0, 8);
+                    transferView.setLayoutParams(transferParams);
+                    container.addView(transferView);
                 }
-
-                // Force a layout pass
-                container.requestLayout();
             }
+
+            container.requestLayout();
         });
+    }
+
+    /**
+     * Gets the expanded height of the layout.
+     *
+     * @return The expanded height in pixels.
+     */
+    private float getExpandedHeight() {
+        layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        float expandedHeight = layoutExpanded.getMeasuredHeight();
+        float density = getResources().getDisplayMetrics().density;
+        Log.d("RouteInfoFragment", "Expanded height: " + expandedHeight);
+        if (expandedHeight > 500 * density) {
+            expandedHeight = 500 * density;
+        }
+        return expandedHeight;
     }
 }

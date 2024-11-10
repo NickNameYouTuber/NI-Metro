@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
      * @param station The station to set as the start station.
      */
     @Override
-    public void onSetStart(Station station) {
+    public void onSetStart(Station station, boolean fromStationInfoFragment) {
         if (selectedStartStation != null) {
             selectedStations.remove(selectedStartStation);
         }
@@ -414,6 +414,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
         startStationEditText.setText(station.getName());
+
+        if (fromStationInfoFragment) {
+            hideStationsList(); // Скрываем список станций, если станция была выбрана через StationInfoFragment
+        }
     }
 
     /**
@@ -422,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
      * @param station The station to set as the end station.
      */
     @Override
-    public void onSetEnd(Station station) {
+    public void onSetEnd(Station station, boolean fromStationInfoFragment) {
         if (selectedEndStation != null) {
             selectedStations.remove(selectedEndStation);
         }
@@ -435,6 +439,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
             metroMapView.setRoute(route);
             showRouteInfo(route);
+        }
+
+        if (fromStationInfoFragment) {
+            hideStationsList(); // Скрываем список станций, если станция была выбрана через StationInfoFragment
         }
     }
 
@@ -542,10 +550,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     public void onStationSelected(Station station) {
         if (startStationEditText.hasFocus()) {
             startStationEditText.setText(station.getName());
-            onSetStart(station);
+            onSetStart(station, true);
         } else if (endStationEditText.hasFocus()) {
             endStationEditText.setText(station.getName());
-            onSetEnd(station);
+            onSetEnd(station, true);
         }
         hideStationsList();
     }

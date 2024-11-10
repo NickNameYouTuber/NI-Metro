@@ -22,14 +22,24 @@ import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
 
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * A bottom sheet fragment that displays detailed information about a metro route.
+ * This includes the route's total time, number of stations, number of transfers,
+ * and a detailed list of stations with transfer indicators.
+ */
 public class BottomFragment extends BottomSheetDialogFragment {
 
     private static final int COLLAPSED_HEIGHT = 228;
     private List<Station> route;
     private BottomSheetBehavior<View> behavior;
 
+    /**
+     * Creates a new instance of BottomFragment with the necessary arguments.
+     *
+     * @param route The route to display information about.
+     * @return A new instance of BottomFragment.
+     */
     public static BottomFragment newInstance(List<Station> route) {
         BottomFragment fragment = new BottomFragment();
         Bundle args = new Bundle();
@@ -55,7 +65,20 @@ public class BottomFragment extends BottomSheetDialogFragment {
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
-        // Initialize views
+        initializeViews(view, colorOnSurface);
+        calculateAndSetRouteStatistics();
+        setupBottomSheetBehavior(view);
+
+        return view;
+    }
+
+    /**
+     * Initializes the views used in the fragment.
+     *
+     * @param view The root view of the fragment.
+     * @param colorOnSurface The color to use for text views.
+     */
+    private void initializeViews(View view, int colorOnSurface) {
         TextView routeTime = view.findViewById(R.id.routeTime);
         TextView routeStationsCount = view.findViewById(R.id.routeStationsCount);
         TextView routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
@@ -66,7 +89,6 @@ public class BottomFragment extends BottomSheetDialogFragment {
         LinearLayout routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
         View bottomSheetInternal = view.findViewById(R.id.bottom_sheet_internal);
 
-        // Set text view colors to colorOnSurface
         routeTime.setTextColor(colorOnSurface);
         routeStationsCount.setTextColor(colorOnSurface);
         routeTransfersCount.setTextColor(colorOnSurface);
@@ -75,29 +97,43 @@ public class BottomFragment extends BottomSheetDialogFragment {
         routeStationsCountTitle.setTextColor(colorOnSurface);
         routeTransfersCountTitle.setTextColor(colorOnSurface);
 
-        // Setup BottomSheetBehavior
         behavior = BottomSheetBehavior.from(bottomSheetInternal);
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
 
-        // Calculate route statistics
+    /**
+     * Calculates and sets the route statistics (total time, number of stations, number of transfers).
+     */
+    private void calculateAndSetRouteStatistics() {
         if (route != null && !route.isEmpty()) {
             int totalTime = calculateTotalTime();
             int stationsCount = route.size();
             int transfersCount = calculateTransfersCount();
 
-            // Update summary information
+            TextView routeTime = requireView().findViewById(R.id.routeTime);
+            TextView routeStationsCount = requireView().findViewById(R.id.routeStationsCount);
+            TextView routeTransfersCount = requireView().findViewById(R.id.routeTransfersCount);
+
             routeTime.setText(String.format("%d мин", totalTime));
             routeStationsCount.setText(String.format("%d", stationsCount));
             routeTransfersCount.setText(String.format("%d", transfersCount));
 
-            // Populate route details
-            populateRouteDetails(routeDetailsContainer);
+            populateRouteDetails(requireView().findViewById(R.id.routeDetailsContainer));
         }
+    }
 
-        // Handle BottomSheet state changes
+    /**
+     * Sets up the BottomSheetBehavior to handle state changes and sliding.
+     *
+     * @param view The root view of the fragment.
+     */
+    private void setupBottomSheetBehavior(View view) {
         behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                TextView routeTitle = view.findViewById(R.id.routeTitle);
+                LinearLayout routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
+
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     routeTitle.setText("Информация о маршруте");
                     routeDetailsContainer.setVisibility(View.VISIBLE);
@@ -112,8 +148,6 @@ public class BottomFragment extends BottomSheetDialogFragment {
                 // Optional: Implement animations during sliding
             }
         });
-
-        return view;
     }
 
     @Override
@@ -136,11 +170,8 @@ public class BottomFragment extends BottomSheetDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
-        // Allow outside touch to dismiss the dialog
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        // Set the background to be transparent
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         dialog.setOnShowListener(dialogInterface -> {
@@ -152,21 +183,28 @@ public class BottomFragment extends BottomSheetDialogFragment {
         return dialog;
     }
 
-
+    /**
+     * Calculates the total time for the route.
+     *
+     * @return The total time in minutes.
+     */
     private int calculateTotalTime() {
         int totalTime = 0;
-        // Base time between stations
-        totalTime += (route.size() - 1) * 2; // 2 minutes between stations
+        totalTime += (route.size() - 1) * 2;
 
-        // Add transfer times
         for (int i = 1; i < route.size(); i++) {
             if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
-                totalTime += 3; // 3 minutes for transfer
+                totalTime += 3;
             }
         }
         return totalTime;
     }
 
+    /**
+     * Calculates the number of transfers in the route.
+     *
+     * @return The number of transfers.
+     */
     private int calculateTransfersCount() {
         int transfers = 0;
         for (int i = 1; i < route.size(); i++) {
@@ -177,6 +215,11 @@ public class BottomFragment extends BottomSheetDialogFragment {
         return transfers;
     }
 
+    /**
+     * Populates the route details container with station and transfer information.
+     *
+     * @param container The container to populate.
+     */
     private void populateRouteDetails(LinearLayout container) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         String currentColor = null;
@@ -184,17 +227,15 @@ public class BottomFragment extends BottomSheetDialogFragment {
         for (int i = 0; i < route.size(); i++) {
             Station station = route.get(i);
 
-            // Add station
             View stationView = inflater.inflate(R.layout.item_route_station, container, false);
             TextView stationName = stationView.findViewById(R.id.stationName);
             View stationIndicator = stationView.findViewById(R.id.stationIndicator);
 
             stationName.setText(station.getName());
-            stationIndicator.setBackgroundColor(android.graphics.Color.parseColor(station.getColor()));
+            stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
 
             container.addView(stationView);
 
-            // Add transfer indicator if needed
             if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
                 View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
                 container.addView(transferView);

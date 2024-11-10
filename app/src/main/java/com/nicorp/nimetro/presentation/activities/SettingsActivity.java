@@ -23,6 +23,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Activity responsible for managing application settings, including metro map selection and theme settings.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     private TextView currentMetroMapName;
@@ -32,47 +35,63 @@ public class SettingsActivity extends AppCompatActivity {
     private LinearLayout currentMetroMapLayout;
     private androidx.appcompat.widget.Toolbar toolbar;
 
+    /**
+     * Called when the activity is first created. Initializes the UI components and sets up event listeners.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        initializeUIComponents();
+        setupToolbar();
+        loadCurrentSettings();
+        setupEventListeners();
+    }
+
+    /**
+     * Initializes the UI components.
+     */
+    private void initializeUIComponents() {
         currentMetroMapName = findViewById(R.id.currentMetroMapName);
         currentMetroMapIcon = findViewById(R.id.currentMetroMapIcon);
         themeRadioGroup = findViewById(R.id.themeRadioGroup);
         currentMetroMapLayout = findViewById(R.id.currentMetroMapLayout);
+    }
 
+    /**
+     * Sets up the toolbar with a back button.
+     */
+    private void setupToolbar() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-            startActivity(intent);});
+        toolbar.setNavigationOnClickListener(v -> navigateToMainActivity());
+    }
 
+    /**
+     * Loads the current settings from SharedPreferences and updates the UI.
+     */
+    private void loadCurrentSettings() {
         sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
 
-        // Загрузка текущей выбранной карты метро
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         MetroMapItem currentMapItem = loadMetroMapItem(selectedMapFileName);
         if (currentMapItem != null) {
-            currentMetroMapName.setText(currentMapItem.getName());
-            Glide.with(this).load(currentMapItem.getIconUrl()).into(currentMetroMapIcon);
+            updateCurrentMetroMap(currentMapItem);
         }
 
-        // Загрузка текущей выбранной темы
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
-        if (selectedTheme.equals("light")) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        if (selectedTheme.equals("light")) {
-            themeRadioGroup.check(R.id.lightThemeRadioButton);
-        } else {
-            themeRadioGroup.check(R.id.darkThemeRadioButton);
-        }
+        setTheme(selectedTheme);
+    }
 
-        // Установка слушателя для изменения темы
+    /**
+     * Sets up event listeners for UI components.
+     */
+    private void setupEventListeners() {
         themeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             String theme = checkedId == R.id.lightThemeRadioButton ? "light" : "dark";
             saveTheme(theme);
@@ -81,18 +100,26 @@ public class SettingsActivity extends AppCompatActivity {
         currentMetroMapLayout.setOnClickListener(v -> onCurrentMetroMapClick(v));
     }
 
+    /**
+     * Handles the click event on the current metro map layout.
+     *
+     * @param view The view that was clicked.
+     */
     public void onCurrentMetroMapClick(View view) {
-        // Открытие диалога для выбора карты метро
         SelectMetroMapDialog dialog = new SelectMetroMapDialog(this);
         dialog.show();
     }
 
+    /**
+     * Updates the current metro map display with the selected metro map item.
+     *
+     * @param selectedItem The selected metro map item.
+     */
     public void updateCurrentMetroMap(MetroMapItem selectedItem) {
         if (selectedItem != null) {
             currentMetroMapName.setText(selectedItem.getName());
             Glide.with(this).load(selectedItem.getIconUrl()).into(currentMetroMapIcon);
 
-            // Сохранение выбранной карты метро в SharedPreferences
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("selected_map", selectedItem.getName());
             editor.putString("selected_map_file", selectedItem.getFileName());
@@ -100,17 +127,39 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves the selected theme to SharedPreferences and updates the application theme.
+     *
+     * @param theme The selected theme ("light" or "dark").
+     */
     private void saveTheme(String theme) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (theme.equals("light")) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
+        setTheme(theme);
         editor.putString("selected_theme", theme);
         editor.apply();
     }
 
+    /**
+     * Sets the application theme based on the selected theme.
+     *
+     * @param theme The selected theme ("light" or "dark").
+     */
+    private void setTheme(String theme) {
+        if (theme.equals("light")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            themeRadioGroup.check(R.id.lightThemeRadioButton);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            themeRadioGroup.check(R.id.darkThemeRadioButton);
+        }
+    }
+
+    /**
+     * Loads the metro map item from the specified file.
+     *
+     * @param fileName The name of the file containing the metro map data.
+     * @return The loaded metro map item, or null if an error occurred.
+     */
     private MetroMapItem loadMetroMapItem(String fileName) {
         try (InputStream is = getAssets().open("raw/" + fileName)) {
             int size = is.available();
@@ -129,18 +178,28 @@ public class SettingsActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * Handles the back button press to navigate back to the main activity.
+     */
     @Override
     public void onBackPressed() {
-        // Возврат на предыдущую активность
         super.onBackPressed();
-        Log.d("MainActivity", "Settings button clicked");
-        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        navigateToMainActivity();
     }
 
+    /**
+     * Handles the back button click to navigate back to the main activity.
+     *
+     * @param view The view that was clicked.
+     */
     public void onBackButtonClick(View view) {
-        // Возврат на предыдущую активность
+        navigateToMainActivity();
+    }
+
+    /**
+     * Navigates to the main activity and finishes the current activity.
+     */
+    private void navigateToMainActivity() {
         Log.d("MainActivity", "Settings button clicked");
         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
         startActivity(intent);
