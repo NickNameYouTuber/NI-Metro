@@ -56,6 +56,8 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
+    private boolean isEditMode = false;
+
     private OnStationClickListener listener;
 
     private float scaleFactor = 1.0f;
@@ -94,6 +96,15 @@ public class MetroMapView extends View {
 
     public float getTranslateY() {
         return translateY;
+    }
+
+    /**
+     * Sets the edit mode of the view.
+     * @param editMode
+     */
+    public void setEditMode(boolean editMode) {
+        isEditMode = editMode;
+        invalidate();
     }
 
     /**
@@ -260,6 +271,11 @@ public class MetroMapView extends View {
             drawStations(canvas);
             drawRoute(canvas);
             drawMapObjects(canvas);
+
+            // Рисуем промежуточные точки только в режиме редактирования
+            if (isEditMode) {
+                drawIntermediatePoints(canvas);
+            }
         }
 
         canvas.restore();
@@ -337,13 +353,6 @@ public class MetroMapView extends View {
             }
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
-
-            if (station.getIntermediatePoints() != null) {
-                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
-                    List<Point> intermediatePoints = entry.getValue();
-                    drawIntermediatePoints(canvas, intermediatePoints, stationPaint);
-                }
-            }
         }
     }
 
@@ -538,6 +547,22 @@ public class MetroMapView extends View {
         }
 
         return interpolatedPoints;
+    }
+
+    /**
+     * Draws intermediate points on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawIntermediatePoints(Canvas canvas) {
+        for (Station station : stations) {
+            if (station.getIntermediatePoints() != null) {
+                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                    List<Point> intermediatePoints = entry.getValue();
+                    drawIntermediatePoints(canvas, intermediatePoints, stationPaint);
+                }
+            }
+        }
     }
 
     /**

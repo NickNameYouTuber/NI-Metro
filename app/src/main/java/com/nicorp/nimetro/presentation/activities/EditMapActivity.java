@@ -26,6 +26,7 @@ import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
+import com.nicorp.nimetro.presentation.adapters.StationSpinnerAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.presentation.adapters.StationListAdapter;
@@ -91,12 +92,14 @@ public class EditMapActivity extends AppCompatActivity {
         Button addStationButton = findViewById(R.id.addStationButton);
         Button removeStationButton = findViewById(R.id.removeStationButton);
         Button saveChangesButton = findViewById(R.id.saveChangesButton);
-        Button addTransferButton = findViewById(R.id.addTransferButton); // Button for creating transfers
+        Button addTransferButton = findViewById(R.id.addTransferButton);
+        Button addIntermediatePointsButton = findViewById(R.id.addIntermediatePointsButton);
 
         addStationButton.setOnClickListener(v -> showAddStationDialog());
         removeStationButton.setOnClickListener(v -> removeSelectedStation());
         saveChangesButton.setOnClickListener(v -> saveMetroData());
-        addTransferButton.setOnClickListener(v -> showAddTransferDialog()); // Handler for creating transfers
+        addTransferButton.setOnClickListener(v -> showAddTransferDialog());
+        addIntermediatePointsButton.setOnClickListener(v -> showAddIntermediatePointsDialog());
     }
 
     /**
@@ -600,9 +603,6 @@ public class EditMapActivity extends AppCompatActivity {
                 if (station.getIntermediatePoints() != null) {
                     for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
                         JSONObject intermediatePointObject = new JSONObject();
-//                        List<Integer> neighborsIds = new ArrayList<>();
-//                        neighborsIds.add(station.getId());
-//                        neighborsIds.add(entry.getKey().getId());
 
                         // Save neighborsId like "neighborsId": [88, 89]" from station.getId() and entry.getKey().getId()
                         JSONArray neighborsIds = new JSONArray();
@@ -667,6 +667,60 @@ public class EditMapActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Save error", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     *  Shows a dialog for adding intermediate points between two stations.
+     *  The dialog has two spinners for selecting the stations and a button to add the intermediate points.
+     *  The dialog is displayed in the center of the screen.*
+     */
+    private void showAddIntermediatePointsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_intermediate_points, null);
+        builder.setView(dialogView);
+
+        Spinner station1Spinner = dialogView.findViewById(R.id.station1Spinner);
+        Spinner station2Spinner = dialogView.findViewById(R.id.station2Spinner);
+        Button addIntermediatePointsButton = dialogView.findViewById(R.id.addIntermediatePointsButton);
+
+        // Initialize AlertDialog instance
+        AlertDialog alertDialog = builder.create();
+
+        // Set up station spinners
+        StationSpinnerAdapter stationAdapter = new StationSpinnerAdapter(this, stations);
+        station1Spinner.setAdapter(stationAdapter);
+        station2Spinner.setAdapter(stationAdapter);
+
+        // Add intermediate points button click handler
+        addIntermediatePointsButton.setOnClickListener(v -> {
+            int selectedStation1Index = station1Spinner.getSelectedItemPosition();
+            int selectedStation2Index = station2Spinner.getSelectedItemPosition();
+
+            if (selectedStation1Index == selectedStation2Index) {
+                Toast.makeText(this, "Select different stations", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Station station1 = stations.get(selectedStation1Index);
+            Station station2 = stations.get(selectedStation2Index);
+
+            // Add intermediate points between the two stations
+            List<Point> intermediatePoints = new ArrayList<>();
+            intermediatePoints.add(new Point(station1.getX() + 10, station1.getY() + 10));
+            intermediatePoints.add(new Point(station2.getX() - 10, station2.getY() - 10));
+
+            station1.addIntermediatePoints(station2, intermediatePoints);
+
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.invalidate();
+
+            // Dismiss the dialog safely
+            alertDialog.dismiss();
+        });
+
+        // Show the dialog
+        alertDialog.show();
     }
 
     /**

@@ -111,8 +111,19 @@ public class Station implements Parcelable {
         neighbors.add(neighbor);
     }
 
-    public List<Point> getIntermediatePoints(Station station2) {
-        return intermediatePoints.get(station2);
+    public List<Point> getIntermediatePoints(Station otherStation) {
+        if (intermediatePoints != null) {
+            List<Point> points = intermediatePoints.get(otherStation);
+            if (points != null) {
+                return points;
+            }
+            // Check the reverse order
+            points = otherStation.intermediatePoints.get(this);
+            if (points != null) {
+                return points;
+            }
+        }
+        return null;
     }
 
     public void addIntermediatePoints(Station station2, List<Point> points) {
