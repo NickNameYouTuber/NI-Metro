@@ -216,9 +216,6 @@ public class EditMapActivity extends AppCompatActivity {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
 
-            // Print all json objects
-            Log.d("JSON", jsonObject.toString(4));
-
             JSONArray linesArray = jsonObject.getJSONArray("lines");
 
             // Initialize lists
@@ -232,7 +229,8 @@ public class EditMapActivity extends AppCompatActivity {
             for (int i = 0; i < linesArray.length(); i++) {
                 JSONObject lineObject = linesArray.getJSONObject(i);
                 boolean isCircle = lineObject.optBoolean("isCircle", false);
-                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle);
+                String lineType = lineObject.optString("lineType", "single"); // Добавлен параметр lineType
+                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
                 JSONArray stationsArray = lineObject.getJSONArray("stations");
                 for (int j = 0; j < stationsArray.length(); j++) {
                     JSONObject stationObject = stationsArray.getJSONObject(j);

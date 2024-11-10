@@ -3971,6 +3971,53 @@
           }
         }
       ]
+    },
+    {
+      "id": 14,
+      "name": "МЦК",
+      "color": "#E94282",
+      "isCircle": false,
+      "lineType": "double",
+      "stations": [
+        {
+          "id": 1400,
+          "name": "Окружная",
+          "x": 0,
+          "y": 0,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1401,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1401,
+          "name": "Владыкино",
+          "x": 0,
+          "y": 100,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1400,
+              2
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
     }
   ],
   "transfers": [

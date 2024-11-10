@@ -305,13 +305,13 @@ public class MetroMapView extends View {
             for (int i = 0; i < line.getStations().size() - 1; i++) {
                 Station station1 = line.getStations().get(i);
                 Station station2 = line.getStations().get(i + 1);
-                drawLineWithIntermediatePoints(canvas, station1, station2);
+                drawLineWithIntermediatePoints(canvas, station1, station2, line.getLineType());
             }
 
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                drawLineWithIntermediatePoints(canvas, firstStation, lastStation);
+                drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType());
             }
         }
     }
@@ -469,12 +469,17 @@ public class MetroMapView extends View {
      * @param canvas The canvas to draw on.
      * @param station1 The first station.
      * @param station2 The second station.
+     * @param lineType The type of the line.
      */
-    private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
+    private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType) {
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
-            canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
-                    station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+            if (lineType.equals("double")) {
+                drawDoubleLine(canvas, station1, station2);
+            } else {
+                canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+                        station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, linePaint);
+            }
         } else if (intermediatePoints.size() == 1) {
             float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
             float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
@@ -517,6 +522,38 @@ public class MetroMapView extends View {
             Point end = new Point(station2.getX(), station2.getY());
             drawBezierCurve(canvas, start, control1, control2, end, routePaint);
         }
+    }
+
+    /**
+     * Draws a double line on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     */
+    private void drawDoubleLine(Canvas canvas, Station station1, Station station2) {
+        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
+        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
+        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
+        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
+
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+
+        float nx = dx / length;
+        float ny = dy / length;
+        float perpX = -ny * 5; // Смещение для второй линии
+        float perpY = nx * 5;
+
+        Paint whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        whitePaint.setStrokeWidth(6);
+
+        canvas.drawLine(x1 + perpX, y1 + perpY, x2 + perpX, y2 + perpY, linePaint);
+        canvas.drawLine(x1 - perpX, y1 - perpY, x2 - perpX, y2 - perpY, linePaint);
+
+        canvas.drawLine(x1 , y1 , x2 , y2, whitePaint);
     }
 
     /**

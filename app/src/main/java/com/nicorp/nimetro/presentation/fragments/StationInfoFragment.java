@@ -206,7 +206,7 @@ public class StationInfoFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(4, 0, 4, 0);
+        params.setMargins(4, 0, 4, 8);
         transferCircle.setLayoutParams(params);
         return transferCircle;
     }

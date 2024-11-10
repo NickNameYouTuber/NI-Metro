@@ -162,13 +162,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void loadMetroData(String mapFileName) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
+
             JSONArray linesArray = jsonObject.getJSONArray("lines");
+
+            // Initialize lists
+            stations = new ArrayList<>();
+            lines = new ArrayList<>();
+            transfers = new ArrayList<>();
+            rivers = new ArrayList<>();
+            mapObjects = new ArrayList<>();
 
             // First, load all stations and lines
             for (int i = 0; i < linesArray.length(); i++) {
                 JSONObject lineObject = linesArray.getJSONObject(i);
                 boolean isCircle = lineObject.optBoolean("isCircle", false);
-                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle);
+                String lineType = lineObject.optString("lineType", "single"); // Добавлен параметр lineType
+                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
                 JSONArray stationsArray = lineObject.getJSONArray("stations");
                 for (int j = 0; j < stationsArray.length(); j++) {
                     JSONObject stationObject = stationsArray.getJSONObject(j);
@@ -218,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             // Load transfers between different lines
             JSONArray transfersArray = jsonObject.getJSONArray("transfers");
-            transfers = new ArrayList<>();
             for (int i = 0; i < transfersArray.length(); i++) {
                 JSONObject transferObject = transfersArray.getJSONObject(i);
                 JSONArray stationsArray = transferObject.getJSONArray("stations");
@@ -237,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             // Load rivers
             JSONArray riversArray = jsonObject.getJSONArray("rivers");
-            rivers = new ArrayList<>();
             for (int i = 0; i < riversArray.length(); i++) {
                 JSONObject riverObject = riversArray.getJSONObject(i);
                 JSONArray pointsArray = riverObject.getJSONArray("points");
@@ -276,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             // Load map objects
             JSONArray objectsArray = jsonObject.getJSONArray("objects");
-            mapObjects = new ArrayList<>();
             for (int i = 0; i < objectsArray.length(); i++) {
                 JSONObject objectObject = objectsArray.getJSONObject(i);
                 String name = objectObject.getString("name");
@@ -286,6 +292,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
                 mapObjects.add(new MapObject(name, type, position, displayName));
             }
+
+            // Set data to MetroMapView
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
         } catch (JSONException e) {
             e.printStackTrace();
         }

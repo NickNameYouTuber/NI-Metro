@@ -13,13 +13,15 @@ public class Line implements Parcelable {
     private String color;
     private List<Station> stations;
     private boolean isCircle;
+    private String lineType;
 
-    public Line(int id, String name, String color, boolean isCircle) {
+    public Line(int id, String name, String color, boolean isCircle, String lineType) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.isCircle = isCircle;
         this.stations = new ArrayList<>();
+        this.lineType = lineType;
     }
 
     protected Line(Parcel in) {
@@ -28,6 +30,7 @@ public class Line implements Parcelable {
         color = in.readString();
         stations = in.createTypedArrayList(Station.CREATOR);
         isCircle = in.readByte() != 0;
+        lineType = in.readString();
     }
 
     public static final Creator<Line> CREATOR = new Creator<Line>() {
@@ -54,6 +57,7 @@ public class Line implements Parcelable {
         dest.writeString(color);
         dest.writeTypedList(stations);
         dest.writeByte((byte) (isCircle ? 1 : 0));
+        dest.writeString(lineType);
     }
 
     public int getId() {
@@ -74,6 +78,14 @@ public class Line implements Parcelable {
 
     public boolean isCircle() {
         return isCircle;
+    }
+
+    public String getLineType() {
+        return lineType;
+    }
+
+    public void setLineType(String lineType) {
+        this.lineType = lineType;
     }
 
     public int getLineIdForStation(Station station) {
