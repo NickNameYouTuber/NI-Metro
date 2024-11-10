@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -211,152 +212,143 @@ public class EditMapActivity extends AppCompatActivity {
     private void loadMetroData() {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
+
+            // Print all json objects
+            Log.d("JSON", jsonObject.toString(4));
+
             JSONArray linesArray = jsonObject.getJSONArray("lines");
 
+            // Initialize lists
             stations = new ArrayList<>();
             lines = new ArrayList<>();
             transfers = new ArrayList<>();
             rivers = new ArrayList<>();
             mapObjects = new ArrayList<>();
 
-            loadStationsAndLines(linesArray);
-            addNeighborsAndTransfers(linesArray);
-            loadRivers(jsonObject.getJSONArray("rivers"));
-            loadTransfers(jsonObject.getJSONArray("transfers"));
-            loadMapObjects(jsonObject.getJSONArray("mapObjects"));
+            // First, load all stations and lines
+            for (int i = 0; i < linesArray.length(); i++) {
+                JSONObject lineObject = linesArray.getJSONObject(i);
+                boolean isCircle = lineObject.optBoolean("isCircle", false);
+                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle);
+                JSONArray stationsArray = lineObject.getJSONArray("stations");
+                for (int j = 0; j < stationsArray.length(); j++) {
+                    JSONObject stationObject = stationsArray.getJSONObject(j);
+                    String schedule = stationObject.optString("schedule", "5:30 - 0:00");
+                    int escalators = stationObject.optInt("escalators", 0);
+                    int elevators = stationObject.optInt("elevators", 0);
+                    String[] exits = toStringArray(stationObject.optJSONArray("exits"));
+                    int textPosition = stationObject.optInt("textPosition", 0);
 
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Loads stations and lines from the JSON array.
-     *
-     * @param linesArray The JSON array containing lines.
-     * @throws JSONException If there is an error parsing the JSON.
-     */
-    private void loadStationsAndLines(JSONArray linesArray) throws JSONException {
-        for (int i = 0; i < linesArray.length(); i++) {
-            JSONObject lineObject = linesArray.getJSONObject(i);
-            boolean isCircle = lineObject.optBoolean("isCircle", false);
-            Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle);
-            JSONArray stationsArray = lineObject.getJSONArray("stations");
-            for (int j = 0; j < stationsArray.length(); j++) {
-                JSONObject stationObject = stationsArray.getJSONObject(j);
-                String schedule = stationObject.optString("schedule", "5:30 - 0:00");
-                int escalators = stationObject.optInt("escalators", 0);
-                int elevators = stationObject.optInt("elevators", 0);
-                String[] exits = toStringArray(stationObject.optJSONArray("exits"));
-                int textPosition = stationObject.optInt("textPosition", 0);
-
-                Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
-                Station station = new Station(
-                        stationObject.getInt("id"),
-                        stationObject.getString("name"),
-                        stationObject.getInt("x"),
-                        stationObject.getInt("y"),
-                        line.getColor(),
-                        facilities,
-                        textPosition
-                );
-                stations.add(station);
-                line.getStations().add(station);
+                    Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
+                    Station station = new Station(
+                            stationObject.getInt("id"),
+                            stationObject.getString("name"),
+                            stationObject.getInt("x"),
+                            stationObject.getInt("y"),
+                            line.getColor(),
+                            facilities,
+                            textPosition
+                    );
+                    stations.add(station);
+                    line.getStations().add(station);
+                }
+                lines.add(line);
             }
-            lines.add(line);
-        }
-    }
 
-    /**
-     * Adds neighbors and transfers to stations.
-     *
-     * @param linesArray The JSON array containing lines.
-     * @throws JSONException If there is an error parsing the JSON.
-     */
-    private void addNeighborsAndTransfers(JSONArray linesArray) throws JSONException {
-        for (int i = 0; i < linesArray.length(); i++) {
-            JSONObject lineObject = linesArray.getJSONObject(i);
-            JSONArray stationsArray = lineObject.getJSONArray("stations");
-            for (int j = 0; j < stationsArray.length(); j++) {
-                JSONObject stationObject = stationsArray.getJSONObject(j);
-                Station station = findStationById(stationObject.getInt("id"));
-                if (station != null) {
-                    JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
-                    for (int k = 0; k < neighborsArray.length(); k++) {
-                        JSONArray neighborArray = neighborsArray.getJSONArray(k);
-                        int neighborId = neighborArray.getInt(0);
-                        int time = neighborArray.getInt(1);
-                        Station neighborStation = findStationById(neighborId);
-                        if (neighborStation != null) {
-                            station.addNeighbor(new Station.Neighbor(neighborStation, time));
+            // Now, add neighbors and transfers
+            for (int i = 0; i < linesArray.length(); i++) {
+                JSONObject lineObject = linesArray.getJSONObject(i);
+                JSONArray stationsArray = lineObject.getJSONArray("stations");
+                for (int j = 0; j < stationsArray.length(); j++) {
+                    JSONObject stationObject = stationsArray.getJSONObject(j);
+                    Station station = findStationById(stationObject.getInt("id"));
+                    if (station != null) {
+                        JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
+                        for (int k = 0; k < neighborsArray.length(); k++) {
+                            JSONArray neighborArray = neighborsArray.getJSONArray(k);
+                            int neighborId = neighborArray.getInt(0);
+                            int time = neighborArray.getInt(1);
+                            Station neighborStation = findStationById(neighborId);
+                            if (neighborStation != null) {
+                                station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                            }
                         }
                     }
                 }
             }
-        }
-    }
 
-    /**
-     * Loads rivers from the JSON array.
-     *
-     * @param riversArray The JSON array containing rivers.
-     * @throws JSONException If there is an error parsing the JSON.
-     */
-    private void loadRivers(JSONArray riversArray) throws JSONException {
-        for (int i = 0; i < riversArray.length(); i++) {
-            JSONObject riverObject = riversArray.getJSONObject(i);
-            JSONArray pointsArray = riverObject.getJSONArray("points");
-            List<Point> riverPoints = new ArrayList<>();
-            for (int j = 0; j < pointsArray.length(); j++) {
-                JSONObject pointObject = pointsArray.getJSONObject(j);
-                Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
-                riverPoints.add(point);
+            // Load transfers between different lines
+            JSONArray transfersArray = jsonObject.getJSONArray("transfers");
+            for (int i = 0; i < transfersArray.length(); i++) {
+                JSONObject transferObject = transfersArray.getJSONObject(i);
+                JSONArray stationsArray = transferObject.getJSONArray("stations");
+                List<Station> transferStations = new ArrayList<>();
+                for (int j = 0; j < stationsArray.length(); j++) {
+                    int stationId = stationsArray.getInt(j);
+                    Station station = findStationById(stationId);
+                    if (station != null) {
+                        transferStations.add(station);
+                    }
+                }
+                int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
+                String type = transferObject.optString("type", "regular");
+                transfers.add(new Transfer(transferStations, time, type));
             }
-            int width = riverObject.optInt("width", 10); // Default width is 10
-            rivers.add(new River(riverPoints, width));
-        }
-    }
 
-    /**
-     * Loads transfers from the JSON array.
-     *
-     * @param transfersArray The JSON array containing transfers.
-     * @throws JSONException If there is an error parsing the JSON.
-     */
-    private void loadTransfers(JSONArray transfersArray) throws JSONException {
-        for (int i = 0; i < transfersArray.length(); i++) {
-            JSONObject transferObject = transfersArray.getJSONObject(i);
-            JSONArray stationsArray = transferObject.getJSONArray("stations");
-            List<Station> transferStations = new ArrayList<>();
-            for (int j = 0; j < stationsArray.length(); j++) {
-                int stationId = stationsArray.getInt(j);
-                Station station = findStationById(stationId);
-                if (station != null) {
-                    transferStations.add(station);
+            // Load rivers
+            JSONArray riversArray = jsonObject.getJSONArray("rivers");
+            for (int i = 0; i < riversArray.length(); i++) {
+                JSONObject riverObject = riversArray.getJSONObject(i);
+                JSONArray pointsArray = riverObject.getJSONArray("points");
+                List<Point> riverPoints = new ArrayList<>();
+                for (int j = 0; j < pointsArray.length(); j++) {
+                    JSONObject pointObject = pointsArray.getJSONObject(j);
+                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                    riverPoints.add(point);
+                }
+                int width = riverObject.optInt("width", 10); // Default width is 10
+                rivers.add(new River(riverPoints, width));
+            }
+
+            // Load intermediate points
+            JSONArray intermediatePointsArray = jsonObject.getJSONArray("intermediatePoints");
+            for (int i = 0; i < intermediatePointsArray.length(); i++) {
+                JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
+                JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
+                int station1Id = neighborsIdArray.getInt(0);
+                int station2Id = neighborsIdArray.getInt(1);
+
+                Station station1 = findStationById(station1Id);
+                Station station2 = findStationById(station2Id);
+
+                if (station1 != null && station2 != null) {
+                    JSONArray pointsArray = intermediatePointObject.getJSONArray("points");
+                    List<Point> intermediatePoints = new ArrayList<>();
+                    for (int j = 0; j < pointsArray.length(); j++) {
+                        JSONObject pointObject = pointsArray.getJSONObject(j);
+                        Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                        intermediatePoints.add(point);
+                    }
+                    station1.addIntermediatePoints(station2, intermediatePoints);
                 }
             }
-            int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
-            String type = transferObject.optString("type", "regular");
-            transfers.add(new Transfer(transferStations, time, type));
-        }
-    }
 
-    /**
-     * Loads map objects from the JSON array.
-     *
-     * @param mapObjectsArray The JSON array containing map objects.
-     * @throws JSONException If there is an error parsing the JSON.
-     */
-    private void loadMapObjects(JSONArray mapObjectsArray) throws JSONException {
-        for (int i = 0; i < mapObjectsArray.length(); i++) {
-            JSONObject mapObjectObject = mapObjectsArray.getJSONObject(i);
-            String name = mapObjectObject.getString("name");
-            String type = mapObjectObject.getString("type");
-            String displayName = mapObjectObject.getString("displayName");
-            JSONObject positionObject = mapObjectObject.getJSONObject("position");
-            Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
-            mapObjects.add(new MapObject(type, displayName, position, name));
+            // Load map objects
+            JSONArray objectsArray = jsonObject.getJSONArray("objects");
+            for (int i = 0; i < objectsArray.length(); i++) {
+                JSONObject objectObject = objectsArray.getJSONObject(i);
+                String name = objectObject.getString("name");
+                String displayName = objectObject.getString("displayName");
+                String type = objectObject.getString("type");
+                JSONObject positionObject = objectObject.getJSONObject("position");
+                Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
+                mapObjects.add(new MapObject(name, type, position, displayName));
+            }
+
+            // Set data to MetroMapView
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -536,8 +528,18 @@ public class EditMapActivity extends AppCompatActivity {
     private void saveMetroData() {
         try {
             JSONObject jsonObject = new JSONObject();
-            JSONArray linesArray = new JSONArray();
 
+            // Save info
+            JSONObject infoObject = new JSONObject();
+            infoObject.put("version", "1.0");
+            infoObject.put("author", "Nicorp");
+            infoObject.put("country", "Россия");
+            infoObject.put("name", "Самара");
+            infoObject.put("icon", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Samara_Metro_logo.svg/351px-Samara_Metro_logo.svg.png");
+            jsonObject.put("info", infoObject);
+
+            // Save lines
+            JSONArray linesArray = new JSONArray();
             for (Line line : lines) {
                 JSONObject lineObject = new JSONObject();
                 lineObject.put("id", line.getId());
@@ -575,9 +577,9 @@ public class EditMapActivity extends AppCompatActivity {
                 lineObject.put("stations", stationsArray);
                 linesArray.put(lineObject);
             }
-
             jsonObject.put("lines", linesArray);
 
+            // Save transfers
             JSONArray transfersArray = new JSONArray();
             for (Transfer transfer : transfers) {
                 JSONObject transferObject = new JSONObject();
@@ -590,7 +592,6 @@ public class EditMapActivity extends AppCompatActivity {
                 transferObject.put("type", transfer.getType());
                 transfersArray.put(transferObject);
             }
-
             jsonObject.put("transfers", transfersArray);
 
             // Save intermediate points
@@ -599,8 +600,16 @@ public class EditMapActivity extends AppCompatActivity {
                 if (station.getIntermediatePoints() != null) {
                     for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
                         JSONObject intermediatePointObject = new JSONObject();
-                        intermediatePointObject.put("station1Id", station.getId());
-                        intermediatePointObject.put("station2Id", entry.getKey().getId());
+//                        List<Integer> neighborsIds = new ArrayList<>();
+//                        neighborsIds.add(station.getId());
+//                        neighborsIds.add(entry.getKey().getId());
+
+                        // Save neighborsId like "neighborsId": [88, 89]" from station.getId() and entry.getKey().getId()
+                        JSONArray neighborsIds = new JSONArray();
+                        neighborsIds.put(station.getId());
+                        neighborsIds.put(entry.getKey().getId());
+
+                        intermediatePointObject.put("neighborsId", neighborsIds);
 
                         JSONArray pointsArray = new JSONArray();
                         for (Point point : entry.getValue()) {
@@ -615,6 +624,38 @@ public class EditMapActivity extends AppCompatActivity {
                 }
             }
             jsonObject.put("intermediatePoints", intermediatePointsArray);
+
+            // Save rivers
+            JSONArray riversArray = new JSONArray();
+            for (River river : rivers) {
+                JSONObject riverObject = new JSONObject();
+                JSONArray pointsArray = new JSONArray();
+                for (Point point : river.getPoints()) {
+                    JSONObject pointObject = new JSONObject();
+                    pointObject.put("x", point.x);
+                    pointObject.put("y", point.y);
+                    pointsArray.put(pointObject);
+                }
+                riverObject.put("points", pointsArray);
+                riverObject.put("width", river.getWidth());
+                riversArray.put(riverObject);
+            }
+            jsonObject.put("rivers", riversArray);
+
+            // Save map objects
+            JSONArray objectsArray = new JSONArray();
+            for (MapObject mapObject : mapObjects) {
+                JSONObject objectObject = new JSONObject();
+                objectObject.put("name", mapObject.getName());
+                objectObject.put("displayName", mapObject.getDisplayName());
+                objectObject.put("type", mapObject.getType());
+                JSONObject positionObject = new JSONObject();
+                positionObject.put("x", mapObject.getPosition().x);
+                positionObject.put("y", mapObject.getPosition().y);
+                objectObject.put("position", positionObject);
+                objectsArray.put(objectObject);
+            }
+            jsonObject.put("objects", objectsArray);
 
             // Save JSON data to internal storage file
             OutputStream os = new FileOutputStream(new File(getFilesDir(), EDITED_DATA_FILENAME));
