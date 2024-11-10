@@ -31,6 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Custom view for displaying a metro map. Handles drawing of lines, stations,
+ * transfers, rivers, and map objects. Also supports touch events for zooming,
+ * panning, and station selection.
+ */
 public class MetroMapView extends View {
 
     private List<Line> lines;
@@ -38,8 +43,8 @@ public class MetroMapView extends View {
     private List<Station> route;
     private List<Station> selectedStations;
     private List<Transfer> transfers;
-    private List<River> rivers; // Добавлен список рек
-    private List<MapObject> mapObjects; // Добавлен список объектов
+    private List<River> rivers;
+    private List<MapObject> mapObjects;
 
     private Paint linePaint;
     private Paint stationPaint;
@@ -49,7 +54,7 @@ public class MetroMapView extends View {
     private Paint whitePaint;
     private Paint transferPaint;
     private Paint stationCenterPaint;
-    private Paint riverPaint; // Добавлен Paint для рек
+    private Paint riverPaint;
 
     private OnStationClickListener listener;
 
@@ -91,7 +96,18 @@ public class MetroMapView extends View {
         return translateY;
     }
 
+    /**
+     * Initializes the view with default settings and gesture detectors.
+     */
     private void init() {
+        initializePaints();
+        initializeGestureDetectors();
+    }
+
+    /**
+     * Initializes the paint objects for drawing various elements.
+     */
+    private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
         linePaint.setStrokeWidth(7);
@@ -130,11 +146,16 @@ public class MetroMapView extends View {
         stationCenterPaint.setStyle(Paint.Style.STROKE);
         stationCenterPaint.setStrokeWidth(5);
 
-        riverPaint = new Paint(); // Инициализация Paint для рек
-        riverPaint.setColor(Color.parseColor("#CCE0EA")); // Бледно-голубой цвет
+        riverPaint = new Paint();
+        riverPaint.setColor(Color.parseColor("#CCE0EA"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(10); // Ширина реки
+        riverPaint.setStrokeWidth(10);
+    }
 
+    /**
+     * Initializes the gesture detectors for handling touch events.
+     */
+    private void initializeGestureDetectors() {
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -156,38 +177,74 @@ public class MetroMapView extends View {
         });
     }
 
+    /**
+     * Clears the current route.
+     */
     public void clearRoute() {
         this.route = null;
         invalidate();
     }
 
+    /**
+     * Clears the current selected stations.
+     */
     public void clearSelectedStations() {
         this.selectedStations = null;
         invalidate();
     }
 
+    /**
+     * Sets the data for the metro map.
+     *
+     * @param lines The list of lines.
+     * @param stations The list of stations.
+     * @param transfers The list of transfers.
+     * @param rivers The list of rivers.
+     * @param mapObjects The list of map objects.
+     */
     public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) {
         this.lines = lines;
         this.stations = stations;
         this.transfers = transfers;
         this.rivers = rivers;
-        this.mapObjects = mapObjects; // Установка списка объектов
+        this.mapObjects = mapObjects;
         invalidate();
     }
+
+    /**
+     * Sets the current route.
+     *
+     * @param route The list of stations representing the route.
+     */
     public void setRoute(List<Station> route) {
         this.route = route;
         invalidate();
     }
 
+    /**
+     * Sets the current selected stations.
+     *
+     * @param selectedStations The list of selected stations.
+     */
     public void setSelectedStations(List<Station> selectedStations) {
         this.selectedStations = selectedStations;
         invalidate();
     }
 
+    /**
+     * Sets the listener for station click events.
+     *
+     * @param listener The listener to set.
+     */
     public void setOnStationClickListener(OnStationClickListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Draws the metro map on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -197,89 +254,133 @@ public class MetroMapView extends View {
         canvas.scale(scaleFactor, scaleFactor);
 
         if (lines != null && stations != null) {
-            // Draw rivers first
-            if (rivers != null) {
-                for (River river : rivers) {
-                    drawRiver(canvas, river);
-                }
-            }
-
-            // Draw lines
-            for (Line line : lines) {
-                linePaint.setColor(Color.parseColor(line.getColor()));
-                for (int i = 0; i < line.getStations().size() - 1; i++) {
-                    Station station1 = line.getStations().get(i);
-                    Station station2 = line.getStations().get(i + 1);
-                    drawLineWithIntermediatePoints(canvas, station1, station2);
-                }
-
-                if (line.isCircle() && line.getStations().size() > 1) {
-                    Station firstStation = line.getStations().get(0);
-                    Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation);
-                }
-            }
-
-            // Draw transfers between stations
-            for (Transfer transfer : transfers) {
-                List<Station> transferStations = transfer.getStations();
-                if (transferStations.size() == 2) {
-                    drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
-                } else if (transferStations.size() == 3) {
-                    drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
-                } else if (transferStations.size() == 4) {
-                    drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
-                }
-            }
-
-            // Draw stations
-            for (Station station : stations) {
-                float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
-                float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
-
-                // Draw white center of the station
-                canvas.drawCircle(stationX, stationY, 10, whitePaint);
-
-                // Draw colored outline of the station
-                stationPaint.setColor(Color.parseColor(station.getColor()));
-                canvas.drawCircle(stationX, stationY, 14, stationPaint);
-
-                if (selectedStations != null && selectedStations.contains(station)) {
-                    canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
-                }
-
-                drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY,
-                        station.getTextPosition(), textPaint);
-
-                // Draw intermediate points
-                if (station.getIntermediatePoints() != null) {
-                    for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
-                        List<Point> intermediatePoints = entry.getValue();
-                        drawIntermediatePoints(canvas, intermediatePoints, stationPaint);
-                    }
-                }
-            }
-
-            // Draw route
-            if (route != null && route.size() > 1) {
-                for (int i = 0; i < route.size() - 1; i++) {
-                    Station station1 = route.get(i);
-                    Station station2 = route.get(i + 1);
-                    drawRouteWithIntermediatePoints(canvas, station1, station2);
-                }
-            }
-
-            // Draw map objects
-            if (mapObjects != null) {
-                for (MapObject mapObject : mapObjects) {
-                    drawMapObject(canvas, mapObject);
-                }
-            }
+            drawRivers(canvas);
+            drawLines(canvas);
+            drawTransfers(canvas);
+            drawStations(canvas);
+            drawRoute(canvas);
+            drawMapObjects(canvas);
         }
 
         canvas.restore();
     }
 
+    /**
+     * Draws the rivers on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawRivers(Canvas canvas) {
+        if (rivers != null) {
+            for (River river : rivers) {
+                drawRiver(canvas, river);
+            }
+        }
+    }
+
+    /**
+     * Draws the lines on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawLines(Canvas canvas) {
+        for (Line line : lines) {
+            linePaint.setColor(Color.parseColor(line.getColor()));
+            for (int i = 0; i < line.getStations().size() - 1; i++) {
+                Station station1 = line.getStations().get(i);
+                Station station2 = line.getStations().get(i + 1);
+                drawLineWithIntermediatePoints(canvas, station1, station2);
+            }
+
+            if (line.isCircle() && line.getStations().size() > 1) {
+                Station firstStation = line.getStations().get(0);
+                Station lastStation = line.getStations().get(line.getStations().size() - 1);
+                drawLineWithIntermediatePoints(canvas, firstStation, lastStation);
+            }
+        }
+    }
+
+    /**
+     * Draws the transfers on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawTransfers(Canvas canvas) {
+        for (Transfer transfer : transfers) {
+            List<Station> transferStations = transfer.getStations();
+            if (transferStations.size() == 2) {
+                drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
+            } else if (transferStations.size() == 3) {
+                drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
+            } else if (transferStations.size() == 4) {
+                drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
+            }
+        }
+    }
+
+    /**
+     * Draws the stations on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawStations(Canvas canvas) {
+        for (Station station : stations) {
+            float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
+            float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
+
+            canvas.drawCircle(stationX, stationY, 10, whitePaint);
+            stationPaint.setColor(Color.parseColor(station.getColor()));
+            canvas.drawCircle(stationX, stationY, 14, stationPaint);
+
+            if (selectedStations != null && selectedStations.contains(station)) {
+                canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
+            }
+
+            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
+
+            if (station.getIntermediatePoints() != null) {
+                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                    List<Point> intermediatePoints = entry.getValue();
+                    drawIntermediatePoints(canvas, intermediatePoints, stationPaint);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws the route on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawRoute(Canvas canvas) {
+        if (route != null && route.size() > 1) {
+            for (int i = 0; i < route.size() - 1; i++) {
+                Station station1 = route.get(i);
+                Station station2 = route.get(i + 1);
+                drawRouteWithIntermediatePoints(canvas, station1, station2);
+            }
+        }
+    }
+
+    /**
+     * Draws the map objects on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     */
+    private void drawMapObjects(Canvas canvas) {
+        if (mapObjects != null) {
+            for (MapObject mapObject : mapObjects) {
+                drawMapObject(canvas, mapObject);
+            }
+        }
+    }
+
+    /**
+     * Draws a map object on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param mapObject The map object to draw.
+     */
     private void drawMapObject(Canvas canvas, MapObject mapObject) {
         float objectX = mapObject.getPosition().x * COORDINATE_SCALE_FACTOR;
         float objectY = mapObject.getPosition().y * COORDINATE_SCALE_FACTOR;
@@ -289,17 +390,21 @@ public class MetroMapView extends View {
         objectPaint.setStyle(Paint.Style.FILL);
         objectPaint.setTextSize(24);
 
-        // Draw the object icon based on its type
         if (mapObject.getType().equals("airport")) {
             canvas.drawText("✈", objectX - 12, objectY + 12, objectPaint);
         } else if (mapObject.getType().equals("train_station")) {
             canvas.drawText("🚂", objectX - 12, objectY + 12, objectPaint);
         }
 
-        // Draw the object name
         canvas.drawText(mapObject.getDisplayName(), objectX + 20, objectY, objectPaint);
     }
 
+    /**
+     * Draws a river on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param river The river to draw.
+     */
     private void drawRiver(Canvas canvas, River river) {
         List<Point> points = river.getPoints();
         int width = river.getWidth();
@@ -308,26 +413,18 @@ public class MetroMapView extends View {
             return;
         }
 
-        // Create the river path
         Path riverPath = new Path();
         riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR, points.get(0).y * COORDINATE_SCALE_FACTOR);
         for (int i = 1; i < points.size(); i++) {
             riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR, points.get(i).y * COORDINATE_SCALE_FACTOR);
         }
 
-        // Calculate the river length
-        float riverLength = 0;
-        for (int i = 1; i < points.size(); i++) {
-            Point p1 = points.get(i - 1);
-            Point p2 = points.get(i);
-            riverLength += Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-        }
+        float riverLength = calculateRiverLength(points);
 
-        // Set up a symmetrical fade-out gradient on both ends
         Point startPoint = points.get(0);
         Point endPoint = points.get(points.size() - 1);
         int[] fadeColors = {Color.parseColor("#00000000"), Color.parseColor("#ADD8E6"), Color.parseColor("#ADD8E6"), Color.parseColor("#00000000")};
-        float fadeMargin = 20 / riverLength; // Margin for fade-out at both ends
+        float fadeMargin = 20 / riverLength;
         float[] fadePositions = {0.0f, fadeMargin, 1.0f - fadeMargin, 1.0f};
 
         LinearGradient fadeGradient = new LinearGradient(
@@ -338,10 +435,32 @@ public class MetroMapView extends View {
         riverPaint.setShader(fadeGradient);
         riverPaint.setStrokeWidth(width);
 
-        // Draw the river path with the gradient
         canvas.drawPath(riverPath, riverPaint);
     }
 
+    /**
+     * Calculates the length of a river.
+     *
+     * @param points The list of points representing the river.
+     * @return The length of the river.
+     */
+    private float calculateRiverLength(List<Point> points) {
+        float riverLength = 0;
+        for (int i = 1; i < points.size(); i++) {
+            Point p1 = points.get(i - 1);
+            Point p2 = points.get(i);
+            riverLength += Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        }
+        return riverLength;
+    }
+
+    /**
+     * Draws a line with intermediate points on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     */
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
@@ -363,6 +482,13 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Draws a route with intermediate points on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     */
     private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
@@ -384,6 +510,12 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Interpolates points to create a smooth curve.
+     *
+     * @param points The list of points to interpolate.
+     * @return The list of interpolated points.
+     */
     private List<Point> interpolatePoints(List<Point> points) {
         int n = points.size();
         double[] x = new double[n];
@@ -408,12 +540,29 @@ public class MetroMapView extends View {
         return interpolatedPoints;
     }
 
+    /**
+     * Draws intermediate points on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param intermediatePoints The list of intermediate points.
+     * @param paint The paint to use for drawing.
+     */
     private void drawIntermediatePoints(Canvas canvas, List<Point> intermediatePoints, Paint paint) {
         for (Point point : intermediatePoints) {
             canvas.drawCircle(point.x * COORDINATE_SCALE_FACTOR, point.y * COORDINATE_SCALE_FACTOR, 10, paint);
         }
     }
 
+    /**
+     * Draws a Bezier curve on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param start The start point.
+     * @param control1 The first control point.
+     * @param control2 The second control point.
+     * @param end The end point.
+     * @param paint The paint to use for drawing.
+     */
     private void drawBezierCurve(Canvas canvas, Point start, Point control1, Point control2, Point end, Paint paint) {
         Path path = new Path();
         paint.setStyle(Paint.Style.STROKE);
@@ -426,6 +575,16 @@ public class MetroMapView extends View {
         canvas.drawPath(path, paint);
     }
 
+    /**
+     * Draws text based on the specified position.
+     *
+     * @param canvas The canvas to draw on.
+     * @param text The text to draw.
+     * @param cx The x-coordinate of the center.
+     * @param cy The y-coordinate of the center.
+     * @param textPosition The position of the text.
+     * @param paint The paint to use for drawing.
+     */
     private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
@@ -480,6 +639,12 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Handles touch events for zooming, panning, and station selection.
+     *
+     * @param event The motion event.
+     * @return True if the event was handled, false otherwise.
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = scaleGestureDetector.onTouchEvent(event);
@@ -498,6 +663,13 @@ public class MetroMapView extends View {
         return result || super.onTouchEvent(event);
     }
 
+    /**
+     * Finds a station at the specified coordinates.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return The station at the specified coordinates, or null if not found.
+     */
     public Station findStationAt(float x, float y) {
         for (Station station : stations) {
             if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
@@ -507,72 +679,74 @@ public class MetroMapView extends View {
         return null;
     }
 
+    /**
+     * Draws a transfer connection between two stations.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     */
     private void drawTransferConnection(Canvas canvas, Station station1, Station station2) {
         float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
         float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
         float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
         float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
 
-        System.out.println("drawTransferConnection: " + x1 + " " + y1 + " " + x2 + " " + y2);
-
-        // Вычисляем вектор направления и его длину
         float dx = x2 - x1;
         float dy = y2 - y1;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
 
-        // Нормализуем вектор и создаем перпендикулярный вектор для смещения
         float nx = dx / length;
         float ny = dy / length;
         float perpX = -ny * (TRANSFER_CAPSULE_WIDTH / 2);
         float perpY = nx * (TRANSFER_CAPSULE_WIDTH / 2);
 
-        // Создаем путь для капсулы
         Path capsulePath = new Path();
-
-        // Начинаем с верхней точки первой станции
         capsulePath.moveTo(x1 + perpX, y1 + perpY);
-
-        // Рисуем верхнюю линию
         capsulePath.lineTo(x2 + perpX, y2 + perpY);
 
-        // Вычисляем угол направления линии в градусах
         float angle = (float) Math.toDegrees(Math.atan2(dy, dx));
 
-        // Рисуем полукруг на конце
         RectF endCircle = new RectF(
-                x2 - TRANSFER_CAPSULE_WIDTH/2,
-                y2 - TRANSFER_CAPSULE_WIDTH/2,
-                x2 + TRANSFER_CAPSULE_WIDTH/2,
-                y2 + TRANSFER_CAPSULE_WIDTH/2
+                x2 - TRANSFER_CAPSULE_WIDTH / 2,
+                y2 - TRANSFER_CAPSULE_WIDTH / 2,
+                x2 + TRANSFER_CAPSULE_WIDTH / 2,
+                y2 + TRANSFER_CAPSULE_WIDTH / 2
         );
         capsulePath.arcTo(endCircle, angle - 90, 180, false);
 
         capsulePath.moveTo(x2 - perpX, y2 - perpY);
-        // Рисуем нижнюю линию обратно
         capsulePath.lineTo(x1 - perpX, y1 - perpY);
 
-        // Рисуем полукруг на начале
         RectF startCircle = new RectF(
-                x1 - TRANSFER_CAPSULE_WIDTH/2,
-                y1 - TRANSFER_CAPSULE_WIDTH/2,
-                x1 + TRANSFER_CAPSULE_WIDTH/2,
-                y1 + TRANSFER_CAPSULE_WIDTH/2
+                x1 - TRANSFER_CAPSULE_WIDTH / 2,
+                y1 - TRANSFER_CAPSULE_WIDTH / 2,
+                x1 + TRANSFER_CAPSULE_WIDTH / 2,
+                y1 + TRANSFER_CAPSULE_WIDTH / 2
         );
         capsulePath.arcTo(startCircle, angle + 90, 180, false);
 
-        // Закрываем путь
         capsulePath.close();
 
-        // Создаем Paint для заливки капсулы
         Paint capsuleFillPaint = new Paint(transferPaint);
         capsuleFillPaint.setStyle(Paint.Style.FILL);
         capsuleFillPaint.setColor(Color.WHITE);
 
-        // Рисуем заливку и обводку
         canvas.drawPath(capsulePath, capsuleFillPaint);
         canvas.drawPath(capsulePath, transferPaint);
     }
 
+    /**
+     * Draws a shifted line on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param x1 The x-coordinate of the first point.
+     * @param y1 The y-coordinate of the first point.
+     * @param x2 The x-coordinate of the second point.
+     * @param y2 The y-coordinate of the second point.
+     * @param centerX The x-coordinate of the center.
+     * @param centerY The y-coordinate of the center.
+     */
     private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
         float dx = x2 - x1;
         float dy = y2 - y1;
@@ -580,14 +754,22 @@ public class MetroMapView extends View {
         float shiftX = (dy / length) * 20;
         float shiftY = -(dx / length) * 20;
 
-        // Смещение наружу от центра
         shiftX = -shiftX;
         shiftY = -shiftY;
-
 
         canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
     }
 
+    /**
+     * Draws a partial circle on the canvas.
+     *
+     * @param canvas The canvas to draw on.
+     * @param centerX The x-coordinate of the center.
+     * @param centerY The y-coordinate of the center.
+     * @param radius The radius of the circle.
+     * @param strokeWidth The stroke width.
+     * @param angles The list of angles.
+     */
     private void drawPartialCircle(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(transferPaint.getColor());
@@ -601,11 +783,18 @@ public class MetroMapView extends View {
             sweepAngle = angles.get(0);
         }
 
-        System.out.println("startAngle: " + 0 + ", sweepAngle: " + sweepAngle);
         RectF rectF = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
+    /**
+     * Draws a transfer connection between three stations.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     * @param station3 The third station.
+     */
     private void drawTransferConnectionTriangle(Canvas canvas, Station station1, Station station2, Station station3) {
         float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
         float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
@@ -614,21 +803,27 @@ public class MetroMapView extends View {
         float x3 = station3.getX() * COORDINATE_SCALE_FACTOR;
         float y3 = station3.getY() * COORDINATE_SCALE_FACTOR;
 
-        // Calculate the center of the triangle
         float centerX = (x1 + x2 + x3) / 3;
         float centerY = (y1 + y2 + y3) / 3;
 
-        // Draw lines shifted by 15 pixels from the center
         drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
         drawShiftedLine(canvas, x2, y2, x3, y3, centerX, centerY);
         drawShiftedLine(canvas, x3, y3, x1, y1, centerX, centerY);
 
-        // Draw partial circles at each station
         drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x3, y3, x1, y1, x2, y2));
         drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
         drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x1, y1));
     }
 
+    /**
+     * Draws a transfer connection between four stations.
+     *
+     * @param canvas The canvas to draw on.
+     * @param station1 The first station.
+     * @param station2 The second station.
+     * @param station3 The third station.
+     * @param station4 The fourth station.
+     */
     private void drawTransferConnectionQuad(Canvas canvas, Station station1, Station station2, Station station3, Station station4) {
         float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
         float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
@@ -639,77 +834,87 @@ public class MetroMapView extends View {
         float x4 = station4.getX() * COORDINATE_SCALE_FACTOR;
         float y4 = station4.getY() * COORDINATE_SCALE_FACTOR;
 
-        // Calculate the center of the quad
         float centerX = (x1 + x2 + x3 + x4) / 4;
         float centerY = (y1 + y2 + y3 + y4) / 4;
 
-        // Draw lines shifted by 15 pixels from the center
         drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
         drawShiftedLine(canvas, x2, y2, x3, y3, centerX, centerY);
         drawShiftedLine(canvas, x3, y3, x4, y4, centerX, centerY);
         drawShiftedLine(canvas, x4, y4, x1, y1, centerX, centerY);
 
-        // Draw partial circles at each station
         drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x4, y4, x1, y1, x2, y2));
         drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
         drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x4, y4));
         drawPartialCircle(canvas, x4, y4, 20, 5, getAngle(x3, y3, x4, y4, x1, y1));
     }
 
+    /**
+     * Calculates the angle between three points.
+     *
+     * @param x1 The x-coordinate of the first point.
+     * @param y1 The y-coordinate of the first point.
+     * @param x2 The x-coordinate of the second point.
+     * @param y2 The y-coordinate of the second point.
+     * @param x3 The x-coordinate of the third point.
+     * @param y3 The y-coordinate of the third point.
+     * @return The list of angles.
+     */
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
-        // Векторы между точками
         double dx1 = x2 - x1;
         double dy1 = y2 - y1;
         double dx2 = x3 - x2;
         double dy2 = y3 - y2;
 
-        // Длины векторов
         double length1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
         double length2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
-        // Вычисляем смещения для обеих линий
         double shift1X = -(dy1 / length1) * 20;
         double shift1Y = (dx1 / length1) * 20;
         double shift2X = -(dy2 / length2) * 20;
         double shift2Y = (dx2 / length2) * 20;
 
-        // Координаты конечных точек смещенных линий около x2,y2
         double point1X = x2 + shift1X;
         double point1Y = y2 + shift1Y;
         double point2X = x2 + shift2X;
         double point2Y = y2 + shift2Y;
 
-        // Вектора от центра (x2,y2) к смещенным точкам
         double vector1X = point1X - x2;
         double vector1Y = point1Y - y2;
         double vector2X = point2X - x2;
         double vector2Y = point2Y - y2;
 
-        // Вычисляем угол между векторами
         double angle = Math.atan2(vector2Y, vector2X) - Math.atan2(vector1Y, vector1X);
 
-        // Нормализуем угол в диапазон [0, 2π]
         if (angle < 0) {
             angle += 2 * Math.PI;
         }
 
-        System.out.println("Angle: " + ((Math.atan2(vector2Y, vector2X) * 180 / Math.PI)));
-        System.out.println("Shifted angle: " + ((Math.atan2(vector1Y, vector1X) * 180 / Math.PI)));
-        System.out.println("Converted angle to degrees from atan2: " + (360 - (angle * 180 / Math.PI)));
-
         return new ArrayList<>(Arrays.asList((float) (360 - (angle * 180 / Math.PI)), (float) ((Math.atan2(vector2Y, vector2X) * 180 / Math.PI))));
     }
 
+    /**
+     * Sets the translation in the x-axis.
+     *
+     * @param v The translation value.
+     */
     public void setTranslateX(float v) {
         translateX = v;
         invalidate();
     }
 
+    /**
+     * Sets the translation in the y-axis.
+     *
+     * @param v The translation value.
+     */
     public void setTranslateY(float v) {
         translateY = v;
         invalidate();
     }
 
+    /**
+     * Interface for handling station click events.
+     */
     public interface OnStationClickListener {
         void onStationClick(Station station);
     }
