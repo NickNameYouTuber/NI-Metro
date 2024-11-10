@@ -37,6 +37,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * The main activity of the application, responsible for initializing the metro map,
+ * handling user interactions, and managing the display of station and route information.
+ */
 public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoFragment.OnStationInfoListener, StationsAdapter.OnStationClickListener {
 
     private MetroMapView metroMapView;
@@ -53,12 +57,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
 
+    /**
+     * Called when the activity is first created. Initializes the UI components,
+     * loads metro data, and sets up event listeners.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Кнопка настроек
+        // Initialize the settings button and set its click listener
         ConstraintLayout settingsButton = findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(v -> {
             Log.d("MainActivity", "Settings button clicked");
@@ -67,27 +78,33 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             finish();
         });
 
+        // Load user preferences for map file and theme
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
+        // Initialize UI components
         metroMapView = findViewById(R.id.metroMapView);
         startStationEditText = findViewById(R.id.startStationEditText);
         endStationEditText = findViewById(R.id.endStationEditText);
         stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
 
+        // Initialize data structures
         stations = new ArrayList<>();
         lines = new ArrayList<>();
         selectedStations = new ArrayList<>();
 
+        // Load metro data from the selected map file
         loadMetroData(selectedMapFileName);
         metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
         metroMapView.setOnStationClickListener(this);
 
+        // Initialize the RecyclerView for displaying stations
         stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
         stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stationsRecyclerView.setAdapter(stationsAdapter);
 
+        // Set focus change listeners for the start and end station input fields
         startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 showStationsList(stations);
@@ -104,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         });
 
+        // Set text change listeners for the start and end station input fields
         startStationEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -133,8 +151,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Transfer> transfers;
     private List<River> rivers;
-    private List<MapObject> mapObjects; // Добавлен список объектов
+    private List<MapObject> mapObjects; // List of map objects
 
+    /**
+     * Loads metro data from a JSON file. Parses the JSON data to populate the
+     * stations, lines, transfers, rivers, and map objects.
+     *
+     * @param mapFileName The name of the JSON file containing the metro data.
+     */
     private void loadMetroData(String mapFileName) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
@@ -267,6 +291,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
+    /**
+     * Converts a JSONArray to a String array.
+     *
+     * @param array The JSONArray to convert.
+     * @return A String array containing the elements of the JSONArray.
+     */
     private String[] toStringArray(JSONArray array) {
         if (array == null) return new String[0];
         String[] result = new String[array.length()];
@@ -280,6 +310,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return result;
     }
 
+    /**
+     * Loads a JSON string from an asset file.
+     *
+     * @param mapFileName The name of the asset file.
+     * @return The JSON string loaded from the asset file.
+     */
     private String loadJSONFromAsset(String mapFileName) {
         String json = null;
         try {
@@ -296,6 +332,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return json;
     }
 
+    /**
+     * Finds a station by its ID.
+     *
+     * @param id The ID of the station to find.
+     * @return The station with the specified ID, or null if not found.
+     */
     private Station findStationById(int id) {
         for (Station station : stations) {
             if (station.getId() == id) {
@@ -305,13 +347,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return null;
     }
 
+    /**
+     * Called when a station is clicked on the metro map.
+     *
+     * @param station The station that was clicked.
+     */
     @Override
     public void onStationClick(Station station) {
         Station prevStation = null;
         Station nextStation = null;
         Line curline = null;
 
-        // Найдите предыдущую и следующую станции на той же линии
+        // Find the previous and next stations on the same line
         for (Line line : lines) {
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
@@ -328,18 +375,21 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         }
 
-        // Очистите FrameLayout перед добавлением нового фрагмента
+        // Clear the FrameLayout before adding a new fragment
         clearFrameLayout();
 
+        // Create and add a new StationInfoFragment to the FrameLayout
         StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation, transfers, lines);
         fragment.setOnStationInfoListener(this);
 
-        // Добавьте новый фрагмент в FrameLayout
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.frameLayout, fragment)
                 .commit();
     }
 
+    /**
+     * Clears the FrameLayout by removing any existing fragment.
+     */
     private void clearFrameLayout() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.frameLayout);
@@ -350,6 +400,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
+    /**
+     * Called when the start station is set from the StationInfoFragment.
+     *
+     * @param station The station to set as the start station.
+     */
     @Override
     public void onSetStart(Station station) {
         if (selectedStartStation != null) {
@@ -361,6 +416,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         startStationEditText.setText(station.getName());
     }
 
+    /**
+     * Called when the end station is set from the StationInfoFragment.
+     *
+     * @param station The station to set as the end station.
+     */
     @Override
     public void onSetEnd(Station station) {
         if (selectedEndStation != null) {
@@ -378,6 +438,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
+    /**
+     * Finds the optimal route between two stations using Dijkstra's algorithm.
+     *
+     * @param start The starting station.
+     * @param end   The destination station.
+     * @return A list of stations representing the optimal route.
+     */
     private List<Station> findOptimalRoute(Station start, Station end) {
         Map<Station, Station> previous = new HashMap<>();
         Map<Station, Integer> distances = new HashMap<>();
@@ -397,10 +464,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             for (Station.Neighbor neighbor : current.getNeighbors()) {
                 int distance = distances.get(current) + neighbor.getTime();
-//                if (neighbor.getStation().getLineId() != current.getLineId()) {
-//                    // Если станция на другой линии, добавляем время перехода
-//                    distance += 3; // Предположим, что время перехода 3 минуты
-//                }
                 if (distance < distances.get(neighbor.getStation())) {
                     distances.put(neighbor.getStation(), distance);
                     previous.put(neighbor.getStation(), current);
@@ -417,18 +480,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return route;
     }
 
-//    private void showRouteInfo(List<Station> route) {
-//        BottomFragment bottomFragment = BottomFragment.newInstance(route);
-//        bottomFragment.show(getSupportFragmentManager(), "bottom_fragment");
-////        BottomFragment bottomFragment = new BottomFragment();
-////        bottomFragment.show(getSupportFragmentManager(), "route_info");
-//    }
-
+    /**
+     * Clears the start and end station input fields.
+     */
     public void clearRouteInputs() {
         startStationEditText.setText("");
         endStationEditText.setText("");
     }
 
+    /**
+     * Displays the route information in a fragment.
+     *
+     * @param route The list of stations representing the route.
+     */
     private void showRouteInfo(List<Station> route) {
         clearFrameLayout();
         RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(route, metroMapView, this);
@@ -437,15 +501,28 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 .commit();
     }
 
+    /**
+     * Shows the list of stations in the RecyclerView.
+     *
+     * @param stations The list of stations to display.
+     */
     private void showStationsList(List<Station> stations) {
         stationsRecyclerView.setVisibility(View.VISIBLE);
         stationsAdapter.setStations(stations);
     }
 
+    /**
+     * Hides the list of stations in the RecyclerView.
+     */
     private void hideStationsList() {
         stationsRecyclerView.setVisibility(View.GONE);
     }
 
+    /**
+     * Filters the list of stations based on the query string.
+     *
+     * @param query The query string to filter the stations.
+     */
     private void filterStations(String query) {
         List<Station> filteredStations = new ArrayList<>();
         for (Station station : stations) {
@@ -456,6 +533,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         stationsAdapter.setStations(filteredStations);
     }
 
+    /**
+     * Called when a station is selected from the RecyclerView.
+     *
+     * @param station The selected station.
+     */
     @Override
     public void onStationSelected(Station station) {
         if (startStationEditText.hasFocus()) {
