@@ -370,8 +370,8 @@
         {
           "id": 15,
           "name": "Спортивная",
-          "x": 350,
-          "y": 800,
+          "x": 339,
+          "y": 804,
           "textPosition": 0,
           "neighbors": [
             [
@@ -882,8 +882,8 @@
         {
           "id": 32,
           "name": "Автозаводская",
-          "x": 700,
-          "y": 750,
+          "x": 699,
+          "y": 767,
           "textPosition": 0,
           "neighbors": [
             [
@@ -906,7 +906,7 @@
           "id": 33,
           "name": "Технопарк",
           "x": 700,
-          "y": 800,
+          "y": 814,
           "textPosition": 0,
           "neighbors": [
             [
@@ -3167,8 +3167,8 @@
         {
           "id": 214,
           "name": "Пролетарская",
-          "x": 912,
-          "y": 656,
+          "x": 892,
+          "y": 645,
           "textPosition": 0,
           "neighbors": [
             [
@@ -3190,8 +3190,8 @@
         {
           "id": 215,
           "name": "Волгоградский проспект",
-          "x": 976,
-          "y": 713,
+          "x": 938,
+          "y": 682,
           "textPosition": 0,
           "neighbors": [
             [
@@ -3976,14 +3976,13 @@
       "id": 14,
       "name": "МЦК",
       "color": "#E94282",
-      "isCircle": false,
-      "lineType": "double",
+      "isCircle": true,
       "stations": [
         {
           "id": 1400,
           "name": "Окружная",
-          "x": 0,
-          "y": 0,
+          "x": 492,
+          "y": 152,
           "textPosition": 0,
           "neighbors": [
             [
@@ -4001,13 +4000,684 @@
         {
           "id": 1401,
           "name": "Владыкино",
-          "x": 0,
-          "y": 100,
+          "x": 587,
+          "y": 153,
           "textPosition": 0,
           "neighbors": [
             [
               1400,
               2
+            ],
+            [
+              1402,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1402,
+          "name": "Ботанический Сад",
+          "x": 750,
+          "y": 158,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1401,
+              3
+            ],
+            [
+              1403,
+              4
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1403,
+          "name": "Ростокино",
+          "x": 811,
+          "y": 159,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1402,
+              4
+            ],
+            [
+              1404,
+              5
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1404,
+          "name": "Белокаменная",
+          "x": 861,
+          "y": 164,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1403,
+              5
+            ],
+            [
+              1405,
+              6
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1405,
+          "name": "Бульвар Рокоссовского",
+          "x": 915,
+          "y": 171,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1404,
+              6
+            ],
+            [
+              1406,
+              7
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1406,
+          "name": "Локомотив",
+          "x": 956,
+          "y": 189,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1405,
+              7
+            ],
+            [
+              1407,
+              8
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1407,
+          "name": "Измайлово",
+          "x": 1035,
+          "y": 277,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1406,
+              8
+            ],
+            [
+              1408,
+              9
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1408,
+          "name": "Соколиная Гора",
+          "x": 1064,
+          "y": 356,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1407,
+              9
+            ],
+            [
+              1409,
+              10
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1409,
+          "name": "Шоссе Энтузиастов",
+          "x": 1067,
+          "y": 439,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1408,
+              10
+            ],
+            [
+              1410,
+              11
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1410,
+          "name": "Андроновка",
+          "x": 1045,
+          "y": 493,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1409,
+              11
+            ],
+            [
+              1411,
+              12
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1411,
+          "name": "Нижегородская",
+          "x": 1022,
+          "y": 549,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1410,
+              12
+            ],
+            [
+              1412,
+              13
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1412,
+          "name": "Новохохловская",
+          "x": 989,
+          "y": 603,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1411,
+              13
+            ],
+            [
+              1413,
+              14
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1413,
+          "name": "Угрешская",
+          "x": 935,
+          "y": 666,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1412,
+              14
+            ],
+            [
+              1414,
+              15
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1414,
+          "name": "Дубровка",
+          "x": 859,
+          "y": 722,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1413,
+              15
+            ],
+            [
+              1415,
+              16
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1415,
+          "name": "Автозаводская",
+          "x": 718,
+          "y": 787,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1414,
+              16
+            ],
+            [
+              1416,
+              17
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1416,
+          "name": "ЗИЛ",
+          "x": 674,
+          "y": 808,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1415,
+              17
+            ],
+            [
+              1417,
+              18
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1417,
+          "name": "Верхние Котлы",
+          "x": 627,
+          "y": 821,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1416,
+              18
+            ],
+            [
+              1418,
+              19
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1418,
+          "name": "Крымская",
+          "x": 570,
+          "y": 822,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1417,
+              19
+            ],
+            [
+              1419,
+              20
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1419,
+          "name": "Площадь Гагарина",
+          "x": 517,
+          "y": 822,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1418,
+              20
+            ],
+            [
+              1420,
+              21
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1420,
+          "name": "Лужники",
+          "x": 350,
+          "y": 821,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1419,
+              21
+            ],
+            [
+              1421,
+              22
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1421,
+          "name": "Кутузовская",
+          "x": 235,
+          "y": 619,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1420,
+              22
+            ],
+            [
+              1422,
+              23
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1422,
+          "name": "Москва-Сити",
+          "x": 235,
+          "y": 504,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1421,
+              23
+            ],
+            [
+              1423,
+              24
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1423,
+          "name": "Шелепиха",
+          "x": 186,
+          "y": 450,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1422,
+              24
+            ],
+            [
+              1424,
+              25
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1424,
+          "name": "Хорошёво",
+          "x": 176,
+          "y": 399,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1423,
+              25
+            ],
+            [
+              1425,
+              26
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1425,
+          "name": "Зорге",
+          "x": 175,
+          "y": 349,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1424,
+              26
+            ],
+            [
+              1426,
+              27
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1426,
+          "name": "Панфиловская",
+          "x": 226,
+          "y": 305,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1425,
+              27
+            ],
+            [
+              1427,
+              28
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1427,
+          "name": "Стрешнево",
+          "x": 274,
+          "y": 279,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1426,
+              28
+            ],
+            [
+              1428,
+              29
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1428,
+          "name": "Балтийская",
+          "x": 333,
+          "y": 239,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1427,
+              29
+            ],
+            [
+              1429,
+              30
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1429,
+          "name": "Коптево",
+          "x": 386,
+          "y": 204,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1428,
+              30
+            ],
+            [
+              1430,
+              31
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1430,
+          "name": "Лихоборы",
+          "x": 431,
+          "y": 178,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1429,
+              31
+            ],
+            [
+              1400,
+              32
             ]
           ],
           "facilities": {
@@ -4337,6 +5007,54 @@
         {
           "x": 827,
           "y": 651
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1421,
+        1420
+      ],
+      "points": [
+        {
+          "x": 279,
+          "y": 821
+        },
+        {
+          "x": 234,
+          "y": 743
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1422,
+        1423
+      ],
+      "points": [
+        {
+          "x": 241,
+          "y": 483
+        },
+        {
+          "x": 196,
+          "y": 485
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1425,
+        1426
+      ],
+      "points": [
+        {
+          "x": 176,
+          "y": 325
+        },
+        {
+          "x": 214,
+          "y": 320
         }
       ]
     }

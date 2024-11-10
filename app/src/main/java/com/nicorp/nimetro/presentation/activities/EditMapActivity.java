@@ -89,6 +89,7 @@ public class EditMapActivity extends AppCompatActivity {
      */
     private void initializeUIComponents() {
         metroMapView = findViewById(R.id.editMetroMapView);
+        metroMapView.setEditMode(true);
         Button addStationButton = findViewById(R.id.addStationButton);
         Button removeStationButton = findViewById(R.id.removeStationButton);
         Button saveChangesButton = findViewById(R.id.saveChangesButton);
