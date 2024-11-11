@@ -1,8 +1,6 @@
 package com.nicorp.nimetro.presentation.views;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -19,7 +17,6 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.google.android.material.color.MaterialColors;
-import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.Line;
@@ -59,18 +56,6 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private Bitmap backgroundBitmap;
-    private Paint backgroundPaint;
-
-    private boolean isStationSelected = false;
-    private boolean isIntermediatePointSelected = false;
-    private Station selectedStation;
-    private Point selectedIntermediatePoint;
-
-    private float initialTouchX;
-    private float initialTouchY;
-
-
     private boolean isEditMode = false;
 
     private OnStationClickListener listener;
@@ -105,11 +90,6 @@ public class MetroMapView extends View {
         return scaleFactor;
     }
 
-    public void setScaleFactor(float scaleFactor) {
-        this.scaleFactor = scaleFactor;
-        invalidate();
-    }
-
     public float getTranslateX() {
         return translateX;
     }
@@ -133,7 +113,6 @@ public class MetroMapView extends View {
     private void init() {
         initializePaints();
         initializeGestureDetectors();
-        loadBackgroundImage();
     }
 
     /**
@@ -182,15 +161,6 @@ public class MetroMapView extends View {
         riverPaint.setColor(Color.parseColor("#CCE0EA"));
         riverPaint.setStyle(Paint.Style.STROKE);
         riverPaint.setStrokeWidth(10);
-    }
-
-    /**
-     * Loads the background image for the view.
-     */
-    private void loadBackgroundImage() {
-        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.metro_map);
-        backgroundPaint = new Paint();
-        backgroundPaint.setFilterBitmap(true);
     }
 
     /**
@@ -290,25 +260,7 @@ public class MetroMapView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (isEditMode) {
-            // Save the current canvas state
-            canvas.save();
-
-            // Apply the same transformations to the background image
-            canvas.translate(translateX, translateY);
-            canvas.scale(scaleFactor, scaleFactor);
-
-            // Draw background image
-            canvas.drawBitmap(backgroundBitmap, 0, 0, backgroundPaint);
-
-            // Restore the canvas state
-            canvas.restore();
-        }
-
-        // Save the current canvas state
         canvas.save();
-
-        // Apply transformations to the main map
         canvas.translate(translateX, translateY);
         canvas.scale(scaleFactor, scaleFactor);
 
@@ -326,7 +278,6 @@ public class MetroMapView extends View {
             }
         }
 
-        // Restore the canvas state
         canvas.restore();
     }
 
@@ -758,108 +709,20 @@ public class MetroMapView extends View {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX() / scaleFactor - translateX;
-        float y = event.getY() / scaleFactor - translateY;
+        boolean result = scaleGestureDetector.onTouchEvent(event);
+        result = gestureDetector.onTouchEvent(event) || result;
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                handleActionDown(x, y, event);
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            float x = (event.getX() - translateX) / scaleFactor;
+            float y = (event.getY() - translateY) / scaleFactor;
+            Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
+            if (clickedStation != null && listener != null) {
+                listener.onStationClick(clickedStation);
                 return true;
-
-            case MotionEvent.ACTION_MOVE:
-                handleActionMove(x, y, event);
-                return true;
-
-            case MotionEvent.ACTION_UP:
-                handleActionUp();
-                return true;
-        }
-
-        return super.onTouchEvent(event);
-    }
-
-    /**
-     * Handles the ACTION_DOWN event.
-     *
-     * @param x The x-coordinate.
-     * @param y The y-coordinate.
-     * @param event The MotionEvent.
-     */
-    private void handleActionDown(float x, float y, MotionEvent event) {
-        selectedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
-        if (selectedStation != null) {
-            isStationSelected = true;
-        } else {
-            selectedIntermediatePoint = findIntermediatePointAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
-            if (selectedIntermediatePoint != null) {
-                isIntermediatePointSelected = true;
             }
         }
-        initialTouchX = event.getX();
-        initialTouchY = event.getY();
-    }
 
-    /**
-     * Handles the ACTION_MOVE event.
-     *
-     * @param x The x-coordinate.
-     * @param y The y-coordinate.
-     * @param event The MotionEvent.
-     */
-    private void handleActionMove(float x, float y, MotionEvent event) {
-        if (isStationSelected) {
-            selectedStation.setX((int) (x / COORDINATE_SCALE_FACTOR));
-            selectedStation.setY((int) (y / COORDINATE_SCALE_FACTOR));
-        } else if (isIntermediatePointSelected) {
-            selectedIntermediatePoint.set((int) (x / COORDINATE_SCALE_FACTOR), (int) (y / COORDINATE_SCALE_FACTOR));
-        } else {
-            // Calculate movement offsets
-            float deltaX = (event.getX() - initialTouchX) / scaleFactor;
-            float deltaY = (event.getY() - initialTouchY) / scaleFactor;
-
-            // Update map's translation
-            translateX += deltaX;
-            translateY += deltaY;
-
-            // Update initial touch positions
-            initialTouchX = event.getX();
-            initialTouchY = event.getY();
-        }
-        invalidate(); // Redraw map view
-    }
-
-    /**
-     * Handles the ACTION_UP event.
-     */
-    private void handleActionUp() {
-        isStationSelected = false;
-        isIntermediatePointSelected = false;
-        selectedStation = null;
-        selectedIntermediatePoint = null;
-        invalidate(); // Redraw map view
-    }
-
-    /**
-     * Finds an intermediate point at the specified coordinates.
-     *
-     * @param x The x-coordinate.
-     * @param y The y-coordinate.
-     * @return The intermediate point if found, otherwise null.
-     */
-    private Point findIntermediatePointAt(float x, float y) {
-        for (Station station : stations) {
-            if (station.getIntermediatePoints() != null) {
-                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
-                    List<Point> intermediatePoints = entry.getValue();
-                    for (Point point : intermediatePoints) {
-                        if (Math.abs(point.x - x) < 10 / COORDINATE_SCALE_FACTOR && Math.abs(point.y - y) < 10 / COORDINATE_SCALE_FACTOR) {
-                            return point;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+        return result || super.onTouchEvent(event);
     }
 
     /**

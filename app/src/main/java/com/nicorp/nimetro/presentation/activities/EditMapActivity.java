@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -63,8 +62,6 @@ public class EditMapActivity extends AppCompatActivity {
     private Station selectedStation;
     private Point selectedIntermediatePoint; // Variable for the selected intermediate point
 
-    private ScaleGestureDetector scaleGestureDetector;
-
     private float initialTouchX;
     private float initialTouchY;
     private boolean isMovingMap = false;
@@ -85,17 +82,6 @@ public class EditMapActivity extends AppCompatActivity {
         initializeUIComponents();
         loadMetroData();
         setupEventListeners();
-
-        // Initialize scale gesture detector
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                float scaleFactor = metroMapView.getScaleFactor() * detector.getScaleFactor();
-                metroMapView.setScaleFactor(Math.max(0.5f, Math.min(scaleFactor, 2.0f)));
-                metroMapView.invalidate();
-                return true;
-            }
-        });
     }
 
     /**
@@ -139,11 +125,6 @@ public class EditMapActivity extends AppCompatActivity {
                     return true;
             }
             return false;
-        });
-
-        metroMapView.setOnTouchListener((v, event) -> {
-            scaleGestureDetector.onTouchEvent(event);
-            return super.onTouchEvent(event);
         });
     }
 
