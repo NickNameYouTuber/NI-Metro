@@ -14,15 +14,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.NIMetro"
+        android:largeHeap="true"
         tools:targetApi="31">
         <activity
             android:name=".presentation.activities.SettingsActivity"
             android:exported="false" />
         <activity
-                android:name=".presentation.activities.EditMapActivity"
+                android:name=".presentation.activities.SplashScreenActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.activities.SplashScreenActivity"
+            android:name=".presentation.activities.EditMapActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
