@@ -1,6 +1,8 @@
 package com.nicorp.nimetro.presentation.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -11,12 +13,14 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.google.android.material.color.MaterialColors;
+import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.Line;
@@ -56,7 +60,7 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private boolean isEditMode = false;
+    private boolean isEditMode = true;
 
     private OnStationClickListener listener;
 
@@ -70,6 +74,8 @@ public class MetroMapView extends View {
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
     private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
+
+    private Bitmap backgroundBitmap;
 
     public MetroMapView(Context context) {
         super(context);
@@ -113,6 +119,9 @@ public class MetroMapView extends View {
     private void init() {
         initializePaints();
         initializeGestureDetectors();
+        if (isEditMode) {
+            loadBackgroundBitmap();
+        }
     }
 
     /**
@@ -186,6 +195,14 @@ public class MetroMapView extends View {
                 return true;
             }
         });
+    }
+
+    /**
+     * Loads the background bitmap from the resources.
+     */
+    private void loadBackgroundBitmap() {
+        Log.d("MetroMapView", "Loading background bitmap...");
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.metro_map);
     }
 
     /**
@@ -263,6 +280,11 @@ public class MetroMapView extends View {
         canvas.save();
         canvas.translate(translateX, translateY);
         canvas.scale(scaleFactor, scaleFactor);
+
+        // Draw the background bitmap
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        }
 
         if (lines != null && stations != null) {
             drawRivers(canvas);
