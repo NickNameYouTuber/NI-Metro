@@ -60,16 +60,16 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private boolean isEditMode = false;
+    private boolean isEditMode = true;
 
     private OnStationClickListener listener;
 
-    private float scaleFactor = 1.0f;
+    public float scaleFactor = 1.0f;
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
     private GestureDetector gestureDetector;
-    private ScaleGestureDetector scaleGestureDetector;
+    public ScaleGestureDetector scaleGestureDetector;
 
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
@@ -757,6 +757,7 @@ public class MetroMapView extends View {
     public Station findStationAt(float x, float y) {
         for (Station station : stations) {
             if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
+                Log.d("MetroMapView", "Found station at " + x + ", " + y + ": " + station.getName());
                 return station;
             }
         }
