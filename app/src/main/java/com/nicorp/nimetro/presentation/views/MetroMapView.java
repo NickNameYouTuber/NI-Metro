@@ -60,7 +60,7 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private boolean isEditMode = true;
+    private boolean isEditMode = false;
 
     private OnStationClickListener listener;
 
@@ -130,12 +130,12 @@ public class MetroMapView extends View {
     private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(7);
+        linePaint.setStrokeWidth(9);
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
         stationPaint.setStyle(Paint.Style.STROKE);
-        stationPaint.setStrokeWidth(6);
+        stationPaint.setStrokeWidth(7);
 
         selectedStationPaint = new Paint();
         selectedStationPaint.setColor(Color.GREEN);
@@ -164,7 +164,7 @@ public class MetroMapView extends View {
         stationCenterPaint = new Paint();
         stationCenterPaint.setColor(Color.parseColor("#00000000"));
         stationCenterPaint.setStyle(Paint.Style.STROKE);
-        stationCenterPaint.setStrokeWidth(5);
+        stationCenterPaint.setStrokeWidth(7);
 
         riverPaint = new Paint();
         riverPaint.setColor(Color.parseColor("#CCE0EA"));
@@ -190,7 +190,7 @@ public class MetroMapView extends View {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
                 scaleFactor *= detector.getScaleFactor();
-                scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+                scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
                 invalidate();
                 return true;
             }

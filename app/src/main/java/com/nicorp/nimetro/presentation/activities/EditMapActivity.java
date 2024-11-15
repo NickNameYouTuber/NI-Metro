@@ -211,7 +211,7 @@ public class EditMapActivity extends AppCompatActivity {
                     @Override
                     public boolean onScale(ScaleGestureDetector detector) {
                         float scaleFactor = metroMapView.getScaleFactor() * detector.getScaleFactor();
-                        metroMapView.scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+                        metroMapView.scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
                         metroMapView.invalidate();
                         return true;
                     }
