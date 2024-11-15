@@ -69,6 +69,8 @@ public class EditMapActivity extends AppCompatActivity {
     private float initialTouchY;
     private boolean isMovingMap = false;
 
+    private boolean isMetroMap = true; // Флаг для определения текущей карты
+
     /**
      * Called when the activity is first created. Initializes the UI components,
      * loads metro data, and sets up event listeners.
@@ -83,7 +85,7 @@ public class EditMapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_map);
 
         initializeUIComponents();
-        loadMetroData();
+        loadMetroData("metro_map"); // Загрузка карты метро по умолчанию
         setupEventListeners();
     }
 
@@ -98,6 +100,13 @@ public class EditMapActivity extends AppCompatActivity {
         Button saveChangesButton = findViewById(R.id.saveChangesButton);
         Button addTransferButton = findViewById(R.id.addTransferButton);
         Button addIntermediatePointsButton = findViewById(R.id.addIntermediatePointsButton);
+
+        // Инициализация кнопки переключения карты
+        Button switchMapButton = findViewById(R.id.switchMapButton);
+        switchMapButton.setOnClickListener(v -> {
+            isMetroMap = !isMetroMap;
+            loadMetroData(isMetroMap ? "metro_map" : "suburban_map");
+        });
 
         addStationButton.setOnClickListener(v -> showAddStationDialog());
         removeStationButton.setOnClickListener(v -> removeSelectedStation());
@@ -304,11 +313,12 @@ public class EditMapActivity extends AppCompatActivity {
     /**
      * Loads metro data from the JSON asset file.
      */
-    private void loadMetroData() {
+    private void loadMetroData(String mapType) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
+            JSONObject mapData = jsonObject.getJSONObject(mapType);
 
-            JSONArray linesArray = jsonObject.getJSONArray("lines");
+            JSONArray linesArray = mapData.getJSONArray("lines");
 
             // Initialize lists
             stations = new ArrayList<>();
@@ -371,7 +381,7 @@ public class EditMapActivity extends AppCompatActivity {
             }
 
             // Load transfers between different lines
-            JSONArray transfersArray = jsonObject.getJSONArray("transfers");
+            JSONArray transfersArray = mapData.getJSONArray("transfers");
             for (int i = 0; i < transfersArray.length(); i++) {
                 JSONObject transferObject = transfersArray.getJSONObject(i);
                 JSONArray stationsArray = transferObject.getJSONArray("stations");
@@ -389,7 +399,7 @@ public class EditMapActivity extends AppCompatActivity {
             }
 
             // Load rivers
-            JSONArray riversArray = jsonObject.getJSONArray("rivers");
+            JSONArray riversArray = mapData.getJSONArray("rivers");
             for (int i = 0; i < riversArray.length(); i++) {
                 JSONObject riverObject = riversArray.getJSONObject(i);
                 JSONArray pointsArray = riverObject.getJSONArray("points");
@@ -404,7 +414,7 @@ public class EditMapActivity extends AppCompatActivity {
             }
 
             // Load intermediate points
-            JSONArray intermediatePointsArray = jsonObject.getJSONArray("intermediatePoints");
+            JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");
             for (int i = 0; i < intermediatePointsArray.length(); i++) {
                 JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
                 JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
@@ -427,7 +437,7 @@ public class EditMapActivity extends AppCompatActivity {
             }
 
             // Load map objects
-            JSONArray objectsArray = jsonObject.getJSONArray("objects");
+            JSONArray objectsArray = mapData.getJSONArray("objects");
             for (int i = 0; i < objectsArray.length(); i++) {
                 JSONObject objectObject = objectsArray.getJSONObject(i);
                 String name = objectObject.getString("name");

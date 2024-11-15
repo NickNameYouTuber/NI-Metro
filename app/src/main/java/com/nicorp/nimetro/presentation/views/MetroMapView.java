@@ -60,7 +60,7 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private boolean isEditMode = false;
+    private boolean isEditMode = true;
 
     private OnStationClickListener listener;
 

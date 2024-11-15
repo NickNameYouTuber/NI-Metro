@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nicorp.nimetro.data.models.MapObject;
@@ -57,17 +59,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
 
-    /**
-     * Called when the activity is first created. Initializes the UI components,
-     * loads metro data, and sets up event listeners.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
-     *                           this contains the data it most recently supplied in onSaveInstanceState(Bundle).
-     */
+    private boolean isMetroMap = true; // Флаг для определения текущей карты
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Load user preferences for map file and theme
+        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "map_data.json");
+        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
+
+        // Инициализация кнопки переключения карты
+        Button switchMapButton = findViewById(R.id.switchMapButton);
+        switchMapButton.setOnClickListener(v -> {
+            isMetroMap = !isMetroMap;
+            loadMetroData(selectedMapFileName ,isMetroMap ? "metro_map" : "suburban_map");
+        });
 
         // Initialize the settings button and set its click listener
         ConstraintLayout settingsButton = findViewById(R.id.settingsButton);
@@ -77,11 +86,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             startActivity(intent);
             finish();
         });
-
-        // Load user preferences for map file and theme
-        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
-        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
-        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         // Initialize UI components
         metroMapView = findViewById(R.id.metroMapView);
@@ -95,9 +99,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations = new ArrayList<>();
 
         // Load metro data from the selected map file
-        loadMetroData(selectedMapFileName);
-        metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
-        metroMapView.setOnStationClickListener(this);
+        loadMetroData(selectedMapFileName, isMetroMap ? "metro_map" : "suburban_map"); // Загрузка карты метро по умолчанию
 
         // Initialize the RecyclerView for displaying stations
         stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
@@ -157,13 +159,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
      * Loads metro data from a JSON file. Parses the JSON data to populate the
      * stations, lines, transfers, rivers, and map objects.
      *
-     * @param mapFileName The name of the JSON file containing the metro data.
+     * @param mapType The type of the map to load ("metro_map" or "suburban_map").
      */
-    private void loadMetroData(String mapFileName) {
+    private void loadMetroData(String mapFileName, String mapType) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
+            JSONObject mapData = jsonObject.getJSONObject(mapType);
 
-            JSONArray linesArray = jsonObject.getJSONArray("lines");
+            JSONArray linesArray = mapData.getJSONArray("lines");
 
             // Initialize lists
             stations = new ArrayList<>();
@@ -226,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
 
             // Load transfers between different lines
-            JSONArray transfersArray = jsonObject.getJSONArray("transfers");
+            JSONArray transfersArray = mapData.getJSONArray("transfers");
             for (int i = 0; i < transfersArray.length(); i++) {
                 JSONObject transferObject = transfersArray.getJSONObject(i);
                 JSONArray stationsArray = transferObject.getJSONArray("stations");
@@ -244,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
 
             // Load rivers
-            JSONArray riversArray = jsonObject.getJSONArray("rivers");
+            JSONArray riversArray = mapData.getJSONArray("rivers");
             for (int i = 0; i < riversArray.length(); i++) {
                 JSONObject riverObject = riversArray.getJSONObject(i);
                 JSONArray pointsArray = riverObject.getJSONArray("points");
@@ -259,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
 
             // Load intermediate points
-            JSONArray intermediatePointsArray = jsonObject.getJSONArray("intermediatePoints");
+            JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");
             for (int i = 0; i < intermediatePointsArray.length(); i++) {
                 JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
                 JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
@@ -282,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
 
             // Load map objects
-            JSONArray objectsArray = jsonObject.getJSONArray("objects");
+            JSONArray objectsArray = mapData.getJSONArray("objects");
             for (int i = 0; i < objectsArray.length(); i++) {
                 JSONObject objectObject = objectsArray.getJSONObject(i);
                 String name = objectObject.getString("name");
