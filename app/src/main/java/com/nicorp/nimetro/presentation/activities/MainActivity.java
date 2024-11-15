@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         // Load user preferences for map file and theme
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
-        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "map_data.json");
+        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         // Инициализация кнопки переключения карты
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         stations = new ArrayList<>();
         lines = new ArrayList<>();
         selectedStations = new ArrayList<>();
+        metroMapView.setOnStationClickListener(this);
 
         // Load metro data from the selected map file
         loadMetroData(selectedMapFileName, isMetroMap ? "metro_map" : "suburban_map"); // Загрузка карты метро по умолчанию
@@ -366,12 +367,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
      */
     @Override
     public void onStationClick(Station station) {
+        Log.d("MainActivity", "Station clicked: " + station.getName());
         Station prevStation = null;
         Station nextStation = null;
         Line curline = null;
 
         // Find the previous and next stations on the same line
         for (Line line : lines) {
+            Log.d("MainActivity", "Line: " + line.getName());
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
                 if (lineStations.get(i).equals(station)) {

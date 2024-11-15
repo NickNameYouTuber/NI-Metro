@@ -32,8 +32,10 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Custom view for displaying a metro map. Handles drawing of lines, stations,
@@ -60,7 +62,7 @@ public class MetroMapView extends View {
     private Paint stationCenterPaint;
     private Paint riverPaint;
 
-    private boolean isEditMode = true;
+    private boolean isEditMode = false;
 
     private OnStationClickListener listener;
 
@@ -322,20 +324,54 @@ public class MetroMapView extends View {
      * @param canvas The canvas to draw on.
      */
     private void drawLines(Canvas canvas) {
+        Set<String> drawnConnections = new HashSet<>();
+
         for (Line line : lines) {
             linePaint.setColor(Color.parseColor(line.getColor()));
-            for (int i = 0; i < line.getStations().size() - 1; i++) {
-                Station station1 = line.getStations().get(i);
-                Station station2 = line.getStations().get(i + 1);
-                drawLineWithIntermediatePoints(canvas, station1, station2, line.getLineType());
+            for (Station station : line.getStations()) {
+                for (Station.Neighbor neighbor : station.getNeighbors()) {
+                    Station neighborStation = findStationById(neighbor.getStation().getId());
+                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != -1) {
+                        String connectionKey = station.getId() < neighborStation.getId()
+                                ? station.getId() + "-" + neighborStation.getId()
+                                : neighborStation.getId() + "-" + station.getId();
+
+                        if (!drawnConnections.contains(connectionKey)) {
+                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType());
+                            drawnConnections.add(connectionKey);
+                        }
+                    }
+                }
             }
 
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType());
+                String connectionKey = firstStation.getId() < lastStation.getId()
+                        ? firstStation.getId() + "-" + lastStation.getId()
+                        : lastStation.getId() + "-" + firstStation.getId();
+
+                if (!drawnConnections.contains(connectionKey)) {
+                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType());
+                    drawnConnections.add(connectionKey);
+                }
             }
         }
+    }
+
+    /**
+     * Finds a station by its ID.
+     *
+     * @param id The ID of the station.
+     * @return The station with the specified ID, or null if not found.
+     */
+    private Station findStationById(int id) {
+        for (Station station : stations) {
+            if (station.getId() == id) {
+                return station;
+            }
+        }
+        return null;
     }
 
     /**
@@ -739,8 +775,13 @@ public class MetroMapView extends View {
             float y = (event.getY() - translateY) / scaleFactor;
             Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
             if (clickedStation != null && listener != null) {
+                Log.d("MetroMapView", "Station clicked: " + clickedStation.getName());
                 listener.onStationClick(clickedStation);
                 return true;
+            } else if (clickedStation == null) {
+                Log.d("MetroMapView", "Map clicked");
+            } else if (listener == null) {
+                Log.d("MetroMapView", "Listener is null");
             }
         }
 
@@ -755,6 +796,7 @@ public class MetroMapView extends View {
      * @return The station at the specified coordinates, or null if not found.
      */
     public Station findStationAt(float x, float y) {
+        Log.d("MetroMapView", "Finding station at " + x + ", " + y);
         for (Station station : stations) {
             if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
                 Log.d("MetroMapView", "Found station at " + x + ", " + y + ": " + station.getName());
