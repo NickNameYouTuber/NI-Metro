@@ -5787,6 +5787,167 @@
       ]
     },
     {
+      "id": 13,
+      "name": "Бутовская линия",
+      "color": "#AEB5CA",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 1300,
+          "name": "Битцевский парк",
+          "x": 644,
+          "y": 1764,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1301,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1301,
+          "name": "Лесопарковая",
+          "x": 721,
+          "y": 1765,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1300,
+              3
+            ],
+            [
+              1302,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1302,
+          "name": "Улица Старокачаловская",
+          "x": 761,
+          "y": 1825,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1301,
+              3
+            ],
+            [
+              1303,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1303,
+          "name": "Улица Скобелевская",
+          "x": 761,
+          "y": 1866,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1302,
+              3
+            ],
+            [
+              1304,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1304,
+          "name": "Бульвар адмирала Ушакова",
+          "x": 662,
+          "y": 1892,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1303,
+              3
+            ],
+            [
+              1305,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1305,
+          "name": "Улица Горчакова",
+          "x": 556,
+          "y": 1890,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1304,
+              3
+            ],
+            [
+              1306,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1306,
+          "name": "Бунинская Аллея",
+          "x": 468,
+          "y": 1890,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1305,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
       "id": 15,
       "name": "МЦК",
       "color": "#E94282",
@@ -6044,8 +6205,8 @@
         {
           "id": 1511,
           "name": "Нижегородская",
-          "x": 1316,
-          "y": 1016,
+          "x": 1315,
+          "y": 1017,
           "textPosition": 0,
           "neighbors": [
             [
@@ -6502,6 +6663,282 @@
           }
         }
       ]
+    },
+    {
+      "id": 16,
+      "name": "Некрасовская линия",
+      "color": "#CB80A2",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 1600,
+          "name": "Некрасовка",
+          "x": 1400,
+          "y": 1650,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1601,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1601,
+          "name": "Лухмановская",
+          "x": 1399,
+          "y": 1619,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1600,
+              3
+            ],
+            [
+              1602,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1602,
+          "name": "Улица Дмитриевского",
+          "x": 1399,
+          "y": 1570,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1601,
+              3
+            ],
+            [
+              1603,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1603,
+          "name": "Косино",
+          "x": 1374,
+          "y": 1462,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1602,
+              3
+            ],
+            [
+              1604,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1604,
+          "name": "Юго-Восточная",
+          "x": 1342,
+          "y": 1255,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1603,
+              3
+            ],
+            [
+              1605,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1605,
+          "name": "Окская",
+          "x": 1342,
+          "y": 1199,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1604,
+              3
+            ],
+            [
+              1606,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1606,
+          "name": "Стахановская",
+          "x": 1342,
+          "y": 1083,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1605,
+              3
+            ],
+            [
+              1607,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1607,
+          "name": "Нижегородская",
+          "x": 1328,
+          "y": 1027,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1606,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Троицкая линия",
+      "color": "#256356",
+      "isCircle": false,
+      "stations": [
+        {
+          "id": 1700,
+          "name": "Новаторская",
+          "x": 513,
+          "y": 1544,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1701,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1701,
+          "name": "Университет дружбы народов",
+          "x": 514,
+          "y": 1617,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1700,
+              3
+            ],
+            [
+              1702,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1702,
+          "name": "Генерала Тюленева",
+          "x": 514,
+          "y": 1665,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1701,
+              3
+            ],
+            [
+              1703,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        },
+        {
+          "id": 1703,
+          "name": "Тютчевская",
+          "x": 515,
+          "y": 1715,
+          "textPosition": 0,
+          "neighbors": [
+            [
+              1702,
+              3
+            ]
+          ],
+          "facilities": {
+            "schedule": "5:30 - 0:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": []
+          }
+        }
+      ]
     }
   ],
   "transfers": [],
@@ -6733,22 +7170,6 @@
     {
       "neighborsId": [
         87,
-        80
-      ],
-      "points": [
-        {
-          "x": 1031,
-          "y": 886
-        },
-        {
-          "x": 1013,
-          "y": 852
-        }
-      ]
-    },
-    {
-      "neighborsId": [
-        87,
         86
       ],
       "points": [
@@ -6759,6 +7180,22 @@
         {
           "x": 1039,
           "y": 1048
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        87,
+        80
+      ],
+      "points": [
+        {
+          "x": 1031,
+          "y": 886
+        },
+        {
+          "x": 1013,
+          "y": 852
         }
       ]
     },
@@ -7309,22 +7746,6 @@
     {
       "neighborsId": [
         1200,
-        1228
-      ],
-      "points": [
-        {
-          "x": 657,
-          "y": 624
-        },
-        {
-          "x": 720,
-          "y": 610
-        }
-      ]
-    },
-    {
-      "neighborsId": [
-        1200,
         1201
       ],
       "points": [
@@ -7335,6 +7756,22 @@
         {
           "x": 536,
           "y": 686
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1200,
+        1228
+      ],
+      "points": [
+        {
+          "x": 657,
+          "y": 624
+        },
+        {
+          "x": 720,
+          "y": 610
         }
       ]
     },
@@ -7431,6 +7868,38 @@
         {
           "x": 817,
           "y": 608
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1301,
+        1302
+      ],
+      "points": [
+        {
+          "x": 759,
+          "y": 1763
+        },
+        {
+          "x": 761,
+          "y": 1766
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1303,
+        1304
+      ],
+      "points": [
+        {
+          "x": 758,
+          "y": 1898
+        },
+        {
+          "x": 749,
+          "y": 1889
         }
       ]
     },
@@ -7591,6 +8060,54 @@
         {
           "x": 282,
           "y": 665
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1602,
+        1603
+      ],
+      "points": [
+        {
+          "x": 1395,
+          "y": 1529
+        },
+        {
+          "x": 1412,
+          "y": 1489
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1603,
+        1604
+      ],
+      "points": [
+        {
+          "x": 1322,
+          "y": 1426
+        },
+        {
+          "x": 1349,
+          "y": 1393
+        }
+      ]
+    },
+    {
+      "neighborsId": [
+        1606,
+        1607
+      ],
+      "points": [
+        {
+          "x": 1341,
+          "y": 1066
+        },
+        {
+          "x": 1347,
+          "y": 1040
         }
       ]
     }
