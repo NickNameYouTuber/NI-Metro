@@ -39,15 +39,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-/**
- * The main activity of the application, responsible for initializing the metro map,
- * handling user interactions, and managing the display of station and route information.
- */
 public class MainActivity extends AppCompatActivity implements MetroMapView.OnStationClickListener, StationInfoFragment.OnStationInfoListener, StationsAdapter.OnStationClickListener {
 
     private MetroMapView metroMapView;
     private List<Station> stations;
     private List<Line> lines;
+    private List<Station> grayedStations;
+    private List<Line> grayedLines;
     private Station selectedStartStation;
     private Station selectedEndStation;
     private List<Station> selectedStations;
@@ -66,19 +64,16 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Load user preferences for map file and theme
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
-        // Инициализация кнопки переключения карты
         Button switchMapButton = findViewById(R.id.switchMapButton);
         switchMapButton.setOnClickListener(v -> {
             isMetroMap = !isMetroMap;
-            loadMetroData(selectedMapFileName ,isMetroMap ? "metro_map" : "suburban_map");
+            updateMapData();
         });
 
-        // Initialize the settings button and set its click listener
         ConstraintLayout settingsButton = findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(v -> {
             Log.d("MainActivity", "Settings button clicked");
@@ -87,27 +82,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             finish();
         });
 
-        // Initialize UI components
         metroMapView = findViewById(R.id.metroMapView);
         startStationEditText = findViewById(R.id.startStationEditText);
         endStationEditText = findViewById(R.id.endStationEditText);
         stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
 
-        // Initialize data structures
         stations = new ArrayList<>();
         lines = new ArrayList<>();
+        grayedStations = new ArrayList<>();
+        grayedLines = new ArrayList<>();
         selectedStations = new ArrayList<>();
         metroMapView.setOnStationClickListener(this);
 
-        // Load metro data from the selected map file
-        loadMetroData(selectedMapFileName, isMetroMap ? "metro_map" : "suburban_map"); // Загрузка карты метро по умолчанию
+        loadMetroData(selectedMapFileName);
 
-        // Initialize the RecyclerView for displaying stations
         stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
         stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stationsRecyclerView.setAdapter(stationsAdapter);
 
-        // Set focus change listeners for the start and end station input fields
         startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 showStationsList(stations);
@@ -124,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         });
 
-        // Set text change listeners for the start and end station input fields
         startStationEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -154,162 +145,154 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Transfer> transfers;
     private List<River> rivers;
-    private List<MapObject> mapObjects; // List of map objects
+    private List<MapObject> mapObjects;
+    private List<Transfer> grayedTransfers;
+    private List<River> grayedRivers;
+    private List<MapObject> grayedMapObjects;
 
-    /**
-     * Loads metro data from a JSON file. Parses the JSON data to populate the
-     * stations, lines, transfers, rivers, and map objects.
-     *
-     * @param mapType The type of the map to load ("metro_map" or "suburban_map").
-     */
-    private void loadMetroData(String mapFileName, String mapType) {
+    private void loadMetroData(String mapFileName) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
-            JSONObject mapData = jsonObject.getJSONObject(mapType);
+            JSONObject metroMapData = jsonObject.getJSONObject("metro_map");
+            JSONObject suburbanMapData = jsonObject.getJSONObject("suburban_map");
 
-            JSONArray linesArray = mapData.getJSONArray("lines");
+            loadMapData(metroMapData, lines, stations, transfers, rivers, mapObjects);
+            loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
 
-            // Initialize lists
-            stations = new ArrayList<>();
-            lines = new ArrayList<>();
-            transfers = new ArrayList<>();
-            rivers = new ArrayList<>();
-            mapObjects = new ArrayList<>();
-
-            // First, load all stations and lines
-            for (int i = 0; i < linesArray.length(); i++) {
-                JSONObject lineObject = linesArray.getJSONObject(i);
-                boolean isCircle = lineObject.optBoolean("isCircle", false);
-                String lineType = lineObject.optString("lineType", "single"); // Добавлен параметр lineType
-                Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
-                JSONArray stationsArray = lineObject.getJSONArray("stations");
-                for (int j = 0; j < stationsArray.length(); j++) {
-                    JSONObject stationObject = stationsArray.getJSONObject(j);
-                    String schedule = stationObject.optString("schedule", "5:30 - 0:00");
-                    int escalators = stationObject.optInt("escalators", 0);
-                    int elevators = stationObject.optInt("elevators", 0);
-                    String[] exits = toStringArray(stationObject.optJSONArray("exits"));
-                    int textPosition = stationObject.optInt("textPosition", 0);
-
-                    Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
-                    Station station = new Station(
-                            stationObject.getInt("id"),
-                            stationObject.getString("name"),
-                            stationObject.getInt("x"),
-                            stationObject.getInt("y"),
-                            line.getColor(),
-                            facilities,
-                            textPosition
-                    );
-                    stations.add(station);
-                    line.getStations().add(station);
-                }
-                lines.add(line);
-            }
-
-            // Now, add neighbors and transfers
-            for (int i = 0; i < linesArray.length(); i++) {
-                JSONObject lineObject = linesArray.getJSONObject(i);
-                JSONArray stationsArray = lineObject.getJSONArray("stations");
-                for (int j = 0; j < stationsArray.length(); j++) {
-                    JSONObject stationObject = stationsArray.getJSONObject(j);
-                    Station station = findStationById(stationObject.getInt("id"));
-                    if (station != null) {
-                        JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
-                        for (int k = 0; k < neighborsArray.length(); k++) {
-                            JSONArray neighborArray = neighborsArray.getJSONArray(k);
-                            int neighborId = neighborArray.getInt(0);
-                            int time = neighborArray.getInt(1);
-                            Station neighborStation = findStationById(neighborId);
-                            if (neighborStation != null) {
-                                station.addNeighbor(new Station.Neighbor(neighborStation, time));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Load transfers between different lines
-            JSONArray transfersArray = mapData.getJSONArray("transfers");
-            for (int i = 0; i < transfersArray.length(); i++) {
-                JSONObject transferObject = transfersArray.getJSONObject(i);
-                JSONArray stationsArray = transferObject.getJSONArray("stations");
-                List<Station> transferStations = new ArrayList<>();
-                for (int j = 0; j < stationsArray.length(); j++) {
-                    int stationId = stationsArray.getInt(j);
-                    Station station = findStationById(stationId);
-                    if (station != null) {
-                        transferStations.add(station);
-                    }
-                }
-                int time = transferObject.optInt("time", 3); // Assuming transfer time is 3 minutes
-                String type = transferObject.optString("type", "regular");
-                transfers.add(new Transfer(transferStations, time, type));
-            }
-
-            // Load rivers
-            JSONArray riversArray = mapData.getJSONArray("rivers");
-            for (int i = 0; i < riversArray.length(); i++) {
-                JSONObject riverObject = riversArray.getJSONObject(i);
-                JSONArray pointsArray = riverObject.getJSONArray("points");
-                List<Point> riverPoints = new ArrayList<>();
-                for (int j = 0; j < pointsArray.length(); j++) {
-                    JSONObject pointObject = pointsArray.getJSONObject(j);
-                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
-                    riverPoints.add(point);
-                }
-                int width = riverObject.optInt("width", 10); // Default width is 10
-                rivers.add(new River(riverPoints, width));
-            }
-
-            // Load intermediate points
-            JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");
-            for (int i = 0; i < intermediatePointsArray.length(); i++) {
-                JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
-                JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
-                int station1Id = neighborsIdArray.getInt(0);
-                int station2Id = neighborsIdArray.getInt(1);
-
-                Station station1 = findStationById(station1Id);
-                Station station2 = findStationById(station2Id);
-
-                if (station1 != null && station2 != null) {
-                    JSONArray pointsArray = intermediatePointObject.getJSONArray("points");
-                    List<Point> intermediatePoints = new ArrayList<>();
-                    for (int j = 0; j < pointsArray.length(); j++) {
-                        JSONObject pointObject = pointsArray.getJSONObject(j);
-                        Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
-                        intermediatePoints.add(point);
-                    }
-                    station1.addIntermediatePoints(station2, intermediatePoints);
-                }
-            }
-
-            // Load map objects
-            JSONArray objectsArray = mapData.getJSONArray("objects");
-            for (int i = 0; i < objectsArray.length(); i++) {
-                JSONObject objectObject = objectsArray.getJSONObject(i);
-                String name = objectObject.getString("name");
-                String displayName = objectObject.getString("displayName");
-                String type = objectObject.getString("type");
-                JSONObject positionObject = objectObject.getJSONObject("position");
-                Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
-                mapObjects.add(new MapObject(name, type, position, displayName));
-            }
-
-            // Set data to MetroMapView
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            updateMapData();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Converts a JSONArray to a String array.
-     *
-     * @param array The JSONArray to convert.
-     * @return A String array containing the elements of the JSONArray.
-     */
+    private void updateMapData() {
+        if (isMetroMap) {
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
+        } else {
+            metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
+        }
+        metroMapView.setActiveMap(isMetroMap);
+    }
+
+    private void loadMapData(JSONObject mapData, List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) throws JSONException {
+        JSONArray linesArray = mapData.getJSONArray("lines");
+
+        for (int i = 0; i < linesArray.length(); i++) {
+            JSONObject lineObject = linesArray.getJSONObject(i);
+            boolean isCircle = lineObject.optBoolean("isCircle", false);
+            String lineType = lineObject.optString("lineType", "single");
+            Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
+            JSONArray stationsArray = lineObject.getJSONArray("stations");
+            for (int j = 0; j < stationsArray.length(); j++) {
+                JSONObject stationObject = stationsArray.getJSONObject(j);
+                String schedule = stationObject.optString("schedule", "5:30 - 0:00");
+                int escalators = stationObject.optInt("escalators", 0);
+                int elevators = stationObject.optInt("elevators", 0);
+                String[] exits = toStringArray(stationObject.optJSONArray("exits"));
+                int textPosition = stationObject.optInt("textPosition", 0);
+
+                Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
+                Station station = new Station(
+                        stationObject.getInt("id"),
+                        stationObject.getString("name"),
+                        stationObject.getInt("x"),
+                        stationObject.getInt("y"),
+                        line.getColor(),
+                        facilities,
+                        textPosition
+                );
+                stations.add(station);
+                line.getStations().add(station);
+            }
+            lines.add(line);
+        }
+
+        for (int i = 0; i < linesArray.length(); i++) {
+            JSONObject lineObject = linesArray.getJSONObject(i);
+            JSONArray stationsArray = lineObject.getJSONArray("stations");
+            for (int j = 0; j < stationsArray.length(); j++) {
+                JSONObject stationObject = stationsArray.getJSONObject(j);
+                Station station = findStationById(stationObject.getInt("id"), stations);
+                if (station != null) {
+                    JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
+                    for (int k = 0; k < neighborsArray.length(); k++) {
+                        JSONArray neighborArray = neighborsArray.getJSONArray(k);
+                        int neighborId = neighborArray.getInt(0);
+                        int time = neighborArray.getInt(1);
+                        Station neighborStation = findStationById(neighborId, stations);
+                        if (neighborStation != null) {
+                            station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                        }
+                    }
+                }
+            }
+        }
+
+        JSONArray transfersArray = mapData.getJSONArray("transfers");
+        for (int i = 0; i < transfersArray.length(); i++) {
+            JSONObject transferObject = transfersArray.getJSONObject(i);
+            JSONArray stationsArray = transferObject.getJSONArray("stations");
+            List<Station> transferStations = new ArrayList<>();
+            for (int j = 0; j < stationsArray.length(); j++) {
+                int stationId = stationsArray.getInt(j);
+                Station station = findStationById(stationId, stations);
+                if (station != null) {
+                    transferStations.add(station);
+                }
+            }
+            int time = transferObject.optInt("time", 3);
+            String type = transferObject.optString("type", "regular");
+            transfers.add(new Transfer(transferStations, time, type));
+        }
+
+        JSONArray riversArray = mapData.getJSONArray("rivers");
+        for (int i = 0; i < riversArray.length(); i++) {
+            JSONObject riverObject = riversArray.getJSONObject(i);
+            JSONArray pointsArray = riverObject.getJSONArray("points");
+            List<Point> riverPoints = new ArrayList<>();
+            for (int j = 0; j < pointsArray.length(); j++) {
+                JSONObject pointObject = pointsArray.getJSONObject(j);
+                Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                riverPoints.add(point);
+            }
+            int width = riverObject.optInt("width", 10);
+            rivers.add(new River(riverPoints, width));
+        }
+
+        JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");
+        for (int i = 0; i < intermediatePointsArray.length(); i++) {
+            JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
+            JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
+            int station1Id = neighborsIdArray.getInt(0);
+            int station2Id = neighborsIdArray.getInt(1);
+
+            Station station1 = findStationById(station1Id, stations);
+            Station station2 = findStationById(station2Id, stations);
+
+            if (station1 != null && station2 != null) {
+                JSONArray pointsArray = intermediatePointObject.getJSONArray("points");
+                List<Point> intermediatePoints = new ArrayList<>();
+                for (int j = 0; j < pointsArray.length(); j++) {
+                    JSONObject pointObject = pointsArray.getJSONObject(j);
+                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
+                    intermediatePoints.add(point);
+                }
+                station1.addIntermediatePoints(station2, intermediatePoints);
+            }
+        }
+
+        JSONArray objectsArray = mapData.getJSONArray("objects");
+        for (int i = 0; i < objectsArray.length(); i++) {
+            JSONObject objectObject = objectsArray.getJSONObject(i);
+            String name = objectObject.getString("name");
+            String displayName = objectObject.getString("displayName");
+            String type = objectObject.getString("type");
+            JSONObject positionObject = objectObject.getJSONObject("position");
+            Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
+            mapObjects.add(new MapObject(name, type, position, displayName));
+        }
+    }
+
     private String[] toStringArray(JSONArray array) {
         if (array == null) return new String[0];
         String[] result = new String[array.length()];
@@ -323,12 +306,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return result;
     }
 
-    /**
-     * Loads a JSON string from an asset file.
-     *
-     * @param mapFileName The name of the asset file.
-     * @return The JSON string loaded from the asset file.
-     */
     private String loadJSONFromAsset(String mapFileName) {
         String json = null;
         try {
@@ -345,13 +322,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return json;
     }
 
-    /**
-     * Finds a station by its ID.
-     *
-     * @param id The ID of the station to find.
-     * @return The station with the specified ID, or null if not found.
-     */
-    private Station findStationById(int id) {
+    private Station findStationById(int id, List<Station> stations) {
         for (Station station : stations) {
             if (station.getId() == id) {
                 return station;
@@ -360,11 +331,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return null;
     }
 
-    /**
-     * Called when a station is clicked on the metro map.
-     *
-     * @param station The station that was clicked.
-     */
     @Override
     public void onStationClick(Station station) {
         Log.d("MainActivity", "Station clicked: " + station.getName());
@@ -372,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Station nextStation = null;
         Line curline = null;
 
-        // Find the previous and next stations on the same line
         for (Line line : lines) {
             Log.d("MainActivity", "Line: " + line.getName());
             List<Station> lineStations = line.getStations();
@@ -389,12 +354,27 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 }
             }
         }
+        for (Line line : grayedLines) {
+            Log.d("MainActivity", "Line: " + line.getName());
+            List<Station> lineStations = line.getStations();
+            for (int i = 0; i < lineStations.size(); i++) {
+                if (lineStations.get(i).equals(station)) {
+                    if (i > 0) {
+                        prevStation = lineStations.get(i - 1);
+                    }
+                    if (i < lineStations.size() - 1) {
+                        nextStation = lineStations.get(i + 1);
+                    }
+                    curline = line;
+                    break;
+                }
+            }
+        }
 
-        // Clear the FrameLayout before adding a new fragment
         clearFrameLayout();
 
-        // Create and add a new StationInfoFragment to the FrameLayout
-        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation, transfers, lines);
+        Log.d("MainActivity", "station fragment inputs " + curline.getName() + ", " + station.getName());
+        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation, transfers, lines, grayedLines);
         fragment.setOnStationInfoListener(this);
 
         getSupportFragmentManager().beginTransaction()
@@ -402,9 +382,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 .commit();
     }
 
-    /**
-     * Clears the FrameLayout by removing any existing fragment.
-     */
     private void clearFrameLayout() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.frameLayout);
@@ -415,11 +392,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
-    /**
-     * Called when the start station is set from the StationInfoFragment.
-     *
-     * @param station The station to set as the start station.
-     */
     @Override
     public void onSetStart(Station station, boolean fromStationInfoFragment) {
         if (selectedStartStation != null) {
@@ -431,15 +403,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         startStationEditText.setText(station.getName());
 
         if (fromStationInfoFragment) {
-            hideStationsList(); // Скрываем список станций, если станция была выбрана через StationInfoFragment
+            hideStationsList();
         }
     }
 
-    /**
-     * Called when the end station is set from the StationInfoFragment.
-     *
-     * @param station The station to set as the end station.
-     */
     @Override
     public void onSetEnd(Station station, boolean fromStationInfoFragment) {
         if (selectedEndStation != null) {
@@ -457,17 +424,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
 
         if (fromStationInfoFragment) {
-            hideStationsList(); // Скрываем список станций, если станция была выбрана через StationInfoFragment
+            hideStationsList();
         }
     }
 
-    /**
-     * Finds the optimal route between two stations using Dijkstra's algorithm.
-     *
-     * @param start The starting station.
-     * @param end   The destination station.
-     * @return A list of stations representing the optimal route.
-     */
     private List<Station> findOptimalRoute(Station start, Station end) {
         Map<Station, Station> previous = new HashMap<>();
         Map<Station, Integer> distances = new HashMap<>();
@@ -503,19 +463,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return route;
     }
 
-    /**
-     * Clears the start and end station input fields.
-     */
     public void clearRouteInputs() {
         startStationEditText.setText("");
         endStationEditText.setText("");
     }
 
-    /**
-     * Displays the route information in a fragment.
-     *
-     * @param route The list of stations representing the route.
-     */
     private void showRouteInfo(List<Station> route) {
         clearFrameLayout();
         RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(route, metroMapView, this);
@@ -524,28 +476,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 .commit();
     }
 
-    /**
-     * Shows the list of stations in the RecyclerView.
-     *
-     * @param stations The list of stations to display.
-     */
     private void showStationsList(List<Station> stations) {
         stationsRecyclerView.setVisibility(View.VISIBLE);
         stationsAdapter.setStations(stations);
     }
 
-    /**
-     * Hides the list of stations in the RecyclerView.
-     */
     private void hideStationsList() {
         stationsRecyclerView.setVisibility(View.GONE);
     }
 
-    /**
-     * Filters the list of stations based on the query string.
-     *
-     * @param query The query string to filter the stations.
-     */
     private void filterStations(String query) {
         List<Station> filteredStations = new ArrayList<>();
         for (Station station : stations) {
@@ -556,11 +495,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         stationsAdapter.setStations(filteredStations);
     }
 
-    /**
-     * Called when a station is selected from the RecyclerView.
-     *
-     * @param station The selected station.
-     */
     @Override
     public void onStationSelected(Station station) {
         if (startStationEditText.hasFocus()) {

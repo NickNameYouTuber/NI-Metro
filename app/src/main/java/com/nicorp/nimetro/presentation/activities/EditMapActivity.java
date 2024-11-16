@@ -449,7 +449,7 @@ public class EditMapActivity extends AppCompatActivity {
             }
 
             // Set data to MetroMapView
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, new ArrayList<>(), new ArrayList<>());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -580,7 +580,7 @@ public class EditMapActivity extends AppCompatActivity {
             newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
             selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
 
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, new ArrayList<>(), new ArrayList<>());
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
@@ -618,7 +618,7 @@ public class EditMapActivity extends AppCompatActivity {
         if (selectedStation != null) {
             stations.remove(selectedStation);
             selectedStation = null;
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, new ArrayList<>(), new ArrayList<>());
             metroMapView.invalidate();
         } else {
             Toast.makeText(this, "Select a station to remove", Toast.LENGTH_SHORT).show();
@@ -812,7 +812,7 @@ public class EditMapActivity extends AppCompatActivity {
 
             station1.addIntermediatePoints(station2, intermediatePoints);
 
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, new ArrayList<>(), new ArrayList<>());
             metroMapView.invalidate();
 
             // Dismiss the dialog safely
@@ -918,7 +918,7 @@ public class EditMapActivity extends AppCompatActivity {
                 }
             }
 
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects);
+            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, new ArrayList<>(), new ArrayList<>());
             metroMapView.invalidate();
 
             // Dismiss the dialog safely

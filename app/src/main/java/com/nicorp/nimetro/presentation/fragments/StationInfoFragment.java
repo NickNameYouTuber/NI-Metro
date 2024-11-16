@@ -24,11 +24,6 @@ import com.nicorp.nimetro.domain.entities.Transfer;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * A fragment that displays detailed information about a specific metro station.
- * This includes the station's name, previous and next stations, line information,
- * and transfer details.
- */
 public class StationInfoFragment extends Fragment {
 
     private static final String ARG_LINE = "line";
@@ -37,27 +32,18 @@ public class StationInfoFragment extends Fragment {
     private static final String ARG_NEXT_STATION = "next_station";
     private static final String ARG_TRANSFER = "transfers";
     private static final String ARG_LINES = "lines";
+    private static final String ARG_GRAYED_LINES = "grayed_lines";
 
     private Line line;
     private List<Line> lines;
+    private List<Line> grayedLines;
     private Station station;
     private List<Transfer> transfers;
     private Station prevStation;
     private Station nextStation;
     private OnStationInfoListener listener;
 
-    /**
-     * Creates a new instance of StationInfoFragment with the necessary arguments.
-     *
-     * @param line The current line of the station.
-     * @param station The station to display information about.
-     * @param prevStation The previous station on the line.
-     * @param nextStation The next station on the line.
-     * @param transfers List of transfers available from the station.
-     * @param lines List of all lines in the metro system.
-     * @return A new instance of StationInfoFragment.
-     */
-    public static StationInfoFragment newInstance(Line line, Station station, Station prevStation, Station nextStation, List<Transfer> transfers, List<Line> lines) {
+    public static StationInfoFragment newInstance(Line line, Station station, Station prevStation, Station nextStation, List<Transfer> transfers, List<Line> lines, List<Line> grayedLines) {
         StationInfoFragment fragment = new StationInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_STATION, station);
@@ -66,6 +52,7 @@ public class StationInfoFragment extends Fragment {
         args.putParcelable(ARG_LINE, line);
         args.putSerializable(ARG_TRANSFER, (Serializable) transfers);
         args.putSerializable(ARG_LINES, (Serializable) lines);
+        args.putSerializable(ARG_GRAYED_LINES, (Serializable) grayedLines);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,6 +67,7 @@ public class StationInfoFragment extends Fragment {
             line = getArguments().getParcelable(ARG_LINE);
             transfers = (List<Transfer>) getArguments().getSerializable(ARG_TRANSFER);
             lines = (List<Line>) getArguments().getSerializable(ARG_LINES);
+            grayedLines = (List<Line>) getArguments().getSerializable(ARG_GRAYED_LINES);
         }
     }
 
@@ -88,11 +76,11 @@ public class StationInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_station_info, container, false);
 
-        // Set view width to match parent
         view.setMinimumWidth(LinearLayout.LayoutParams.MATCH_PARENT);
 
         TextView stationName = view.findViewById(R.id.stationName);
         stationName.setText(station.getName());
+        Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
 
         TextView prevStationName = view.findViewById(R.id.prevStationName);
         setStationNameVisibility(prevStationName, prevStation);
@@ -113,17 +101,11 @@ public class StationInfoFragment extends Fragment {
         setLineNumberAndColor(lineNumber, station);
 
         LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
-        addTransferCircles(transferCirclesContainer);
+//        addTransferCircles(transferCirclesContainer);
 
         return view;
     }
 
-    /**
-     * Sets the visibility of the station name TextView based on whether the station is null.
-     *
-     * @param stationNameTextView The TextView to set visibility for.
-     * @param station The station to check for null.
-     */
     private void setStationNameVisibility(TextView stationNameTextView, Station station) {
         if (station != null) {
             stationNameTextView.setText(station.getName());
@@ -133,10 +115,6 @@ public class StationInfoFragment extends Fragment {
         }
     }
 
-    /**
-     * Handles the click event for the "From" button.
-     * Notifies the listener to set the current station as the start station.
-     */
     private void onFromButtonClick() {
         if (listener != null) {
             listener.onSetStart(station, true);
@@ -144,10 +122,6 @@ public class StationInfoFragment extends Fragment {
         dismiss();
     }
 
-    /**
-     * Handles the click event for the "To" button.
-     * Notifies the listener to set the current station as the end station.
-     */
     private void onToButtonClick() {
         if (listener != null) {
             listener.onSetEnd(station, true);
@@ -155,22 +129,11 @@ public class StationInfoFragment extends Fragment {
         dismiss();
     }
 
-    /**
-     * Sets the line number and color for the station.
-     *
-     * @param lineNumber The TextView to display the line number.
-     * @param station The station to get the line information from.
-     */
     private void setLineNumberAndColor(TextView lineNumber, Station station) {
         lineNumber.setText(String.valueOf(line.getLineIdForStation(station)));
         lineNumber.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
     }
 
-    /**
-     * Adds transfer circles to the container for each transfer available from the station.
-     *
-     * @param transferCirclesContainer The container to add transfer circles to.
-     */
     private void addTransferCircles(LinearLayout transferCirclesContainer) {
         for (Transfer transfer : transfers) {
             if (transfer.getStations().contains(station)) {
@@ -186,12 +149,6 @@ public class StationInfoFragment extends Fragment {
         }
     }
 
-    /**
-     * Creates a transfer circle TextView for the given transfer station.
-     *
-     * @param transferStation The transfer station to create the circle for.
-     * @return The created TextView representing the transfer circle.
-     */
     private TextView createTransferCircle(Station transferStation) {
         TextView transferCircle = new TextView(getContext());
         int transferLineId = getLineIdForStation(transferStation);
@@ -211,14 +168,13 @@ public class StationInfoFragment extends Fragment {
         return transferCircle;
     }
 
-    /**
-     * Gets the line ID for the given station.
-     *
-     * @param station The station to get the line ID for.
-     * @return The line ID of the station, or -1 if not found.
-     */
     private int getLineIdForStation(Station station) {
         for (Line line : lines) {
+            if (line.getStations().contains(station)) {
+                return line.getId();
+            }
+        }
+        for (Line line : grayedLines) {
             if (line.getStations().contains(station)) {
                 return line.getId();
             }
@@ -226,14 +182,13 @@ public class StationInfoFragment extends Fragment {
         return -1;
     }
 
-    /**
-     * Gets the color for the given station.
-     *
-     * @param station The station to get the color for.
-     * @return The color of the station, or black if not found.
-     */
     private String getColorForStation(Station station) {
         for (Line line : lines) {
+            if (line.getStations().contains(station)) {
+                return line.getColor();
+            }
+        }
+        for (Line line : grayedLines) {
             if (line.getStations().contains(station)) {
                 return line.getColor();
             }
@@ -241,18 +196,10 @@ public class StationInfoFragment extends Fragment {
         return "#000000";
     }
 
-    /**
-     * Sets the listener for station info events.
-     *
-     * @param listener The listener to set.
-     */
     public void setOnStationInfoListener(OnStationInfoListener listener) {
         this.listener = listener;
     }
 
-    /**
-     * Dismisses the fragment.
-     */
     private void dismiss() {
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
@@ -261,9 +208,6 @@ public class StationInfoFragment extends Fragment {
         }
     }
 
-    /**
-     * Interface for handling station info events.
-     */
     public interface OnStationInfoListener {
         void onSetStart(Station station, boolean fromStationInfoFragment);
         void onSetEnd(Station station, boolean fromStationInfoFragment);
