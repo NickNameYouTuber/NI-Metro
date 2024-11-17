@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -88,6 +89,8 @@ public class StationInfoFragment extends Fragment {
     }
 
     LinearLayout stationInfoContainer;
+    TextView prevStationArrivalTime;
+    TextView nextStationArrivalTime;
 
     @Nullable
     @Override
@@ -99,6 +102,9 @@ public class StationInfoFragment extends Fragment {
         TextView stationName = view.findViewById(R.id.stationName);
         stationName.setText(station.getName());
         Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
+
+        prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
+        nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
 
         TextView prevStationName = view.findViewById(R.id.prevStationName);
         setStationNameVisibility(prevStationName, prevStation);
@@ -131,12 +137,10 @@ public class StationInfoFragment extends Fragment {
 
     private void fetchExpress3Schedule(Station station) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
-        String from = station.getExpress3();
-        String to = prevStation != null ? prevStation.getExpress3() : nextStation.getExpress3();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        Log.d("StationInfoFragment", "Fetching express3 schedule for station: " + station.getName() + " from: " + from + " to: " + to + " on date: " + date);
+        Log.d("StationInfoFragment", "Fetching express3 schedule for station: " + station.getName() + " on date: " + date);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.rasp.yandex.net/")
@@ -144,35 +148,70 @@ public class StationInfoFragment extends Fragment {
                 .build();
 
         YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "express", date);
 
-        call.enqueue(new Callback<YandexRaspResponse>() {
-            @Override
-            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
-                    if (!segments.isEmpty()) {
-                        String nearestArrivalTime = findNearestArrivalTime(segments);
-                        Log.d("StationInfoFragment", "Nearest express3 arrival time: " + nearestArrivalTime);
-                        // Отобразить время прибытия в UI
-                        showExpress3ArrivalTime(nearestArrivalTime);
+        // Запрос для предыдущей станции
+        if (prevStation != null) {
+            String fromPrev = station.getExpress3();
+            String toPrev = prevStation.getExpress3();
+            Call<YandexRaspResponse> callPrev = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromPrev, toPrev, "express", date);
+            callPrev.enqueue(new Callback<YandexRaspResponse>() {
+                @Override
+                public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<YandexRaspResponse.Segment> segments = response.body().getSegments();
+                        if (!segments.isEmpty()) {
+                            List<String> nearestArrivalTimePrev = findNearestArrivalTime(segments, prevStation);
+                            Log.d("StationInfoFragment", "Nearest express3 arrival time prev " + prevStation.getName() + " " + prevStation.getExpress3() + " : " + nearestArrivalTimePrev);
+                            // Отобразить время прибытия в UI
+                            showExpress3ArrivalTime(nearestArrivalTimePrev, null);
+                        } else {
+                            Log.d("StationInfoFragment", "No segments found for express3 schedule for prev station");
+                        }
                     } else {
-                        Log.d("StationInfoFragment", "No segments found for express3 schedule");
+                        Log.e("StationInfoFragment", "Failed to fetch express3 schedule for prev station: " + response.message());
                     }
-                } else {
-                    Log.e("StationInfoFragment", "Failed to fetch express3 schedule: " + response.message());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                Log.e("StationInfoFragment", "Error fetching express3 schedule", t);
-            }
-        });
+                @Override
+                public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
+                    Log.e("StationInfoFragment", "Error fetching express3 schedule for prev station", t);
+                }
+            });
+        }
+
+        // Запрос для следующей станции
+        if (nextStation != null) {
+            String fromNext = station.getExpress3();
+            String toNext = nextStation.getExpress3();
+            Call<YandexRaspResponse> callNext = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromNext, toNext, "express", date);
+            callNext.enqueue(new Callback<YandexRaspResponse>() {
+                @Override
+                public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<YandexRaspResponse.Segment> segments = response.body().getSegments();
+                        if (!segments.isEmpty()) {
+                            List<String> nearestArrivalTimeNext = findNearestArrivalTime(segments, nextStation);
+                            Log.d("StationInfoFragment", "Nearest express3 arrival time next " + nextStation.getName() + " " + nextStation.getExpress3() + " : " + nearestArrivalTimeNext);
+                            // Отобразить время прибытия в UI
+                            showExpress3ArrivalTime(null, nearestArrivalTimeNext);
+                        } else {
+                            Log.d("StationInfoFragment", "No segments found for express3 schedule for next station");
+                        }
+                    } else {
+                        Log.e("StationInfoFragment", "Failed to fetch express3 schedule for next station: " + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
+                    Log.e("StationInfoFragment", "Error fetching express3 schedule for next station", t);
+                }
+            });
+        }
     }
 
-    private String findNearestArrivalTime(List<YandexRaspResponse.Segment> segments) {
-        String nearestArrivalTime = null;
+    private List<String> findNearestArrivalTime(List<YandexRaspResponse.Segment> segments, Station targetStation) {
+        List<String> nearestArrivalTimes = new ArrayList<>();
         long minDifference = Long.MAX_VALUE;
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
 
@@ -183,16 +222,24 @@ public class StationInfoFragment extends Fragment {
                 ZonedDateTime arrivalDateTime = ZonedDateTime.parse(segment.getArrival(), formatter);
                 long difference = ChronoUnit.MINUTES.between(currentTime, arrivalDateTime);
 
-                if (difference > 0 && difference < minDifference) {
-                    minDifference = difference;
-                    nearestArrivalTime = segment.getArrival();
+                if (difference > 0 && nearestArrivalTimes.size() < 3) {
+                    nearestArrivalTimes.add(segment.getArrival().substring(11, 16));
                 }
             } catch (Exception e) {
                 Log.e("StationInfoFragment", "Error parsing date", e);
             }
         }
 
-        return nearestArrivalTime;
+        return nearestArrivalTimes;
+    }
+
+    private void showExpress3ArrivalTime(List<String> arrivalTimePrev, List<String> arrivalTimeNext) {
+        if (arrivalTimePrev != null) {
+            prevStationArrivalTime.setText(String.join(", ", arrivalTimePrev));
+        }
+        if (arrivalTimeNext != null) {
+            nextStationArrivalTime.setText(String.join(", ", arrivalTimeNext));
+        }
     }
 
     private void showExpress3ArrivalTime(String arrivalTime) {

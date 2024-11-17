@@ -74,6 +74,32 @@
         app:layout_constraintStart_toStartOf="@+id/prevStationName"
         app:layout_constraintTop_toBottomOf="@+id/prevStationName" />
 
+    <!-- Время прибытия электрички в сторону предыдущей станции -->
+    <TextView
+        android:id="@+id/prevStationArrivalTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="00:00"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/prevStationName"
+        app:layout_constraintStart_toEndOf="@+id/prevStationName"
+        app:layout_constraintTop_toTopOf="@+id/prevStationName" />
+
+    <!-- Время прибытия электрички в сторону следующей станции -->
+    <TextView
+        android:id="@+id/nextStationArrivalTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="00:00"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/nextStationName"
+        app:layout_constraintStart_toEndOf="@+id/nextStationName"
+        app:layout_constraintTop_toTopOf="@+id/nextStationName" />
+
     <!-- Текст "Отсюда" -->
 
     <LinearLayout

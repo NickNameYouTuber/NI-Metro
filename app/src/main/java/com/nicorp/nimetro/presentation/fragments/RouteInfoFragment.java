@@ -35,6 +35,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +60,7 @@ public class RouteInfoFragment extends Fragment {
     private boolean isExpanded = false;
 
     private TextView routeTime;
+    private TextView nearestTrainsTextView;
     private TextView routeStationsCount;
     private TextView routeTransfersCount;
     private TextView routeTitle;
@@ -129,6 +131,7 @@ public class RouteInfoFragment extends Fragment {
      * @param colorOnSurface The color to use for text views.
      */
     private void initializeViews(View view, int colorOnSurface) {
+        nearestTrainsTextView = view.findViewById(R.id.nearestTrains);
         routeTime = view.findViewById(R.id.routeTime);
         routeStationsCount = view.findViewById(R.id.routeStationsCount);
         routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
@@ -402,10 +405,10 @@ public class RouteInfoFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                     if (!segments.isEmpty()) {
-                        String nearestDepartureTime = findNearestDepartureTime(segments);
-                        Log.d("RouteInfoFragment", "Nearest express3 departure time: " + nearestDepartureTime);
+                        List<String> nearestDepartureTimes = findNearestDepartureTimes(segments);
+                        Log.d("RouteInfoFragment", "Nearest express3 departure times: " + nearestDepartureTimes);
                         // Отобразить время отправления в UI
-                        showExpress3DepartureTime(nearestDepartureTime);
+                        showExpress3DepartureTimes(nearestDepartureTimes);
                     } else {
                         Log.d("RouteInfoFragment", "No segments found for express3 departure time");
                     }
@@ -421,42 +424,29 @@ public class RouteInfoFragment extends Fragment {
         });
     }
 
-    private String findNearestDepartureTime(List<YandexRaspResponse.Segment> segments) {
-        String nearestDepartureTime = null;
-        long minDifference = Long.MAX_VALUE;
-        // Current time in Moscow time zone
+    private List<String> findNearestDepartureTimes(List<YandexRaspResponse.Segment> segments) {
+        List<String> nearestDepartureTimes = new ArrayList<>();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
-
-        Log.d("RouteInfoFragment", "Current time: " + currentTime);
 
         for (YandexRaspResponse.Segment segment : segments) {
             try {
                 Log.d("RouteInfoFragment", "Departure: " + segment.getDeparture());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
                 ZonedDateTime departureDateTime = ZonedDateTime.parse(segment.getDeparture(), formatter);
-                Log.d("RouteInfoFragment", "Departure date: " + departureDateTime);
                 long difference = ChronoUnit.MINUTES.between(currentTime, departureDateTime);
 
-                Log.d("RouteInfoFragment", "Difference: " + difference);
-
-                if (difference > 0 && difference < minDifference) {
-                    minDifference = difference;
-                    nearestDepartureTime = segment.getDeparture();
+                if (difference > 0 && nearestDepartureTimes.size() < 3) {
+                    nearestDepartureTimes.add(segment.getDeparture().substring(11, 16));
                 }
             } catch (Exception e) {
                 Log.e("RouteInfoFragment", "Error parsing date", e);
             }
         }
 
-        return nearestDepartureTime;
+        return nearestDepartureTimes;
     }
 
-    private void showExpress3DepartureTime(String departureTime) {
-        TextView departureTimeTextView = new TextView(getContext());
-        departureTimeTextView.setText("Отправление электрички: " + departureTime);
-        departureTimeTextView.setTextColor(Color.BLACK);
-        departureTimeTextView.setPadding(16, 8, 16, 8);
-
-        routeInfoContainer.addView(departureTimeTextView);
+    private void showExpress3DepartureTimes(List<String> departureTimes) {
+        nearestTrainsTextView.setText("Ближайшие электрички: " + String.join(", ", departureTimes));
     }
 }
