@@ -22,12 +22,28 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
+import com.nicorp.nimetro.data.api.YandexRaspApi;
+import com.nicorp.nimetro.data.models.YandexRaspResponse;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A fragment that displays detailed information about a metro route.
@@ -97,6 +113,11 @@ public class RouteInfoFragment extends Fragment {
         calculateAndSetRouteStatistics();
         setupCloseButton(view);
         setupSwipeGestureDetector(view);
+
+        // Вызов fetchExpress3DepartureTime
+        if (route != null && !route.isEmpty()) {
+            fetchExpress3DepartureTime(route.get(0));
+        }
 
         return view;
     }
@@ -356,5 +377,86 @@ public class RouteInfoFragment extends Fragment {
             expandedHeight = 500 * density;
         }
         return expandedHeight;
+    }
+
+    private void fetchExpress3DepartureTime(Station startStation) {
+        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
+        String from = startStation.getExpress3();
+        String to = route.get(1).getExpress3();
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+        String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        Log.d("RouteInfoFragment", "Fetching express3 departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.rasp.yandex.net/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "express", date);
+
+        call.enqueue(new Callback<YandexRaspResponse>() {
+            @Override
+            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
+                    if (!segments.isEmpty()) {
+                        String nearestDepartureTime = findNearestDepartureTime(segments);
+                        Log.d("RouteInfoFragment", "Nearest express3 departure time: " + nearestDepartureTime);
+                        // Отобразить время отправления в UI
+                        showExpress3DepartureTime(nearestDepartureTime);
+                    } else {
+                        Log.d("RouteInfoFragment", "No segments found for express3 departure time");
+                    }
+                } else {
+                    Log.e("RouteInfoFragment", "Failed to fetch express3 departure time: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
+                Log.e("RouteInfoFragment", "Error fetching express3 departure time", t);
+            }
+        });
+    }
+
+    private String findNearestDepartureTime(List<YandexRaspResponse.Segment> segments) {
+        String nearestDepartureTime = null;
+        long minDifference = Long.MAX_VALUE;
+        // Current time in Moscow time zone
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+
+        Log.d("RouteInfoFragment", "Current time: " + currentTime);
+
+        for (YandexRaspResponse.Segment segment : segments) {
+            try {
+                Log.d("RouteInfoFragment", "Departure: " + segment.getDeparture());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+                ZonedDateTime departureDateTime = ZonedDateTime.parse(segment.getDeparture(), formatter);
+                Log.d("RouteInfoFragment", "Departure date: " + departureDateTime);
+                long difference = ChronoUnit.MINUTES.between(currentTime, departureDateTime);
+
+                Log.d("RouteInfoFragment", "Difference: " + difference);
+
+                if (difference > 0 && difference < minDifference) {
+                    minDifference = difference;
+                    nearestDepartureTime = segment.getDeparture();
+                }
+            } catch (Exception e) {
+                Log.e("RouteInfoFragment", "Error parsing date", e);
+            }
+        }
+
+        return nearestDepartureTime;
+    }
+
+    private void showExpress3DepartureTime(String departureTime) {
+        TextView departureTimeTextView = new TextView(getContext());
+        departureTimeTextView.setText("Отправление электрички: " + departureTime);
+        departureTimeTextView.setTextColor(Color.BLACK);
+        departureTimeTextView.setPadding(16, 8, 16, 8);
+
+        routeInfoContainer.addView(departureTimeTextView);
     }
 }

@@ -346,6 +346,7 @@ public class EditMapActivity extends AppCompatActivity {
                             stationObject.getString("name"),
                             stationObject.getInt("x"),
                             stationObject.getInt("y"),
+                            "",
                             line.getColor(),
                             facilities,
                             textPosition
@@ -603,6 +604,7 @@ public class EditMapActivity extends AppCompatActivity {
                 stationName,
                 selectedStation.getX() + 20,
                 selectedStation.getY() + 20,
+                "",
                 selectedLine.getColor(),
                 new Facilities("5:30 - 0:00", 0, 0, new String[]{}),
                 0
