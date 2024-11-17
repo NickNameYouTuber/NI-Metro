@@ -14,19 +14,19 @@ public class Station implements Parcelable {
     private String name;
     private int x;
     private int y;
-    private String express3;
+    private String ESP;
     private String color;
     private Facilities facilities;
     private int textPosition;
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints; // Изменение структуры данных
 
-    public Station(String id, String name, int x, int y, String express3, String color, Facilities facilities, int textPosition) {
+    public Station(String id, String name, int x, int y, String ESP, String color, Facilities facilities, int textPosition) {
         this.id = id;
         this.name = name;
         this.x = x;
         this.y = y;
-        this.express3 = express3;
+        this.ESP = ESP;
         this.color = color;
         this.facilities = facilities;
         this.textPosition = textPosition;
@@ -39,7 +39,7 @@ public class Station implements Parcelable {
         name = in.readString();
         x = in.readInt();
         y = in.readInt();
-        express3 = in.readString();
+        ESP = in.readString();
         color = in.readString();
         facilities = in.readParcelable(Facilities.class.getClassLoader());
         textPosition = in.readInt();
@@ -71,7 +71,7 @@ public class Station implements Parcelable {
         dest.writeString(name);
         dest.writeInt(x);
         dest.writeInt(y);
-        dest.writeString(express3);
+        dest.writeString(ESP);
         dest.writeString(color);
         dest.writeParcelable(facilities, flags);
         dest.writeInt(textPosition);
@@ -220,12 +220,12 @@ public class Station implements Parcelable {
         this.intermediatePoints = intermediatePoints;
     }
 
-    public String getExpress3() {
-        return express3;
+    public String getESP() {
+        return ESP;
     }
 
-    public void setExpress3(String express3) {
-        this.express3 = express3;
+    public void setESP(String ESP) {
+        this.ESP = ESP;
     }
 
     @Override

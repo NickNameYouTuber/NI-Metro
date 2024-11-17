@@ -129,18 +129,18 @@ public class StationInfoFragment extends Fragment {
         LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
 //        addTransferCircles(transferCirclesContainer);
 
-        // Вызов fetchExpress3Schedule
-        fetchExpress3Schedule(station);
+        // Вызов fetchESPSchedule
+        fetchESPSchedule(station);
 
         return view;
     }
 
-    private void fetchExpress3Schedule(Station station) {
+    private void fetchESPSchedule(Station station) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        Log.d("StationInfoFragment", "Fetching express3 schedule for station: " + station.getName() + " on date: " + date);
+        Log.d("StationInfoFragment", "Fetching ESP schedule for station: " + station.getName() + " on date: " + date);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.rasp.yandex.net/")
@@ -151,9 +151,9 @@ public class StationInfoFragment extends Fragment {
 
         // Запрос для предыдущей станции
         if (prevStation != null) {
-            String fromPrev = station.getExpress3();
-            String toPrev = prevStation.getExpress3();
-            Call<YandexRaspResponse> callPrev = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromPrev, toPrev, "express", date);
+            String fromPrev = station.getESP();
+            String toPrev = prevStation.getESP();
+            Call<YandexRaspResponse> callPrev = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromPrev, toPrev, "esr", date);
             callPrev.enqueue(new Callback<YandexRaspResponse>() {
                 @Override
                 public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
@@ -161,29 +161,29 @@ public class StationInfoFragment extends Fragment {
                         List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                         if (!segments.isEmpty()) {
                             List<String> nearestArrivalTimePrev = findNearestArrivalTime(segments, prevStation);
-                            Log.d("StationInfoFragment", "Nearest express3 arrival time prev " + prevStation.getName() + " " + prevStation.getExpress3() + " : " + nearestArrivalTimePrev);
+                            Log.d("StationInfoFragment", "Nearest ESP arrival time prev " + prevStation.getName() + " " + prevStation.getESP() + " : " + nearestArrivalTimePrev);
                             // Отобразить время прибытия в UI
-                            showExpress3ArrivalTime(nearestArrivalTimePrev, null);
+                            showESPArrivalTime(nearestArrivalTimePrev, null);
                         } else {
-                            Log.d("StationInfoFragment", "No segments found for express3 schedule for prev station");
+                            Log.d("StationInfoFragment", "No segments found for ESP schedule for prev station");
                         }
                     } else {
-                        Log.e("StationInfoFragment", "Failed to fetch express3 schedule for prev station: " + response.message());
+                        Log.e("StationInfoFragment", "Failed to fetch ESP schedule for prev station: " + response.message());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                    Log.e("StationInfoFragment", "Error fetching express3 schedule for prev station", t);
+                    Log.e("StationInfoFragment", "Error fetching ESP schedule for prev station", t);
                 }
             });
         }
 
         // Запрос для следующей станции
         if (nextStation != null) {
-            String fromNext = station.getExpress3();
-            String toNext = nextStation.getExpress3();
-            Call<YandexRaspResponse> callNext = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromNext, toNext, "express", date);
+            String fromNext = station.getESP();
+            String toNext = nextStation.getESP();
+            Call<YandexRaspResponse> callNext = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromNext, toNext, "esr", date);
             callNext.enqueue(new Callback<YandexRaspResponse>() {
                 @Override
                 public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
@@ -191,20 +191,20 @@ public class StationInfoFragment extends Fragment {
                         List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                         if (!segments.isEmpty()) {
                             List<String> nearestArrivalTimeNext = findNearestArrivalTime(segments, nextStation);
-                            Log.d("StationInfoFragment", "Nearest express3 arrival time next " + nextStation.getName() + " " + nextStation.getExpress3() + " : " + nearestArrivalTimeNext);
+                            Log.d("StationInfoFragment", "Nearest ESP arrival time next " + nextStation.getName() + " " + nextStation.getESP() + " : " + nearestArrivalTimeNext);
                             // Отобразить время прибытия в UI
-                            showExpress3ArrivalTime(null, nearestArrivalTimeNext);
+                            showESPArrivalTime(null, nearestArrivalTimeNext);
                         } else {
-                            Log.d("StationInfoFragment", "No segments found for express3 schedule for next station");
+                            Log.d("StationInfoFragment", "No segments found for ESP schedule for next station");
                         }
                     } else {
-                        Log.e("StationInfoFragment", "Failed to fetch express3 schedule for next station: " + response.message());
+                        Log.e("StationInfoFragment", "Failed to fetch ESP schedule for next station: " + response.message());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                    Log.e("StationInfoFragment", "Error fetching express3 schedule for next station", t);
+                    Log.e("StationInfoFragment", "Error fetching ESP schedule for next station", t);
                 }
             });
         }
@@ -233,7 +233,7 @@ public class StationInfoFragment extends Fragment {
         return nearestArrivalTimes;
     }
 
-    private void showExpress3ArrivalTime(List<String> arrivalTimePrev, List<String> arrivalTimeNext) {
+    private void showESPArrivalTime(List<String> arrivalTimePrev, List<String> arrivalTimeNext) {
         if (arrivalTimePrev != null) {
             prevStationArrivalTime.setText(String.join(", ", arrivalTimePrev));
         }
@@ -242,7 +242,7 @@ public class StationInfoFragment extends Fragment {
         }
     }
 
-    private void showExpress3ArrivalTime(String arrivalTime) {
+    private void showESPArrivalTime(String arrivalTime) {
         TextView arrivalTimeTextView = new TextView(getContext());
         arrivalTimeTextView.setText("Прибытие электрички: " + arrivalTime);
         arrivalTimeTextView.setTextColor(Color.BLACK);

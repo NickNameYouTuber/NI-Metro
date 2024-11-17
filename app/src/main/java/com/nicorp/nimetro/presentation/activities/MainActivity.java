@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 int elevators = stationObject.optInt("elevators", 0);
                 String[] exits = toStringArray(stationObject.optJSONArray("exits"));
                 int textPosition = stationObject.optInt("textPosition", 0);
-                String express3 = stationObject.optString("express3", null); // Добавляем поле express3
+                String ESP = stationObject.optString("ESP", null); // Добавляем поле ESP
 
                 Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                 Station station = new Station(
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         stationObject.getString("name"),
                         stationObject.getInt("x"),
                         stationObject.getInt("y"),
-                        express3,
+                        ESP,
                         line.getColor(),
                         facilities,
                         textPosition

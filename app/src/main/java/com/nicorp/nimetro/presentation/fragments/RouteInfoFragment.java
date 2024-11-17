@@ -116,9 +116,9 @@ public class RouteInfoFragment extends Fragment {
         setupCloseButton(view);
         setupSwipeGestureDetector(view);
 
-        // Вызов fetchExpress3DepartureTime
+        // Вызов fetchESPDepartureTime
         if (route != null && !route.isEmpty()) {
-            fetchExpress3DepartureTime(route.get(0));
+            fetchESPDepartureTime(route.get(0));
         }
 
         return view;
@@ -382,14 +382,14 @@ public class RouteInfoFragment extends Fragment {
         return expandedHeight;
     }
 
-    private void fetchExpress3DepartureTime(Station startStation) {
+    private void fetchESPDepartureTime(Station startStation) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
-        String from = startStation.getExpress3();
-        String to = route.get(1).getExpress3();
+        String from = startStation.getESP();
+        String to = route.get(1).getESP();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        Log.d("RouteInfoFragment", "Fetching express3 departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
+        Log.d("RouteInfoFragment", "Fetching ESP departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.rasp.yandex.net/")
@@ -397,7 +397,7 @@ public class RouteInfoFragment extends Fragment {
                 .build();
 
         YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "express", date);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date);
 
         call.enqueue(new Callback<YandexRaspResponse>() {
             @Override
@@ -406,20 +406,20 @@ public class RouteInfoFragment extends Fragment {
                     List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                     if (!segments.isEmpty()) {
                         List<String> nearestDepartureTimes = findNearestDepartureTimes(segments);
-                        Log.d("RouteInfoFragment", "Nearest express3 departure times: " + nearestDepartureTimes);
+                        Log.d("RouteInfoFragment", "Nearest ESP departure times: " + nearestDepartureTimes);
                         // Отобразить время отправления в UI
-                        showExpress3DepartureTimes(nearestDepartureTimes);
+                        showESPDepartureTimes(nearestDepartureTimes);
                     } else {
-                        Log.d("RouteInfoFragment", "No segments found for express3 departure time");
+                        Log.d("RouteInfoFragment", "No segments found for ESP departure time");
                     }
                 } else {
-                    Log.e("RouteInfoFragment", "Failed to fetch express3 departure time: " + response.message());
+                    Log.e("RouteInfoFragment", "Failed to fetch ESP departure time: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                Log.e("RouteInfoFragment", "Error fetching express3 departure time", t);
+                Log.e("RouteInfoFragment", "Error fetching ESP departure time", t);
             }
         });
     }
@@ -446,7 +446,7 @@ public class RouteInfoFragment extends Fragment {
         return nearestDepartureTimes;
     }
 
-    private void showExpress3DepartureTimes(List<String> departureTimes) {
+    private void showESPDepartureTimes(List<String> departureTimes) {
         nearestTrainsTextView.setText("Ближайшие электрички: " + String.join(", ", departureTimes));
     }
 }
