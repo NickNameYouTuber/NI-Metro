@@ -61,7 +61,7 @@ public class MetroMapView extends View {
     private Paint riverPaint;
     private Paint grayedPaint;
 
-    private boolean isEditMode = false;
+    private boolean isEditMode = true;
 
     private OnStationClickListener listener;
 
@@ -340,7 +340,7 @@ public class MetroMapView extends View {
                 for (Station.Neighbor neighbor : station.getNeighbors()) {
                     Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
                     if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        String connectionKey = Integer.parseInt( station.getId().split("_")[1]) < Integer.parseInt(neighborStation.getId().split("_")[1])
+                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
                                 ? station.getId() + "-" + neighborStation.getId()
                                 : neighborStation.getId() + "-" + station.getId();
 
@@ -355,7 +355,7 @@ public class MetroMapView extends View {
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = Integer.parseInt(firstStation.getId().split("_")[1]) < Integer.parseInt(lastStation.getId().split("_")[1])
+                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
                         ? firstStation.getId() + "-" + lastStation.getId()
                         : lastStation.getId() + "-" + firstStation.getId();
 
@@ -486,9 +486,6 @@ public class MetroMapView extends View {
     }
 
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType, Paint paint) {
-        Log.d("Color", paint.getColor() + " " + station1.getColor() + " " + station2.getColor());
-        String hexColor = String.format("#%06X", (0xFFFFFF & paint.getColor()));
-        Log.d("Color", hexColor);
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
             if (lineType.equals("double")) {
@@ -509,7 +506,11 @@ public class MetroMapView extends View {
             Point control1 = intermediatePoints.get(0);
             Point control2 = intermediatePoints.get(1);
             Point end = new Point(station2.getX(), station2.getY());
-            drawBezierCurve(canvas, start, control1, control2, end, paint);
+            if (lineType.equals("double")) {
+                drawDoubleBezierCurve(canvas, start, control1, control2, end, paint);
+            } else {
+                drawBezierCurve(canvas, start, control1, control2, end, paint);
+            }
         }
     }
 
@@ -557,6 +558,43 @@ public class MetroMapView extends View {
         canvas.drawLine(x1 - perpX, y1 - perpY, x2 - perpX, y2 - perpY, paint);
 
         canvas.drawLine(x1, y1, x2, y2, whitePaint);
+    }
+
+    private void drawDoubleBezierCurve(Canvas canvas, Point start, Point control1, Point control2, Point end, Paint paint) {
+        // Создаем две кривые Безье, смещенные относительно друг друга
+        Path path1 = new Path();
+        Path path2 = new Path();
+
+        paint.setStrokeWidth(6);
+
+        // Вычисляем смещение для кривых
+        float offset = 2.5f; // Смещение в пикселях
+        float dx = control2.x - control1.x;
+        float dy = control2.y - control1.y;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float nx = dy / length;
+        float ny = -dx / length;
+
+        // Первая кривая
+        path1.moveTo((start.x + nx * offset) * COORDINATE_SCALE_FACTOR, (start.y + ny * offset) * COORDINATE_SCALE_FACTOR);
+        path1.cubicTo(
+                (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR, (control1.y + ny * offset) * COORDINATE_SCALE_FACTOR,
+                (control2.x + nx * offset) * COORDINATE_SCALE_FACTOR, (control2.y + ny * offset) * COORDINATE_SCALE_FACTOR,
+                (end.x + nx * offset) * COORDINATE_SCALE_FACTOR, (end.y + ny * offset) * COORDINATE_SCALE_FACTOR
+        );
+
+        // Вторая кривая
+        path2.moveTo((start.x - nx * offset) * COORDINATE_SCALE_FACTOR, (start.y - ny * offset) * COORDINATE_SCALE_FACTOR);
+        path2.cubicTo(
+                (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR, (control1.y - ny * offset) * COORDINATE_SCALE_FACTOR,
+                (control2.x - nx * offset) * COORDINATE_SCALE_FACTOR, (control2.y - ny * offset) * COORDINATE_SCALE_FACTOR,
+                (end.x - nx * offset) * COORDINATE_SCALE_FACTOR, (end.y - ny * offset) * COORDINATE_SCALE_FACTOR
+        );
+
+        // Рисуем обе кривые
+        canvas.drawPath(path1, paint);
+        canvas.drawPath(path2, paint);
+        paint.setStrokeWidth(9);
     }
 
     private List<Point> interpolatePoints(List<Point> points) {
