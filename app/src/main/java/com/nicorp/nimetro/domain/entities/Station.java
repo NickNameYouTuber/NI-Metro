@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Station implements Parcelable {
-    private int id;
+    private String id;
     private String name;
     private int x;
     private int y;
@@ -20,7 +20,7 @@ public class Station implements Parcelable {
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints; // Изменение структуры данных
 
-    public Station(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
+    public Station(String id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
         this.name = name;
         this.x = x;
@@ -33,7 +33,7 @@ public class Station implements Parcelable {
     }
 
     protected Station(Parcel in) {
-        id = in.readInt();
+        id = in.readString();
         name = in.readString();
         x = in.readInt();
         y = in.readInt();
@@ -64,7 +64,7 @@ public class Station implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeString(id);
         dest.writeString(name);
         dest.writeInt(x);
         dest.writeInt(y);
@@ -75,7 +75,7 @@ public class Station implements Parcelable {
         dest.writeMap(intermediatePoints);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -176,7 +176,7 @@ public class Station implements Parcelable {
         }
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

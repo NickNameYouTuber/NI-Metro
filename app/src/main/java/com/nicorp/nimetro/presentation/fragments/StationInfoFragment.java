@@ -151,7 +151,7 @@ public class StationInfoFragment extends Fragment {
 
     private TextView createTransferCircle(Station transferStation) {
         TextView transferCircle = new TextView(getContext());
-        int transferLineId = getLineIdForStation(transferStation);
+        String transferLineId = getLineIdForStation(transferStation);
         transferCircle.setText(String.valueOf(transferLineId));
         transferCircle.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_background_red));
         transferCircle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(getColorForStation(transferStation))));
@@ -168,7 +168,7 @@ public class StationInfoFragment extends Fragment {
         return transferCircle;
     }
 
-    private int getLineIdForStation(Station station) {
+    private String getLineIdForStation(Station station) {
         for (Line line : lines) {
             if (line.getStations().contains(station)) {
                 return line.getId();
@@ -179,7 +179,7 @@ public class StationInfoFragment extends Fragment {
                 return line.getId();
             }
         }
-        return -1;
+        return null;
     }
 
     private String getColorForStation(Station station) {

@@ -284,8 +284,9 @@ public class MetroMapView extends View {
             for (Station station : line.getStations()) {
                 for (Station.Neighbor neighbor : station.getNeighbors()) {
                     Station neighborStation = findStationById(neighbor.getStation().getId(), grayedStations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != -1) {
-                        String connectionKey = station.getId() < neighborStation.getId()
+                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+                        Log.d("MetroMapView", "Drawing connection: " + station.getId() + " - " + neighborStation.getId());
+                        String connectionKey = Integer.parseInt( station.getId().split("_")[1]) < Integer.parseInt(neighborStation.getId().split("_")[1])
                                 ? station.getId() + "-" + neighborStation.getId()
                                 : neighborStation.getId() + "-" + station.getId();
 
@@ -300,7 +301,7 @@ public class MetroMapView extends View {
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = firstStation.getId() < lastStation.getId()
+                String connectionKey = Integer.parseInt(firstStation.getId().split("_")[1]) < Integer.parseInt(lastStation.getId().split("_")[1])
                         ? firstStation.getId() + "-" + lastStation.getId()
                         : lastStation.getId() + "-" + firstStation.getId();
 
@@ -338,8 +339,8 @@ public class MetroMapView extends View {
             for (Station station : line.getStations()) {
                 for (Station.Neighbor neighbor : station.getNeighbors()) {
                     Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != -1) {
-                        String connectionKey = station.getId() < neighborStation.getId()
+                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+                        String connectionKey = Integer.parseInt( station.getId().split("_")[1]) < Integer.parseInt(neighborStation.getId().split("_")[1])
                                 ? station.getId() + "-" + neighborStation.getId()
                                 : neighborStation.getId() + "-" + station.getId();
 
@@ -354,7 +355,7 @@ public class MetroMapView extends View {
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = firstStation.getId() < lastStation.getId()
+                String connectionKey = Integer.parseInt(firstStation.getId().split("_")[1]) < Integer.parseInt(lastStation.getId().split("_")[1])
                         ? firstStation.getId() + "-" + lastStation.getId()
                         : lastStation.getId() + "-" + firstStation.getId();
 
@@ -366,9 +367,9 @@ public class MetroMapView extends View {
         }
     }
 
-    private Station findStationById(int id, List<Station> stations) {
+    private Station findStationById(String id, List<Station> stations) {
         for (Station station : stations) {
-            if (station.getId() == id) {
+            if (station.getId().equals(id)) {
                 return station;
             }
         }

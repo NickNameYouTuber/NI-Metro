@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Line implements Parcelable {
-    private int id;
+    private String id;
     private String name;
     private String color;
     private List<Station> stations;
     private boolean isCircle;
     private String lineType;
 
-    public Line(int id, String name, String color, boolean isCircle, String lineType) {
+    public Line(String id, String name, String color, boolean isCircle, String lineType) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -25,7 +25,7 @@ public class Line implements Parcelable {
     }
 
     protected Line(Parcel in) {
-        id = in.readInt();
+        id = in.readString();
         name = in.readString();
         color = in.readString();
         stations = in.createTypedArrayList(Station.CREATOR);
@@ -52,7 +52,7 @@ public class Line implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeString(id);
         dest.writeString(name);
         dest.writeString(color);
         dest.writeTypedList(stations);
@@ -60,7 +60,7 @@ public class Line implements Parcelable {
         dest.writeString(lineType);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -88,11 +88,11 @@ public class Line implements Parcelable {
         this.lineType = lineType;
     }
 
-    public int getLineIdForStation(Station station) {
+    public String getLineIdForStation(Station station) {
         Log.d("Line", "Searching for station in this line " + station.getName());
         if (stations.contains(station)) {
             return id;
         }
-        return -1;
+        return null;
     }
 }

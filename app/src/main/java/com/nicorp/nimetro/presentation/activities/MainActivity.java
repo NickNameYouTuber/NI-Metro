@@ -156,8 +156,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject metroMapData = jsonObject.getJSONObject("metro_map");
             JSONObject suburbanMapData = jsonObject.getJSONObject("suburban_map");
 
+            // Загружаем данные для метро
             loadMapData(metroMapData, lines, stations, transfers, rivers, mapObjects);
+
+            // Загружаем данные для электричек
             loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
+
+            // Объединяем станции и добавляем соседей
+            List<Station> allStations = new ArrayList<>(stations);
+            allStations.addAll(grayedStations);
+            addNeighbors(metroMapData, allStations);
+            addNeighbors(suburbanMapData, allStations);
 
             updateMapData();
         } catch (JSONException e) {
@@ -181,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject lineObject = linesArray.getJSONObject(i);
             boolean isCircle = lineObject.optBoolean("isCircle", false);
             String lineType = lineObject.optString("lineType", "single");
-            Line line = new Line(lineObject.getInt("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
+            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
             JSONArray stationsArray = lineObject.getJSONArray("stations");
             for (int j = 0; j < stationsArray.length(); j++) {
                 JSONObject stationObject = stationsArray.getJSONObject(j);
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
                 Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                 Station station = new Station(
-                        stationObject.getInt("id"),
+                        stationObject.getString("id"),
                         stationObject.getString("name"),
                         stationObject.getInt("x"),
                         stationObject.getInt("y"),
@@ -207,34 +216,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             lines.add(line);
         }
 
-        for (int i = 0; i < linesArray.length(); i++) {
-            JSONObject lineObject = linesArray.getJSONObject(i);
-            JSONArray stationsArray = lineObject.getJSONArray("stations");
-            for (int j = 0; j < stationsArray.length(); j++) {
-                JSONObject stationObject = stationsArray.getJSONObject(j);
-                Station station = findStationById(stationObject.getInt("id"), stations);
-                if (station != null) {
-                    JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
-                    for (int k = 0; k < neighborsArray.length(); k++) {
-                        JSONArray neighborArray = neighborsArray.getJSONArray(k);
-                        int neighborId = neighborArray.getInt(0);
-                        int time = neighborArray.getInt(1);
-                        Station neighborStation = findStationById(neighborId, stations);
-                        if (neighborStation != null) {
-                            station.addNeighbor(new Station.Neighbor(neighborStation, time));
-                        }
-                    }
-                }
-            }
-        }
-
         JSONArray transfersArray = mapData.getJSONArray("transfers");
         for (int i = 0; i < transfersArray.length(); i++) {
             JSONObject transferObject = transfersArray.getJSONObject(i);
             JSONArray stationsArray = transferObject.getJSONArray("stations");
             List<Station> transferStations = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
-                int stationId = stationsArray.getInt(j);
+                String stationId = stationsArray.getString(j);
                 Station station = findStationById(stationId, stations);
                 if (station != null) {
                     transferStations.add(station);
@@ -263,8 +251,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         for (int i = 0; i < intermediatePointsArray.length(); i++) {
             JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
             JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
-            int station1Id = neighborsIdArray.getInt(0);
-            int station2Id = neighborsIdArray.getInt(1);
+            String station1Id = neighborsIdArray.getString(0);
+            String station2Id = neighborsIdArray.getString(1);
 
             Station station1 = findStationById(station1Id, stations);
             Station station2 = findStationById(station2Id, stations);
@@ -290,6 +278,31 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject positionObject = objectObject.getJSONObject("position");
             Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
             mapObjects.add(new MapObject(name, type, position, displayName));
+        }
+    }
+
+    private void addNeighbors(JSONObject mapData, List<Station> allStations) throws JSONException {
+        JSONArray linesArray = mapData.getJSONArray("lines");
+
+        for (int i = 0; i < linesArray.length(); i++) {
+            JSONObject lineObject = linesArray.getJSONObject(i);
+            JSONArray stationsArray = lineObject.getJSONArray("stations");
+            for (int j = 0; j < stationsArray.length(); j++) {
+                JSONObject stationObject = stationsArray.getJSONObject(j);
+                Station station = findStationById(stationObject.getString("id"), allStations);
+                if (station != null) {
+                    JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
+                    for (int k = 0; k < neighborsArray.length(); k++) {
+                        JSONArray neighborArray = neighborsArray.getJSONArray(k);
+                        String neighborId = neighborArray.getString(0);
+                        int time = neighborArray.getInt(1);
+                        Station neighborStation = findStationById(neighborId, allStations);
+                        if (neighborStation != null) {
+                            station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -322,9 +335,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return json;
     }
 
-    private Station findStationById(int id, List<Station> stations) {
+    private Station findStationById(String id, List<Station> stations) {
         for (Station station : stations) {
-            if (station.getId() == id) {
+            if (station.getId().equals(id)) {
                 return station;
             }
         }
@@ -429,11 +442,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private List<Station> findOptimalRoute(Station start, Station end) {
+        Log.d("MainActivity", "Finding optimal route from " + start.getName() + " to " + end.getName());
         Map<Station, Station> previous = new HashMap<>();
         Map<Station, Integer> distances = new HashMap<>();
         PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
-        for (Station station : stations) {
+        List<Station> allStations = new ArrayList<>(stations);
+        allStations.addAll(grayedStations);
+
+        for (Station station : allStations) {
             distances.put(station, Integer.MAX_VALUE);
         }
         distances.put(start, 0);
@@ -441,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         while (!queue.isEmpty()) {
             Station current = queue.poll();
-            if (current == end) {
+            if (current.getId().equals(end.getId())) {
                 break;
             }
 
