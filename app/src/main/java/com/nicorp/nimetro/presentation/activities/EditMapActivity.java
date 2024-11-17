@@ -665,7 +665,7 @@ public class EditMapActivity extends AppCompatActivity {
                     for (Station.Neighbor neighbor : station.getNeighbors()) {
                         JSONArray neighborArray = new JSONArray();
                         String[] neighborIdParts = neighbor.getStation().getId().split("_");
-                        neighborArray.put(neighborIdParts[1]); // Extract the numeric part of the ID
+                        neighborArray.put(neighborIdParts[2] + "_" + neighborIdParts[3]); // Extract the numeric part of the ID
                         neighborArray.put(neighbor.getTime());
                         neighborsArray.put(neighborArray);
                     }
@@ -692,7 +692,7 @@ public class EditMapActivity extends AppCompatActivity {
                 JSONArray stationsArray = new JSONArray();
                 for (Station station : transfer.getStations()) {
                     String[] stationIdParts = station.getId().split("_");
-                    stationsArray.put(stationIdParts[1]); // Extract the numeric part of the ID
+                    stationsArray.put(stationIdParts[2] + "_" + stationIdParts[3]); // Extract the numeric part of the ID
                 }
                 transferObject.put("stations", stationsArray);
                 transferObject.put("time", transfer.getTime());
@@ -711,9 +711,9 @@ public class EditMapActivity extends AppCompatActivity {
                         // Save neighborsId like "neighborsId": [88, 89]" from station.getId() and entry.getKey().getId()
                         JSONArray neighborsIds = new JSONArray();
                         String[] stationIdParts = station.getId().split("_");
-                        neighborsIds.put(stationIdParts[1]); // Extract the numeric part of the ID
+                        neighborsIds.put(stationIdParts[2] + "_" + stationIdParts[3]); // Extract the numeric part of the ID
                         String[] neighborIdParts = entry.getKey().getId().split("_");
-                        neighborsIds.put(neighborIdParts[1]); // Extract the numeric part of the ID
+                        neighborsIds.put(neighborIdParts[2] + "_" + neighborIdParts[3]); // Extract the numeric part of the ID
 
                         intermediatePointObject.put("neighborsId", neighborsIds);
 

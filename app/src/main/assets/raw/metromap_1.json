@@ -9,7 +9,7 @@
   "metro_map": {
     "lines": [
       {
-        "id": 1,
+        "id": "1",
         "name": "Сокольническая линия",
         "color": "#E40520",
         "isCircle": false,
@@ -630,7 +630,7 @@
         ]
       },
       {
-        "id": 2,
+        "id": "2",
         "name": "Замоскворецкая линия",
         "color": "#46AF50",
         "isCircle": false,
@@ -1182,7 +1182,7 @@
         ]
       },
       {
-        "id": 3,
+        "id": "3",
         "name": "Арбатско-Покровская линия",
         "color": "#0072BB",
         "isCircle": false,
@@ -1688,7 +1688,7 @@
         ]
       },
       {
-        "id": 4,
+        "id": "4",
         "name": "Филевская линия",
         "color": "#27BCEF",
         "isCircle": false,
@@ -1941,7 +1941,7 @@
         ]
       },
       {
-        "id": 5,
+        "id": "5",
         "name": "Кольцевая линия",
         "color": "#915133",
         "isCircle": true,
@@ -2249,7 +2249,7 @@
         ]
       },
       {
-        "id": 6,
+        "id": "6",
         "name": "Калужско-Рижская линия",
         "color": "#FF8C00",
         "isCircle": false,
@@ -2801,7 +2801,7 @@
         ]
       },
       {
-        "id": 7,
+        "id": "7",
         "name": "Таганско-Краснопресненская линия",
         "color": "#8B008B",
         "isCircle": false,
@@ -3330,7 +3330,7 @@
         ]
       },
       {
-        "id": 8,
+        "id": "8",
         "name": "Калининская линия",
         "color": "#F5D86C",
         "isCircle": false,
@@ -3514,7 +3514,7 @@
         ]
       },
       {
-        "id": 9,
+        "id": "9",
         "name": "Солнцевская линия",
         "color": "#F5D86C",
         "isCircle": false,
@@ -3940,7 +3940,7 @@
         ]
       },
       {
-        "id": 10,
+        "id": "10",
         "name": "Серпуховско-Тимирязевская линия",
         "color": "#808080",
         "isCircle": false,
@@ -4515,7 +4515,7 @@
         ]
       },
       {
-        "id": 11,
+        "id": "11",
         "name": "Люблинско-Дмитровская линия",
         "color": "#ABC469",
         "isCircle": false,
@@ -5113,7 +5113,7 @@
         ]
       },
       {
-        "id": 12,
+        "id": "12",
         "name": "Большая кольцевая линия",
         "color": "#A0C5BE",
         "isCircle": true,
@@ -5788,7 +5788,7 @@
         ]
       },
       {
-        "id": 13,
+        "id": "13",
         "name": "Бутовская линия",
         "color": "#AEB5CA",
         "isCircle": false,
@@ -5949,7 +5949,7 @@
         ]
       },
       {
-        "id": 15,
+        "id": "15",
         "name": "МЦК",
         "color": "#E94282",
         "isCircle": true,
@@ -6667,7 +6667,7 @@
         ]
       },
       {
-        "id": 16,
+        "id": "16",
         "name": "Некрасовская линия",
         "color": "#CB80A2",
         "isCircle": false,
@@ -6851,7 +6851,7 @@
         ]
       },
       {
-        "id": 17,
+        "id": "17",
         "name": "Троицкая линия",
         "color": "#256356",
         "isCircle": false,
@@ -6943,7 +6943,7 @@
         ]
       },
       {
-        "id": 18,
+        "id": "18",
         "name": "МЦД1",
         "color": "#FDA130",
         "isCircle": false,
@@ -6956,7 +6956,10 @@
             "y": 1342,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1801", 3]
+              [
+                "METRO_1801",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -6972,8 +6975,14 @@
             "y": 1314,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1800", 3],
-              ["METRO_1802", 3]
+              [
+                "METRO_1800",
+                3
+              ],
+              [
+                "METRO_1802",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -6989,8 +6998,14 @@
             "y": 1286,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1801", 3],
-              ["METRO_1803", 3]
+              [
+                "METRO_1801",
+                3
+              ],
+              [
+                "METRO_1803",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7006,8 +7021,14 @@
             "y": 1261,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1802", 3],
-              ["METRO_1804", 3]
+              [
+                "METRO_1802",
+                3
+              ],
+              [
+                "METRO_1804",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7023,8 +7044,14 @@
             "y": 1234,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1803", 3],
-              ["METRO_1805", 3]
+              [
+                "METRO_1803",
+                3
+              ],
+              [
+                "METRO_1805",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7040,8 +7067,14 @@
             "y": 1208,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1804", 3],
-              ["METRO_1806", 3]
+              [
+                "METRO_1804",
+                3
+              ],
+              [
+                "METRO_1806",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7057,8 +7090,14 @@
             "y": 1181,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1805", 3],
-              ["METRO_1807", 3]
+              [
+                "METRO_1805",
+                3
+              ],
+              [
+                "METRO_1807",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7074,8 +7113,14 @@
             "y": 1142,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1806", 3],
-              ["METRO_1808", 3]
+              [
+                "METRO_1806",
+                3
+              ],
+              [
+                "METRO_1808",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7091,8 +7136,14 @@
             "y": 1065,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1807", 3],
-              ["METRO_1809", 3]
+              [
+                "METRO_1807",
+                3
+              ],
+              [
+                "METRO_1809",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7108,8 +7159,14 @@
             "y": 837,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1808", 3],
-              ["METRO_1810", 3]
+              [
+                "METRO_1808",
+                3
+              ],
+              [
+                "METRO_1810",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7125,8 +7182,14 @@
             "y": 822,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1809", 3],
-              ["METRO_1811", 3]
+              [
+                "METRO_1809",
+                3
+              ],
+              [
+                "METRO_1811",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7138,12 +7201,18 @@
           {
             "id": "METRO_1811",
             "name": "Белорусская",
-            "x": 545,
-            "y": 822,
+            "x": 544,
+            "y": 823,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1810", 3],
-              ["METRO_1812", 3]
+              [
+                "METRO_1810",
+                3
+              ],
+              [
+                "METRO_1812",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7155,12 +7224,18 @@
           {
             "id": "METRO_1812",
             "name": "Савёловская",
-            "x": 660,
-            "y": 822,
+            "x": 640,
+            "y": 666,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1811", 3],
-              ["METRO_1813", 3]
+              [
+                "METRO_1811",
+                3
+              ],
+              [
+                "METRO_1813",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7172,12 +7247,18 @@
           {
             "id": "METRO_1813",
             "name": "Тимирязевская",
-            "x": 775,
-            "y": 822,
+            "x": 690,
+            "y": 508,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1812", 3],
-              ["METRO_1814", 3]
+              [
+                "METRO_1812",
+                3
+              ],
+              [
+                "METRO_1814",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7189,12 +7270,18 @@
           {
             "id": "METRO_1814",
             "name": "Окружная",
-            "x": 890,
-            "y": 822,
+            "x": 691,
+            "y": 426,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1813", 3],
-              ["METRO_1815", 3]
+              [
+                "METRO_1813",
+                3
+              ],
+              [
+                "METRO_1815",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7206,12 +7293,18 @@
           {
             "id": "METRO_1815",
             "name": "Дегунино",
-            "x": 1005,
-            "y": 822,
+            "x": 692,
+            "y": 342,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1814", 3],
-              ["METRO_1816", 3]
+              [
+                "METRO_1814",
+                3
+              ],
+              [
+                "METRO_1816",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7223,12 +7316,18 @@
           {
             "id": "METRO_1816",
             "name": "Бескудниково",
-            "x": 1120,
-            "y": 822,
+            "x": 693,
+            "y": 300,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1815", 3],
-              ["METRO_1817", 3]
+              [
+                "METRO_1815",
+                3
+              ],
+              [
+                "METRO_1817",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7240,12 +7339,18 @@
           {
             "id": "METRO_1817",
             "name": "Лианозово",
-            "x": 1235,
-            "y": 822,
+            "x": 693,
+            "y": 264,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1816", 3],
-              ["METRO_1818", 3]
+              [
+                "METRO_1816",
+                3
+              ],
+              [
+                "METRO_1818",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7257,12 +7362,18 @@
           {
             "id": "METRO_1818",
             "name": "Марк",
-            "x": 1350,
-            "y": 822,
+            "x": 693,
+            "y": 208,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1817", 3],
-              ["METRO_1819", 3]
+              [
+                "METRO_1817",
+                3
+              ],
+              [
+                "METRO_1819",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7274,12 +7385,18 @@
           {
             "id": "METRO_1819",
             "name": "Новодачная",
-            "x": 1465,
-            "y": 822,
+            "x": 693,
+            "y": 178,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1818", 3],
-              ["METRO_1820", 3]
+              [
+                "METRO_1818",
+                3
+              ],
+              [
+                "METRO_1820",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7291,12 +7408,18 @@
           {
             "id": "METRO_1820",
             "name": "Долгопрудная",
-            "x": 1580,
-            "y": 822,
+            "x": 693,
+            "y": 147,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1819", 3],
-              ["METRO_1821", 3]
+              [
+                "METRO_1819",
+                3
+              ],
+              [
+                "METRO_1821",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7308,12 +7431,18 @@
           {
             "id": "METRO_1821",
             "name": "Водники",
-            "x": 1695,
-            "y": 822,
+            "x": 692,
+            "y": 120,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1820", 3],
-              ["METRO_1822", 3]
+              [
+                "METRO_1820",
+                3
+              ],
+              [
+                "METRO_1822",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7325,12 +7454,18 @@
           {
             "id": "METRO_1822",
             "name": "Хлебниково",
-            "x": 1810,
-            "y": 822,
+            "x": 693,
+            "y": 95,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1821", 3],
-              ["METRO_1823", 3]
+              [
+                "METRO_1821",
+                3
+              ],
+              [
+                "METRO_1823",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7341,13 +7476,19 @@
           },
           {
             "id": "METRO_1823",
-            "name": "Шерьеметевская",
-            "x": 1925,
-            "y": 822,
+            "name": "Шереметьевская",
+            "x": 693,
+            "y": 67,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1822", 3],
-              ["METRO_1824", 3]
+              [
+                "METRO_1822",
+                3
+              ],
+              [
+                "METRO_1824",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7359,11 +7500,14 @@
           {
             "id": "METRO_1824",
             "name": "Лобня",
-            "x": 2040,
-            "y": 822,
+            "x": 692,
+            "y": 39,
             "textPosition": 0,
             "neighbors": [
-              ["METRO_1823", 3]
+              [
+                "METRO_1823",
+                3
+              ]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7688,8 +7832,8 @@
         ],
         "points": [
           {
-            "x": 555,
-            "y": 836
+            "x": 552,
+            "y": 834
           },
           {
             "x": 521,
@@ -8180,22 +8324,6 @@
       {
         "neighborsId": [
           "METRO_1200",
-          "METRO_1201"
-        ],
-        "points": [
-          {
-            "x": 586,
-            "y": 658
-          },
-          {
-            "x": 536,
-            "y": 686
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1200",
           "METRO_1228"
         ],
         "points": [
@@ -8206,6 +8334,22 @@
           {
             "x": 720,
             "y": 610
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1200",
+          "METRO_1201"
+        ],
+        "points": [
+          {
+            "x": 586,
+            "y": 658
+          },
+          {
+            "x": 536,
+            "y": 686
           }
         ]
       },
@@ -8468,22 +8612,6 @@
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1523"
-        ],
-        "points": [
-          {
-            "x": 278,
-            "y": 852
-          },
-          {
-            "x": 281,
-            "y": 815
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1524",
           "METRO_1525"
         ],
         "points": [
@@ -8494,6 +8622,22 @@
           {
             "x": 282,
             "y": 665
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1524",
+          "METRO_1523"
+        ],
+        "points": [
+          {
+            "x": 278,
+            "y": 852
+          },
+          {
+            "x": 281,
+            "y": 815
           }
         ]
       },
@@ -8542,6 +8686,54 @@
           {
             "x": 1347,
             "y": 1040
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1809",
+          "METRO_1810"
+        ],
+        "points": [
+          {
+            "x": 312,
+            "y": 816
+          },
+          {
+            "x": 326,
+            "y": 822
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1811",
+          "METRO_1812"
+        ],
+        "points": [
+          {
+            "x": 641,
+            "y": 730
+          },
+          {
+            "x": 542,
+            "y": 734
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1812",
+          "METRO_1813"
+        ],
+        "points": [
+          {
+            "x": 691,
+            "y": 618
+          },
+          {
+            "x": 690,
+            "y": 608
           }
         ]
       }
