@@ -6928,11 +6928,80 @@
             "id": "METRO_1703",
             "name": "Тютчевская",
             "x": 515,
-            "y": 1715,
+            "y": 1705,
             "textPosition": 0,
             "neighbors": [
               [
                 "METRO_1702",
+                3
+              ],
+              [
+                "METRO_1704",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_1704",
+            "name": "Корниловская",
+            "x": 515,
+            "y": 1745,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_1703",
+                3
+              ],
+              [
+                "METRO_1705",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_1705",
+            "name": "Коммунарка",
+            "x": 515,
+            "y": 1775,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_1704",
+                3
+              ],
+              [
+                "METRO_1706",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_1706",
+            "name": "Новомосковская",
+            "x": 490,
+            "y": 1810,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_1705",
                 3
               ]
             ],
