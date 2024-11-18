@@ -28,6 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Краткая информация"
+                android:textColor="@color/textPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,6 +52,7 @@
 
             <TextView
                 android:id="@+id/nearestTrainsTitle"
+                android:textColor="@color/textPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ближайшие поезда:"
@@ -74,6 +76,7 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeTimeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,6 +84,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,6 +101,7 @@
                 android:paddingTop="8dp">
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeStationsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -104,6 +109,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeStationsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -120,6 +126,7 @@
                 android:paddingTop="8dp">
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeTransfersTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -127,6 +134,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:textColor="@color/textPrimary"
                     android:id="@+id/routeTransfersCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
