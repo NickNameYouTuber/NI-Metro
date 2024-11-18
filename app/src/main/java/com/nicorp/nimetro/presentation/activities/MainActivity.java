@@ -159,20 +159,30 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void loadMetroData(String mapFileName) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
-            JSONObject metroMapData = jsonObject.getJSONObject("metro_map");
-            JSONObject suburbanMapData = jsonObject.getJSONObject("suburban_map");
+            JSONObject metroMapData = jsonObject.optJSONObject("metro_map");
+            JSONObject suburbanMapData = jsonObject.optJSONObject("suburban_map");
 
             // Загружаем данные для метро
-            loadMapData(metroMapData, lines, stations, transfers, rivers, mapObjects);
+            if (metroMapData != null) {
+                loadMapData(metroMapData, lines, stations, transfers, rivers, mapObjects);
+            }
 
-            // Загружаем данные для электричек
-            loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
+            // Загружаем данные для электричек, если они есть
+            if (suburbanMapData != null) {
+                loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
+            }
 
             // Объединяем станции и добавляем соседей
             List<Station> allStations = new ArrayList<>(stations);
-            allStations.addAll(grayedStations);
-            addNeighbors(metroMapData, allStations);
-            addNeighbors(suburbanMapData, allStations);
+            if (suburbanMapData != null) {
+                allStations.addAll(grayedStations);
+            }
+            if (metroMapData != null) {
+                addNeighbors(metroMapData, allStations);
+            }
+            if (suburbanMapData != null) {
+                addNeighbors(suburbanMapData, allStations);
+            }
 
             updateMapData();
         } catch (JSONException e) {

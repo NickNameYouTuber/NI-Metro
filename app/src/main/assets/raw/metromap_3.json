@@ -6,215 +6,219 @@
     "name": "Mecca",
     "icon": "https://global.yometro.com/images/metro/mecca-metro.png"
   },
-  "lines": [
-    {
-      "id": 1,
-      "name": "Линия Хадж",
-      "color": "#FF6FCF",
-      "isCircle": false,
-      "stations": [
-        {
-          "id": 1,
-          "name": "Arafat 1",
-          "x": 57,
-          "y": 95,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              2,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 2,
-          "name": "Arafat 2",
-          "x": 101,
-          "y": 153,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              1,
-              3
+  "metro_map": {
+    "lines": [
+      {
+        "id": 1,
+        "name": "Линия Хадж",
+        "color": "#FF6FCF",
+        "isCircle": false,
+        "stations": [
+          {
+            "id": "METRO_100",
+            "name": "Arafat 1",
+            "x": 57,
+            "y": 95,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_101",
+                3
+              ]
             ],
-            [
-              3,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 3,
-          "name": "Arafat 3",
-          "x": 147,
-          "y": 210,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              2,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_101",
+            "name": "Arafat 2",
+            "x": 101,
+            "y": 153,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_100",
+                3
+              ],
+              [
+                "METRO_102",
+                3
+              ]
             ],
-            [
-              4,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 4,
-          "name": "Muzdalifah 1",
-          "x": 151,
-          "y": 277,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              3,
-              3
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_102",
+            "name": "Arafat 3",
+            "x": 147,
+            "y": 210,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_101",
+                3
+              ],
+              [
+                "METRO_103",
+                3
+              ]
             ],
-            [
-              5,
-              5
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 5,
-          "name": "Muzdalifah 2",
-          "x": 193,
-          "y": 325,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              4,
-              5
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_103",
+            "name": "Muzdalifah 1",
+            "x": 151,
+            "y": 277,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_102",
+                3
+              ],
+              [
+                "METRO_104",
+                3
+              ]
             ],
-            [
-              6,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 6,
-          "name": "Muzdalifah 3",
-          "x": 255,
-          "y": 343,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              5,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_104",
+            "name": "Muzdalifah 2",
+            "x": 193,
+            "y": 325,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_103",
+                3
+              ],
+              [
+                "METRO_105",
+                3
+              ]
             ],
-            [
-              7,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 7,
-          "name": "Mina 1",
-          "x": 299,
-          "y": 503,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              6,
-              3
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_105",
+            "name": "Muzdalifah 3",
+            "x": 255,
+            "y": 343,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_104",
+                3
+              ],
+              [
+                "METRO_106",
+                3
+              ]
             ],
-            [
-              8,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 8,
-          "name": "Mina 2",
-          "x": 321,
-          "y": 567,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              7,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_106",
+            "name": "Mina 1",
+            "x": 299,
+            "y": 503,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_105",
+                3
+              ],
+              [
+                "METRO_107",
+                3
+              ]
             ],
-            [
-              9,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_107",
+            "name": "Mina 2",
+            "x": 321,
+            "y": 567,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_106",
+                3
+              ],
+              [
+                "METRO_108",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_108",
+            "name": "Mina 3",
+            "x": 348,
+            "y": 627,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_107",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
           }
-        },
-        {
-          "id": 9,
-          "name": "Mina 3",
-          "x": 348,
-          "y": 627,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              8,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        }
-      ]
-    }
-  ],
-  "transfers": [],
-  "intermediatePoints": []
+        ]
+      }
+    ],
+    "transfers": [],
+    "intermediatePoints": [],
+    "rivers": [],
+    "objects": []
+  }
 }

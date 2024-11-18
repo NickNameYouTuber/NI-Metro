@@ -21,6 +21,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFF"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -28,6 +29,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Текущая карта метро"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/currentMetroMapCard"
@@ -40,36 +48,30 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_background"
                     android:orientation="vertical"
                     android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Текущая карта метро"
-                        android:textAppearance="?attr/textAppearanceHeadline6"
-                        android:layout_marginBottom="12dp"/>
 
                     <LinearLayout
                         android:id="@+id/currentMetroMapLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/currentMetroMapIcon"
                             android:layout_width="56dp"
                             android:layout_height="56dp"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"/>
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
                         <TextView
                             android:id="@+id/currentMetroMapName"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
-                            android:textAppearance="?attr/textAppearanceBody1"/>
+                            android:layout_weight="1"
+                            android:textAppearance="?attr/textAppearanceBody1" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -77,9 +79,9 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:text="Оформление"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:layout_marginBottom="12dp"/>
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <RadioGroup
                 android:id="@+id/themeRadioGroup"
@@ -91,15 +93,15 @@
                     android:id="@+id/lightThemeRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Светлая тема"
-                    android:padding="12dp"/>
+                    android:padding="12dp"
+                    android:text="Светлая тема" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/darkThemeRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Темная тема"
-                    android:padding="12dp"/>
+                    android:padding="12dp"
+                    android:text="Темная тема" />
             </RadioGroup>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -130,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="M Icon"
-                android:src="@drawable/ic_m_icon"
+                android:src="@drawable/ic_m_icon_light"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -150,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Settings Icon"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/ic_settings_dark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

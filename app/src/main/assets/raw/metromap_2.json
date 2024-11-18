@@ -6,275 +6,242 @@
     "name": "Самара",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Samara_Metro_logo.svg/351px-Samara_Metro_logo.svg.png"
   },
-  "lines": [
-    {
-      "id": 1,
-      "name": "Первая линия",
-      "color": "#E40520",
-      "isCircle": false,
-      "stations": [
-        {
-          "id": 1,
-          "name": "Юнгородок",
-          "x": 77,
-          "y": 105,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              2,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 2,
-          "name": "Кировская",
-          "x": 145,
-          "y": 149,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              1,
-              3
+  "metro_map": {
+    "lines": [
+      {
+        "id": 1,
+        "name": "Первая линия",
+        "color": "#E40520",
+        "isCircle": false,
+        "stations": [
+          {
+            "id": "METRO_100",
+            "name": "Юнгородок",
+            "x": 77,
+            "y": 105,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_101",
+                3
+              ]
             ],
-            [
-              3,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 3,
-          "name": "Безымянка",
-          "x": 167,
-          "y": 215,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              2,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_101",
+            "name": "Кировская",
+            "x": 145,
+            "y": 149,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_100",
+                3
+              ],
+              [
+                "METRO_102",
+                3
+              ]
             ],
-            [
-              4,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 4,
-          "name": "Победа",
-          "x": 189,
-          "y": 278,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              3,
-              3
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_102",
+            "name": "Безымянка",
+            "x": 167,
+            "y": 215,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_101",
+                3
+              ],
+              [
+                "METRO_103",
+                3
+              ]
             ],
-            [
-              5,
-              5
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 5,
-          "name": "Советская",
-          "x": 215,
-          "y": 347,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              4,
-              5
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_103",
+            "name": "Победа",
+            "x": 189,
+            "y": 278,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_102",
+                3
+              ],
+              [
+                "METRO_104",
+                3
+              ]
             ],
-            [
-              6,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 6,
-          "name": "Спортивная",
-          "x": 239,
-          "y": 413,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              5,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_104",
+            "name": "Советская",
+            "x": 215,
+            "y": 347,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_103",
+                3
+              ],
+              [
+                "METRO_105",
+                3
+              ]
             ],
-            [
-              7,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 7,
-          "name": "Гагаринская",
-          "x": 264,
-          "y": 477,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              6,
-              3
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_105",
+            "name": "Спортивная",
+            "x": 239,
+            "y": 413,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_104",
+                3
+              ],
+              [
+                "METRO_106",
+                3
+              ]
             ],
-            [
-              8,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 8,
-          "name": "Московская",
-          "x": 289,
-          "y": 537,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              7,
-              4
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_106",
+            "name": "Гагаринская",
+            "x": 264,
+            "y": 477,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_105",
+                3
+              ],
+              [
+                "METRO_107",
+                3
+              ]
             ],
-            [
-              9,
-              3
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        },
-        {
-          "id": 9,
-          "name": "Российская",
-          "x": 319,
-          "y": 601,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              8,
-              3
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_107",
+            "name": "Московская",
+            "x": 289,
+            "y": 537,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_106",
+                3
+              ],
+              [
+                "METRO_108",
+                3
+              ]
             ],
-            [
-              10,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_108",
+            "name": "Российская",
+            "x": 319,
+            "y": 601,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_107",
+                3
+              ],
+              [
+                "METRO_109",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_109",
+            "name": "Алабинская",
+            "x": 385,
+            "y": 641,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_108",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
           }
-        },
-        {
-          "id": 10,
-          "name": "Алабинская",
-          "x": 385,
-          "y": 641,
-          "textPosition": 0,
-          "neighbors": [
-            [
-              9,
-              4
-            ]
-          ],
-          "facilities": {
-            "schedule": "5:30 - 0:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": []
-          }
-        }
-      ]
-    }
-  ],
-  "transfers": [],
-  "intermediatePoints": [],
-  "rivers": [
-    {
-      "points": [
-        {"x": 0, "y": 40},
-        {"x": 150, "y": 800}
-      ],
-      "width": 25
-    },
-    {
-      "points": [
-        {"x": -50, "y": 50},
-        {"x": 280, "y": 50},
-        {"x": 430, "y": -30}
-      ],
-      "width": 45
-    }
-  ],
-  "objects": [
-    {
-      "name": "Самара-Аэропорт",
-      "displayName": "KUF",
-      "type": "airport",
-      "position": {
-        "x": 350,
-        "y": 50
+        ]
       }
-    },
-    {
-      "name": "Самарский вокзал",
-      "displayName": "Самарский вокзал",
-      "type": "train_station",
-      "position": {
-        "x": 100,
-        "y": 900
-      }
-    }
-  ]
+    ],
+    "transfers": [],
+    "intermediatePoints": [],
+    "rivers": [],
+    "objects": []
+  }
 }
