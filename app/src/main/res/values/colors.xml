@@ -5,7 +5,11 @@
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
     <color name="primary">#2196F3</color>
-
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+    <color name="dividerColor">#EEEEEE</color>
     <color name="my_light_primary">#6200EE</color>
     <color name="my_light_primary_variant">#3700B3</color>
     <color name="my_light_on_primary">#FFFFFF</color>

@@ -124,11 +124,6 @@ public class StationInfoFragment extends Fragment {
         TextView lineNumber = view.findViewById(R.id.lineNumber);
         setLineNumberAndColor(lineNumber, station);
 
-        stationInfoContainer = view.findViewById(R.id.stationInfoContainer);
-
-        LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
-//        addTransferCircles(transferCirclesContainer);
-
         // Вызов fetchESPSchedule
         fetchESPSchedule(station);
 

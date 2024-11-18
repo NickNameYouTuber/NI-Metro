@@ -19,6 +19,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
@@ -27,6 +29,7 @@ import com.nicorp.nimetro.data.models.YandexRaspResponse;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
+import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 
 import java.text.ParseException;
@@ -73,6 +76,7 @@ public class RouteInfoFragment extends Fragment {
     private FrameLayout routeInfoContainer;
     private MetroMapView metroMapView;
     private MainActivity mainActivity;
+    private RecyclerView nearestTrainsRecyclerView;
 
     /**
      * Creates a new instance of RouteInfoFragment with the necessary arguments.
@@ -116,7 +120,9 @@ public class RouteInfoFragment extends Fragment {
         setupCloseButton(view);
         setupSwipeGestureDetector(view);
 
-        // Вызов fetchESPDepartureTime
+        nearestTrainsRecyclerView = view.findViewById(R.id.nearestTrainsRecyclerView);
+        nearestTrainsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
         if (route != null && !route.isEmpty()) {
             fetchESPDepartureTime(route.get(0));
         }
@@ -131,7 +137,6 @@ public class RouteInfoFragment extends Fragment {
      * @param colorOnSurface The color to use for text views.
      */
     private void initializeViews(View view, int colorOnSurface) {
-        nearestTrainsTextView = view.findViewById(R.id.nearestTrains);
         routeTime = view.findViewById(R.id.routeTime);
         routeStationsCount = view.findViewById(R.id.routeStationsCount);
         routeTransfersCount = view.findViewById(R.id.routeTransfersCount);
@@ -385,7 +390,7 @@ public class RouteInfoFragment extends Fragment {
     private void fetchESPDepartureTime(Station startStation) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         String from = startStation.getESP();
-        String to = route.get(1).getESP();
+        String to = route.get(route.size()-1).getESP();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -405,10 +410,11 @@ public class RouteInfoFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                     if (!segments.isEmpty()) {
-                        List<String> nearestDepartureTimes = findNearestDepartureTimes(segments);
-                        Log.d("RouteInfoFragment", "Nearest ESP departure times: " + nearestDepartureTimes);
-                        // Отобразить время отправления в UI
-                        showESPDepartureTimes(nearestDepartureTimes);
+                        List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
+
+                        // Set up RecyclerView
+                        TrainInfoAdapter adapter = new TrainInfoAdapter(nearestDepartureSegments);
+                        nearestTrainsRecyclerView.setAdapter(adapter);
                     } else {
                         Log.d("RouteInfoFragment", "No segments found for ESP departure time");
                     }
@@ -424,8 +430,8 @@ public class RouteInfoFragment extends Fragment {
         });
     }
 
-    private List<String> findNearestDepartureTimes(List<YandexRaspResponse.Segment> segments) {
-        List<String> nearestDepartureTimes = new ArrayList<>();
+    private List<YandexRaspResponse.Segment> findNearestDepartureTimes(List<YandexRaspResponse.Segment> segments) {
+        List<YandexRaspResponse.Segment> nearestDepartureTimes = new ArrayList<>();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
 
         for (YandexRaspResponse.Segment segment : segments) {
@@ -436,7 +442,7 @@ public class RouteInfoFragment extends Fragment {
                 long difference = ChronoUnit.MINUTES.between(currentTime, departureDateTime);
 
                 if (difference > 0 && nearestDepartureTimes.size() < 3) {
-                    nearestDepartureTimes.add(segment.getDeparture().substring(11, 16));
+                    nearestDepartureTimes.add(segment);
                 }
             } catch (Exception e) {
                 Log.e("RouteInfoFragment", "Error parsing date", e);
@@ -444,9 +450,5 @@ public class RouteInfoFragment extends Fragment {
         }
 
         return nearestDepartureTimes;
-    }
-
-    private void showESPDepartureTimes(List<String> departureTimes) {
-        nearestTrainsTextView.setText("Ближайшие электрички: " + String.join(", ", departureTimes));
     }
 }

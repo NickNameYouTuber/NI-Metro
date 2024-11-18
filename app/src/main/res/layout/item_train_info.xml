@@ -1,0 +1,97 @@
+<!-- item_train_info.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/card_background"
+    android:elevation="4dp"
+    android:layout_margin="8dp">
+
+    <!-- Заголовок с номером поезда -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_train"
+            android:tint="@color/colorPrimary"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/trainNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6812"
+            android:textSize="12sp"
+            android:textColor="@color/textPrimary"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"/>
+    </LinearLayout>
+
+
+    <!-- Время отправления -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/departureTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="04:22"
+            android:textSize="10sp"
+            android:textColor="@color/textPrimary"
+            android:fontFamily="sans-serif"/>
+    </LinearLayout>
+
+    <!-- Время прибытия -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/arrivalTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="04:50"
+            android:textSize="10sp"
+            android:textColor="@color/textPrimary"
+            android:fontFamily="sans-serif"/>
+    </LinearLayout>
+
+    <!-- Длительность поездки -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_timer"
+            android:tint="@color/colorPrimary"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28 мин"
+            android:textSize="10sp"
+            android:textColor="@color/textSecondary"
+            android:fontFamily="sans-serif-medium"/>
+    </LinearLayout>
+</LinearLayout>
