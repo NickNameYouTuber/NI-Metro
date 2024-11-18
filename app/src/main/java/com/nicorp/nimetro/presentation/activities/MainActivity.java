@@ -155,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private List<Transfer> grayedTransfers;
     private List<River> grayedRivers;
     private List<MapObject> grayedMapObjects;
+    private List<Line> allLines;
+
+    public List<Line> getAllLines() {
+        return allLines;
+    }
 
     private void loadMetroData(String mapFileName) {
         try {
@@ -182,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
             if (suburbanMapData != null) {
                 addNeighbors(suburbanMapData, allStations);
+            }
+
+            allLines = new ArrayList<>(lines);
+            if (suburbanMapData != null) {
+                allLines.addAll(grayedLines);
             }
 
             updateMapData();

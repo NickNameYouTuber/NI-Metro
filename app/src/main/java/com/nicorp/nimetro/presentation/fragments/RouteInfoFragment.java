@@ -26,6 +26,7 @@ import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
 import com.nicorp.nimetro.data.models.YandexRaspResponse;
+import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
@@ -47,11 +48,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * A fragment that displays detailed information about a metro route.
- * This includes the route's total time, number of stations, number of transfers,
- * and a detailed list of stations with transfer indicators.
- */
 public class RouteInfoFragment extends Fragment {
 
     private static final String ARG_ROUTE = "route";
@@ -76,14 +72,6 @@ public class RouteInfoFragment extends Fragment {
     private MainActivity mainActivity;
     private RecyclerView nearestTrainsRecyclerView;
 
-    /**
-     * Creates a new instance of RouteInfoFragment with the necessary arguments.
-     *
-     * @param route The route to display information about.
-     * @param metroMapView The MetroMapView instance.
-     * @param mainActivity The MainActivity instance.
-     * @return A new instance of RouteInfoFragment.
-     */
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
         Bundle args = new Bundle();
@@ -122,18 +110,12 @@ public class RouteInfoFragment extends Fragment {
         nearestTrainsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         if (route != null && !route.isEmpty()) {
-            fetchESPDepartureTime(route.get(0));
+            determineTrainInfoDisplay(route);
         }
 
         return view;
     }
 
-    /**
-     * Initializes the views used in the fragment.
-     *
-     * @param view The root view of the fragment.
-     * @param colorOnSurface The color to use for text views.
-     */
     private void initializeViews(View view, int colorOnSurface) {
         routeTime = view.findViewById(R.id.routeTime);
         routeStationsCount = view.findViewById(R.id.routeStationsCount);
@@ -148,11 +130,6 @@ public class RouteInfoFragment extends Fragment {
         routeInfoContainer = view.findViewById(R.id.routeInfoContainer);
     }
 
-    /**
-     * Sets the text colors for the views.
-     *
-     * @param colorOnSurface The color to use for text views.
-     */
     private void setViewColors(int colorOnSurface) {
         routeTime.setTextColor(colorOnSurface);
         routeStationsCount.setTextColor(colorOnSurface);
@@ -163,9 +140,6 @@ public class RouteInfoFragment extends Fragment {
         routeTransfersCountTitle.setTextColor(colorOnSurface);
     }
 
-    /**
-     * Calculates and sets the route statistics (total time, number of stations, number of transfers).
-     */
     private void calculateAndSetRouteStatistics() {
         if (route != null && !route.isEmpty()) {
             int totalTime = calculateTotalTime();
@@ -180,21 +154,11 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
-    /**
-     * Sets up the close button to dismiss the fragment.
-     *
-     * @param view The root view of the fragment.
-     */
     private void setupCloseButton(View view) {
         ImageView closeButton = view.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> dismiss());
     }
 
-    /**
-     * Sets up the swipe gesture detector to handle expand and collapse actions.
-     *
-     * @param view The root view of the fragment.
-     */
     private void setupSwipeGestureDetector(View view) {
         GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -217,9 +181,6 @@ public class RouteInfoFragment extends Fragment {
         routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
-    /**
-     * Dismisses the fragment and clears the route and selected stations on the map.
-     */
     private void dismiss() {
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
@@ -235,9 +196,6 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
-    /**
-     * Expands the fragment to show detailed route information.
-     */
     private void expand() {
         isExpanded = true;
         routeTitle.setText("Информация о маршруте");
@@ -248,9 +206,6 @@ public class RouteInfoFragment extends Fragment {
         animateHeightChange(routeInfoContainer, COLLAPSED_HEIGHT, expandedHeight);
     }
 
-    /**
-     * Collapses the fragment to show only summary route information.
-     */
     private void collapse() {
         isExpanded = false;
         routeTitle.setText("Краткая информация");
@@ -261,13 +216,6 @@ public class RouteInfoFragment extends Fragment {
         animateHeightChange(routeInfoContainer, routeInfoContainer.getHeight(), COLLAPSED_HEIGHT * density);
     }
 
-    /**
-     * Animates the height change of the view.
-     *
-     * @param view The view to animate.
-     * @param startHeight The starting height of the view.
-     * @param endHeight The ending height of the view.
-     */
     private void animateHeightChange(final View view, final int startHeight, final float endHeight) {
         Animation animation = new Animation() {
             @Override
@@ -287,11 +235,6 @@ public class RouteInfoFragment extends Fragment {
         view.startAnimation(animation);
     }
 
-    /**
-     * Calculates the total time for the route.
-     *
-     * @return The total time in minutes.
-     */
     private int calculateTotalTime() {
         int totalTime = 0;
         totalTime += (route.size() - 1) * 2;
@@ -304,11 +247,6 @@ public class RouteInfoFragment extends Fragment {
         return totalTime;
     }
 
-    /**
-     * Calculates the number of transfers in the route.
-     *
-     * @return The number of transfers.
-     */
     private int calculateTransfersCount() {
         int transfers = 0;
         for (int i = 1; i < route.size(); i++) {
@@ -319,11 +257,6 @@ public class RouteInfoFragment extends Fragment {
         return transfers;
     }
 
-    /**
-     * Populates the route details container with station and transfer information.
-     *
-     * @param container The container to populate.
-     */
     private void populateRouteDetails(LinearLayout container) {
         container.post(() -> {
             container.removeAllViews();
@@ -336,9 +269,16 @@ public class RouteInfoFragment extends Fragment {
                 View stationView = inflater.inflate(R.layout.item_route_station, container, false);
                 TextView stationName = stationView.findViewById(R.id.stationName);
                 View stationIndicator = stationView.findViewById(R.id.stationIndicator);
+                View stationIndicatorDouble = stationView.findViewById(R.id.stationIndicatorDouble);
 
                 stationName.setText(station.getName());
                 stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+
+                // Проверяем, является ли линия типа "double"
+                if (isLineDouble(station)) {
+                    stationIndicatorDouble.setVisibility(View.VISIBLE);
+                    stationIndicatorDouble.setBackgroundColor(Color.parseColor(station.getColor()));
+                }
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -369,11 +309,15 @@ public class RouteInfoFragment extends Fragment {
         });
     }
 
-    /**
-     * Gets the expanded height of the layout.
-     *
-     * @return The expanded height in pixels.
-     */
+    private boolean isLineDouble(Station station) {
+        for (Line line : mainActivity.getAllLines()) {
+            if (line.getStations().contains(station) && "double".equals(line.getLineType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private float getExpandedHeight() {
         layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         float expandedHeight = layoutExpanded.getMeasuredHeight();
@@ -385,10 +329,140 @@ public class RouteInfoFragment extends Fragment {
         return expandedHeight;
     }
 
-    private void fetchESPDepartureTime(Station startStation) {
+    private void determineTrainInfoDisplay(List<Station> route) {
+        Station suburbanStartStation = null;
+        Station suburbanEndStation = null;
+        int count = 0;
+
+        // Поиск первой suburban линии и ее границ
+        for (int i = 0; i < route.size(); i++) {
+            // Найти начальную станцию suburban линии
+            if (isLineSuburban(route.get(i)) && suburbanStartStation == null) {
+                suburbanStartStation = route.get(i);
+            }
+
+            if (isLineSuburban(route.get(i))){
+                count++;
+            }
+
+            // Найти конечную станцию suburban линии
+            if (suburbanStartStation != null && (!isLineSuburban(route.get(i)) || i == route.size() - 1)) {
+                suburbanEndStation = isLineSuburban(route.get(i)) ? route.get(i) : route.get(i - 1);
+                break;
+            }
+        }
+
+
+        // Если найдены suburban станции
+        if (suburbanStartStation != null && suburbanEndStation != null) {
+            Log.d("RouteInfoFragment", "Suburban route detected: from " +
+                    suburbanStartStation.getName() + " to " + suburbanEndStation.getName());
+            Log.d("RouteInfoFragment", "Count: " + count + " size: " + route.size());
+            if (count == route.size()) {
+                fetchESPDepartureTime(suburbanStartStation, suburbanEndStation);
+            } else {
+                fetchAndDisplaySuburbanSchedule(suburbanStartStation, suburbanEndStation);
+            }
+        } else if (suburbanStartStation != null) {
+            Log.d("RouteInfoFragment", "suburbanStartStation " + suburbanStartStation.getName());
+        } else if (suburbanEndStation != null) {
+            Log.d("RouteInfoFragment", "suburbanEndStation " + suburbanEndStation.getName());
+        } else {
+            Log.d("RouteInfoFragment", "No suburban stations found");
+        }
+    }
+
+    // Запрос расписания поездов
+    private void fetchAndDisplaySuburbanSchedule(Station startStation, Station endStation) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         String from = startStation.getESP();
-        String to = route.get(route.size()-1).getESP();
+        String to = endStation.getESP();
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+        String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        Log.d("RouteInfoFragment", "Fetching suburban schedule: from " + startStation.getName() +
+                " to " + endStation.getName() + " on " + date);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl("https://api.rasp.yandex.net/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date, 1000);
+
+        call.enqueue(new Callback<YandexRaspResponse>() {
+            @Override
+            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
+                    if (!segments.isEmpty()) {
+                        List<YandexRaspResponse.Segment> nearestSegments = findNearestDepartureTimes(segments);
+                        displayNearestTrains(startStation, nearestSegments);
+                    } else {
+                        Log.d("RouteInfoFragment", "No segments found for suburban schedule");
+                    }
+                } else {
+                    Log.e("RouteInfoFragment", "Failed to fetch suburban schedule: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
+                Log.e("RouteInfoFragment", "Error fetching suburban schedule", t);
+            }
+        });
+    }
+
+    // Отображение поездов на первой suburban станции
+    private void displayNearestTrains(Station startStation, List<YandexRaspResponse.Segment> segments) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        routeDetailsContainer.post(() -> {
+            for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
+                View stationView = routeDetailsContainer.getChildAt(i);
+                TextView stationName = stationView.findViewById(R.id.stationName);
+
+                if (stationName != null && stationName.getText().toString().equals(startStation.getName())) {
+                    RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
+                    if (nearestTrainsRV != null) {
+                        nearestTrainsRV.setVisibility(View.VISIBLE);
+                        nearestTrainsRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        setupTrainInfoAdapter(segments, nearestTrainsRV);
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    private boolean isLineSuburban(Station station) {
+        for (Line line : mainActivity.getAllLines()) {
+            if (line.getStations().contains(station) && "suburban".equals(line.getLineType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasSuburbanLineInRoute(List<Station> route) {
+        for (Station station : route) {
+            if (isLineSuburban(station)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void fetchESPDepartureTime(Station startStation, Station endStstion) {
+        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
+        String from = startStation.getESP();
+        String to = endStstion.getESP();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -415,13 +489,7 @@ public class RouteInfoFragment extends Fragment {
                     List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                     if (!segments.isEmpty()) {
                         List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
-
-                        // Set up RecyclerView
-                        TrainInfoAdapter adapter = new TrainInfoAdapter(nearestDepartureSegments, () -> {
-                            FullScheduleDialogFragment dialogFragment = FullScheduleDialogFragment.newInstance(segments, from, to);
-                            dialogFragment.show(getChildFragmentManager(), "FullScheduleDialogFragment");
-                        });
-                        nearestTrainsRecyclerView.setAdapter(adapter);
+                        setupTrainInfoAdapter(nearestDepartureSegments, nearestTrainsRecyclerView);
                     } else {
                         Log.d("RouteInfoFragment", "No segments found for ESP departure time");
                     }
@@ -457,5 +525,103 @@ public class RouteInfoFragment extends Fragment {
         }
 
         return nearestDepartureTimes;
+    }
+
+    private void showTrainInfoInRouteDetails(List<Station> route) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        for (int i = 0; i < route.size(); i++) {
+            Station station = route.get(i);
+            if (isLineSuburban(station)) {
+                TextView stationName = getView().findViewById(R.id.stationName);
+                View stationIndicator = getView().findViewById(R.id.stationIndicator);
+
+                stationName.setText(station.getName());
+                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0, 0, 0, 0);
+                getView().setLayoutParams(params);
+
+                if (i == 0 || i == route.size() - 1) {
+                    stationName.setTypeface(null, Typeface.BOLD);
+                }
+
+                routeDetailsContainer.addView(getView());
+
+                TextView nearestTrainsTitle = getView().findViewById(R.id.nearestTrainsTitle);
+                RecyclerView nearestTrainsRV = getView().findViewById(R.id.nearestTrainsRV);
+
+                nearestTrainsTitle.setVisibility(View.VISIBLE);
+                nearestTrainsRV.setVisibility(View.VISIBLE);
+
+                // Устанавливаем LayoutManager для nearestTrainsRV
+                nearestTrainsRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+                fetchESPDepartureTime(station, nearestTrainsRV);
+
+                break;
+            }
+        }
+    }
+
+    private void fetchESPDepartureTime(Station startStation, RecyclerView recyclerView) {
+        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
+        String from = startStation.getESP();
+        String to = route.get(route.size()-1).getESP();
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+        String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        Log.d("RouteInfoFragment", "Fetching ESP departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
+
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl("https://api.rasp.yandex.net/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date, 1000);
+
+        call.enqueue(new Callback<YandexRaspResponse>() {
+            @Override
+            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
+                    if (!segments.isEmpty()) {
+                        List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
+                        setupTrainInfoAdapter(nearestDepartureSegments, recyclerView);
+                    } else {
+                        Log.d("RouteInfoFragment", "No segments found for ESP departure time");
+                    }
+                } else {
+                    Log.e("RouteInfoFragment", "Failed to fetch ESP departure time: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
+                Log.e("RouteInfoFragment", "Error fetching ESP departure time", t);
+            }
+        });
+    }
+
+    private void setupTrainInfoAdapter(List<YandexRaspResponse.Segment> segments, RecyclerView recyclerView) {
+        Log.d("RouteInfoFragment", "Setting up train info adapter with: " + segments.size() + " segments");
+        Log.d("RouteInfoFragment", "RecyclerView: " + recyclerView.toString());
+        TrainInfoAdapter adapter = new TrainInfoAdapter(segments, () -> {
+            FullScheduleDialogFragment dialogFragment = FullScheduleDialogFragment.newInstance(segments, route.get(0).getESP(), route.get(route.size() - 1).getESP());
+            dialogFragment.show(getChildFragmentManager(), "FullScheduleDialogFragment");
+        });
+        recyclerView.setAdapter(adapter);
+        recyclerView.requestLayout();
+        recyclerView.invalidate();
     }
 }
