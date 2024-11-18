@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -68,9 +69,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
-        Button switchMapButton = findViewById(R.id.switchMapButton);
+        ImageView switchMapButton = findViewById(R.id.switchMapButton);
         switchMapButton.setOnClickListener(v -> {
             isMetroMap = !isMetroMap;
+            if (isMetroMap) {
+                switchMapButton.setImageResource(R.drawable.metro_map_icon);
+            } else {
+                switchMapButton.setImageResource(R.drawable.suburban_map_icon);
+            }
             updateMapData();
         });
 
