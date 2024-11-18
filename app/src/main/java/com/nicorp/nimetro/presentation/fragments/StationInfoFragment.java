@@ -24,17 +24,15 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -137,7 +135,13 @@ public class StationInfoFragment extends Fragment {
 
         Log.d("StationInfoFragment", "Fetching ESP schedule for station: " + station.getName() + " on date: " + date);
 
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
                 .baseUrl("https://api.rasp.yandex.net/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -148,7 +152,7 @@ public class StationInfoFragment extends Fragment {
         if (prevStation != null) {
             String fromPrev = station.getESP();
             String toPrev = prevStation.getESP();
-            Call<YandexRaspResponse> callPrev = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromPrev, toPrev, "esr", date);
+            Call<YandexRaspResponse> callPrev = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromPrev, toPrev, "esr", date, 1000);
             callPrev.enqueue(new Callback<YandexRaspResponse>() {
                 @Override
                 public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
@@ -178,7 +182,7 @@ public class StationInfoFragment extends Fragment {
         if (nextStation != null) {
             String fromNext = station.getESP();
             String toNext = nextStation.getESP();
-            Call<YandexRaspResponse> callNext = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromNext, toNext, "esr", date);
+            Call<YandexRaspResponse> callNext = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, fromNext, toNext, "esr", date, 1000);
             callNext.enqueue(new Callback<YandexRaspResponse>() {
                 @Override
                 public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
@@ -207,7 +211,6 @@ public class StationInfoFragment extends Fragment {
 
     private List<String> findNearestArrivalTime(List<YandexRaspResponse.Segment> segments, Station targetStation) {
         List<String> nearestArrivalTimes = new ArrayList<>();
-        long minDifference = Long.MAX_VALUE;
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
 
         for (YandexRaspResponse.Segment segment : segments) {
@@ -215,8 +218,13 @@ public class StationInfoFragment extends Fragment {
                 Log.d("StationInfoFragment", "Arrival: " + segment.getArrival());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
                 ZonedDateTime arrivalDateTime = ZonedDateTime.parse(segment.getArrival(), formatter);
+                Log.d("StationInfoFragment", "Arrival date: " + arrivalDateTime);
+                Log.d("StationInfoFragment", "Current time: " + currentTime);
                 long difference = ChronoUnit.MINUTES.between(currentTime, arrivalDateTime);
+                long anotherDifference = ChronoUnit.MINUTES.between(arrivalDateTime, currentTime);
+                Log.d("StationInfoFragment", "Difference: " + difference + " anotherDifference: " + anotherDifference);
 
+                // Учитываем только положительные разницы
                 if (difference > 0 && nearestArrivalTimes.size() < 3) {
                     nearestArrivalTimes.add(segment.getArrival().substring(11, 16));
                 }
@@ -235,15 +243,6 @@ public class StationInfoFragment extends Fragment {
         if (arrivalTimeNext != null) {
             nextStationArrivalTime.setText(String.join(", ", arrivalTimeNext));
         }
-    }
-
-    private void showESPArrivalTime(String arrivalTime) {
-        TextView arrivalTimeTextView = new TextView(getContext());
-        arrivalTimeTextView.setText("Прибытие электрички: " + arrivalTime);
-        arrivalTimeTextView.setTextColor(Color.BLACK);
-        arrivalTimeTextView.setPadding(16, 8, 16, 8);
-
-        stationInfoContainer.addView(arrivalTimeTextView);
     }
 
     private void setStationNameVisibility(TextView stationNameTextView, Station station) {

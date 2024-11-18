@@ -15,6 +15,7 @@ public interface YandexRaspApi {
             @Query("from") String from,
             @Query("to") String to,
             @Query("system") String system,
-            @Query("date") String date
+            @Query("date") String date,
+            @Query("limit") int limit
     );
 }

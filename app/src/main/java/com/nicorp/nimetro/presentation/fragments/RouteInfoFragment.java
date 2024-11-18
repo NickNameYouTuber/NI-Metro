@@ -32,17 +32,15 @@ import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -396,13 +394,19 @@ public class RouteInfoFragment extends Fragment {
 
         Log.d("RouteInfoFragment", "Fetching ESP departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
 
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
                 .baseUrl("https://api.rasp.yandex.net/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date, 1000);
 
         call.enqueue(new Callback<YandexRaspResponse>() {
             @Override
@@ -413,7 +417,10 @@ public class RouteInfoFragment extends Fragment {
                         List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
 
                         // Set up RecyclerView
-                        TrainInfoAdapter adapter = new TrainInfoAdapter(nearestDepartureSegments);
+                        TrainInfoAdapter adapter = new TrainInfoAdapter(nearestDepartureSegments, () -> {
+                            FullScheduleDialogFragment dialogFragment = FullScheduleDialogFragment.newInstance(segments, from, to);
+                            dialogFragment.show(getChildFragmentManager(), "FullScheduleDialogFragment");
+                        });
                         nearestTrainsRecyclerView.setAdapter(adapter);
                     } else {
                         Log.d("RouteInfoFragment", "No segments found for ESP departure time");

@@ -19,12 +19,6 @@
         <!-- Customize your light theme here. -->
     </style>
 
-    <style name="FullScreenDialogStyle" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
-    </style>
-
     <style name="TransparentDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item> <!-- затемняет фон за диалогом -->
@@ -48,5 +42,12 @@
 
     <style name="AppBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="FullScreenDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 </resources>
