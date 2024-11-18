@@ -34,7 +34,7 @@ public class TrainInfoAdapter extends RecyclerView.Adapter<TrainInfoAdapter.Trai
         holder.trainNumber.setText(segment.getThread().getNumber());
         holder.departureTime.setText("Отправление: " + segment.getDeparture().substring(11, 16));
         holder.arrivalTime.setText("Прибытие: " + segment.getArrival().substring(11, 16));
-        holder.duration.setText("Длительность: " + segment.getDuration() / 60 + " мин");
+        holder.duration.setText("Время пути: " + (int) segment.getDuration() / 60 + " мин");
     }
 
     @Override

@@ -57,7 +57,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RouteInfoFragment extends Fragment {
 
     private static final String ARG_ROUTE = "route";
-    private static final int COLLAPSED_HEIGHT = 178;
+    private static final int COLLAPSED_HEIGHT = 308;
 
     private List<Station> route;
     private boolean isExpanded = false;

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:maxHeight="500dp"
+    android:elevation="4dp"
     app:layout_constraintHeight_max="500dp"
     android:background="@drawable/rounded_background"
     android:clickable="true"
@@ -53,8 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ближайшие поезда:"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="16sp"
                 android:layout_marginTop="16dp" />
 
             <androidx.recyclerview.widget.RecyclerView
