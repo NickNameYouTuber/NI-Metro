@@ -22,11 +22,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
+import com.nicorp.nimetro.domain.entities.APITariff;
+import com.nicorp.nimetro.domain.entities.FlatRateTariff;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
+import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.Transfer;
-import com.nicorp.nimetro.domain.fares.FareCalculator;
-import com.nicorp.nimetro.domain.fares.FixedFareCalculator;
+import com.nicorp.nimetro.domain.entities.ZoneBasedTariff;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.presentation.fragments.RouteInfoFragment;
@@ -226,7 +228,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject lineObject = linesArray.getJSONObject(i);
             boolean isCircle = lineObject.optBoolean("isCircle", false);
             String lineType = lineObject.optString("lineType", "single");
-            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType);
+            Tariff tariff = createTariff(lineObject.optJSONObject("tariff"));
+            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType, tariff);
             JSONArray stationsArray = lineObject.getJSONArray("stations");
             for (int j = 0; j < stationsArray.length(); j++) {
                 JSONObject stationObject = stationsArray.getJSONObject(j);
@@ -316,6 +319,30 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject positionObject = objectObject.getJSONObject("position");
             Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
             mapObjects.add(new MapObject(name, type, position, displayName));
+        }
+    }
+
+    private Tariff createTariff(JSONObject tariffObject) throws JSONException {
+        if (tariffObject == null) return null;
+
+        String type = tariffObject.getString("type");
+        switch (type) {
+            case "FlatRateTariff":
+                double price = tariffObject.getDouble("price");
+                return new FlatRateTariff(price);
+            case "ZoneBasedTariff":
+                Map<Integer, Double> zonePrices = new HashMap<>();
+                JSONObject zonePricesObject = tariffObject.getJSONObject("zonePrices");
+                Iterator<String> keys = zonePricesObject.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    zonePrices.put(Integer.parseInt(key), zonePricesObject.getDouble(key));
+                }
+                return new ZoneBasedTariff(zonePrices);
+            case "APITariff":
+                return new APITariff();
+            default:
+                return null;
         }
     }
 
@@ -529,22 +556,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, routeInfoFragment)
                 .commit();
-    }
-
-    private double calculateFare(List<Station> route) {
-        if (route == null || route.isEmpty()) {
-            return 0.0;
-        }
-
-        // Получаем тарифный калькулятор для начальной станции
-        FareCalculator fareCalculator = route.get(0).getFareCalculator();
-
-        // Если тарифный калькулятор не установлен, используем дефолтный
-        if (fareCalculator == null) {
-            fareCalculator = new FixedFareCalculator(50.0); // Пример фиксированного тарифа
-        }
-
-        return fareCalculator.calculateFare(route);
     }
 
     private void showStationsList(List<Station> stations) {

@@ -28,10 +28,15 @@ import com.nicorp.nimetro.data.api.YandexRaspApi;
 import com.nicorp.nimetro.data.models.YandexRaspResponse;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Route;
+import com.nicorp.nimetro.domain.entities.RouteSegment;
 import com.nicorp.nimetro.domain.entities.Station;
+import com.nicorp.nimetro.domain.entities.Tariff;
+import com.nicorp.nimetro.domain.entities.TariffCallback;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
+
+import org.json.JSONException;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -40,6 +45,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -71,6 +77,7 @@ public class RouteInfoFragment extends Fragment {
     private MetroMapView metroMapView;
     private MainActivity mainActivity;
     private RecyclerView nearestTrainsRecyclerView;
+    private TextView routeCost;
 
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
@@ -102,9 +109,17 @@ public class RouteInfoFragment extends Fragment {
 
         initializeViews(view, colorOnSurface);
         setViewColors(colorOnSurface);
-        calculateAndSetRouteStatistics();
+        try {
+            calculateAndSetRouteStatistics();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         setupCloseButton(view);
         setupSwipeGestureDetector(view);
+
+        calculateTotalCost(route, cost -> {
+            routeCost.setText(String.format("%.2f руб.", cost));
+        });
 
         nearestTrainsRecyclerView = view.findViewById(R.id.nearestTrainsRecyclerView);
         nearestTrainsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -128,6 +143,7 @@ public class RouteInfoFragment extends Fragment {
         layoutCollapsed = view.findViewById(R.id.layoutCollapsed);
         layoutExpanded = view.findViewById(R.id.layoutExpanded);
         routeInfoContainer = view.findViewById(R.id.routeInfoContainer);
+        routeCost = view.findViewById(R.id.routeCost);
     }
 
     private void setViewColors(int colorOnSurface) {
@@ -140,7 +156,7 @@ public class RouteInfoFragment extends Fragment {
         routeTransfersCountTitle.setTextColor(colorOnSurface);
     }
 
-    private void calculateAndSetRouteStatistics() {
+    private void calculateAndSetRouteStatistics() throws JSONException {
         if (route != null && !route.isEmpty()) {
             int totalTime = calculateTotalTime();
             int stationsCount = route.size();
@@ -152,6 +168,58 @@ public class RouteInfoFragment extends Fragment {
 
             populateRouteDetails(routeDetailsContainer);
         }
+    }
+
+    private void calculateTotalCost(List<Station> route, TariffCallback callback) {
+        AtomicReference<Double> totalCost = new AtomicReference<>(0.0);
+        List<RouteSegment> segments = splitRouteIntoSegments(route);
+
+        for (RouteSegment segment : segments) {
+            Tariff tariff = segment.getLine().getTariff();
+            Log.d("RouteInfoFragment", "Tariff = " + tariff);
+            if (tariff != null) {
+                tariff.calculateCost(segment, cost -> {
+                    totalCost.updateAndGet(v -> new Double((double) (v + cost)));
+                    callback.onCostCalculated(totalCost.get());
+                });
+            }
+        }
+    }
+
+    private List<RouteSegment> splitRouteIntoSegments(List<Station> route) {
+        List<RouteSegment> segments = new ArrayList<>();
+        Line currentLine = null;
+        List<Station> currentSegment = new ArrayList<>();
+
+        for (Station station : route) {
+            Line stationLine = getLineForStation(station);
+            if (currentLine == null) {
+                currentLine = stationLine;
+            }
+
+            if (stationLine != currentLine) {
+                segments.add(new RouteSegment(currentSegment, currentLine, 0)); // Зоны пока не учитываем
+                currentSegment = new ArrayList<>();
+                currentLine = stationLine;
+            }
+
+            currentSegment.add(station);
+        }
+
+        if (!currentSegment.isEmpty()) {
+            segments.add(new RouteSegment(currentSegment, currentLine, 0)); // Зоны пока не учитываем
+        }
+
+        return segments;
+    }
+
+    private Line getLineForStation(Station station) {
+        for (Line line : mainActivity.getAllLines()) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
+        return null;
     }
 
     private void setupCloseButton(View view) {
@@ -450,15 +518,6 @@ public class RouteInfoFragment extends Fragment {
         return false;
     }
 
-    private boolean hasSuburbanLineInRoute(List<Station> route) {
-        for (Station station : route) {
-            if (isLineSuburban(station)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void fetchESPDepartureTime(Station startStation, Station endStstion) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         String from = startStation.getESP();
@@ -525,92 +584,6 @@ public class RouteInfoFragment extends Fragment {
         }
 
         return nearestDepartureTimes;
-    }
-
-    private void showTrainInfoInRouteDetails(List<Station> route) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (int i = 0; i < route.size(); i++) {
-            Station station = route.get(i);
-            if (isLineSuburban(station)) {
-                TextView stationName = getView().findViewById(R.id.stationName);
-                View stationIndicator = getView().findViewById(R.id.stationIndicator);
-
-                stationName.setText(station.getName());
-                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(0, 0, 0, 0);
-                getView().setLayoutParams(params);
-
-                if (i == 0 || i == route.size() - 1) {
-                    stationName.setTypeface(null, Typeface.BOLD);
-                }
-
-                routeDetailsContainer.addView(getView());
-
-                TextView nearestTrainsTitle = getView().findViewById(R.id.nearestTrainsTitle);
-                RecyclerView nearestTrainsRV = getView().findViewById(R.id.nearestTrainsRV);
-
-                nearestTrainsTitle.setVisibility(View.VISIBLE);
-                nearestTrainsRV.setVisibility(View.VISIBLE);
-
-                // Устанавливаем LayoutManager для nearestTrainsRV
-                nearestTrainsRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-                fetchESPDepartureTime(station, nearestTrainsRV);
-
-                break;
-            }
-        }
-    }
-
-    private void fetchESPDepartureTime(Station startStation, RecyclerView recyclerView) {
-        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
-        String from = startStation.getESP();
-        String to = route.get(route.size()-1).getESP();
-        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
-        String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        Log.d("RouteInfoFragment", "Fetching ESP departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
-
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl("https://api.rasp.yandex.net/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date, 1000);
-
-        call.enqueue(new Callback<YandexRaspResponse>() {
-            @Override
-            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
-                    if (!segments.isEmpty()) {
-                        List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
-                        setupTrainInfoAdapter(nearestDepartureSegments, recyclerView);
-                    } else {
-                        Log.d("RouteInfoFragment", "No segments found for ESP departure time");
-                    }
-                } else {
-                    Log.e("RouteInfoFragment", "Failed to fetch ESP departure time: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                Log.e("RouteInfoFragment", "Error fetching ESP departure time", t);
-            }
-        });
     }
 
     private void setupTrainInfoAdapter(List<YandexRaspResponse.Segment> segments, RecyclerView recyclerView) {

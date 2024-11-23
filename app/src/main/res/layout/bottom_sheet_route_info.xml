@@ -48,6 +48,7 @@
             android:id="@+id/layoutCollapsed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             >
 
@@ -58,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:text="Ближайшие поезда:"
                 android:textSize="16sp"
-                android:layout_marginTop="16dp" />
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/nearestTrainsRecyclerView"
@@ -162,7 +163,7 @@
 
                 <TextView
                     android:textColor="@color/textPrimary"
-                    android:id="@+id/routeFare"
+                    android:id="@+id/routeCost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0 ₽"
@@ -175,6 +176,7 @@
             android:id="@+id/layoutExpanded"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             android:visibility="gone">
 

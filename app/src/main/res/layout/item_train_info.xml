@@ -1,7 +1,8 @@
 <!-- item_train_info.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="140dp"
+    android:layout_height="140dp"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@drawable/rounded_background"
@@ -46,10 +47,11 @@
             android:id="@+id/departureTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="04:22"
-            android:textSize="11sp"
             android:textColor="@color/textPrimary"
-            android:fontFamily="sans-serif"/>
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Время прибытия -->
@@ -64,10 +66,11 @@
             android:id="@+id/arrivalTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="04:50"
-            android:textSize="11sp"
             android:textColor="@color/textPrimary"
-            android:fontFamily="sans-serif"/>
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Длительность поездки -->
@@ -90,7 +93,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="28 мин"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:textColor="@color/textSecondary"
             android:fontFamily="sans-serif-medium"/>
     </LinearLayout>
@@ -115,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="50 руб"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:textColor="@color/textSecondary"
             android:fontFamily="sans-serif-medium"/>
     </LinearLayout>

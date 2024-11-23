@@ -1,6 +1,7 @@
 package com.nicorp.nimetro.presentation.adapters;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class TrainInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView departureTime;
         private TextView arrivalTime;
         private TextView duration;
+        private TextView cost;
 
         public TrainInfoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +77,7 @@ public class TrainInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             departureTime = itemView.findViewById(R.id.departureTime);
             arrivalTime = itemView.findViewById(R.id.arrivalTime);
             duration = itemView.findViewById(R.id.duration);
+            cost = itemView.findViewById(R.id.price);
         }
 
         @SuppressLint("SetTextI18n")
@@ -83,6 +86,9 @@ public class TrainInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             departureTime.setText(segment.getDeparture().substring(11, 16));
             arrivalTime.setText(segment.getArrival().substring(11, 16));
             duration.setText((String.valueOf((int) (segment.getDuration() / 60))) + " мин");
+            // Convert the integer to a float or double before formatting
+            float price = segment.getTicketsInfo().getPlaces().get(0).getPrice().getWhole();
+            cost.setText(price + "." + segment.getTicketsInfo().getPlaces().get(0).getCurrency());
         }
     }
 

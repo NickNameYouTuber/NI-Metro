@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.nicorp.nimetro.domain.entities.Tariff;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +16,16 @@ public class Line implements Parcelable {
     private List<Station> stations;
     private boolean isCircle;
     private String lineType;
+    private Tariff tariff;
 
-    public Line(String id, String name, String color, boolean isCircle, String lineType) {
+    public Line(String id, String name, String color, boolean isCircle, String lineType, Tariff tariff) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.isCircle = isCircle;
         this.stations = new ArrayList<>();
         this.lineType = lineType;
+        this.tariff = tariff;
     }
 
     protected Line(Parcel in) {
@@ -31,6 +35,7 @@ public class Line implements Parcelable {
         stations = in.createTypedArrayList(Station.CREATOR);
         isCircle = in.readByte() != 0;
         lineType = in.readString();
+        // Tariff не может быть просто так десериализован, нужно будет добавить логику для этого
     }
 
     public static final Creator<Line> CREATOR = new Creator<Line>() {
@@ -58,6 +63,7 @@ public class Line implements Parcelable {
         dest.writeTypedList(stations);
         dest.writeByte((byte) (isCircle ? 1 : 0));
         dest.writeString(lineType);
+        // Tariff не может быть просто так сериализован, нужно будет добавить логику для этого
     }
 
     public String getId() {
@@ -94,5 +100,13 @@ public class Line implements Parcelable {
             return id;
         }
         return null;
+    }
+
+    public Tariff getTariff() {
+        return tariff;
+    }
+
+    public void setTariff(Tariff tariff) {
+        this.tariff = tariff;
     }
 }
