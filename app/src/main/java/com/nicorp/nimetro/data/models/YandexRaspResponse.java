@@ -17,6 +17,7 @@ public class YandexRaspResponse {
         private String departure;
         private String arrival;
         private double duration;
+        private TicketsInfo tickets_info;
 
         public Thread getThread() {
             return thread;
@@ -34,12 +35,17 @@ public class YandexRaspResponse {
             return duration;
         }
 
+        public TicketsInfo getTicketsInfo() {
+            return tickets_info;
+        }
+
         // Parcelable implementation
         protected Segment(Parcel in) {
             thread = in.readParcelable(Thread.class.getClassLoader());
             departure = in.readString();
             arrival = in.readString();
             duration = in.readDouble();
+            tickets_info = in.readParcelable(TicketsInfo.class.getClassLoader());
         }
 
         public Segment() {
@@ -52,6 +58,7 @@ public class YandexRaspResponse {
             dest.writeString(departure);
             dest.writeString(arrival);
             dest.writeDouble(duration);
+            dest.writeParcelable(tickets_info, flags);
         }
 
         @Override
@@ -162,6 +169,151 @@ public class YandexRaspResponse {
         @Override
         public int describeContents() {
             return 0;
+        }
+    }
+
+    public static class TicketsInfo implements Parcelable {
+        private boolean et_marker;
+        private List<Place> places;
+
+        public boolean isEtMarker() {
+            return et_marker;
+        }
+
+        public List<Place> getPlaces() {
+            return places;
+        }
+
+        // Parcelable implementation
+        protected TicketsInfo(Parcel in) {
+            et_marker = in.readByte() != 0;
+            places = in.createTypedArrayList(Place.CREATOR);
+        }
+
+        public TicketsInfo() {
+            // Default constructor
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeByte((byte) (et_marker ? 1 : 0));
+            dest.writeTypedList(places);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<TicketsInfo> CREATOR = new Creator<TicketsInfo>() {
+            @Override
+            public TicketsInfo createFromParcel(Parcel in) {
+                return new TicketsInfo(in);
+            }
+
+            @Override
+            public TicketsInfo[] newArray(int size) {
+                return new TicketsInfo[size];
+            }
+        };
+
+        public static class Place implements Parcelable {
+            private String name;
+            private Price price;
+            private String currency;
+
+            public String getName() {
+                return name;
+            }
+
+            public Price getPrice() {
+                return price;
+            }
+
+            public String getCurrency() {
+                return currency;
+            }
+
+            // Parcelable implementation
+            protected Place(Parcel in) {
+                name = in.readString();
+                price = in.readParcelable(Price.class.getClassLoader());
+                currency = in.readString();
+            }
+
+            public Place() {
+                // Default constructor
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(name);
+                dest.writeParcelable(price, flags);
+                dest.writeString(currency);
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            public static final Creator<Place> CREATOR = new Creator<Place>() {
+                @Override
+                public Place createFromParcel(Parcel in) {
+                    return new Place(in);
+                }
+
+                @Override
+                public Place[] newArray(int size) {
+                    return new Place[size];
+                }
+            };
+        }
+
+        public static class Price implements Parcelable {
+            private int whole;
+            private int cents;
+
+            public int getWhole() {
+                return whole;
+            }
+
+            public int getCents() {
+                return cents;
+            }
+
+            // Parcelable implementation
+            protected Price(Parcel in) {
+                whole = in.readInt();
+                cents = in.readInt();
+            }
+
+            public Price() {
+                // Default constructor
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeInt(whole);
+                dest.writeInt(cents);
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            public static final Creator<Price> CREATOR = new Creator<Price>() {
+                @Override
+                public Price createFromParcel(Parcel in) {
+                    return new Price(in);
+                }
+
+                @Override
+                public Price[] newArray(int size) {
+                    return new Price[size];
+                }
+            };
         }
     }
 }

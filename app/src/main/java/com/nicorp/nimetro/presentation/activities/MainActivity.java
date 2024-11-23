@@ -25,6 +25,8 @@ import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
+import com.nicorp.nimetro.domain.fares.FareCalculator;
+import com.nicorp.nimetro.domain.fares.FixedFareCalculator;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.presentation.fragments.RouteInfoFragment;
@@ -60,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private boolean isMetroMap = true; // Флаг для определения текущей карты
 
+    /**
+     * Called when the activity is first created.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -519,6 +529,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, routeInfoFragment)
                 .commit();
+    }
+
+    private double calculateFare(List<Station> route) {
+        if (route == null || route.isEmpty()) {
+            return 0.0;
+        }
+
+        // Получаем тарифный калькулятор для начальной станции
+        FareCalculator fareCalculator = route.get(0).getFareCalculator();
+
+        // Если тарифный калькулятор не установлен, используем дефолтный
+        if (fareCalculator == null) {
+            fareCalculator = new FixedFareCalculator(50.0); // Пример фиксированного тарифа
+        }
+
+        return fareCalculator.calculateFare(route);
     }
 
     private void showStationsList(List<Station> stations) {
