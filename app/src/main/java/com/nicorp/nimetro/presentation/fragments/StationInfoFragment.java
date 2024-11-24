@@ -5,10 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Typeface;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.nicorp.nimetro.R;
@@ -30,6 +29,7 @@ import com.nicorp.nimetro.data.models.YandexRaspResponse;
 import com.nicorp.nimetro.domain.entities.CircleShape;
 import com.nicorp.nimetro.domain.entities.DoubleCircleShape;
 import com.nicorp.nimetro.domain.entities.Line;
+import com.nicorp.nimetro.domain.entities.ParallelogramShape;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 
@@ -287,19 +287,40 @@ public class StationInfoFragment extends Fragment {
             ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
             shapeDrawable.getPaint().setColor(Color.parseColor(station.getColor()));
             shapeDrawable.setIntrinsicHeight(40); // Установите нужную высоту
-            shapeDrawable.setIntrinsicWidth(45);  // Установите нужную ширину
+            shapeDrawable.setIntrinsicWidth(40);  // Установите нужную ширину
             lineNumber.setBackground(shapeDrawable);
         } else {
             lineNumber.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
         }
 
+        float density = getResources().getDisplayMetrics().density;
         lineNumber.setGravity(Gravity.CENTER);
         if (shape instanceof DoubleCircleShape) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    (int) (30*density),
+                    (int) (30*density)
+            );
+            lineNumber.setLayoutParams(params);
             lineNumber.setTextColor(Color.BLACK);
-        } else  {
+            lineNumber.setTextSize(13);
+        } else if (shape instanceof ParallelogramShape) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    (int) (40*density),
+                    (int) (30*density)
+            );
+            lineNumber.setLayoutParams(params);
+            Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            lineNumber.setTypeface(customTypeface, Typeface.BOLD);
             lineNumber.setTextColor(Color.WHITE);
+        } else {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    (int) (30*density),
+                    (int) (30*density)
+            );
+            lineNumber.setLayoutParams(params);
+            lineNumber.setTextColor(Color.WHITE);
+            lineNumber.setTextSize(14);
         }
-        lineNumber.setTextSize(12);
         lineNumber.setPadding(4, 4, 4, 4);
     }
 
@@ -369,27 +390,7 @@ public class StationInfoFragment extends Fragment {
                 } else if (line.getDisplayShape().equals("DOUBLE_CIRCLE")) {
                     return new DoubleCircleShape(Color.parseColor(line.getColor()));
                 } else if (line.getDisplayShape().equals("PARALLELOGRAM")) {
-                    return new Shape() {
-                        @Override
-                        public void draw(Canvas canvas, Paint paint) {
-                            Path path = new Path();
-                            path.moveTo(getWidth() / 4, 15); // Верхний правый угол
-                            path.lineTo(getWidth() - 5, 15); // Верхний левый угол
-                            path.lineTo(getWidth() * 3 / 4, getHeight() - 15); // Нижний левый угол
-                            path.lineTo(0 + 5, getHeight() - 15); // Нижний правый угол
-                            path.close();
-
-                            Paint strokePaint = new Paint(paint);
-                            strokePaint.setStyle(Paint.Style.FILL);
-                            strokePaint.setColor(Color.parseColor(line.getColor()));
-                            strokePaint.setStrokeWidth(10); // Ширина обводки
-                            canvas.drawPath(path, strokePaint);
-                            strokePaint.setStyle(Paint.Style.STROKE);
-                            strokePaint.setColor(Color.parseColor(line.getColor()));
-                            strokePaint.setStrokeWidth(10); // Ширина обводки
-                            canvas.drawPath(path, strokePaint);
-                        }
-                    };
+                    return new ParallelogramShape(Color.parseColor(line.getColor()));
                 }
             }
         }

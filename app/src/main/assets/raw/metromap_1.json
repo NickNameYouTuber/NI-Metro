@@ -10,8 +10,6 @@
     "lines": [
       {
         "id": "1",
-        "displayNumber": "1",
-        "displayShape": "CIRCLE",
         "name": "Сокольническая линия",
         "color": "#E40520",
         "isCircle": false,
@@ -19,6 +17,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_100",
@@ -29,9 +28,6 @@
             "neighbors": [
               [
                 "METRO_101",
-                3
-              ], [
-                "SUBURBAN_100",
                 3
               ]
             ],
@@ -45,7 +41,7 @@
           {
             "id": "METRO_101",
             "name": "Черкизовская",
-            "x": 1084,
+            "x": 1085,
             "y": 512,
             "textPosition": 3,
             "neighbors": [
@@ -68,8 +64,8 @@
           {
             "id": "METRO_102",
             "name": "Преображенская площадь",
-            "x": 1084,
-            "y": 622,
+            "x": 1085,
+            "y": 590,
             "textPosition": 3,
             "neighbors": [
               [
@@ -321,8 +317,8 @@
           {
             "id": "METRO_113",
             "name": "Фрунзенская",
-            "x": 527,
-            "y": 1205,
+            "x": 525,
+            "y": 1208,
             "textPosition": 7,
             "neighbors": [
               [
@@ -390,7 +386,7 @@
           {
             "id": "METRO_116",
             "name": "Университет",
-            "x": 398,
+            "x": 395,
             "y": 1387,
             "textPosition": 0,
             "neighbors": [
@@ -640,8 +636,6 @@
       },
       {
         "id": "2",
-        "displayNumber": "2",
-        "displayShape": "CIRCLE",
         "name": "Замоскворецкая линия",
         "color": "#46AF50",
         "isCircle": false,
@@ -649,6 +643,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_200",
@@ -948,8 +943,8 @@
           {
             "id": "METRO_213",
             "name": "Павелецкая",
-            "x": 931,
-            "y": 1238,
+            "x": 930,
+            "y": 1234,
             "textPosition": 3,
             "neighbors": [
               [
@@ -971,8 +966,8 @@
           {
             "id": "METRO_214",
             "name": "Автозаводская",
-            "x": 929,
-            "y": 1340,
+            "x": 930,
+            "y": 1339,
             "textPosition": 0,
             "neighbors": [
               [
@@ -994,7 +989,7 @@
           {
             "id": "METRO_215",
             "name": "Технопарк",
-            "x": 932,
+            "x": 930,
             "y": 1417,
             "textPosition": 0,
             "neighbors": [
@@ -1017,8 +1012,8 @@
           {
             "id": "METRO_216",
             "name": "Коломенская",
-            "x": 931,
-            "y": 1469,
+            "x": 930,
+            "y": 1467,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1198,8 +1193,6 @@
       },
       {
         "id": "3",
-        "displayNumber": "3",
-        "displayShape": "CIRCLE",
         "name": "Арбатско-Покровская линия",
         "color": "#0072BB",
         "isCircle": false,
@@ -1207,12 +1200,13 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_300",
             "name": "Пятницкое шоссе",
-            "x": 155,
-            "y": 395,
+            "x": 158,
+            "y": 392,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1230,7 +1224,7 @@
           {
             "id": "METRO_301",
             "name": "Митино",
-            "x": 157,
+            "x": 158,
             "y": 439,
             "textPosition": 0,
             "neighbors": [
@@ -1253,8 +1247,8 @@
           {
             "id": "METRO_302",
             "name": "Волоколамская",
-            "x": 157,
-            "y": 499,
+            "x": 158,
+            "y": 498,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1276,7 +1270,7 @@
           {
             "id": "METRO_303",
             "name": "Мякинино",
-            "x": 157,
+            "x": 158,
             "y": 535,
             "textPosition": 0,
             "neighbors": [
@@ -1322,8 +1316,8 @@
           {
             "id": "METRO_305",
             "name": "Крылатское",
-            "x": 156,
-            "y": 670,
+            "x": 158,
+            "y": 669,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1644,8 +1638,8 @@
           {
             "id": "METRO_319",
             "name": "Измайловская",
-            "x": 1242,
-            "y": 590,
+            "x": 1239,
+            "y": 589,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1667,7 +1661,7 @@
           {
             "id": "METRO_320",
             "name": "Первомайская",
-            "x": 1240,
+            "x": 1239,
             "y": 536,
             "textPosition": 0,
             "neighbors": [
@@ -1710,8 +1704,6 @@
       },
       {
         "id": "4",
-        "displayNumber": "4",
-        "displayShape": "CIRCLE",
         "name": "Филевская линия",
         "color": "#27BCEF",
         "isCircle": false,
@@ -1719,6 +1711,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_400",
@@ -1969,8 +1962,6 @@
       },
       {
         "id": "5",
-        "displayNumber": "5",
-        "displayShape": "CIRCLE",
         "name": "Кольцевая линия",
         "color": "#915133",
         "isCircle": true,
@@ -1978,6 +1969,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_87",
@@ -2283,8 +2275,6 @@
       },
       {
         "id": "6",
-        "displayNumber": "6",
-        "displayShape": "CIRCLE",
         "name": "Калужско-Рижская линия",
         "color": "#FF8C00",
         "isCircle": false,
@@ -2292,12 +2282,13 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_600",
             "name": "Медведково",
-            "x": 931,
-            "y": 279,
+            "x": 930,
+            "y": 277,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2315,8 +2306,8 @@
           {
             "id": "METRO_601",
             "name": "Бабушкинская",
-            "x": 932,
-            "y": 316,
+            "x": 930,
+            "y": 315,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2338,7 +2329,7 @@
           {
             "id": "METRO_602",
             "name": "Свиблово",
-            "x": 932,
+            "x": 930,
             "y": 351,
             "textPosition": 0,
             "neighbors": [
@@ -2384,8 +2375,8 @@
           {
             "id": "METRO_604",
             "name": "ВДНХ",
-            "x": 931,
-            "y": 506,
+            "x": 930,
+            "y": 505,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2407,7 +2398,7 @@
           {
             "id": "METRO_605",
             "name": "Алексеевская",
-            "x": 931,
+            "x": 930,
             "y": 550,
             "textPosition": 0,
             "neighbors": [
@@ -2499,8 +2490,8 @@
           {
             "id": "METRO_609",
             "name": "Тургеневская",
-            "x": 887,
-            "y": 877,
+            "x": 885,
+            "y": 878,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2591,8 +2582,8 @@
           {
             "id": "METRO_613",
             "name": "Шаболовская",
-            "x": 644,
-            "y": 1282,
+            "x": 642,
+            "y": 1284,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2614,7 +2605,7 @@
           {
             "id": "METRO_614",
             "name": "Ленинский проспект",
-            "x": 644,
+            "x": 642,
             "y": 1345,
             "textPosition": 0,
             "neighbors": [
@@ -2752,7 +2743,7 @@
           {
             "id": "METRO_620",
             "name": "Коньково",
-            "x": 646,
+            "x": 643,
             "y": 1650,
             "textPosition": 0,
             "neighbors": [
@@ -2775,8 +2766,8 @@
           {
             "id": "METRO_621",
             "name": "Тёплый стан",
-            "x": 644,
-            "y": 1678,
+            "x": 643,
+            "y": 1679,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2798,7 +2789,7 @@
           {
             "id": "METRO_622",
             "name": "Ясенево",
-            "x": 644,
+            "x": 643,
             "y": 1708,
             "textPosition": 0,
             "neighbors": [
@@ -2821,8 +2812,8 @@
           {
             "id": "METRO_623",
             "name": "Новоясеневская",
-            "x": 642,
-            "y": 1743,
+            "x": 643,
+            "y": 1744,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2841,8 +2832,6 @@
       },
       {
         "id": "7",
-        "displayNumber": "7",
-        "displayShape": "CIRCLE",
         "name": "Таганско-Краснопресненская линия",
         "color": "#8B008B",
         "isCircle": false,
@@ -2850,12 +2839,13 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_700",
             "name": "Планерная",
-            "x": 311,
-            "y": 396,
+            "x": 313,
+            "y": 394,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2873,8 +2863,8 @@
           {
             "id": "METRO_701",
             "name": "Сходненская",
-            "x": 311,
-            "y": 426,
+            "x": 313,
+            "y": 425,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2896,8 +2886,8 @@
           {
             "id": "METRO_702",
             "name": "Тушинская",
-            "x": 312,
-            "y": 481,
+            "x": 313,
+            "y": 480,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2919,8 +2909,8 @@
           {
             "id": "METRO_703",
             "name": "Спартак",
-            "x": 311,
-            "y": 514,
+            "x": 313,
+            "y": 515,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2942,8 +2932,8 @@
           {
             "id": "METRO_704",
             "name": "Щукинская",
-            "x": 311,
-            "y": 555,
+            "x": 313,
+            "y": 556,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3264,8 +3254,8 @@
           {
             "id": "METRO_718",
             "name": "Рязанский проспект",
-            "x": 1321,
-            "y": 1380,
+            "x": 1322,
+            "y": 1379,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3311,7 +3301,7 @@
             "id": "METRO_720",
             "name": "Лермонтовский проспект",
             "x": 1389,
-            "y": 1447,
+            "y": 1445,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3333,8 +3323,8 @@
           {
             "id": "METRO_721",
             "name": "Жулебино",
-            "x": 1417,
-            "y": 1481,
+            "x": 1418,
+            "y": 1476,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3376,15 +3366,14 @@
       },
       {
         "id": "8",
-        "displayNumber": "8",
-        "displayShape": "CIRCLE",
         "name": "Калининская линия",
-        "color": "#F5D86C",
+        "color": "#ffd702",
         "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_800",
@@ -3566,15 +3555,14 @@
       },
       {
         "id": "9",
-        "displayNumber": "8a",
-        "displayShape": "CIRCLE",
         "name": "Солнцевская линия",
-        "color": "#F5D86C",
+        "color": "#ffd702",
         "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_900",
@@ -3998,8 +3986,6 @@
       },
       {
         "id": "10",
-        "displayNumber": "9",
-        "displayShape": "CIRCLE",
         "name": "Серпуховско-Тимирязевская линия",
         "color": "#808080",
         "isCircle": false,
@@ -4007,6 +3993,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1000",
@@ -4214,8 +4201,8 @@
           {
             "id": "METRO_1009",
             "name": "Нагатинская",
-            "x": 775,
-            "y": 1419,
+            "x": 776,
+            "y": 1418,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4260,8 +4247,8 @@
           {
             "id": "METRO_1011",
             "name": "Серпуховская",
-            "x": 774,
-            "y": 1247,
+            "x": 776,
+            "y": 1245,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4579,8 +4566,6 @@
       },
       {
         "id": "11",
-        "displayNumber": "10",
-        "displayShape": "CIRCLE",
         "name": "Люблинско-Дмитровская линия",
         "color": "#ABC469",
         "isCircle": false,
@@ -4588,6 +4573,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1100",
@@ -4657,7 +4643,7 @@
           {
             "id": "METRO_1103",
             "name": "Марьино",
-            "x": 1156,
+            "x": 1157,
             "y": 1634,
             "textPosition": 0,
             "neighbors": [
@@ -4726,8 +4712,8 @@
           {
             "id": "METRO_1106",
             "name": "Волжская",
-            "x": 1156,
-            "y": 1495,
+            "x": 1157,
+            "y": 1496,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4772,8 +4758,8 @@
           {
             "id": "METRO_1108",
             "name": "Кожуховская",
-            "x": 1086,
-            "y": 1293,
+            "x": 1083,
+            "y": 1290,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4795,8 +4781,8 @@
           {
             "id": "METRO_1109",
             "name": "Дубровка",
-            "x": 1085,
-            "y": 1220,
+            "x": 1083,
+            "y": 1219,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4819,7 +4805,7 @@
             "id": "METRO_1110",
             "name": "Крестьянская застава",
             "x": 1084,
-            "y": 1173,
+            "y": 1172,
             "textPosition": 0,
             "neighbors": [
               [
@@ -5183,8 +5169,6 @@
       },
       {
         "id": "12",
-        "displayNumber": "11",
-        "displayShape": "CIRCLE",
         "name": "Большая кольцевая линия",
         "color": "#A0C5BE",
         "isCircle": true,
@@ -5192,6 +5176,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1200",
@@ -5864,8 +5849,6 @@
       },
       {
         "id": "13",
-        "displayNumber": "12",
-        "displayShape": "CIRCLE",
         "name": "Бутовская линия",
         "color": "#AEB5CA",
         "isCircle": false,
@@ -5873,6 +5856,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1300",
@@ -6031,15 +6015,9 @@
       },
       {
         "id": "15",
-        "displayNumber": "14",
-        "displayShape": "DOUBLE_CIRCLE",
         "name": "МЦК",
         "color": "#E94282",
         "isCircle": true,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "double",
         "stations": [
           {
@@ -6202,8 +6180,8 @@
           {
             "id": "METRO_1507",
             "name": "Измайлово",
-            "x": 1267,
-            "y": 660,
+            "x": 1268,
+            "y": 658,
             "textPosition": 0,
             "neighbors": [
               [
@@ -6225,8 +6203,8 @@
           {
             "id": "METRO_1508",
             "name": "Соколиная Гора",
-            "x": 1296,
-            "y": 705,
+            "x": 1294,
+            "y": 706,
             "textPosition": 0,
             "neighbors": [
               [
@@ -6295,7 +6273,7 @@
             "id": "METRO_1511",
             "name": "Нижегородская",
             "x": 1315,
-            "y": 1017,
+            "y": 1018,
             "textPosition": 0,
             "neighbors": [
               [
@@ -6755,8 +6733,6 @@
       },
       {
         "id": "16",
-        "displayNumber": "15",
-        "displayShape": "CIRCLE",
         "name": "Некрасовская линия",
         "color": "#CB80A2",
         "isCircle": false,
@@ -6764,11 +6740,12 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1600",
             "name": "Некрасовка",
-            "x": 1400,
+            "x": 1397,
             "y": 1650,
             "textPosition": 0,
             "neighbors": [
@@ -6787,8 +6764,8 @@
           {
             "id": "METRO_1601",
             "name": "Лухмановская",
-            "x": 1399,
-            "y": 1619,
+            "x": 1397,
+            "y": 1617,
             "textPosition": 0,
             "neighbors": [
               [
@@ -6810,8 +6787,8 @@
           {
             "id": "METRO_1602",
             "name": "Улица Дмитриевского",
-            "x": 1399,
-            "y": 1570,
+            "x": 1397,
+            "y": 1569,
             "textPosition": 0,
             "neighbors": [
               [
@@ -6945,8 +6922,6 @@
       },
       {
         "id": "17",
-        "displayNumber": "18",
-        "displayShape": "CIRCLE",
         "name": "Троицкая линия",
         "color": "#256356",
         "isCircle": false,
@@ -6954,6 +6929,7 @@
           "type": "FlatRateTariff",
           "price": 70
         },
+        "lineType": "single",
         "stations": [
           {
             "id": "METRO_1700",
@@ -7023,8 +6999,8 @@
           {
             "id": "METRO_1703",
             "name": "Тютчевская",
-            "x": 515,
-            "y": 1705,
+            "x": 514,
+            "y": 1703,
             "textPosition": 0,
             "neighbors": [
               [
@@ -7046,8 +7022,8 @@
           {
             "id": "METRO_1704",
             "name": "Корниловская",
-            "x": 515,
-            "y": 1745,
+            "x": 514,
+            "y": 1739,
             "textPosition": 0,
             "neighbors": [
               [
@@ -7069,7 +7045,7 @@
           {
             "id": "METRO_1705",
             "name": "Коммунарка",
-            "x": 515,
+            "x": 514,
             "y": 1775,
             "textPosition": 0,
             "neighbors": [
@@ -7112,10 +7088,8 @@
       },
       {
         "id": "18",
-        "displayNumber": "D1",
-        "displayShape": "PARALLELOGRAM",
         "name": "МЦД1",
-        "color": "#FDA130",
+        "color": "#f6a600",
         "isCircle": false,
         "tariff": {
           "type": "APITariff"
@@ -7124,7 +7098,6 @@
         "stations": [
           {
             "id": "METRO_1800",
-            "ESP": 182209,
             "name": "Одинцово",
             "x": 139,
             "y": 1342,
@@ -7144,7 +7117,6 @@
           },
           {
             "id": "METRO_1801",
-            "ESP": 181757,
             "name": "Баковка",
             "x": 138,
             "y": 1314,
@@ -7168,7 +7140,6 @@
           },
           {
             "id": "METRO_1802",
-            "ESP": 181742,
             "name": "Сколково",
             "x": 139,
             "y": 1286,
@@ -7192,7 +7163,6 @@
           },
           {
             "id": "METRO_1803",
-            "ESP": 181738,
             "name": "Немчиновка",
             "x": 138,
             "y": 1261,
@@ -7216,7 +7186,6 @@
           },
           {
             "id": "METRO_1804",
-            "ESP": 181723,
             "name": "Сетунь",
             "x": 145,
             "y": 1234,
@@ -7240,7 +7209,6 @@
           },
           {
             "id": "METRO_1805",
-            "ESP": 181719,
             "name": "Рабочий Посёлок",
             "x": 174,
             "y": 1208,
@@ -7264,7 +7232,6 @@
           },
           {
             "id": "METRO_1806",
-            "ESP": 181704,
             "name": "Кунцевская",
             "x": 205,
             "y": 1181,
@@ -7288,7 +7255,6 @@
           },
           {
             "id": "METRO_1807",
-            "ESP": 181615,
             "name": "Славянский бульвар",
             "x": 244,
             "y": 1142,
@@ -7312,7 +7278,6 @@
           },
           {
             "id": "METRO_1808",
-            "ESP": 181600,
             "name": "Фили",
             "x": 313,
             "y": 1065,
@@ -7336,7 +7301,6 @@
           },
           {
             "id": "METRO_1809",
-            "ESP": 198226,
             "name": "Тестовская (Москва-Сити)",
             "x": 312,
             "y": 837,
@@ -7360,7 +7324,6 @@
           },
           {
             "id": "METRO_1810",
-            "ESP": 198211,
             "name": "Беговая",
             "x": 420,
             "y": 822,
@@ -7384,7 +7347,6 @@
           },
           {
             "id": "METRO_1811",
-            "ESP": 198230,
             "name": "Белорусская",
             "x": 544,
             "y": 823,
@@ -7408,7 +7370,6 @@
           },
           {
             "id": "METRO_1812",
-            "ESP": 196004,
             "name": "Савёловская",
             "x": 640,
             "y": 666,
@@ -7432,7 +7393,6 @@
           },
           {
             "id": "METRO_1813",
-            "ESP": 196019,
             "name": "Тимирязевская",
             "x": 690,
             "y": 508,
@@ -7456,7 +7416,6 @@
           },
           {
             "id": "METRO_1814",
-            "ESP": 196023,
             "name": "Окружная",
             "x": 691,
             "y": 426,
@@ -7480,7 +7439,6 @@
           },
           {
             "id": "METRO_1815",
-            "ESP": 196038,
             "name": "Дегунино",
             "x": 692,
             "y": 342,
@@ -7504,7 +7462,6 @@
           },
           {
             "id": "METRO_1816",
-            "ESP": 195800,
             "name": "Бескудниково",
             "x": 693,
             "y": 300,
@@ -7528,7 +7485,6 @@
           },
           {
             "id": "METRO_1817",
-            "ESP": 195815,
             "name": "Лианозово",
             "x": 693,
             "y": 264,
@@ -7552,7 +7508,6 @@
           },
           {
             "id": "METRO_1818",
-            "ESP": 237806,
             "name": "Марк",
             "x": 693,
             "y": 208,
@@ -7576,7 +7531,6 @@
           },
           {
             "id": "METRO_1819",
-            "ESP": 237810,
             "name": "Новодачная",
             "x": 693,
             "y": 178,
@@ -7600,7 +7554,6 @@
           },
           {
             "id": "METRO_1820",
-            "ESP": 237825,
             "name": "Долгопрудная",
             "x": 693,
             "y": 147,
@@ -7624,7 +7577,6 @@
           },
           {
             "id": "METRO_1821",
-            "ESP": 237831,
             "name": "Водники",
             "x": 692,
             "y": 120,
@@ -7648,7 +7600,6 @@
           },
           {
             "id": "METRO_1822",
-            "ESP": 237844,
             "name": "Хлебниково",
             "x": 693,
             "y": 95,
@@ -7672,7 +7623,6 @@
           },
           {
             "id": "METRO_1823",
-            "ESP": 237859,
             "name": "Шереметьевская",
             "x": 693,
             "y": 67,
@@ -7696,7 +7646,6 @@
           },
           {
             "id": "METRO_1824",
-            "ESP": 237908,
             "name": "Лобня",
             "x": 692,
             "y": 39,
@@ -7726,12 +7675,12 @@
         ],
         "points": [
           {
-            "x": 1088,
-            "y": 692
+            "x": 1084,
+            "y": 694
           },
           {
-            "x": 1087,
-            "y": 708
+            "x": 1073,
+            "y": 710
           }
         ]
       },
@@ -7774,12 +7723,12 @@
         ],
         "points": [
           {
-            "x": 393,
-            "y": 1330
+            "x": 403,
+            "y": 1335
           },
           {
-            "x": 393,
-            "y": 1332
+            "x": 395,
+            "y": 1346
           }
         ]
       },
@@ -7790,12 +7739,12 @@
         ],
         "points": [
           {
-            "x": 392,
-            "y": 1755
+            "x": 394,
+            "y": 1749
           },
           {
-            "x": 408,
-            "y": 1759
+            "x": 406,
+            "y": 1757
           }
         ]
       },
@@ -7806,12 +7755,12 @@
         ],
         "points": [
           {
-            "x": 487,
-            "y": 1844
+            "x": 479,
+            "y": 1834
           },
           {
-            "x": 497,
-            "y": 1834
+            "x": 516,
+            "y": 1838
           }
         ]
       },
@@ -7838,12 +7787,12 @@
         ],
         "points": [
           {
-            "x": 917,
-            "y": 1157
+            "x": 921,
+            "y": 1161
           },
           {
-            "x": 934,
-            "y": 1144
+            "x": 930,
+            "y": 1181
           }
         ]
       },
@@ -7870,12 +7819,12 @@
         ],
         "points": [
           {
-            "x": 1165,
-            "y": 1813
+            "x": 1151,
+            "y": 1811
           },
           {
-            "x": 1153,
-            "y": 1846
+            "x": 1156,
+            "y": 1829
           }
         ]
       },
@@ -7918,8 +7867,8 @@
         ],
         "points": [
           {
-            "x": 939,
-            "y": 1046
+            "x": 940,
+            "y": 1047
           },
           {
             "x": 924,
@@ -7934,12 +7883,12 @@
         ],
         "points": [
           {
-            "x": 1231,
-            "y": 746
+            "x": 1220,
+            "y": 747
           },
           {
-            "x": 1245,
-            "y": 727
+            "x": 1238,
+            "y": 731
           }
         ]
       },
@@ -8126,8 +8075,8 @@
         ],
         "points": [
           {
-            "x": 935,
-            "y": 677
+            "x": 932,
+            "y": 680
           },
           {
             "x": 889,
@@ -8158,12 +8107,12 @@
         ],
         "points": [
           {
-            "x": 938,
-            "y": 1030
+            "x": 935,
+            "y": 1082
           },
           {
-            "x": 948,
-            "y": 1096
+            "x": 905,
+            "y": 1067
           }
         ]
       },
@@ -8190,12 +8139,12 @@
         ],
         "points": [
           {
-            "x": 678,
-            "y": 1229
+            "x": 671,
+            "y": 1223
           },
           {
-            "x": 633,
-            "y": 1240
+            "x": 642,
+            "y": 1244
           }
         ]
       },
@@ -8286,12 +8235,12 @@
         ],
         "points": [
           {
-            "x": 778,
-            "y": 1227
+            "x": 775,
+            "y": 1217
           },
           {
-            "x": 789,
-            "y": 1211
+            "x": 771,
+            "y": 1196
           }
         ]
       },
@@ -8302,8 +8251,8 @@
         ],
         "points": [
           {
-            "x": 695,
-            "y": 1144
+            "x": 697,
+            "y": 1139
           },
           {
             "x": 705,
@@ -8414,8 +8363,8 @@
         ],
         "points": [
           {
-            "x": 1096,
-            "y": 1000
+            "x": 1088,
+            "y": 996
           },
           {
             "x": 1037,
@@ -8610,8 +8559,8 @@
             "y": 1237
           },
           {
-            "x": 1320,
-            "y": 1221
+            "x": 1314,
+            "y": 1219
           }
         ]
       },
@@ -8690,7 +8639,7 @@
             "y": 523
           },
           {
-            "x": 1249,
+            "x": 1246,
             "y": 619
           }
         ]
@@ -8702,12 +8651,12 @@
         ],
         "points": [
           {
-            "x": 1363,
-            "y": 890
+            "x": 1367,
+            "y": 891
           },
           {
-            "x": 1377,
-            "y": 950
+            "x": 1367,
+            "y": 963
           }
         ]
       },
@@ -8810,32 +8759,32 @@
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1525"
+          "METRO_1523"
         ],
         "points": [
           {
-            "x": 281,
-            "y": 684
+            "x": 283,
+            "y": 853
           },
           {
-            "x": 282,
-            "y": 665
+            "x": 281,
+            "y": 825
           }
         ]
       },
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1523"
+          "METRO_1525"
         ],
         "points": [
           {
-            "x": 278,
-            "y": 852
+            "x": 284,
+            "y": 684
           },
           {
-            "x": 281,
-            "y": 815
+            "x": 288,
+            "y": 670
           }
         ]
       },
@@ -8847,11 +8796,11 @@
         "points": [
           {
             "x": 1395,
-            "y": 1529
+            "y": 1528
           },
           {
-            "x": 1412,
-            "y": 1489
+            "x": 1408,
+            "y": 1478
           }
         ]
       },

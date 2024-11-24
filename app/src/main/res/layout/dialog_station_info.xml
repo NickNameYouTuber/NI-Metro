@@ -10,8 +10,8 @@
     <!-- Круг с номером линии метро -->
     <TextView
         android:id="@+id/lineNumber"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:background="@drawable/circle_background_red"
         android:gravity="center"
         android:text="1"

@@ -622,6 +622,7 @@ public class MetroMapView extends View {
     }
 
     private void drawIntermediatePoints(Canvas canvas) {
+        Log.d("MetroMapView", "drawIntermediatePoints");
         for (Station station : stations) {
             if (station.getIntermediatePoints() != null) {
                 for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
@@ -634,6 +635,7 @@ public class MetroMapView extends View {
 
     private void drawIntermediatePoints(Canvas canvas, List<Point> intermediatePoints, Paint paint) {
         for (Point point : intermediatePoints) {
+            Log.d("MetroMapView", "drawIntermediatePoints: " + point.x + " " + point.y);
             canvas.drawCircle(point.x * COORDINATE_SCALE_FACTOR, point.y * COORDINATE_SCALE_FACTOR, 10, paint);
         }
     }
