@@ -8524,6 +8524,910 @@
             }
           }
         ]
+      },
+      {
+        "id": "20",
+        "displayName": "МЦД3",
+        "displayShape": "PARALLELOGRAM",
+        "name": "МЦД3",
+        "color": "#ea5b04",
+        "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "lineType": "double",
+        "stations": [
+          {
+            "id": "METRO_2000",
+            "name": "Зеленоград-Крюково",
+            "x": 250,
+            "y": 89,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2001",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2001",
+            "name": "Фирсановская",
+            "x": 282,
+            "y": 124,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2000",
+                3
+              ],
+              [
+                "METRO_2002",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2002",
+            "name": "Сходня",
+            "x": 306,
+            "y": 151,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2001",
+                3
+              ],
+              [
+                "METRO_2003",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2003",
+            "name": "Подрезково",
+            "x": 332,
+            "y": 176,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2002",
+                3
+              ],
+              [
+                "METRO_2004",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2004",
+            "name": "Новоподрезково",
+            "x": 356,
+            "y": 201,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2003",
+                3
+              ],
+              [
+                "METRO_2005",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2005",
+            "name": "Молжаниново",
+            "x": 382,
+            "y": 228,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2004",
+                3
+              ],
+              [
+                "METRO_2006",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2006",
+            "name": "Химки",
+            "x": 408,
+            "y": 254,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2005",
+                3
+              ],
+              [
+                "METRO_2007",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2007",
+            "name": "Левобережная",
+            "x": 434,
+            "y": 279,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2006",
+                3
+              ],
+              [
+                "METRO_2008",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2008",
+            "name": "Ховрино",
+            "x": 477,
+            "y": 325,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2007",
+                3
+              ],
+              [
+                "METRO_2009",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2009",
+            "name": "Грачёвская",
+            "x": 515,
+            "y": 360,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2008",
+                3
+              ],
+              [
+                "METRO_2010",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2010",
+            "name": "Моссельмаш",
+            "x": 556,
+            "y": 404,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2009",
+                3
+              ],
+              [
+                "METRO_2011",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2011",
+            "name": "Лихоборы",
+            "x": 599,
+            "y": 447,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2010",
+                3
+              ],
+              [
+                "METRO_2012",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2012",
+            "name": "Петровско-Разумовская",
+            "x": 749,
+            "y": 491,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2011",
+                3
+              ],
+              [
+                "METRO_2013",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2013",
+            "name": "Останкино",
+            "x": 902,
+            "y": 541,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2012",
+                3
+              ],
+              [
+                "METRO_2014",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2014",
+            "name": "Митьково",
+            "x": 1055,
+            "y": 695,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2013",
+                3
+              ],
+              [
+                "METRO_2015",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2015",
+            "name": "Электрозаводская",
+            "x": 1177,
+            "y": 815,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2014",
+                3
+              ],
+              [
+                "METRO_2016",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2016",
+            "name": "Сортировочная",
+            "x": 1239,
+            "y": 873,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2015",
+                3
+              ],
+              [
+                "METRO_2017",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2017",
+            "name": "Авиамоторная",
+            "x": 1271,
+            "y": 906,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2016",
+                3
+              ],
+              [
+                "METRO_2018",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2018",
+            "name": "Андроновка",
+            "x": 1335,
+            "y": 973,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2017",
+                3
+              ],
+              [
+                "METRO_2019",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2019",
+            "name": "Перово",
+            "x": 1385,
+            "y": 1024,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2018",
+                3
+              ],
+              [
+                "METRO_2020",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2020",
+            "name": "Плющево",
+            "x": 1395,
+            "y": 1136,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2019",
+                3
+              ],
+              [
+                "METRO_2021",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2021",
+            "name": "Вешняки",
+            "x": 1395,
+            "y": 1306,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2020",
+                3
+              ],
+              [
+                "METRO_2022",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2022",
+            "name": "Выхино",
+            "x": 1382,
+            "y": 1407,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2021",
+                3
+              ],
+              [
+                "METRO_2023",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2023",
+            "name": "Косино",
+            "x": 1325,
+            "y": 1462,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2022",
+                3
+              ],
+              [
+                "METRO_2024",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2024",
+            "name": "Ухтомская",
+            "x": 1294,
+            "y": 1506,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2023",
+                3
+              ],
+              [
+                "METRO_2025",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2025",
+            "name": "Люберцы",
+            "x": 1294,
+            "y": 1536,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2024",
+                3
+              ],
+              [
+                "METRO_2026",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2026",
+            "name": "Панки",
+            "x": 1294,
+            "y": 1566,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2025",
+                3
+              ],
+              [
+                "METRO_2027",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2027",
+            "name": "Томилино",
+            "x": 1294,
+            "y": 1597,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2026",
+                3
+              ],
+              [
+                "METRO_2028",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2028",
+            "name": "Красково",
+            "x": 1294,
+            "y": 1624,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2027",
+                3
+              ],
+              [
+                "METRO_2029",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2029",
+            "name": "Малаховка",
+            "x": 1294,
+            "y": 1654,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2028",
+                3
+              ],
+              [
+                "METRO_2030",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2030",
+            "name": "Удельная",
+            "x": 1294,
+            "y": 1685,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2029",
+                3
+              ],
+              [
+                "METRO_2031",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2031",
+            "name": "Быково",
+            "x": 1294,
+            "y": 1714,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2030",
+                3
+              ],
+              [
+                "METRO_2032",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2032",
+            "name": "Ильинская",
+            "x": 1294,
+            "y": 1741,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2031",
+                3
+              ],
+              [
+                "METRO_2033",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2033",
+            "name": "Отдых",
+            "x": 1294,
+            "y": 1771,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2032",
+                3
+              ],
+              [
+                "METRO_2034",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2034",
+            "name": "Кратово",
+            "x": 1294,
+            "y": 1799,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2033",
+                3
+              ],
+              [
+                "METRO_2035",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2035",
+            "name": "Есенинская",
+            "x": 1294,
+            "y": 1827,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2034",
+                3
+              ],
+              [
+                "METRO_2036",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2036",
+            "name": "Фабричная",
+            "x": 1294,
+            "y": 1855,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2035",
+                3
+              ],
+              [
+                "METRO_2037",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2037",
+            "name": "Раменское",
+            "x": 1294,
+            "y": 1884,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2036",
+                3
+              ],
+              [
+                "METRO_2038",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_2038",
+            "name": "Ипподром",
+            "x": 1294,
+            "y": 1915,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "METRO_2037",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          }
+        ]
       }
     ],
     "transfers": [],
