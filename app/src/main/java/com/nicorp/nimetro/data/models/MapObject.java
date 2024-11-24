@@ -4,13 +4,13 @@ import android.graphics.Point;
 
 public class MapObject {
     private String name;
-    private String displayName;
+    private String displayNumber;
     private String type;
     private Point position;
 
-    public MapObject(String name, String type, Point position, String displayName) {
+    public MapObject(String name, String type, Point position, String displayNumber) {
         this.name = name;
-        this.displayName = displayName;
+        this.displayNumber = displayNumber;
         this.type = type;
         this.position = position;
     }
@@ -27,7 +27,7 @@ public class MapObject {
         return position;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getdisplayNumber() {
+        return displayNumber;
     }
 }

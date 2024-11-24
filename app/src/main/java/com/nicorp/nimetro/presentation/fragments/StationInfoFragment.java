@@ -1,7 +1,15 @@
 package com.nicorp.nimetro.presentation.fragments;
 
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,6 +27,8 @@ import androidx.fragment.app.Fragment;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
 import com.nicorp.nimetro.data.models.YandexRaspResponse;
+import com.nicorp.nimetro.domain.entities.CircleShape;
+import com.nicorp.nimetro.domain.entities.DoubleCircleShape;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
@@ -269,8 +279,28 @@ public class StationInfoFragment extends Fragment {
     }
 
     private void setLineNumberAndColor(TextView lineNumber, Station station) {
-        lineNumber.setText(String.valueOf(line.getLineIdForStation(station)));
-        lineNumber.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
+        String lineId = String.valueOf(line.getLineDisplayNumberForStation(station));
+        lineNumber.setText(lineId);
+
+        Shape shape = getLineShapeForStation(station);
+        if (shape != null) {
+            ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
+            shapeDrawable.getPaint().setColor(Color.parseColor(station.getColor()));
+            shapeDrawable.setIntrinsicHeight(40); // Установите нужную высоту
+            shapeDrawable.setIntrinsicWidth(45);  // Установите нужную ширину
+            lineNumber.setBackground(shapeDrawable);
+        } else {
+            lineNumber.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
+        }
+
+        lineNumber.setGravity(Gravity.CENTER);
+        if (shape instanceof DoubleCircleShape) {
+            lineNumber.setTextColor(Color.BLACK);
+        } else  {
+            lineNumber.setTextColor(Color.WHITE);
+        }
+        lineNumber.setTextSize(12);
+        lineNumber.setPadding(4, 4, 4, 4);
     }
 
     private void addTransferCircles(LinearLayout transferCirclesContainer) {
@@ -292,30 +322,82 @@ public class StationInfoFragment extends Fragment {
         TextView transferCircle = new TextView(getContext());
         String transferLineId = getLineIdForStation(transferStation);
         transferCircle.setText(String.valueOf(transferLineId));
-        transferCircle.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_background_red));
-        transferCircle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(getColorForStation(transferStation))));
+
+        Shape shape = getLineShapeForStation(transferStation);
+        ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
+        shapeDrawable.getPaint().setColor(Color.parseColor(getColorForStation(transferStation)));
+        shapeDrawable.setIntrinsicHeight(45); // Установите нужную высоту
+        shapeDrawable.setIntrinsicWidth(45);  // Установите нужную ширину
+
+        transferCircle.setBackground(shapeDrawable);
         transferCircle.setGravity(Gravity.CENTER);
         transferCircle.setTextColor(Color.WHITE);
         transferCircle.setTextSize(12);
         transferCircle.setPadding(4, 4, 4, 4);
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(4, 0, 4, 8);
         transferCircle.setLayoutParams(params);
+
         return transferCircle;
     }
 
     private String getLineIdForStation(Station station) {
         for (Line line : lines) {
             if (line.getStations().contains(station)) {
-                return line.getId();
+                return line.getdisplayNumber();
             }
         }
         for (Line line : grayedLines) {
             if (line.getStations().contains(station)) {
-                return line.getId();
+                return line.getdisplayNumber();
+            }
+        }
+        return null;
+    }
+
+    private Shape getLineShapeForStation(Station station) {
+        for (Line line : lines) {
+            if (line.getStations().contains(station)) {
+                if (line.getDisplayShape().equals("SQUARE")) {
+                    return new RectShape();
+                } else if (line.getDisplayShape().equals("CIRCLE")) {
+                    return new CircleShape(Color.parseColor(line.getColor()));
+                } else if (line.getDisplayShape().equals("DOUBLE_CIRCLE")) {
+                    return new DoubleCircleShape(Color.parseColor(line.getColor()));
+                } else if (line.getDisplayShape().equals("PARALLELOGRAM")) {
+                    return new Shape() {
+                        @Override
+                        public void draw(Canvas canvas, Paint paint) {
+                            Path path = new Path();
+                            path.moveTo(getWidth() / 4, 15); // Верхний правый угол
+                            path.lineTo(getWidth() - 5, 15); // Верхний левый угол
+                            path.lineTo(getWidth() * 3 / 4, getHeight() - 15); // Нижний левый угол
+                            path.lineTo(0 + 5, getHeight() - 15); // Нижний правый угол
+                            path.close();
+
+                            Paint strokePaint = new Paint(paint);
+                            strokePaint.setStyle(Paint.Style.FILL);
+                            strokePaint.setColor(Color.parseColor(line.getColor()));
+                            strokePaint.setStrokeWidth(10); // Ширина обводки
+                            canvas.drawPath(path, strokePaint);
+                            strokePaint.setStyle(Paint.Style.STROKE);
+                            strokePaint.setColor(Color.parseColor(line.getColor()));
+                            strokePaint.setStrokeWidth(10); // Ширина обводки
+                            canvas.drawPath(path, strokePaint);
+                        }
+                    };
+                }
+            }
+        }
+        for (Line line : grayedLines) {
+            if (line.getStations().contains(station)) {
+                if (line.getDisplayShape().equals("SQUARE")) {
+                    return new RectShape();
+                }
             }
         }
         return null;

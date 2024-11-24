@@ -440,11 +440,11 @@
 //            for (int i = 0; i < objectsArray.length(); i++) {
 //                JSONObject objectObject = objectsArray.getJSONObject(i);
 //                String name = objectObject.getString("name");
-//                String displayName = objectObject.getString("displayName");
+//                String displayNumber = objectObject.getString("displayNumber");
 //                String type = objectObject.getString("type");
 //                JSONObject positionObject = objectObject.getJSONObject("position");
 //                Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
-//                mapObjects.add(new MapObject(name, type, position, displayName));
+//                mapObjects.add(new MapObject(name, type, position, displayNumber));
 //            }
 //
 //            // Set data to MetroMapView
@@ -755,7 +755,7 @@
 //            for (MapObject mapObject : mapObjects) {
 //                JSONObject objectObject = new JSONObject();
 //                objectObject.put("name", mapObject.getName());
-//                objectObject.put("displayName", mapObject.getDisplayName());
+//                objectObject.put("displayNumber", mapObject.getdisplayNumber());
 //                objectObject.put("type", mapObject.getType());
 //                JSONObject positionObject = new JSONObject();
 //                positionObject.put("x", mapObject.getPosition().x);

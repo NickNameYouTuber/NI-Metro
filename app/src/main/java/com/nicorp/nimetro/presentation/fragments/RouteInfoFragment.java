@@ -26,6 +26,8 @@ import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
 import com.nicorp.nimetro.data.models.YandexRaspResponse;
+import com.nicorp.nimetro.domain.entities.APITariff;
+import com.nicorp.nimetro.domain.entities.FlatRateTariff;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.RouteSegment;
@@ -173,15 +175,28 @@ public class RouteInfoFragment extends Fragment {
     private void calculateTotalCost(List<Station> route, TariffCallback callback) {
         AtomicReference<Double> totalCost = new AtomicReference<>(0.0);
         List<RouteSegment> segments = splitRouteIntoSegments(route);
+        boolean flatRateTariffApplied = false; // Флаг для отслеживания применения FlatRateTariff
 
         for (RouteSegment segment : segments) {
             Tariff tariff = segment.getLine().getTariff();
             Log.d("RouteInfoFragment", "Tariff = " + tariff);
             if (tariff != null) {
-                tariff.calculateCost(segment, cost -> {
-                    totalCost.updateAndGet(v -> new Double((double) (v + cost)));
-                    callback.onCostCalculated(totalCost.get());
-                });
+                if (tariff instanceof FlatRateTariff) {
+                    if (!flatRateTariffApplied) {
+                        // Применяем FlatRateTariff только один раз
+                        flatRateTariffApplied = true;
+                        tariff.calculateCost(segment, cost -> {
+                            totalCost.updateAndGet(v -> new Double((double) (v + cost)));
+                            callback.onCostCalculated(totalCost.get());
+                        });
+                    }
+                } else {
+                    // Для других тарифов просто добавляем стоимость
+                    tariff.calculateCost(segment, cost -> {
+                        totalCost.updateAndGet(v -> new Double((double) (v + cost)));
+                        callback.onCostCalculated(totalCost.get());
+                    });
+                }
             }
         }
     }
@@ -398,45 +413,12 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void determineTrainInfoDisplay(List<Station> route) {
-        Station suburbanStartStation = null;
-        Station suburbanEndStation = null;
-        int count = 0;
-
-        // Поиск первой suburban линии и ее границ
-        for (int i = 0; i < route.size(); i++) {
-            // Найти начальную станцию suburban линии
-            if (isLineSuburban(route.get(i)) && suburbanStartStation == null) {
-                suburbanStartStation = route.get(i);
+        List<RouteSegment> segments = splitRouteIntoSegments(route);
+        for (RouteSegment segment : segments) {
+            if (segment.getLine().getTariff() instanceof APITariff) {
+                fetchAndDisplaySuburbanSchedule(segment.getStations().get(0), segment.getStations().get(segment.getStations().size() - 1));
+                break; // Выходим после первого найденного сегмента с APITariff
             }
-
-            if (isLineSuburban(route.get(i))){
-                count++;
-            }
-
-            // Найти конечную станцию suburban линии
-            if (suburbanStartStation != null && (!isLineSuburban(route.get(i)) || i == route.size() - 1)) {
-                suburbanEndStation = isLineSuburban(route.get(i)) ? route.get(i) : route.get(i - 1);
-                break;
-            }
-        }
-
-
-        // Если найдены suburban станции
-        if (suburbanStartStation != null && suburbanEndStation != null) {
-            Log.d("RouteInfoFragment", "Suburban route detected: from " +
-                    suburbanStartStation.getName() + " to " + suburbanEndStation.getName());
-            Log.d("RouteInfoFragment", "Count: " + count + " size: " + route.size());
-            if (count == route.size()) {
-                fetchESPDepartureTime(suburbanStartStation, suburbanEndStation);
-            } else {
-                fetchAndDisplaySuburbanSchedule(suburbanStartStation, suburbanEndStation);
-            }
-        } else if (suburbanStartStation != null) {
-            Log.d("RouteInfoFragment", "suburbanStartStation " + suburbanStartStation.getName());
-        } else if (suburbanEndStation != null) {
-            Log.d("RouteInfoFragment", "suburbanEndStation " + suburbanEndStation.getName());
-        } else {
-            Log.d("RouteInfoFragment", "No suburban stations found");
         }
     }
 
@@ -505,61 +487,6 @@ public class RouteInfoFragment extends Fragment {
                     }
                     break;
                 }
-            }
-        });
-    }
-
-    private boolean isLineSuburban(Station station) {
-        for (Line line : mainActivity.getAllLines()) {
-            if (line.getStations().contains(station) && "suburban".equals(line.getLineType())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void fetchESPDepartureTime(Station startStation, Station endStstion) {
-        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
-        String from = startStation.getESP();
-        String to = endStstion.getESP();
-        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
-        String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        Log.d("RouteInfoFragment", "Fetching ESP departure time for station: " + startStation.getName() + " from: " + from + " to: " + to + " on date: " + date);
-
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl("https://api.rasp.yandex.net/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", apiKey, from, to, "esr", date, 1000);
-
-        call.enqueue(new Callback<YandexRaspResponse>() {
-            @Override
-            public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<YandexRaspResponse.Segment> segments = response.body().getSegments();
-                    if (!segments.isEmpty()) {
-                        List<YandexRaspResponse.Segment> nearestDepartureSegments = findNearestDepartureTimes(segments);
-                        setupTrainInfoAdapter(nearestDepartureSegments, nearestTrainsRecyclerView);
-                    } else {
-                        Log.d("RouteInfoFragment", "No segments found for ESP departure time");
-                    }
-                } else {
-                    Log.e("RouteInfoFragment", "Failed to fetch ESP departure time: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<YandexRaspResponse> call, Throwable t) {
-                Log.e("RouteInfoFragment", "Error fetching ESP departure time", t);
             }
         });
     }

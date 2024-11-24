@@ -228,8 +228,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject lineObject = linesArray.getJSONObject(i);
             boolean isCircle = lineObject.optBoolean("isCircle", false);
             String lineType = lineObject.optString("lineType", "single");
+            String displayNumber = lineObject.optString("displayNumber", null);
+            String displayShape = lineObject.optString("displayShape", null);
             Tariff tariff = createTariff(lineObject.optJSONObject("tariff"));
-            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType, tariff);
+            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType, tariff, displayNumber, displayShape);
             JSONArray stationsArray = lineObject.getJSONArray("stations");
             for (int j = 0; j < stationsArray.length(); j++) {
                 JSONObject stationObject = stationsArray.getJSONObject(j);
@@ -314,11 +316,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         for (int i = 0; i < objectsArray.length(); i++) {
             JSONObject objectObject = objectsArray.getJSONObject(i);
             String name = objectObject.getString("name");
-            String displayName = objectObject.getString("displayName");
+            String displayNumber = objectObject.getString("displayNumber");
             String type = objectObject.getString("type");
             JSONObject positionObject = objectObject.getJSONObject("position");
             Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
-            mapObjects.add(new MapObject(name, type, position, displayName));
+            mapObjects.add(new MapObject(name, type, position, displayNumber));
         }
     }
 

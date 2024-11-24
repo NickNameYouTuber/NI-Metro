@@ -10,6 +10,8 @@
     "lines": [
       {
         "id": "1",
+        "displayNumber": "1",
+        "displayShape": "CIRCLE",
         "name": "Сокольническая линия",
         "color": "#E40520",
         "isCircle": false,
@@ -638,6 +640,8 @@
       },
       {
         "id": "2",
+        "displayNumber": "2",
+        "displayShape": "CIRCLE",
         "name": "Замоскворецкая линия",
         "color": "#46AF50",
         "isCircle": false,
@@ -1194,6 +1198,8 @@
       },
       {
         "id": "3",
+        "displayNumber": "3",
+        "displayShape": "CIRCLE",
         "name": "Арбатско-Покровская линия",
         "color": "#0072BB",
         "isCircle": false,
@@ -1704,6 +1710,8 @@
       },
       {
         "id": "4",
+        "displayNumber": "4",
+        "displayShape": "CIRCLE",
         "name": "Филевская линия",
         "color": "#27BCEF",
         "isCircle": false,
@@ -1961,6 +1969,8 @@
       },
       {
         "id": "5",
+        "displayNumber": "5",
+        "displayShape": "CIRCLE",
         "name": "Кольцевая линия",
         "color": "#915133",
         "isCircle": true,
@@ -2273,9 +2283,15 @@
       },
       {
         "id": "6",
+        "displayNumber": "6",
+        "displayShape": "CIRCLE",
         "name": "Калужско-Рижская линия",
         "color": "#FF8C00",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_600",
@@ -2825,9 +2841,15 @@
       },
       {
         "id": "7",
+        "displayNumber": "7",
+        "displayShape": "CIRCLE",
         "name": "Таганско-Краснопресненская линия",
         "color": "#8B008B",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_700",
@@ -3354,9 +3376,15 @@
       },
       {
         "id": "8",
+        "displayNumber": "8",
+        "displayShape": "CIRCLE",
         "name": "Калининская линия",
         "color": "#F5D86C",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_800",
@@ -3538,9 +3566,15 @@
       },
       {
         "id": "9",
+        "displayNumber": "8a",
+        "displayShape": "CIRCLE",
         "name": "Солнцевская линия",
         "color": "#F5D86C",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_900",
@@ -3964,9 +3998,15 @@
       },
       {
         "id": "10",
+        "displayNumber": "9",
+        "displayShape": "CIRCLE",
         "name": "Серпуховско-Тимирязевская линия",
         "color": "#808080",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1000",
@@ -4539,9 +4579,15 @@
       },
       {
         "id": "11",
+        "displayNumber": "10",
+        "displayShape": "CIRCLE",
         "name": "Люблинско-Дмитровская линия",
         "color": "#ABC469",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1100",
@@ -5137,9 +5183,15 @@
       },
       {
         "id": "12",
+        "displayNumber": "11",
+        "displayShape": "CIRCLE",
         "name": "Большая кольцевая линия",
         "color": "#A0C5BE",
         "isCircle": true,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1200",
@@ -5812,9 +5864,15 @@
       },
       {
         "id": "13",
+        "displayNumber": "12",
+        "displayShape": "CIRCLE",
         "name": "Бутовская линия",
         "color": "#AEB5CA",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1300",
@@ -5973,9 +6031,15 @@
       },
       {
         "id": "15",
+        "displayNumber": "14",
+        "displayShape": "DOUBLE_CIRCLE",
         "name": "МЦК",
         "color": "#E94282",
         "isCircle": true,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "lineType": "double",
         "stations": [
           {
@@ -6691,9 +6755,15 @@
       },
       {
         "id": "16",
+        "displayNumber": "15",
+        "displayShape": "CIRCLE",
         "name": "Некрасовская линия",
         "color": "#CB80A2",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1600",
@@ -6875,9 +6945,15 @@
       },
       {
         "id": "17",
+        "displayNumber": "18",
+        "displayShape": "CIRCLE",
         "name": "Троицкая линия",
         "color": "#256356",
         "isCircle": false,
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "stations": [
           {
             "id": "METRO_1700",
@@ -7036,13 +7112,19 @@
       },
       {
         "id": "18",
+        "displayNumber": "D1",
+        "displayShape": "PARALLELOGRAM",
         "name": "МЦД1",
         "color": "#FDA130",
         "isCircle": false,
+        "tariff": {
+          "type": "APITariff"
+        },
         "lineType": "double",
         "stations": [
           {
             "id": "METRO_1800",
+            "ESP": 182209,
             "name": "Одинцово",
             "x": 139,
             "y": 1342,
@@ -7062,6 +7144,7 @@
           },
           {
             "id": "METRO_1801",
+            "ESP": 181757,
             "name": "Баковка",
             "x": 138,
             "y": 1314,
@@ -7085,6 +7168,7 @@
           },
           {
             "id": "METRO_1802",
+            "ESP": 181742,
             "name": "Сколково",
             "x": 139,
             "y": 1286,
@@ -7108,6 +7192,7 @@
           },
           {
             "id": "METRO_1803",
+            "ESP": 181738,
             "name": "Немчиновка",
             "x": 138,
             "y": 1261,
@@ -7131,6 +7216,7 @@
           },
           {
             "id": "METRO_1804",
+            "ESP": 181723,
             "name": "Сетунь",
             "x": 145,
             "y": 1234,
@@ -7154,6 +7240,7 @@
           },
           {
             "id": "METRO_1805",
+            "ESP": 181719,
             "name": "Рабочий Посёлок",
             "x": 174,
             "y": 1208,
@@ -7177,6 +7264,7 @@
           },
           {
             "id": "METRO_1806",
+            "ESP": 181704,
             "name": "Кунцевская",
             "x": 205,
             "y": 1181,
@@ -7200,6 +7288,7 @@
           },
           {
             "id": "METRO_1807",
+            "ESP": 181615,
             "name": "Славянский бульвар",
             "x": 244,
             "y": 1142,
@@ -7223,6 +7312,7 @@
           },
           {
             "id": "METRO_1808",
+            "ESP": 181600,
             "name": "Фили",
             "x": 313,
             "y": 1065,
@@ -7246,6 +7336,7 @@
           },
           {
             "id": "METRO_1809",
+            "ESP": 198226,
             "name": "Тестовская (Москва-Сити)",
             "x": 312,
             "y": 837,
@@ -7269,6 +7360,7 @@
           },
           {
             "id": "METRO_1810",
+            "ESP": 198211,
             "name": "Беговая",
             "x": 420,
             "y": 822,
@@ -7292,6 +7384,7 @@
           },
           {
             "id": "METRO_1811",
+            "ESP": 198230,
             "name": "Белорусская",
             "x": 544,
             "y": 823,
@@ -7315,6 +7408,7 @@
           },
           {
             "id": "METRO_1812",
+            "ESP": 196004,
             "name": "Савёловская",
             "x": 640,
             "y": 666,
@@ -7338,6 +7432,7 @@
           },
           {
             "id": "METRO_1813",
+            "ESP": 196019,
             "name": "Тимирязевская",
             "x": 690,
             "y": 508,
@@ -7361,6 +7456,7 @@
           },
           {
             "id": "METRO_1814",
+            "ESP": 196023,
             "name": "Окружная",
             "x": 691,
             "y": 426,
@@ -7384,6 +7480,7 @@
           },
           {
             "id": "METRO_1815",
+            "ESP": 196038,
             "name": "Дегунино",
             "x": 692,
             "y": 342,
@@ -7407,6 +7504,7 @@
           },
           {
             "id": "METRO_1816",
+            "ESP": 195800,
             "name": "Бескудниково",
             "x": 693,
             "y": 300,
@@ -7430,6 +7528,7 @@
           },
           {
             "id": "METRO_1817",
+            "ESP": 195815,
             "name": "Лианозово",
             "x": 693,
             "y": 264,
@@ -7453,6 +7552,7 @@
           },
           {
             "id": "METRO_1818",
+            "ESP": 237806,
             "name": "Марк",
             "x": 693,
             "y": 208,
@@ -7476,6 +7576,7 @@
           },
           {
             "id": "METRO_1819",
+            "ESP": 237810,
             "name": "Новодачная",
             "x": 693,
             "y": 178,
@@ -7499,6 +7600,7 @@
           },
           {
             "id": "METRO_1820",
+            "ESP": 237825,
             "name": "Долгопрудная",
             "x": 693,
             "y": 147,
@@ -7522,6 +7624,7 @@
           },
           {
             "id": "METRO_1821",
+            "ESP": 237831,
             "name": "Водники",
             "x": 692,
             "y": 120,
@@ -7545,6 +7648,7 @@
           },
           {
             "id": "METRO_1822",
+            "ESP": 237844,
             "name": "Хлебниково",
             "x": 693,
             "y": 95,
@@ -7568,6 +7672,7 @@
           },
           {
             "id": "METRO_1823",
+            "ESP": 237859,
             "name": "Шереметьевская",
             "x": 693,
             "y": 67,
@@ -7591,6 +7696,7 @@
           },
           {
             "id": "METRO_1824",
+            "ESP": 237908,
             "name": "Лобня",
             "x": 692,
             "y": 39,
@@ -8837,6 +8943,8 @@
     "lines": [
       {
         "id": 1,
+        "displayNumber": "1",
+        "displayShape": "SQUARE",
         "lineType": "suburban",
         "name": "Белорусское направление",
         "color": "#EA2A1D",

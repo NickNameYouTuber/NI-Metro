@@ -17,8 +17,10 @@ public class Line implements Parcelable {
     private boolean isCircle;
     private String lineType;
     private Tariff tariff;
+    private String displayNumber;
+    private String displayShape;
 
-    public Line(String id, String name, String color, boolean isCircle, String lineType, Tariff tariff) {
+    public Line(String id, String name, String color, boolean isCircle, String lineType, Tariff tariff, String displayNumber, String displayShape) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -26,6 +28,8 @@ public class Line implements Parcelable {
         this.stations = new ArrayList<>();
         this.lineType = lineType;
         this.tariff = tariff;
+        this.displayNumber = displayNumber;
+        this.displayShape = displayShape;
     }
 
     protected Line(Parcel in) {
@@ -35,6 +39,9 @@ public class Line implements Parcelable {
         stations = in.createTypedArrayList(Station.CREATOR);
         isCircle = in.readByte() != 0;
         lineType = in.readString();
+        tariff = null;
+        displayNumber = in.readString();
+        displayShape = in.readString();
         // Tariff не может быть просто так десериализован, нужно будет добавить логику для этого
     }
 
@@ -63,6 +70,8 @@ public class Line implements Parcelable {
         dest.writeTypedList(stations);
         dest.writeByte((byte) (isCircle ? 1 : 0));
         dest.writeString(lineType);
+        dest.writeString(displayNumber);
+        dest.writeString(displayShape);
         // Tariff не может быть просто так сериализован, нужно будет добавить логику для этого
     }
 
@@ -102,11 +111,30 @@ public class Line implements Parcelable {
         return null;
     }
 
+    public String getLineDisplayNumberForStation(Station station) {
+        if (stations.contains(station)) {
+            return displayNumber;
+        }
+        return null;
+    }
+
     public Tariff getTariff() {
         return tariff;
     }
 
     public void setTariff(Tariff tariff) {
         this.tariff = tariff;
+    }
+
+    public String getdisplayNumber() {
+        return displayNumber;
+    }
+
+    public void setdisplayNumber(String displayNumber) {
+        this.displayNumber = displayNumber;
+    }
+
+    public String getDisplayShape() {
+        return displayShape;
     }
 }

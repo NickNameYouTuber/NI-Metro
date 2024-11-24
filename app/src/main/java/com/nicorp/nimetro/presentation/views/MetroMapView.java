@@ -439,7 +439,7 @@ public class MetroMapView extends View {
             canvas.drawText("🚂", objectX - 12, objectY + 12, objectPaint);
         }
 
-        canvas.drawText(mapObject.getDisplayName(), objectX + 20, objectY, objectPaint);
+        canvas.drawText(mapObject.getdisplayNumber(), objectX + 20, objectY, objectPaint);
     }
 
     private void drawRiver(Canvas canvas, River river) {
