@@ -123,7 +123,7 @@ public class MetroMapView extends View {
     private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(18);
+        linePaint.setStrokeWidth(30);
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
@@ -253,12 +253,12 @@ public class MetroMapView extends View {
         }
 
         if (lines != null && stations != null) {
-//            drawRivers(canvas);
+            drawRivers(canvas);
             drawLines(canvas);
-//            drawTransfers(canvas);
+            drawTransfers(canvas);
             drawStations(canvas);
             drawRoute(canvas);
-//            drawMapObjects(canvas);
+            drawMapObjects(canvas);
 
             if (isEditMode) {
                 drawIntermediatePoints(canvas);
@@ -377,16 +377,16 @@ public class MetroMapView extends View {
     }
 
     private void drawTransfers(Canvas canvas) {
-        for (Transfer transfer : transfers) {
-            List<Station> transferStations = transfer.getStations();
-            if (transferStations.size() == 2) {
-                drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
-            } else if (transferStations.size() == 3) {
-                drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
-            } else if (transferStations.size() == 4) {
-                drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
-            }
-        }
+//        for (Transfer transfer : transfers) {
+//            List<Station> transferStations = transfer.getStations();
+//            if (transferStations.size() == 2) {
+//                drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
+//            } else if (transferStations.size() == 3) {
+//                drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
+//            } else if (transferStations.size() == 4) {
+//                drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
+//            }
+//        }
     }
 
     private void drawStations(Canvas canvas) {
@@ -491,6 +491,7 @@ public class MetroMapView extends View {
             if (lineType.equals("double")) {
                 drawDoubleLine(canvas, station1, station2, paint);
             } else {
+                paint.setStrokeWidth(20);
                 canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
                         station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, paint);
             }
