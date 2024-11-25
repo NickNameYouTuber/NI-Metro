@@ -38,7 +38,7 @@
                     android:drawablePadding="12dp"
                     android:drawableTint="#424242"
                     android:text="Время: "
-                    android:textColor="#1F1F1F"
+                    android:textColor="#21212E"
                     android:gravity="center_vertical"
                     android:textSize="15sp" />
 
@@ -52,7 +52,7 @@
                     android:drawableTint="#424242"
                     android:text="Количество станций: "
                     android:gravity="center_vertical"
-                    android:textColor="#1F1F1F"
+                    android:textColor="#21212E"
                     android:textSize="15sp" />
 
                 <TextView
@@ -65,7 +65,7 @@
                     android:drawableTint="#424242"
                     android:text="Количество пересадок: "
                     android:gravity="center_vertical"
-                    android:textColor="#1F1F1F"
+                    android:textColor="#21212E"
                     android:textSize="15sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

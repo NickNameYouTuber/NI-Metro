@@ -4,7 +4,7 @@
     <corners android:radius="12dp" />
 
     <!-- Черная обводка -->
-    <stroke android:width="2dp" android:color="#1F1F1F" />
+    <stroke android:width="2dp" android:color="#21212E" />
 
     <!-- Белый фон -->
     <solid android:color="#FFFFFF" />

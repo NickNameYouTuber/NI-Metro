@@ -104,7 +104,7 @@ public class Line implements Parcelable {
     }
 
     public String getLineIdForStation(Station station) {
-        Log.d("Line", "Searching for station in this line " + station.getName());
+//        Log.d("Line", "Searching for station in this line " + station.getName());
         if (stations.contains(station)) {
             return id;
         }
