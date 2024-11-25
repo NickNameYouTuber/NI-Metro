@@ -3569,7 +3569,7 @@
           {
             "id": "METRO_900",
             "name": "Деловой центр",
-            "x": 359,
+            "x": 360,
             "y": 999,
             "textPosition": 0,
             "neighbors": [
@@ -3592,7 +3592,7 @@
           {
             "id": "METRO_901",
             "name": "Парк Победы",
-            "x": 359,
+            "x": 360,
             "y": 1124,
             "textPosition": 0,
             "neighbors": [
@@ -6017,8 +6017,10 @@
       },
       {
         "id": "15",
+        "displayNumber": "14",
+        "displayShape": "DOUBLE_CIRCLE",
         "name": "МЦК",
-        "color": "#E94282",
+        "color": "#d6171b",
         "isCircle": true,
         "lineType": "double",
         "stations": [
@@ -7090,11 +7092,14 @@
       },
       {
         "id": "18",
+        "displayNumber": "D1",
+        "displayShape": "PARALLELOGRAM",
         "name": "МЦД1",
         "color": "#f6a600",
         "isCircle": false,
         "tariff": {
-          "type": "APITariff"
+          "type": "FlatRateTariff",
+          "price": 70
         },
         "lineType": "double",
         "stations": [
@@ -7281,7 +7286,7 @@
           {
             "id": "METRO_1808",
             "name": "Фили",
-            "x": 313,
+            "x": 312,
             "y": 1065,
             "textPosition": 0,
             "neighbors": [
@@ -7817,7 +7822,7 @@
           {
             "id": "METRO_1906",
             "name": "Волоколамская",
-            "x": 171,
+            "x": 140,
             "y": 484,
             "textPosition": 0,
             "neighbors": [
@@ -7840,8 +7845,8 @@
           {
             "id": "METRO_1907",
             "name": "Трикотажная",
-            "x": 239,
-            "y": 483,
+            "x": 240,
+            "y": 484,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8997,7 +9002,7 @@
           {
             "id": "METRO_2020",
             "name": "Плющево",
-            "x": 1395,
+            "x": 1385,
             "y": 1136,
             "textPosition": 0,
             "neighbors": [
@@ -9020,7 +9025,7 @@
           {
             "id": "METRO_2021",
             "name": "Вешняки",
-            "x": 1395,
+            "x": 1385,
             "y": 1306,
             "textPosition": 0,
             "neighbors": [
@@ -9786,8 +9791,8 @@
           {
             "id": "METRO_2115",
             "name": "Матвеевская",
-            "x": 301,
-            "y": 1254,
+            "x": 297,
+            "y": 1246,
             "textPosition": 0,
             "neighbors": [
               [
@@ -9809,8 +9814,8 @@
           {
             "id": "METRO_2116",
             "name": "Минская",
-            "x": 336,
-            "y": 1215,
+            "x": 329,
+            "y": 1211,
             "textPosition": 0,
             "neighbors": [
               [
@@ -9832,7 +9837,7 @@
           {
             "id": "METRO_2117",
             "name": "Поклонная",
-            "x": 337,
+            "x": 349,
             "y": 1166,
             "textPosition": 0,
             "neighbors": [
@@ -9855,7 +9860,7 @@
           {
             "id": "METRO_2118",
             "name": "Кутузовская",
-            "x": 349,
+            "x": 350,
             "y": 1061,
             "textPosition": 0,
             "neighbors": [
@@ -9878,7 +9883,7 @@
           {
             "id": "METRO_2119",
             "name": "Москва-Сити",
-            "x": 351,
+            "x": 350,
             "y": 931,
             "textPosition": 0,
             "neighbors": [
