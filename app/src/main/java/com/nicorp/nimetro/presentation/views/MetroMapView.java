@@ -72,9 +72,9 @@ public class MetroMapView extends View {
     private GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
 
-    public static final float COORDINATE_SCALE_FACTOR = 2.5f;
-    private static final float CLICK_RADIUS = 30.0f;
-    private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
+    public static final float COORDINATE_SCALE_FACTOR = 5f;
+    private static final float CLICK_RADIUS = 60.0f;
+    private static final float TRANSFER_CAPSULE_WIDTH = 80.0f;
 
     private Bitmap backgroundBitmap;
 
@@ -123,17 +123,17 @@ public class MetroMapView extends View {
     private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(9);
+        linePaint.setStrokeWidth(18);
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
         stationPaint.setStyle(Paint.Style.STROKE);
-        stationPaint.setStrokeWidth(7);
+        stationPaint.setStrokeWidth(14);
 
         selectedStationPaint = new Paint();
         selectedStationPaint.setColor(Color.GREEN);
         selectedStationPaint.setStyle(Paint.Style.STROKE);
-        selectedStationPaint.setStrokeWidth(5);
+        selectedStationPaint.setStrokeWidth(10);
 
         whitePaint = new Paint();
         whitePaint.setColor(Color.WHITE);
@@ -141,32 +141,32 @@ public class MetroMapView extends View {
 
         routePaint = new Paint();
         routePaint.setColor(Color.YELLOW);
-        routePaint.setStrokeWidth(9);
+        routePaint.setStrokeWidth(18);
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
         textPaint = new Paint();
         textPaint.setColor(colorOnSurface);
-        textPaint.setTextSize(20);
+        textPaint.setTextSize(40);
 
         transferPaint = new Paint();
         transferPaint.setColor(Color.DKGRAY);
-        transferPaint.setStrokeWidth(5);
+        transferPaint.setStrokeWidth(10);
         transferPaint.setStyle(Paint.Style.STROKE);
 
         stationCenterPaint = new Paint();
         stationCenterPaint.setColor(Color.parseColor("#00000000"));
         stationCenterPaint.setStyle(Paint.Style.STROKE);
-        stationCenterPaint.setStrokeWidth(7);
+        stationCenterPaint.setStrokeWidth(14);
 
         riverPaint = new Paint();
         riverPaint.setColor(Color.parseColor("#CCE0EA"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(10);
+        riverPaint.setStrokeWidth(20);
 
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
-        grayedPaint.setStrokeWidth(9);
+        grayedPaint.setStrokeWidth(18);
     }
 
     private void initializeGestureDetectors() {
@@ -271,14 +271,14 @@ public class MetroMapView extends View {
     private void drawGrayedMap(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
         Paint grayedLinePaint = new Paint(grayedPaint);
-        grayedLinePaint.setStrokeWidth(9);
+        grayedLinePaint.setStrokeWidth(18);
 
         Paint grayedStationPaint = new Paint(grayedPaint);
         grayedStationPaint.setStyle(Paint.Style.STROKE);
-        grayedStationPaint.setStrokeWidth(7);
+        grayedStationPaint.setStrokeWidth(14);
 
         Paint grayedTextPaint = new Paint(grayedPaint);
-        grayedTextPaint.setTextSize(20);
+        grayedTextPaint.setTextSize(40);
 
         for (Line line : grayedLines) {
             for (Station station : line.getStations()) {
@@ -316,8 +316,8 @@ public class MetroMapView extends View {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-            canvas.drawCircle(stationX, stationY, 10, whitePaint);
-            canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
+            canvas.drawCircle(stationX, stationY, 20, whitePaint);
+            canvas.drawCircle(stationX, stationY, 28, grayedStationPaint);
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), grayedTextPaint);
         }
@@ -394,12 +394,12 @@ public class MetroMapView extends View {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-            canvas.drawCircle(stationX, stationY, 10, whitePaint);
+            canvas.drawCircle(stationX, stationY, 20, whitePaint);
             stationPaint.setColor(Color.parseColor(station.getColor()));
-            canvas.drawCircle(stationX, stationY, 14, stationPaint);
+            canvas.drawCircle(stationX, stationY, 28, stationPaint);
 
             if (selectedStations != null && selectedStations.contains(station)) {
-                canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
+                canvas.drawCircle(stationX, stationY, 40, selectedStationPaint);
             }
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
@@ -431,7 +431,7 @@ public class MetroMapView extends View {
         Paint objectPaint = new Paint();
         objectPaint.setColor(Color.BLACK);
         objectPaint.setStyle(Paint.Style.FILL);
-        objectPaint.setTextSize(24);
+        objectPaint.setTextSize(36);
 
         if (mapObject.getType().equals("airport")) {
             canvas.drawText("✈", objectX - 12, objectY + 12, objectPaint);
@@ -439,7 +439,7 @@ public class MetroMapView extends View {
             canvas.drawText("🚂", objectX - 12, objectY + 12, objectPaint);
         }
 
-        canvas.drawText(mapObject.getdisplayNumber(), objectX + 20, objectY, objectPaint);
+        canvas.drawText(mapObject.getdisplayNumber(), objectX + 40, objectY, objectPaint);
     }
 
     private void drawRiver(Canvas canvas, River river) {
@@ -461,7 +461,7 @@ public class MetroMapView extends View {
         Point startPoint = points.get(0);
         Point endPoint = points.get(points.size() - 1);
         int[] fadeColors = {Color.parseColor("#00000000"), Color.parseColor("#ADD8E6"), Color.parseColor("#ADD8E6"), Color.parseColor("#00000000")};
-        float fadeMargin = 20 / riverLength;
+        float fadeMargin = 40 / riverLength;
         float[] fadePositions = {0.0f, fadeMargin, 1.0f - fadeMargin, 1.0f};
 
         LinearGradient fadeGradient = new LinearGradient(
@@ -547,12 +547,12 @@ public class MetroMapView extends View {
 
         float nx = dx / length;
         float ny = dy / length;
-        float perpX = -ny * 5;
-        float perpY = nx * 5;
+        float perpX = -ny * 10;
+        float perpY = nx * 10;
 
         Paint whitePaint = new Paint();
         whitePaint.setColor(Color.WHITE);
-        whitePaint.setStrokeWidth(6);
+        whitePaint.setStrokeWidth(12);
 
         canvas.drawLine(x1 + perpX, y1 + perpY, x2 + perpX, y2 + perpY, paint);
         canvas.drawLine(x1 - perpX, y1 - perpY, x2 - perpX, y2 - perpY, paint);
@@ -564,37 +564,64 @@ public class MetroMapView extends View {
         // Создаем две кривые Безье, смещенные относительно друг друга
         Path path1 = new Path();
         Path path2 = new Path();
+        Path fillPath = new Path();
 
-        paint.setStrokeWidth(6);
+        paint.setStrokeWidth(12);
 
         // Вычисляем смещение для кривых
-        float offset = 2.5f; // Смещение в пикселях
-        float dx = control2.x - control1.x;
-        float dy = control2.y - control1.y;
+        float offset = 2.5f; // Смещение в пикселях (половина ширины линии)
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
         float nx = dy / length;
         float ny = -dx / length;
 
+        // Точки для первой кривой (смещение вправо)
+        float x1Start = (start.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Start = (start.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control1 = (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control1 = (control1.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control2 = (control2.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control2 = (control2.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1End = (end.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1End = (end.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+
+        // Точки для второй кривой (смещение влево)
+        float x2Start = (start.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Start = (start.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control1 = (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control1 = (control1.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control2 = (control2.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control2 = (control2.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2End = (end.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2End = (end.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+
         // Первая кривая
-        path1.moveTo((start.x + nx * offset) * COORDINATE_SCALE_FACTOR, (start.y + ny * offset) * COORDINATE_SCALE_FACTOR);
-        path1.cubicTo(
-                (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR, (control1.y + ny * offset) * COORDINATE_SCALE_FACTOR,
-                (control2.x + nx * offset) * COORDINATE_SCALE_FACTOR, (control2.y + ny * offset) * COORDINATE_SCALE_FACTOR,
-                (end.x + nx * offset) * COORDINATE_SCALE_FACTOR, (end.y + ny * offset) * COORDINATE_SCALE_FACTOR
-        );
+        path1.moveTo(x1Start, y1Start);
+        path1.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
 
         // Вторая кривая
-        path2.moveTo((start.x - nx * offset) * COORDINATE_SCALE_FACTOR, (start.y - ny * offset) * COORDINATE_SCALE_FACTOR);
-        path2.cubicTo(
-                (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR, (control1.y - ny * offset) * COORDINATE_SCALE_FACTOR,
-                (control2.x - nx * offset) * COORDINATE_SCALE_FACTOR, (control2.y - ny * offset) * COORDINATE_SCALE_FACTOR,
-                (end.x - nx * offset) * COORDINATE_SCALE_FACTOR, (end.y - ny * offset) * COORDINATE_SCALE_FACTOR
-        );
+        path2.moveTo(x2Start, y2Start);
+        path2.cubicTo(x2Control1, y2Control1, x2Control2, y2Control2, x2End, y2End);
+
+        // Создаем путь для заливки
+        fillPath.moveTo(x1Start, y1Start);
+        fillPath.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
+        fillPath.lineTo(x2End, y2End);
+        fillPath.cubicTo(x2Control2, y2Control2, x2Control1, y2Control1, x2Start, y2Start);
+        fillPath.close(); // Замыкаем путь
+
+        // Устанавливаем белую заливку
+        Paint fillPaint = new Paint();
+        fillPaint.setColor(Color.WHITE);
+        fillPaint.setStyle(Paint.Style.FILL);
+
+        // Заливаем область между кривыми
+        canvas.drawPath(fillPath, fillPaint);
 
         // Рисуем обе кривые
         canvas.drawPath(path1, paint);
         canvas.drawPath(path2, paint);
-        paint.setStrokeWidth(9);
     }
 
     private List<Point> interpolatePoints(List<Point> points) {
@@ -795,8 +822,8 @@ public class MetroMapView extends View {
         float dx = x2 - x1;
         float dy = y2 - y1;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 20;
-        float shiftY = -(dx / length) * 20;
+        float shiftX = (dy / length) * 40;
+        float shiftY = -(dx / length) * 40;
 
         shiftX = -shiftX;
         shiftY = -shiftY;

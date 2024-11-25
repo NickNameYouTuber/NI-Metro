@@ -302,16 +302,15 @@ public class StationInfoFragment extends Fragment {
             );
             lineNumber.setLayoutParams(params);
             lineNumber.setTextColor(Color.BLACK);
-            lineNumber.setTextSize(13);
+            lineNumber.setTextSize(14);
         } else if (shape instanceof ParallelogramShape) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     (int) (40*density),
                     (int) (30*density)
             );
             lineNumber.setLayoutParams(params);
-            Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
-            lineNumber.setTypeface(customTypeface, Typeface.BOLD);
             lineNumber.setTextColor(Color.WHITE);
+            lineNumber.setTextSize(14);
         } else {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     (int) (30*density),
@@ -319,8 +318,10 @@ public class StationInfoFragment extends Fragment {
             );
             lineNumber.setLayoutParams(params);
             lineNumber.setTextColor(Color.WHITE);
-            lineNumber.setTextSize(14);
+            lineNumber.setTextSize(15);
         }
+        Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+        lineNumber.setTypeface(customTypeface, Typeface.BOLD);
         lineNumber.setPadding(4, 4, 4, 4);
     }
 

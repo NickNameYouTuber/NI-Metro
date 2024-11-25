@@ -638,6 +638,8 @@
       },
       {
         "id": "2",
+        "displayNumber": "2",
+        "displayShape": "CIRCLE",
         "name": "Замоскворецкая линия",
         "color": "#46AF50",
         "isCircle": false,
@@ -1195,6 +1197,8 @@
       },
       {
         "id": "3",
+        "displayNumber": "3",
+        "displayShape": "CIRCLE",
         "name": "Арбатско-Покровская линия",
         "color": "#0072BB",
         "isCircle": false,
@@ -1410,7 +1414,7 @@
           {
             "id": "METRO_309",
             "name": "Парк Победы",
-            "x": 359,
+            "x": 370,
             "y": 1141,
             "textPosition": 0,
             "neighbors": [
@@ -1706,6 +1710,8 @@
       },
       {
         "id": "4",
+        "displayNumber": "4",
+        "displayShape": "CIRCLE",
         "name": "Филевская линия",
         "color": "#27BCEF",
         "isCircle": false,
@@ -1964,6 +1970,8 @@
       },
       {
         "id": "5",
+        "displayNumber": "5",
+        "displayShape": "CIRCLE",
         "name": "Кольцевая линия",
         "color": "#915133",
         "isCircle": true,
@@ -2277,6 +2285,8 @@
       },
       {
         "id": "6",
+        "displayNumber": "6",
+        "displayShape": "CIRCLE",
         "name": "Калужско-Рижская линия",
         "color": "#FF8C00",
         "isCircle": false,
@@ -2834,6 +2844,8 @@
       },
       {
         "id": "7",
+        "displayNumber": "7",
+        "displayShape": "CIRCLE",
         "name": "Таганско-Краснопресненская линия",
         "color": "#8B008B",
         "isCircle": false,
@@ -3368,6 +3380,8 @@
       },
       {
         "id": "8",
+        "displayNumber": "8",
+        "displayShape": "CIRCLE",
         "name": "Калининская линия",
         "color": "#ffd702",
         "isCircle": false,
@@ -3557,6 +3571,8 @@
       },
       {
         "id": "9",
+        "displayNumber": "8а",
+        "displayShape": "CIRCLE",
         "name": "Солнцевская линия",
         "color": "#ffd702",
         "isCircle": false,
@@ -3569,8 +3585,8 @@
           {
             "id": "METRO_900",
             "name": "Деловой центр",
-            "x": 360,
-            "y": 999,
+            "x": 370,
+            "y": 1000,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3592,7 +3608,7 @@
           {
             "id": "METRO_901",
             "name": "Парк Победы",
-            "x": 360,
+            "x": 370,
             "y": 1124,
             "textPosition": 0,
             "neighbors": [
@@ -3988,6 +4004,8 @@
       },
       {
         "id": "10",
+        "displayNumber": "9",
+        "displayShape": "CIRCLE",
         "name": "Серпуховско-Тимирязевская линия",
         "color": "#808080",
         "isCircle": false,
@@ -4568,6 +4586,8 @@
       },
       {
         "id": "11",
+        "displayNumber": "10",
+        "displayShape": "CIRCLE",
         "name": "Люблинско-Дмитровская линия",
         "color": "#ABC469",
         "isCircle": false,
@@ -5171,6 +5191,8 @@
       },
       {
         "id": "12",
+        "displayNumber": "11",
+        "displayShape": "CIRCLE",
         "name": "Большая кольцевая линия",
         "color": "#A0C5BE",
         "isCircle": true,
@@ -5851,6 +5873,8 @@
       },
       {
         "id": "13",
+        "displayNumber": "12",
+        "displayShape": "CIRCLE",
         "name": "Бутовская линия",
         "color": "#AEB5CA",
         "isCircle": false,
@@ -6737,6 +6761,8 @@
       },
       {
         "id": "16",
+        "displayNumber": "16",
+        "displayShape": "CIRCLE",
         "name": "Некрасовская линия",
         "color": "#CB80A2",
         "isCircle": false,
@@ -6926,6 +6952,8 @@
       },
       {
         "id": "17",
+        "displayNumber": "17",
+        "displayShape": "CIRCLE",
         "name": "Троицкая линия",
         "color": "#256356",
         "isCircle": false,
