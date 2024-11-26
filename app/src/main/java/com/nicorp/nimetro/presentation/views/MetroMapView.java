@@ -183,6 +183,7 @@ public class MetroMapView extends View {
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 translateX -= distanceX / scaleFactor;
                 translateY -= distanceY / scaleFactor;
+                updateTransformMatrix();
                 invalidate();
                 return true;
             }
@@ -193,11 +194,18 @@ public class MetroMapView extends View {
             public boolean onScale(ScaleGestureDetector detector) {
                 scaleFactor *= detector.getScaleFactor();
                 scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
+                updateTransformMatrix();
                 needsRedraw = true; // Помечаем, что требуется перерисовка
                 invalidate();
                 return true;
             }
         });
+    }
+
+    private void updateTransformMatrix() {
+        transformMatrix.reset();
+        transformMatrix.postTranslate(translateX, translateY);
+        transformMatrix.postScale(scaleFactor, scaleFactor);
     }
 
     private void loadBackgroundBitmap() {
@@ -261,16 +269,11 @@ public class MetroMapView extends View {
             needsRedraw = false;
         }
 
-        // Обновляем матрицу трансформации
-        transformMatrix.reset();
-        transformMatrix.postTranslate(translateX, translateY);
-        transformMatrix.postScale(scaleFactor, scaleFactor);
-
         // Выбираем подходящий уровень детализации
         float lodScaleFactor = getLodScaleFactor();
         Bitmap cacheBitmap = cacheBitmaps.get(lodScaleFactor);
         if (cacheBitmap == null) {
-            cacheBitmap = createCacheBitmap(5000, 5000);
+            cacheBitmap = createCacheBitmap(6000, 7000);
             cacheBitmaps.put(lodScaleFactor, cacheBitmap);
         }
 
