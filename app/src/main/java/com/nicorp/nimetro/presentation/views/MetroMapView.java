@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -32,6 +33,7 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -72,11 +74,15 @@ public class MetroMapView extends View {
     private GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
 
-    public static final float COORDINATE_SCALE_FACTOR = 5f;
-    private static final float CLICK_RADIUS = 60.0f;
-    private static final float TRANSFER_CAPSULE_WIDTH = 80.0f;
+    public static final float COORDINATE_SCALE_FACTOR = 2.5f;
+    private static final float CLICK_RADIUS = 30.0f;
+    private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
 
     private Bitmap backgroundBitmap;
+    private Map<Float, Bitmap> cacheBitmaps = new HashMap<>(); // Кэшированные битмапы для разных уровней детализации
+    private boolean needsRedraw = true; // Флаг, указывающий на необходимость перерисовки
+    private Matrix transformMatrix; // Матрица трансформации для перемещения и масштабирования
+    private Bitmap cacheBitmap; // Битмап для кэширования всей карты
 
     private boolean isActiveMapMetro = true;
 
@@ -109,12 +115,14 @@ public class MetroMapView extends View {
 
     public void setEditMode(boolean editMode) {
         isEditMode = editMode;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     private void init() {
         initializePaints();
         initializeGestureDetectors();
+        transformMatrix = new Matrix();
         if (isEditMode) {
             loadBackgroundBitmap();
         }
@@ -123,17 +131,17 @@ public class MetroMapView extends View {
     private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(30);
+        linePaint.setStrokeWidth(15);
 
         stationPaint = new Paint();
         stationPaint.setColor(Color.BLUE);
         stationPaint.setStyle(Paint.Style.STROKE);
-        stationPaint.setStrokeWidth(14);
+        stationPaint.setStrokeWidth(7);
 
         selectedStationPaint = new Paint();
         selectedStationPaint.setColor(Color.GREEN);
         selectedStationPaint.setStyle(Paint.Style.STROKE);
-        selectedStationPaint.setStrokeWidth(10);
+        selectedStationPaint.setStrokeWidth(5);
 
         whitePaint = new Paint();
         whitePaint.setColor(Color.WHITE);
@@ -141,32 +149,32 @@ public class MetroMapView extends View {
 
         routePaint = new Paint();
         routePaint.setColor(Color.YELLOW);
-        routePaint.setStrokeWidth(18);
+        routePaint.setStrokeWidth(9);
 
-        int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
+        int colorOnSurface = Color.WHITE;
 
         textPaint = new Paint();
         textPaint.setColor(colorOnSurface);
-        textPaint.setTextSize(40);
+        textPaint.setTextSize(20);
 
         transferPaint = new Paint();
         transferPaint.setColor(Color.DKGRAY);
-        transferPaint.setStrokeWidth(10);
+        transferPaint.setStrokeWidth(5);
         transferPaint.setStyle(Paint.Style.STROKE);
 
         stationCenterPaint = new Paint();
         stationCenterPaint.setColor(Color.parseColor("#00000000"));
         stationCenterPaint.setStyle(Paint.Style.STROKE);
-        stationCenterPaint.setStrokeWidth(14);
+        stationCenterPaint.setStrokeWidth(7);
 
         riverPaint = new Paint();
         riverPaint.setColor(Color.parseColor("#CCE0EA"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(20);
+        riverPaint.setStrokeWidth(10);
 
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
-        grayedPaint.setStrokeWidth(18);
+        grayedPaint.setStrokeWidth(9);
     }
 
     private void initializeGestureDetectors() {
@@ -185,6 +193,7 @@ public class MetroMapView extends View {
             public boolean onScale(ScaleGestureDetector detector) {
                 scaleFactor *= detector.getScaleFactor();
                 scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
+                needsRedraw = true; // Помечаем, что требуется перерисовка
                 invalidate();
                 return true;
             }
@@ -198,11 +207,13 @@ public class MetroMapView extends View {
 
     public void clearRoute() {
         this.route = null;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     public void clearSelectedStations() {
         this.selectedStations = null;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
@@ -214,16 +225,19 @@ public class MetroMapView extends View {
         this.mapObjects = mapObjects;
         this.grayedLines = grayedLines;
         this.grayedStations = grayedStations;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     public void setRoute(List<Station> route) {
         this.route = route;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     public void setSelectedStations(List<Station> selectedStations) {
         this.selectedStations = selectedStations;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
@@ -233,6 +247,7 @@ public class MetroMapView extends View {
 
     public void setActiveMap(boolean isMetroMap) {
         this.isActiveMapMetro = isMetroMap;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
@@ -240,10 +255,67 @@ public class MetroMapView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.save();
-        canvas.translate(translateX, translateY);
-        canvas.scale(scaleFactor, scaleFactor);
+        // Если необходима перерисовка кэша
+        if (needsRedraw) {
+            createCacheBitmap(10000, 10000);
+            needsRedraw = false;
+        }
 
+        // Обновляем матрицу трансформации
+        transformMatrix.reset();
+        transformMatrix.postTranslate(translateX, translateY);
+        transformMatrix.postScale(scaleFactor, scaleFactor);
+
+        // Выбираем подходящий уровень детализации
+        float lodScaleFactor = getLodScaleFactor();
+        Bitmap cacheBitmap = cacheBitmaps.get(lodScaleFactor);
+        if (cacheBitmap == null) {
+            cacheBitmap = createCacheBitmap(5000, 5000);
+            cacheBitmaps.put(lodScaleFactor, cacheBitmap);
+        }
+
+        // Отрисовываем кэшированный битмап с применением трансформации
+        canvas.drawBitmap(cacheBitmap, transformMatrix, null);
+    }
+
+    private float getLodScaleFactor() {
+        if (scaleFactor < 0.5f) {
+            return 0.5f;
+        } else if (scaleFactor < 1.0f) {
+            return 1.0f;
+        } else {
+            return 2.0f;
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (w > 0 && h > 0) {
+            // Создаем кэш-битмап при изменении размера view
+            createCacheBitmap(w, h);
+            needsRedraw = true;
+        }
+    }
+
+    private Bitmap createCacheBitmap(int width, int height) {
+        // Освобождаем память от старого битмапа, если он существует
+        if (cacheBitmap != null && !cacheBitmap.isRecycled()) {
+            cacheBitmap.recycle();
+        }
+
+        // Создаем новый битмап для кэширования
+        Bitmap cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas cacheCanvas = new Canvas(cacheBitmap);
+
+        // Отрисовываем все элементы карты в кэш
+        drawMapContents(cacheCanvas);
+
+        return cacheBitmap;
+    }
+
+    private void drawMapContents(Canvas canvas) {
+        // Отрисовка фонового изображения
         if (backgroundBitmap != null) {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
@@ -264,21 +336,19 @@ public class MetroMapView extends View {
                 drawIntermediatePoints(canvas);
             }
         }
-
-        canvas.restore();
     }
 
     private void drawGrayedMap(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
         Paint grayedLinePaint = new Paint(grayedPaint);
-        grayedLinePaint.setStrokeWidth(18);
+        grayedLinePaint.setStrokeWidth(9);
 
         Paint grayedStationPaint = new Paint(grayedPaint);
         grayedStationPaint.setStyle(Paint.Style.STROKE);
-        grayedStationPaint.setStrokeWidth(14);
+        grayedStationPaint.setStrokeWidth(7);
 
         Paint grayedTextPaint = new Paint(grayedPaint);
-        grayedTextPaint.setTextSize(40);
+        grayedTextPaint.setTextSize(20);
 
         for (Line line : grayedLines) {
             for (Station station : line.getStations()) {
@@ -316,8 +386,8 @@ public class MetroMapView extends View {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-            canvas.drawCircle(stationX, stationY, 20, whitePaint);
-            canvas.drawCircle(stationX, stationY, 28, grayedStationPaint);
+            canvas.drawCircle(stationX, stationY, 10, whitePaint);
+            canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), grayedTextPaint);
         }
@@ -377,16 +447,16 @@ public class MetroMapView extends View {
     }
 
     private void drawTransfers(Canvas canvas) {
-//        for (Transfer transfer : transfers) {
-//            List<Station> transferStations = transfer.getStations();
-//            if (transferStations.size() == 2) {
-//                drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
-//            } else if (transferStations.size() == 3) {
-//                drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
-//            } else if (transferStations.size() == 4) {
-//                drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
-//            }
-//        }
+        // for (Transfer transfer : transfers) {
+        //     List<Station> transferStations = transfer.getStations();
+        //     if (transferStations.size() == 2) {
+        //         drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
+        //     } else if (transferStations.size() == 3) {
+        //         drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
+        //     } else if (transferStations.size() == 4) {
+        //         drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
+        //     }
+        // }
     }
 
     private void drawStations(Canvas canvas) {
@@ -394,12 +464,12 @@ public class MetroMapView extends View {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-            canvas.drawCircle(stationX, stationY, 20, whitePaint);
+            canvas.drawCircle(stationX, stationY, 10, whitePaint);
             stationPaint.setColor(Color.parseColor(station.getColor()));
-            canvas.drawCircle(stationX, stationY, 28, stationPaint);
+            canvas.drawCircle(stationX, stationY, 14, stationPaint);
 
             if (selectedStations != null && selectedStations.contains(station)) {
-                canvas.drawCircle(stationX, stationY, 40, selectedStationPaint);
+                canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
             }
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
@@ -431,7 +501,7 @@ public class MetroMapView extends View {
         Paint objectPaint = new Paint();
         objectPaint.setColor(Color.BLACK);
         objectPaint.setStyle(Paint.Style.FILL);
-        objectPaint.setTextSize(36);
+        objectPaint.setTextSize(20);
 
         if (mapObject.getType().equals("airport")) {
             canvas.drawText("✈", objectX - 12, objectY + 12, objectPaint);
@@ -491,7 +561,7 @@ public class MetroMapView extends View {
             if (lineType.equals("double")) {
                 drawDoubleLine(canvas, station1, station2, paint);
             } else {
-                paint.setStrokeWidth(20);
+                paint.setStrokeWidth(10);
                 canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
                         station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, paint);
             }
@@ -548,12 +618,12 @@ public class MetroMapView extends View {
 
         float nx = dx / length;
         float ny = dy / length;
-        float perpX = -ny * 10;
-        float perpY = nx * 10;
+        float perpX = -ny * 5;
+        float perpY = nx * 5;
 
         Paint whitePaint = new Paint();
         whitePaint.setColor(Color.WHITE);
-        whitePaint.setStrokeWidth(12);
+        whitePaint.setStrokeWidth(6);
 
         canvas.drawLine(x1 + perpX, y1 + perpY, x2 + perpX, y2 + perpY, paint);
         canvas.drawLine(x1 - perpX, y1 - perpY, x2 - perpX, y2 - perpY, paint);
@@ -567,7 +637,7 @@ public class MetroMapView extends View {
         Path path2 = new Path();
         Path fillPath = new Path();
 
-        paint.setStrokeWidth(12);
+        paint.setStrokeWidth(6);
 
         // Вычисляем смещение для кривых
         float offset = 2.5f; // Смещение в пикселях (половина ширины линии)
@@ -740,8 +810,13 @@ public class MetroMapView extends View {
         result = gestureDetector.onTouchEvent(event) || result;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float x = (event.getX() - translateX) / scaleFactor;
-            float y = (event.getY() - translateY) / scaleFactor;
+            // Преобразуем координаты касания с учетом трансформации
+            float[] point = new float[] {event.getX(), event.getY()};
+            Matrix inverseMatrix = new Matrix();
+            transformMatrix.invert(inverseMatrix);
+            inverseMatrix.mapPoints(point);
+            float x = point[0];
+            float y = point[1];
             Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
             if (clickedStation != null && listener != null) {
                 Log.d("MetroMapView", "Station clicked: " + clickedStation.getName());
@@ -823,8 +898,8 @@ public class MetroMapView extends View {
         float dx = x2 - x1;
         float dy = y2 - y1;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 40;
-        float shiftY = -(dx / length) * 40;
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
 
         shiftX = -shiftX;
         shiftY = -shiftY;
@@ -928,15 +1003,29 @@ public class MetroMapView extends View {
 
     public void setTranslateX(float v) {
         translateX = v;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     public void setTranslateY(float v) {
         translateY = v;
+        needsRedraw = true; // Помечаем, что требуется перерисовка
         invalidate();
     }
 
     public interface OnStationClickListener {
         void onStationClick(Station station);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        // Освобождаем память
+        for (Bitmap bitmap : cacheBitmaps.values()) {
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+        cacheBitmaps.clear();
     }
 }
