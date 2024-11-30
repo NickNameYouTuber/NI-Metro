@@ -89,16 +89,34 @@ public class MetroMapView extends View {
     public MetroMapView(Context context) {
         super(context);
         init();
+        translateY = -300;
+        translateX = -1600;
+        scaleFactor = 0.4f;
+
+        updateTransformMatrix();
+        invalidate();
     }
 
     public MetroMapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
+        translateY = -300;
+        translateX = -1600;
+        scaleFactor = 0.4f;
+
+        updateTransformMatrix();
+        invalidate();
     }
 
     public MetroMapView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+        translateY = -300;
+        translateX = -1600;
+        scaleFactor = 0.4f;
+
+        updateTransformMatrix();
+        invalidate();
     }
 
     public float getScaleFactor() {
@@ -154,7 +172,7 @@ public class MetroMapView extends View {
         int colorOnSurface = Color.WHITE;
 
         textPaint = new Paint();
-        textPaint.setColor(colorOnSurface);
+        textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(20);
 
         transferPaint = new Paint();
@@ -203,6 +221,7 @@ public class MetroMapView extends View {
     }
 
     private void updateTransformMatrix() {
+        Log.d("MetroMapView", "Transform matrix: " + translateX + ", " + translateY + ", " + scaleFactor);
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
         transformMatrix.postScale(scaleFactor, scaleFactor);
@@ -265,6 +284,7 @@ public class MetroMapView extends View {
 
         // Если необходима перерисовка кэша
         if (needsRedraw) {
+            Log.d("MetroMapView", "Redrawing cache...");
             createCacheBitmap(10000, 10000);
             needsRedraw = false;
         }
@@ -303,9 +323,9 @@ public class MetroMapView extends View {
 
     private Bitmap createCacheBitmap(int width, int height) {
         // Освобождаем память от старого битмапа, если он существует
-        if (cacheBitmap != null && !cacheBitmap.isRecycled()) {
-            cacheBitmap.recycle();
-        }
+        cacheBitmaps = new HashMap<>();
+        cacheBitmap = null;
+        Log.d("MetroMapView", "Cache bitmap cleared");
 
         // Создаем новый битмап для кэширования
         Bitmap cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -323,11 +343,13 @@ public class MetroMapView extends View {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
 
-        if (grayedLines != null && grayedStations != null) {
+        if (grayedLines != null && grayedStations != null && !grayedLines.isEmpty() && !grayedStations.isEmpty()) {
+            Log.d("MetroMapView", "Station 1: " + grayedStations.get(0).getName());
             drawGrayedMap(canvas);
         }
 
         if (lines != null && stations != null) {
+            Log.d("MetroMapView", "Station 2: " + stations.get(0).getName());
             drawRivers(canvas);
             drawLines(canvas);
             drawTransfers(canvas);
@@ -450,16 +472,19 @@ public class MetroMapView extends View {
     }
 
     private void drawTransfers(Canvas canvas) {
-        // for (Transfer transfer : transfers) {
-        //     List<Station> transferStations = transfer.getStations();
-        //     if (transferStations.size() == 2) {
-        //         drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
-        //     } else if (transferStations.size() == 3) {
-        //         drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
-        //     } else if (transferStations.size() == 4) {
-        //         drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
-        //     }
-        // }
+        if (transfers == null || transfers.isEmpty()) {
+            return;
+        }
+         for (Transfer transfer : transfers) {
+             List<Station> transferStations = transfer.getStations();
+             if (transferStations.size() == 2) {
+                 drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
+             } else if (transferStations.size() == 3) {
+                 drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
+             } else if (transferStations.size() == 4) {
+                 drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
+             }
+         }
     }
 
     private void drawStations(Canvas canvas) {

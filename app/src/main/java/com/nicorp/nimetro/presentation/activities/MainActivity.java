@@ -84,11 +84,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         ImageView switchMapButton = findViewById(R.id.switchMapButton);
         switchMapButton.setOnClickListener(v -> {
             isMetroMap = !isMetroMap;
+            Log.d("MainActivity", "Switched map to " + (isMetroMap ? "metro" : "suburban"));
             if (isMetroMap) {
+                Log.d("MainActivity", "SwTest");
                 switchMapButton.setImageResource(R.drawable.metro_map_icon);
+                Log.d("MainActivity", "SwTest");
             } else {
+                Log.d("MainActivity", "SwTest");
                 switchMapButton.setImageResource(R.drawable.suburban_map_icon);
+                Log.d("MainActivity", "SwTest");
             }
+            Log.d("MainActivity", "Switched map to " + (isMetroMap ? "metro" : "suburban"));
             updateMapData();
         });
 
@@ -213,9 +219,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private void updateMapData() {
+        Log.d("MetroMapView_MainActivity", "isMetroMap " + isMetroMap);
         if (isMetroMap) {
+            Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
+            Log.d("MetroMapView_MainActivity", "Gray Station 1: " + grayedStations.get(0).getName());
             metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
         } else {
+            Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
+            Log.d("MetroMapView_MainActivity", "Gray Station 1: " + grayedStations.get(0).getName());
             metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
         }
         metroMapView.setActiveMap(isMetroMap);
@@ -259,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             lines.add(line);
         }
 
+        transfers = new ArrayList<>();
         JSONArray transfersArray = mapData.getJSONArray("transfers");
         for (int i = 0; i < transfersArray.length(); i++) {
             JSONObject transferObject = transfersArray.getJSONObject(i);
@@ -266,13 +278,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             List<Station> transferStations = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
                 String stationId = stationsArray.getString(j);
+                Log.d("MetroMapView_MainActivity", "Transfer Station ID: " + stationId);
                 Station station = findStationById(stationId, stations);
                 if (station != null) {
+                    Log.d("MetroMapView_MainActivity", "Transfer Station: " + station.getName());
                     transferStations.add(station);
                 }
             }
             int time = transferObject.optInt("time", 3);
             String type = transferObject.optString("type", "regular");
+            Log.d("MetroMapView_MainActivity", "Transfer Type: " + type);
+            Log.d("MetroMapView_MainActivity", "Transfer Time: " + time);
             transfers.add(new Transfer(transferStations, time, type));
         }
 

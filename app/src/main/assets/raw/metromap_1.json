@@ -215,6 +215,10 @@
               [
                 "METRO_109",
                 3
+              ],
+              [
+                "METRO_711",
+                3
               ]
             ],
             "facilities": {
@@ -3118,6 +3122,10 @@
               [
                 "METRO_712",
                 4
+              ],
+              [
+                "METRO_108",
+                3
               ]
             ],
             "facilities": {
@@ -10298,7 +10306,16 @@
         ]
       }
     ],
-    "transfers": [],
+    "transfers": [
+      {
+        "stations": [
+          "METRO_108",
+          "METRO_711"
+        ],
+        "time": 3,
+        "type": "regular"
+      }
+    ],
     "intermediatePoints": [
       {
         "neighborsId": [
