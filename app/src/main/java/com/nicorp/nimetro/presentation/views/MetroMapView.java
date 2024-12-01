@@ -71,7 +71,7 @@ public class MetroMapView extends View {
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
-    private GestureDetector gestureDetector;
+    public GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
 
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
@@ -80,7 +80,7 @@ public class MetroMapView extends View {
 
     private Bitmap backgroundBitmap;
     private Map<Float, Bitmap> cacheBitmaps = new HashMap<>(); // Кэшированные битмапы для разных уровней детализации
-    private boolean needsRedraw = true; // Флаг, указывающий на необходимость перерисовки
+    public boolean needsRedraw = true; // Флаг, указывающий на необходимость перерисовки
     private Matrix transformMatrix; // Матрица трансформации для перемещения и масштабирования
     private Bitmap cacheBitmap; // Битмап для кэширования всей карты
 
@@ -220,7 +220,7 @@ public class MetroMapView extends View {
         });
     }
 
-    private void updateTransformMatrix() {
+    public void updateTransformMatrix() {
         Log.d("MetroMapView", "Transform matrix: " + translateX + ", " + translateY + ", " + scaleFactor);
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
@@ -1031,14 +1031,20 @@ public class MetroMapView extends View {
 
     public void setTranslateX(float v) {
         translateX = v;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        updateTransformMatrix();
+        needsRedraw = true;
         invalidate();
     }
 
     public void setTranslateY(float v) {
         translateY = v;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        updateTransformMatrix();
+        needsRedraw = true;
         invalidate();
+    }
+
+    public Matrix getTransformMatrix() {
+        return transformMatrix;
     }
 
     public interface OnStationClickListener {

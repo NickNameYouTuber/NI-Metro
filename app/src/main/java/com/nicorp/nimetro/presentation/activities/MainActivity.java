@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         });
     }
 
-    private List<Transfer> transfers;
+    private List<Transfer> transfers = new ArrayList<>();
     private List<River> rivers;
     private List<MapObject> mapObjects;
     private List<Transfer> grayedTransfers;
@@ -223,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         if (isMetroMap) {
             Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
             Log.d("MetroMapView_MainActivity", "Gray Station 1: " + grayedStations.get(0).getName());
+            Log.d("MetroMapView_MainActivity", "Transfer 1: " + transfers.get(0).getStations().get(0).getName());
             metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
         } else {
             Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
@@ -270,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             lines.add(line);
         }
 
-        transfers = new ArrayList<>();
         JSONArray transfersArray = mapData.getJSONArray("transfers");
         for (int i = 0; i < transfersArray.length(); i++) {
             JSONObject transferObject = transfersArray.getJSONObject(i);

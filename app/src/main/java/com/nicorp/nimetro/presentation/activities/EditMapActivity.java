@@ -1,7 +1,9 @@
 package com.nicorp.nimetro.presentation.activities;
 
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
@@ -132,105 +134,81 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
     @SuppressLint("ClickableViewAccessibility")
     private void setupEventListeners() {
         metroMapView.setOnTouchListener((v, event) -> {
-            // Handle scaling
-            metroMapView.scaleGestureDetector.onTouchEvent(event);
-            if (metroMapView.scaleGestureDetector.isInProgress()) {
-                return true;
-            }
-
-            // Get the touch coordinates in screen space
-            float touchX = event.getX();
-            float touchY = event.getY();
-            // Convert to station coordinate system
-            float stationX = (((touchX - metroMapView.getTranslateX()) / metroMapView.getScaleFactor() / MetroMapView.COORDINATE_SCALE_FACTOR));
-            float stationY = (((touchY - metroMapView.getTranslateY()) / metroMapView.getScaleFactor() / MetroMapView.COORDINATE_SCALE_FACTOR));
-
-            Log.d("EditMapActivity", "Station: " + stationX + ", " + stationY);
+            // Find station or intermediate point at the touch location using transformed coordinates
+            float[] point = new float[]{event.getX(), event.getY()};
+            Matrix inverseMatrix = new Matrix();
+            metroMapView.getTransformMatrix().invert(inverseMatrix);
+            inverseMatrix.mapPoints(point);
+            float x = point[0] / MetroMapView.COORDINATE_SCALE_FACTOR;
+            float y = point[1] / MetroMapView.COORDINATE_SCALE_FACTOR;
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    lastTouchX = touchX;
-                    lastTouchY = touchY;
-
-                    // Find station or intermediate point at the touch location using transformed coordinates
-                    selectedStation = metroMapView.findStationAt(stationX, stationY);
-
+                    selectedStation = metroMapView.findStationAt(x, y);
                     if (selectedStation == null) {
-                        selectedIntermediatePoint = findIntermediatePointAt(stationX, stationY);
+                        selectedIntermediatePoint = findIntermediatePointAt(x, y);
                     }
-
-                    if (selectedStation != null) {
-                        // Store original station position in map coordinates
-                        originalStationX = selectedStation.getX();
-                        originalStationY = selectedStation.getY();
-                    }
-
                     isMovingMap = (selectedStation == null && selectedIntermediatePoint == null);
-                    return true;
+                    initialTouchX = event.getRawX();
+                    initialTouchY = event.getRawY();
+                    break;
 
                 case MotionEvent.ACTION_MOVE:
-                    float deltaX = touchX - lastTouchX;
-                    float deltaY = touchY - lastTouchY;
-
                     if (selectedStation != null) {
-                        // Convert delta from screen space to map space accounting for scale
-                        Log.d("EditMapActivity", "deltaX: " + deltaX + ", deltaY: " + deltaY);
-                        float scaledDeltaX = deltaX / (metroMapView.getScaleFactor() * MetroMapView.COORDINATE_SCALE_FACTOR);
-                        float scaledDeltaY = deltaY / (metroMapView.getScaleFactor() * MetroMapView.COORDINATE_SCALE_FACTOR);
-                        Log.d("EditMapActivity", "scaledDeltaX: " + scaledDeltaX + ", scaledDeltaY: " + scaledDeltaY);
-
-                        // Update station position relative to its original position
-                        float newX = originalStationX + scaledDeltaX;
-                        float newY = originalStationY + scaledDeltaY;
-
-                        selectedStation.setX((int) newX);
-                        selectedStation.setY((int) newY);
-
-                        // Update original position for next move
-                        originalStationX = newX;
-                        originalStationY = newY;
-
+                        float dx = event.getRawX() - initialTouchX;
+                        float dy = event.getRawY() - initialTouchY;
+                        selectedStation.setX((int) (selectedStation.getX() + dx / MetroMapView.COORDINATE_SCALE_FACTOR));
+                        selectedStation.setY((int) (selectedStation.getY() + dy / MetroMapView.COORDINATE_SCALE_FACTOR));
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        metroMapView.needsRedraw = true;
+                        metroMapView.invalidate(); // Перерисовываем карту
                     } else if (selectedIntermediatePoint != null) {
-                        // Convert delta from screen space to map space for intermediate points
-                        float scaledDeltaX = deltaX / (metroMapView.getScaleFactor() * MetroMapView.COORDINATE_SCALE_FACTOR);
-                        float scaledDeltaY = deltaY / (metroMapView.getScaleFactor() * MetroMapView.COORDINATE_SCALE_FACTOR);
-
-                        selectedIntermediatePoint.set(
-                                (int) (selectedIntermediatePoint.x + scaledDeltaX),
-                                (int) (selectedIntermediatePoint.y + scaledDeltaY)
-                        );
-
+                        float dx = event.getRawX() - initialTouchX;
+                        float dy = event.getRawY() - initialTouchY;
+                        selectedIntermediatePoint.x = (int) (selectedIntermediatePoint.x + dx / MetroMapView.COORDINATE_SCALE_FACTOR);
+                        selectedIntermediatePoint.y = (int) (selectedIntermediatePoint.y + dy / MetroMapView.COORDINATE_SCALE_FACTOR);
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        metroMapView.needsRedraw = true;
+                        metroMapView.invalidate(); // Перерисовываем карту
                     } else if (isMovingMap) {
-                        // Update map translation in screen space
-                        metroMapView.setTranslateX(metroMapView.getTranslateX() + deltaX / metroMapView.getScaleFactor());
-                        metroMapView.setTranslateY(metroMapView.getTranslateY() + deltaY / metroMapView.getScaleFactor());
+                        float dx = event.getRawX() - initialTouchX;
+                        float dy = event.getRawY() - initialTouchY;
+                        metroMapView.setTranslateX(metroMapView.getTranslateX() + dx / metroMapView.getScaleFactor());
+                        metroMapView.setTranslateY(metroMapView.getTranslateY() + dy / metroMapView.getScaleFactor());
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        metroMapView.needsRedraw = true;
+                        metroMapView.invalidate(); // Перерисовываем карту
                     }
-
-                    lastTouchX = touchX;
-                    lastTouchY = touchY;
-                    metroMapView.invalidate();
-                    return true;
+                    break;
 
                 case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
                     selectedStation = null;
                     selectedIntermediatePoint = null;
                     isMovingMap = false;
-                    return true;
+                    metroMapView.needsRedraw = true;
+                    metroMapView.invalidate(); // Перерисовываем карту
+                    break;
             }
-            return false;
-        });
 
-        metroMapView.scaleGestureDetector = new ScaleGestureDetector(this,
-                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-                    @Override
-                    public boolean onScale(ScaleGestureDetector detector) {
-                        float scaleFactor = metroMapView.getScaleFactor() * detector.getScaleFactor();
-                        metroMapView.scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
-                        metroMapView.invalidate();
-                        return true;
-                    }
-                });
+            // Allow MetroMapView to handle its own touch events if no station or point is selected
+            boolean result = selectedStation != null || selectedIntermediatePoint != null || isMovingMap;
+            metroMapView.scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    metroMapView.scaleFactor *= 2;
+                    metroMapView.scaleFactor = Math.max(0.1f, Math.min(metroMapView.scaleFactor, 2.0f));
+                    metroMapView.updateTransformMatrix();
+                    metroMapView.needsRedraw = true; // Помечаем, что требуется перерисовка
+                    metroMapView.invalidate();
+                    return true;
+                }
+            });
+            result = metroMapView.scaleGestureDetector.onTouchEvent(event) || result;
+            return result;
+        });
     }
 
     /**
@@ -277,7 +255,7 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
             initialTouchX = event.getX();
             initialTouchY = event.getY();
         }
-        metroMapView.invalidate();
+        metroMapView.invalidate(); // Перерисовываем карту
     }
 
     /**

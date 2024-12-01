@@ -12,13 +12,13 @@
         "id": "1",
         "displayNumber": "1",
         "displayShape": "CIRCLE",
-        "name": "Сокольническая линия",
-        "color": "#E40520",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Сокольническая линия",
+        "color": "#E40520",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -30,6 +30,10 @@
             "neighbors": [
               [
                 "METRO_101",
+                3
+              ],
+              [
+                "METRO_1505",
                 3
               ]
             ],
@@ -53,6 +57,10 @@
               ],
               [
                 "METRO_102",
+                3
+              ],
+              [
+                "METRO_1506",
                 3
               ]
             ],
@@ -100,6 +108,14 @@
               [
                 "METRO_104",
                 3
+              ],
+              [
+                "METRO_1226",
+                3
+              ],
+              [
+                "METRO_2014",
+                3
               ]
             ],
             "facilities": {
@@ -145,6 +161,18 @@
               ],
               [
                 "METRO_106",
+                3
+              ],
+              [
+                "METRO_1916",
+                3
+              ],
+              [
+                "METRO_80",
+                3
+              ],
+              [
+                "METRO_2123",
                 3
               ]
             ],
@@ -192,6 +220,14 @@
               [
                 "METRO_108",
                 3
+              ],
+              [
+                "METRO_609",
+                3
+              ],
+              [
+                "METRO_1113",
+                3
               ]
             ],
             "facilities": {
@@ -238,6 +274,14 @@
               [
                 "METRO_110",
                 3
+              ],
+              [
+                "METRO_313",
+                3
+              ],
+              [
+                "METRO_211",
+                3
               ]
             ],
             "facilities": {
@@ -260,6 +304,18 @@
               ],
               [
                 "METRO_111",
+                3
+              ],
+              [
+                "METRO_1013",
+                3
+              ],
+              [
+                "METRO_410",
+                3
+              ],
+              [
+                "METRO_312",
                 3
               ]
             ],
@@ -307,6 +363,10 @@
               [
                 "METRO_113",
                 3
+              ],
+              [
+                "METRO_82",
+                3
               ]
             ],
             "facilities": {
@@ -352,6 +412,10 @@
               ],
               [
                 "METRO_115",
+                3
+              ],
+              [
+                "METRO_1520",
                 3
               ]
             ],
@@ -421,6 +485,10 @@
               ],
               [
                 "METRO_118",
+                3
+              ],
+              [
+                "METRO_1211",
                 3
               ]
             ],
@@ -606,6 +674,10 @@
               [
                 "METRO_126",
                 3
+              ],
+              [
+                "METRO_1706",
+                3
               ]
             ],
             "facilities": {
@@ -640,13 +712,13 @@
         "id": "2",
         "displayNumber": "2",
         "displayShape": "CIRCLE",
-        "name": "Замоскворецкая линия",
-        "color": "#46AF50",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Замоскворецкая линия",
+        "color": "#46AF50",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -659,6 +731,10 @@
               [
                 "METRO_201",
                 2
+              ],
+              [
+                "METRO_2008",
+                3
               ]
             ],
             "facilities": {
@@ -751,6 +827,14 @@
               [
                 "METRO_205",
                 3
+              ],
+              [
+                "METRO_1528",
+                3
+              ],
+              [
+                "METRO_1527",
+                3
               ]
             ],
             "facilities": {
@@ -820,6 +904,10 @@
               [
                 "METRO_208",
                 4
+              ],
+              [
+                "METRO_1201",
+                3
               ]
             ],
             "facilities": {
@@ -842,6 +930,10 @@
               ],
               [
                 "METRO_209",
+                3
+              ],
+              [
+                "METRO_89",
                 3
               ]
             ],
@@ -889,6 +981,14 @@
               [
                 "METRO_211",
                 3
+              ],
+              [
+                "METRO_710",
+                3
+              ],
+              [
+                "METRO_1014",
+                3
               ]
             ],
             "facilities": {
@@ -912,6 +1012,14 @@
               [
                 "METRO_212",
                 4
+              ],
+              [
+                "METRO_313",
+                3
+              ],
+              [
+                "METRO_109",
+                3
               ]
             ],
             "facilities": {
@@ -934,6 +1042,14 @@
               ],
               [
                 "METRO_213",
+                3
+              ],
+              [
+                "METRO_807",
+                3
+              ],
+              [
+                "METRO_611",
                 3
               ]
             ],
@@ -958,6 +1074,10 @@
               [
                 "METRO_214",
                 4
+              ],
+              [
+                "METRO_85",
+                3
               ]
             ],
             "facilities": {
@@ -980,6 +1100,10 @@
               ],
               [
                 "METRO_215",
+                3
+              ],
+              [
+                "METRO_1515",
                 3
               ]
             ],
@@ -1050,6 +1174,10 @@
               [
                 "METRO_218",
                 4
+              ],
+              [
+                "METRO_1217",
+                3
               ]
             ],
             "facilities": {
@@ -1096,6 +1224,10 @@
               [
                 "METRO_220",
                 4
+              ],
+              [
+                "METRO_1928",
+                3
               ]
             ],
             "facilities": {
@@ -1165,6 +1297,10 @@
               [
                 "METRO_223",
                 3
+              ],
+              [
+                "METRO_1100",
+                3
               ]
             ],
             "facilities": {
@@ -1199,13 +1335,13 @@
         "id": "3",
         "displayNumber": "3",
         "displayShape": "CIRCLE",
-        "name": "Арбатско-Покровская линия",
-        "color": "#0072BB",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Арбатско-Покровская линия",
+        "color": "#0072BB",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -1263,6 +1399,10 @@
               ],
               [
                 "METRO_303",
+                3
+              ],
+              [
+                "METRO_1906",
                 3
               ]
             ],
@@ -1379,6 +1519,14 @@
               [
                 "METRO_308",
                 4
+              ],
+              [
+                "METRO_400",
+                3
+              ],
+              [
+                "METRO_1207",
+                3
               ]
             ],
             "facilities": {
@@ -1401,6 +1549,10 @@
               ],
               [
                 "METRO_309",
+                3
+              ],
+              [
+                "METRO_1807",
                 3
               ]
             ],
@@ -1425,6 +1577,10 @@
               [
                 "METRO_310",
                 4
+              ],
+              [
+                "METRO_901",
+                3
               ]
             ],
             "facilities": {
@@ -1447,6 +1603,14 @@
               ],
               [
                 "METRO_311",
+                3
+              ],
+              [
+                "METRO_407",
+                3
+              ],
+              [
+                "METRO_81",
                 3
               ]
             ],
@@ -1494,6 +1658,18 @@
               [
                 "METRO_313",
                 3
+              ],
+              [
+                "METRO_1013",
+                3
+              ],
+              [
+                "METRO_410",
+                3
+              ],
+              [
+                "METRO_110",
+                3
               ]
             ],
             "facilities": {
@@ -1517,6 +1693,14 @@
               [
                 "METRO_314",
                 4
+              ],
+              [
+                "METRO_211",
+                3
+              ],
+              [
+                "METRO_109",
+                3
               ]
             ],
             "facilities": {
@@ -1539,6 +1723,22 @@
               ],
               [
                 "METRO_315",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -1586,6 +1786,14 @@
               [
                 "METRO_317",
                 3
+              ],
+              [
+                "METRO_1225",
+                3
+              ],
+              [
+                "METRO_2015",
+                3
               ]
             ],
             "facilities": {
@@ -1631,6 +1839,10 @@
               ],
               [
                 "METRO_319",
+                3
+              ],
+              [
+                "METRO_1507",
                 3
               ]
             ],
@@ -1712,13 +1924,13 @@
         "id": "4",
         "displayNumber": "4",
         "displayShape": "CIRCLE",
-        "name": "Филевская линия",
-        "color": "#27BCEF",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Филевская линия",
+        "color": "#27BCEF",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -1731,6 +1943,14 @@
               [
                 "METRO_401",
                 2
+              ],
+              [
+                "METRO_307",
+                3
+              ],
+              [
+                "METRO_1207",
+                3
               ]
             ],
             "facilities": {
@@ -1823,6 +2043,10 @@
               [
                 "METRO_405",
                 3
+              ],
+              [
+                "METRO_1808",
+                3
               ]
             ],
             "facilities": {
@@ -1846,6 +2070,14 @@
               [
                 "METRO_406",
                 4
+              ],
+              [
+                "METRO_1521",
+                3
+              ],
+              [
+                "METRO_2118",
+                3
               ]
             ],
             "facilities": {
@@ -1892,6 +2124,14 @@
               [
                 "METRO_408",
                 4
+              ],
+              [
+                "METRO_81",
+                3
+              ],
+              [
+                "METRO_310",
+                3
               ]
             ],
             "facilities": {
@@ -1957,6 +2197,18 @@
               [
                 "METRO_409",
                 4
+              ],
+              [
+                "METRO_1013",
+                3
+              ],
+              [
+                "METRO_110",
+                3
+              ],
+              [
+                "METRO_312",
+                3
               ]
             ],
             "facilities": {
@@ -1972,13 +2224,13 @@
         "id": "5",
         "displayNumber": "5",
         "displayShape": "CIRCLE",
-        "name": "Кольцевая линия",
-        "color": "#915133",
-        "isCircle": true,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Кольцевая линия",
+        "color": "#915133",
+        "isCircle": true,
         "lineType": "single",
         "stations": [
           {
@@ -1995,6 +2247,22 @@
               [
                 "METRO_80",
                 4
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
+                3
               ]
             ],
             "facilities": {
@@ -2017,6 +2285,18 @@
               ],
               [
                 "METRO_91",
+                3
+              ],
+              [
+                "METRO_1916",
+                3
+              ],
+              [
+                "METRO_105",
+                3
+              ],
+              [
+                "METRO_2123",
                 3
               ]
             ],
@@ -2041,6 +2321,10 @@
               [
                 "METRO_88",
                 4
+              ],
+              [
+                "METRO_607",
+                3
               ]
             ],
             "facilities": {
@@ -2087,6 +2371,10 @@
               [
                 "METRO_90",
                 4
+              ],
+              [
+                "METRO_208",
+                3
               ]
             ],
             "facilities": {
@@ -2109,6 +2397,10 @@
               ],
               [
                 "METRO_81",
+                3
+              ],
+              [
+                "METRO_709",
                 3
               ]
             ],
@@ -2133,6 +2425,14 @@
               [
                 "METRO_82",
                 4
+              ],
+              [
+                "METRO_407",
+                3
+              ],
+              [
+                "METRO_310",
+                3
               ]
             ],
             "facilities": {
@@ -2155,6 +2455,10 @@
               ],
               [
                 "METRO_83",
+                3
+              ],
+              [
+                "METRO_112",
                 3
               ]
             ],
@@ -2179,6 +2483,10 @@
               [
                 "METRO_84",
                 4
+              ],
+              [
+                "METRO_612",
+                3
               ]
             ],
             "facilities": {
@@ -2225,6 +2533,10 @@
               [
                 "METRO_86",
                 4
+              ],
+              [
+                "METRO_213",
+                3
               ]
             ],
             "facilities": {
@@ -2248,6 +2560,14 @@
               [
                 "METRO_87",
                 3
+              ],
+              [
+                "METRO_713",
+                3
+              ],
+              [
+                "METRO_806",
+                3
               ]
             ],
             "facilities": {
@@ -2263,13 +2583,13 @@
         "id": "6",
         "displayNumber": "6",
         "displayShape": "CIRCLE",
-        "name": "Калужско-Рижская линия",
-        "color": "#FF8C00",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Калужско-Рижская линия",
+        "color": "#FF8C00",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -2351,6 +2671,10 @@
               [
                 "METRO_604",
                 4
+              ],
+              [
+                "METRO_1502",
+                3
               ]
             ],
             "facilities": {
@@ -2420,6 +2744,10 @@
               [
                 "METRO_607",
                 3
+              ],
+              [
+                "METRO_1227",
+                3
               ]
             ],
             "facilities": {
@@ -2443,6 +2771,10 @@
               [
                 "METRO_608",
                 4
+              ],
+              [
+                "METRO_91",
+                3
               ]
             ],
             "facilities": {
@@ -2489,6 +2821,14 @@
               [
                 "METRO_610",
                 4
+              ],
+              [
+                "METRO_107",
+                3
+              ],
+              [
+                "METRO_1113",
+                3
               ]
             ],
             "facilities": {
@@ -2511,6 +2851,10 @@
               ],
               [
                 "METRO_611",
+                3
+              ],
+              [
+                "METRO_712",
                 3
               ]
             ],
@@ -2535,6 +2879,14 @@
               [
                 "METRO_612",
                 4
+              ],
+              [
+                "METRO_807",
+                3
+              ],
+              [
+                "METRO_212",
+                3
               ]
             ],
             "facilities": {
@@ -2557,6 +2909,10 @@
               ],
               [
                 "METRO_613",
+                3
+              ],
+              [
+                "METRO_83",
                 3
               ]
             ],
@@ -2603,6 +2959,10 @@
               ],
               [
                 "METRO_615",
+                3
+              ],
+              [
+                "METRO_1519",
                 3
               ]
             ],
@@ -2695,6 +3055,10 @@
               ],
               [
                 "METRO_619",
+                3
+              ],
+              [
+                "METRO_1213",
                 3
               ]
             ],
@@ -2807,6 +3171,10 @@
               [
                 "METRO_622",
                 3
+              ],
+              [
+                "METRO_1300",
+                3
               ]
             ],
             "facilities": {
@@ -2822,13 +3190,13 @@
         "id": "7",
         "displayNumber": "7",
         "displayShape": "CIRCLE",
-        "name": "Таганско-Краснопресненская линия",
-        "color": "#8B008B",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Таганско-Краснопресненская линия",
+        "color": "#8B008B",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -2887,6 +3255,10 @@
               [
                 "METRO_703",
                 3
+              ],
+              [
+                "METRO_1908",
+                3
               ]
             ],
             "facilities": {
@@ -2933,6 +3305,10 @@
               [
                 "METRO_705",
                 3
+              ],
+              [
+                "METRO_1909",
+                3
               ]
             ],
             "facilities": {
@@ -2956,6 +3332,14 @@
               [
                 "METRO_706",
                 4
+              ],
+              [
+                "METRO_1525",
+                3
+              ],
+              [
+                "METRO_1526",
+                3
               ]
             ],
             "facilities": {
@@ -2978,6 +3362,10 @@
               ],
               [
                 "METRO_707",
+                3
+              ],
+              [
+                "METRO_1203",
                 3
               ]
             ],
@@ -3002,6 +3390,10 @@
               [
                 "METRO_708",
                 4
+              ],
+              [
+                "METRO_1810",
+                3
               ]
             ],
             "facilities": {
@@ -3048,6 +3440,10 @@
               [
                 "METRO_710",
                 4
+              ],
+              [
+                "METRO_90",
+                3
               ]
             ],
             "facilities": {
@@ -3070,6 +3466,14 @@
               ],
               [
                 "METRO_711",
+                3
+              ],
+              [
+                "METRO_1014",
+                3
+              ],
+              [
+                "METRO_210",
                 3
               ]
             ],
@@ -3117,6 +3521,10 @@
               [
                 "METRO_713",
                 3
+              ],
+              [
+                "METRO_610",
+                3
               ]
             ],
             "facilities": {
@@ -3140,6 +3548,14 @@
               [
                 "METRO_714",
                 4
+              ],
+              [
+                "METRO_806",
+                3
+              ],
+              [
+                "METRO_86",
+                3
               ]
             ],
             "facilities": {
@@ -3162,6 +3578,10 @@
               ],
               [
                 "METRO_715",
+                3
+              ],
+              [
+                "METRO_1110",
                 3
               ]
             ],
@@ -3186,6 +3606,10 @@
               [
                 "METRO_716",
                 4
+              ],
+              [
+                "METRO_1513",
+                3
               ]
             ],
             "facilities": {
@@ -3208,6 +3632,14 @@
               ],
               [
                 "METRO_717",
+                3
+              ],
+              [
+                "METRO_1921",
+                3
+              ],
+              [
+                "METRO_1221",
                 3
               ]
             ],
@@ -3255,6 +3687,10 @@
               [
                 "METRO_719",
                 3
+              ],
+              [
+                "METRO_2021",
+                3
               ]
             ],
             "facilities": {
@@ -3278,6 +3714,10 @@
               [
                 "METRO_720",
                 4
+              ],
+              [
+                "METRO_2022",
+                3
               ]
             ],
             "facilities": {
@@ -3300,6 +3740,10 @@
               ],
               [
                 "METRO_721",
+                3
+              ],
+              [
+                "METRO_1603",
                 3
               ]
             ],
@@ -3358,13 +3802,13 @@
         "id": "8",
         "displayNumber": "8",
         "displayShape": "CIRCLE",
-        "name": "Калининская линия",
-        "color": "#ffd702",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Калининская линия",
+        "color": "#ffd702",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -3515,6 +3959,14 @@
               [
                 "METRO_807",
                 4
+              ],
+              [
+                "METRO_713",
+                3
+              ],
+              [
+                "METRO_86",
+                3
               ]
             ],
             "facilities": {
@@ -3534,6 +3986,14 @@
               [
                 "METRO_806",
                 4
+              ],
+              [
+                "METRO_212",
+                3
+              ],
+              [
+                "METRO_611",
+                3
               ]
             ],
             "facilities": {
@@ -3547,15 +4007,15 @@
       },
       {
         "id": "9",
-        "displayNumber": "8а",
+        "displayNumber": "9",
         "displayShape": "CIRCLE",
-        "name": "Солнцевская линия",
-        "color": "#ffd702",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Солнцевская линия",
+        "color": "#ffd702",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -3603,6 +4063,10 @@
               [
                 "METRO_902",
                 4
+              ],
+              [
+                "METRO_309",
+                3
               ]
             ],
             "facilities": {
@@ -3980,15 +4444,15 @@
       },
       {
         "id": "10",
-        "displayNumber": "9",
+        "displayNumber": "10",
         "displayShape": "CIRCLE",
-        "name": "Серпуховско-Тимирязевская линия",
-        "color": "#808080",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Серпуховско-Тимирязевская линия",
+        "color": "#808080",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -4300,6 +4764,18 @@
               [
                 "METRO_1014",
                 2
+              ],
+              [
+                "METRO_410",
+                3
+              ],
+              [
+                "METRO_110",
+                3
+              ],
+              [
+                "METRO_312",
+                3
               ]
             ],
             "facilities": {
@@ -4323,6 +4799,14 @@
               [
                 "METRO_1015",
                 2
+              ],
+              [
+                "METRO_710",
+                3
+              ],
+              [
+                "METRO_210",
+                3
               ]
             ],
             "facilities": {
@@ -4562,15 +5046,15 @@
       },
       {
         "id": "11",
-        "displayNumber": "10",
+        "displayNumber": "11",
         "displayShape": "CIRCLE",
-        "name": "Люблинско-Дмитровская линия",
-        "color": "#ABC469",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Люблинско-Дмитровская линия",
+        "color": "#ABC469",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -4583,6 +5067,10 @@
               [
                 "METRO_1101",
                 2
+              ],
+              [
+                "METRO_222",
+                3
               ]
             ],
             "facilities": {
@@ -4813,6 +5301,10 @@
               [
                 "METRO_1111",
                 3
+              ],
+              [
+                "METRO_714",
+                3
               ]
             ],
             "facilities": {
@@ -4859,6 +5351,22 @@
               [
                 "METRO_1113",
                 3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
               ]
             ],
             "facilities": {
@@ -4882,6 +5390,14 @@
               [
                 "METRO_1114",
                 4
+              ],
+              [
+                "METRO_107",
+                3
+              ],
+              [
+                "METRO_609",
+                3
               ]
             ],
             "facilities": {
@@ -5167,15 +5683,15 @@
       },
       {
         "id": "12",
-        "displayNumber": "11",
+        "displayNumber": "12",
         "displayShape": "CIRCLE",
-        "name": "Большая кольцевая линия",
-        "color": "#A0C5BE",
-        "isCircle": true,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Большая кольцевая линия",
+        "color": "#A0C5BE",
+        "isCircle": true,
         "lineType": "single",
         "stations": [
           {
@@ -5214,6 +5730,10 @@
               ],
               [
                 "METRO_1202",
+                3
+              ],
+              [
+                "METRO_207",
                 3
               ]
             ],
@@ -5260,6 +5780,10 @@
               ],
               [
                 "METRO_1204",
+                3
+              ],
+              [
+                "METRO_706",
                 3
               ]
             ],
@@ -5353,6 +5877,14 @@
               [
                 "METRO_1208",
                 3
+              ],
+              [
+                "METRO_400",
+                3
+              ],
+              [
+                "METRO_307",
+                3
               ]
             ],
             "facilities": {
@@ -5445,6 +5977,10 @@
               [
                 "METRO_1212",
                 3
+              ],
+              [
+                "METRO_117",
+                3
               ]
             ],
             "facilities": {
@@ -5490,6 +6026,10 @@
               ],
               [
                 "METRO_1214",
+                3
+              ],
+              [
+                "METRO_618",
                 3
               ]
             ],
@@ -5583,6 +6123,10 @@
               [
                 "METRO_1218",
                 3
+              ],
+              [
+                "METRO_217",
+                3
               ]
             ],
             "facilities": {
@@ -5674,6 +6218,14 @@
               ],
               [
                 "METRO_1222",
+                3
+              ],
+              [
+                "METRO_716",
+                3
+              ],
+              [
+                "METRO_1921",
                 3
               ]
             ],
@@ -5767,6 +6319,14 @@
               [
                 "METRO_1226",
                 3
+              ],
+              [
+                "METRO_316",
+                3
+              ],
+              [
+                "METRO_2015",
+                3
               ]
             ],
             "facilities": {
@@ -5790,6 +6350,14 @@
               [
                 "METRO_1227",
                 3
+              ],
+              [
+                "METRO_103",
+                3
+              ],
+              [
+                "METRO_2014",
+                3
               ]
             ],
             "facilities": {
@@ -5812,6 +6380,10 @@
               ],
               [
                 "METRO_1228",
+                3
+              ],
+              [
+                "METRO_606",
                 3
               ]
             ],
@@ -5849,15 +6421,15 @@
       },
       {
         "id": "13",
-        "displayNumber": "12",
+        "displayNumber": "13",
         "displayShape": "CIRCLE",
-        "name": "Бутовская линия",
-        "color": "#AEB5CA",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Бутовская линия",
+        "color": "#AEB5CA",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -5869,6 +6441,10 @@
             "neighbors": [
               [
                 "METRO_1301",
+                3
+              ],
+              [
+                "METRO_623",
                 3
               ]
             ],
@@ -6017,8 +6593,12 @@
       },
       {
         "id": "15",
-        "displayNumber": "14",
-        "displayShape": "DOUBLE_CIRCLE",
+        "displayNumber": "15",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
         "name": "МЦК",
         "color": "#d6171b",
         "isCircle": true,
@@ -6080,6 +6660,10 @@
               [
                 "METRO_1503",
                 4
+              ],
+              [
+                "METRO_603",
+                3
               ]
             ],
             "facilities": {
@@ -6149,6 +6733,10 @@
               [
                 "METRO_1506",
                 7
+              ],
+              [
+                "METRO_100",
+                3
               ]
             ],
             "facilities": {
@@ -6172,6 +6760,10 @@
               [
                 "METRO_1507",
                 8
+              ],
+              [
+                "METRO_101",
+                3
               ]
             ],
             "facilities": {
@@ -6195,6 +6787,10 @@
               [
                 "METRO_1508",
                 9
+              ],
+              [
+                "METRO_318",
+                3
               ]
             ],
             "facilities": {
@@ -6333,6 +6929,10 @@
               [
                 "METRO_1514",
                 15
+              ],
+              [
+                "METRO_715",
+                3
               ]
             ],
             "facilities": {
@@ -6379,6 +6979,10 @@
               [
                 "METRO_1516",
                 17
+              ],
+              [
+                "METRO_214",
+                3
               ]
             ],
             "facilities": {
@@ -6471,6 +7075,10 @@
               [
                 "METRO_1520",
                 21
+              ],
+              [
+                "METRO_614",
+                3
               ]
             ],
             "facilities": {
@@ -6494,6 +7102,10 @@
               [
                 "METRO_1521",
                 22
+              ],
+              [
+                "METRO_114",
+                3
               ]
             ],
             "facilities": {
@@ -6517,6 +7129,14 @@
               [
                 "METRO_1522",
                 23
+              ],
+              [
+                "METRO_2118",
+                3
+              ],
+              [
+                "METRO_405",
+                3
               ]
             ],
             "facilities": {
@@ -6609,6 +7229,10 @@
               [
                 "METRO_1526",
                 27
+              ],
+              [
+                "METRO_705",
+                3
               ]
             ],
             "facilities": {
@@ -6632,6 +7256,10 @@
               [
                 "METRO_1527",
                 28
+              ],
+              [
+                "METRO_705",
+                3
               ]
             ],
             "facilities": {
@@ -6655,6 +7283,10 @@
               [
                 "METRO_1528",
                 29
+              ],
+              [
+                "METRO_204",
+                3
               ]
             ],
             "facilities": {
@@ -6678,6 +7310,10 @@
               [
                 "METRO_1529",
                 30
+              ],
+              [
+                "METRO_204",
+                3
               ]
             ],
             "facilities": {
@@ -6739,13 +7375,13 @@
         "id": "16",
         "displayNumber": "16",
         "displayShape": "CIRCLE",
-        "name": "Некрасовская линия",
-        "color": "#CB80A2",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Некрасовская линия",
+        "color": "#CB80A2",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -6826,6 +7462,10 @@
               ],
               [
                 "METRO_1604",
+                3
+              ],
+              [
+                "METRO_720",
                 3
               ]
             ],
@@ -6930,13 +7570,13 @@
         "id": "17",
         "displayNumber": "17",
         "displayShape": "CIRCLE",
-        "name": "Троицкая линия",
-        "color": "#256356",
-        "isCircle": false,
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "Троицкая линия",
+        "color": "#256356",
+        "isCircle": false,
         "lineType": "single",
         "stations": [
           {
@@ -7083,6 +7723,10 @@
               [
                 "METRO_1705",
                 3
+              ],
+              [
+                "METRO_125",
+                3
               ]
             ],
             "facilities": {
@@ -7096,15 +7740,15 @@
       },
       {
         "id": "18",
-        "displayNumber": "D1",
-        "displayShape": "PARALLELOGRAM",
-        "name": "МЦД1",
-        "color": "#f6a600",
-        "isCircle": false,
+        "displayNumber": "18",
+        "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "МЦД1",
+        "color": "#f6a600",
+        "isCircle": false,
         "lineType": "double",
         "stations": [
           {
@@ -7278,6 +7922,10 @@
               [
                 "METRO_1808",
                 3
+              ],
+              [
+                "METRO_308",
+                3
               ]
             ],
             "facilities": {
@@ -7300,6 +7948,10 @@
               ],
               [
                 "METRO_1809",
+                3
+              ],
+              [
+                "METRO_404",
                 3
               ]
             ],
@@ -7346,6 +7998,10 @@
               ],
               [
                 "METRO_1811",
+                3
+              ],
+              [
+                "METRO_707",
                 3
               ]
             ],
@@ -7678,15 +8334,15 @@
       },
       {
         "id": "19",
-        "displayNumber": "D2",
-        "displayShape": "PARALLELOGRAM",
-        "name": "МЦД2",
-        "color": "#ea4083",
-        "isCircle": false,
+        "displayNumber": "19",
+        "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "МЦД2",
+        "color": "#ea4083",
+        "isCircle": false,
         "lineType": "double",
         "stations": [
           {
@@ -7837,6 +8493,10 @@
               [
                 "METRO_1907",
                 3
+              ],
+              [
+                "METRO_302",
+                3
               ]
             ],
             "facilities": {
@@ -7883,6 +8543,10 @@
               [
                 "METRO_1909",
                 3
+              ],
+              [
+                "METRO_702",
+                3
               ]
             ],
             "facilities": {
@@ -7905,6 +8569,10 @@
               ],
               [
                 "METRO_1910",
+                3
+              ],
+              [
+                "METRO_704",
                 3
               ]
             ],
@@ -8067,6 +8735,18 @@
               [
                 "METRO_1917",
                 3
+              ],
+              [
+                "METRO_105",
+                3
+              ],
+              [
+                "METRO_80",
+                3
+              ],
+              [
+                "METRO_2123",
+                3
               ]
             ],
             "facilities": {
@@ -8089,6 +8769,22 @@
               ],
               [
                 "METRO_1918",
+                3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -8181,6 +8877,14 @@
               ],
               [
                 "METRO_1922",
+                3
+              ],
+              [
+                "METRO_716",
+                3
+              ],
+              [
+                "METRO_1221",
                 3
               ]
             ],
@@ -8342,6 +9046,10 @@
               ],
               [
                 "METRO_1929",
+                3
+              ],
+              [
+                "METRO_219",
                 3
               ]
             ],
@@ -8536,15 +9244,15 @@
       },
       {
         "id": "20",
-        "displayNumber": "D3",
-        "displayShape": "PARALLELOGRAM",
-        "name": "МЦД3",
-        "color": "#ea5b04",
-        "isCircle": false,
+        "displayNumber": "20",
+        "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "МЦД3",
+        "color": "#ea5b04",
+        "isCircle": false,
         "lineType": "double",
         "stations": [
           {
@@ -8741,6 +9449,10 @@
               [
                 "METRO_2009",
                 3
+              ],
+              [
+                "METRO_200",
+                3
               ]
             ],
             "facilities": {
@@ -8879,6 +9591,14 @@
               [
                 "METRO_2015",
                 3
+              ],
+              [
+                "METRO_1226",
+                3
+              ],
+              [
+                "METRO_103",
+                3
               ]
             ],
             "facilities": {
@@ -8901,6 +9621,14 @@
               ],
               [
                 "METRO_2016",
+                3
+              ],
+              [
+                "METRO_1225",
+                3
+              ],
+              [
+                "METRO_316",
                 3
               ]
             ],
@@ -9040,6 +9768,10 @@
               [
                 "METRO_2022",
                 3
+              ],
+              [
+                "METRO_718",
+                3
               ]
             ],
             "facilities": {
@@ -9062,6 +9794,10 @@
               ],
               [
                 "METRO_2023",
+                3
+              ],
+              [
+                "METRO_719",
                 3
               ]
             ],
@@ -9440,15 +10176,15 @@
       },
       {
         "id": "21",
-        "displayNumber": "D4",
-        "displayShape": "PARALLELOGRAM",
-        "name": "МЦД4",
-        "color": "#3fb485",
-        "isCircle": false,
+        "displayNumber": "21",
+        "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
         },
+        "name": "МЦД4",
+        "color": "#3fb485",
+        "isCircle": false,
         "lineType": "double",
         "stations": [
           {
@@ -9875,6 +10611,14 @@
               [
                 "METRO_2119",
                 3
+              ],
+              [
+                "METRO_1521",
+                3
+              ],
+              [
+                "METRO_405",
+                3
               ]
             ],
             "facilities": {
@@ -9990,6 +10734,18 @@
               [
                 "METRO_2124",
                 3
+              ],
+              [
+                "METRO_1916",
+                3
+              ],
+              [
+                "METRO_105",
+                3
+              ],
+              [
+                "METRO_80",
+                3
               ]
             ],
             "facilities": {
@@ -10012,6 +10768,22 @@
               ],
               [
                 "METRO_2125",
+                3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -10282,6 +11054,464 @@
         ],
         "time": 3,
         "type": "regular"
+      },
+      {
+        "stations": [
+          "METRO_100",
+          "METRO_1505"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_101",
+          "METRO_1506"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1226",
+          "METRO_103",
+          "METRO_2014"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1916",
+          "METRO_105",
+          "METRO_80",
+          "METRO_2123"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_107",
+          "METRO_609",
+          "METRO_1113"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_313",
+          "METRO_211",
+          "METRO_109"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1013",
+          "METRO_410",
+          "METRO_110",
+          "METRO_312"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_82",
+          "METRO_112"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1520",
+          "METRO_114"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_117",
+          "METRO_1211"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_125",
+          "METRO_1706"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_2008",
+          "METRO_200"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1528",
+          "METRO_204"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1527",
+          "METRO_204"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_207",
+          "METRO_1201"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_208",
+          "METRO_89"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_710",
+          "METRO_1014",
+          "METRO_210"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_807",
+          "METRO_212",
+          "METRO_611"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_213",
+          "METRO_85"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_214",
+          "METRO_1515"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1217",
+          "METRO_217"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_219",
+          "METRO_1928"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_222",
+          "METRO_1100"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_302",
+          "METRO_1906"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_400",
+          "METRO_307",
+          "METRO_1207"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1807",
+          "METRO_308"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_901",
+          "METRO_309"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_407",
+          "METRO_81",
+          "METRO_310"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_314",
+          "METRO_87",
+          "METRO_1917",
+          "METRO_2124",
+          "METRO_1112"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1225",
+          "METRO_316",
+          "METRO_2015"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1507",
+          "METRO_318"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1808",
+          "METRO_404"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1521",
+          "METRO_2118",
+          "METRO_405"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_603",
+          "METRO_1502"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1227",
+          "METRO_606"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_91",
+          "METRO_607"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_712",
+          "METRO_610"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_612",
+          "METRO_83"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_614",
+          "METRO_1519"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_618",
+          "METRO_1213"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1300",
+          "METRO_623"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_702",
+          "METRO_1908"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_704",
+          "METRO_1909"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1525",
+          "METRO_705"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1526",
+          "METRO_705"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1203",
+          "METRO_706"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1810",
+          "METRO_707"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_709",
+          "METRO_90"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_713",
+          "METRO_806",
+          "METRO_86"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_714",
+          "METRO_1110"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_715",
+          "METRO_1513"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_716",
+          "METRO_1921",
+          "METRO_1221"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_718",
+          "METRO_2021"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_719",
+          "METRO_2022"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_720",
+          "METRO_1603"
+        ],
+        "time": 3,
+        "type": "default"
       }
     ],
     "intermediatePoints": [
@@ -11088,22 +12318,6 @@
       {
         "neighborsId": [
           "METRO_1200",
-          "METRO_1228"
-        ],
-        "points": [
-          {
-            "x": 1057,
-            "y": 624
-          },
-          {
-            "x": 1120,
-            "y": 610
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1200",
           "METRO_1201"
         ],
         "points": [
@@ -11114,6 +12328,22 @@
           {
             "x": 936,
             "y": 686
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1200",
+          "METRO_1228"
+        ],
+        "points": [
+          {
+            "x": 1057,
+            "y": 624
+          },
+          {
+            "x": 1120,
+            "y": 610
           }
         ]
       },
@@ -11376,22 +12606,6 @@
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1523"
-        ],
-        "points": [
-          {
-            "x": 683,
-            "y": 853
-          },
-          {
-            "x": 681,
-            "y": 825
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1524",
           "METRO_1525"
         ],
         "points": [
@@ -11402,6 +12616,22 @@
           {
             "x": 688,
             "y": 670
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1524",
+          "METRO_1523"
+        ],
+        "points": [
+          {
+            "x": 683,
+            "y": 853
+          },
+          {
+            "x": 681,
+            "y": 825
           }
         ]
       },
