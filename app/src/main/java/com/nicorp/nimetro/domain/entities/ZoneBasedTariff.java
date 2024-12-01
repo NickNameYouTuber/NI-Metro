@@ -1,5 +1,6 @@
 package com.nicorp.nimetro.domain.entities;
 
+import com.google.gson.JsonObject;
 import com.nicorp.nimetro.domain.entities.RouteSegment;
 
 import java.util.Map;
@@ -16,5 +17,13 @@ public class ZoneBasedTariff implements Tariff {
         int zone = segment.getZone();
         double price = zonePrices.getOrDefault(zone, 0.0);
         callback.onCostCalculated(price);
+    }
+
+    @Override
+    public JsonObject getJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "ZoneBasedTariff");
+
+        return json;
     }
 }

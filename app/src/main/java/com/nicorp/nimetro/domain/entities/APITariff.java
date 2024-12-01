@@ -2,8 +2,12 @@ package com.nicorp.nimetro.domain.entities;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
 import com.nicorp.nimetro.data.models.YandexRaspResponse;
+
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,4 +58,14 @@ public class APITariff implements Tariff {
             }
         });
     }
+
+    @Override
+    public JsonObject getJson() {
+        // Convert APITariff to JsonObject and return it
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("type", "APITariff");
+        return jsonObject;
+
+    }
+
 }

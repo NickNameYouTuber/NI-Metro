@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.JsonObject;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.APITariff;
@@ -670,6 +671,9 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
             for (Line line : lines) {
                 JSONObject lineObject = new JSONObject();
                 lineObject.put("id", line.getId());
+                lineObject.put("displayNumber", line.getId());
+                lineObject.put("displayShape", "CIRCLE");
+                lineObject.put("tariff",new JSONObject(line.getTariff().getJson().toString()));
                 lineObject.put("name", line.getName());
                 lineObject.put("color", line.getColor());
                 lineObject.put("isCircle", line.isCircle());

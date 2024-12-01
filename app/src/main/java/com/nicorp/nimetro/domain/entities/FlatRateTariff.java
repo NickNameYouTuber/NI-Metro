@@ -1,5 +1,6 @@
 package com.nicorp.nimetro.domain.entities;
 
+import com.google.gson.JsonObject;
 import com.nicorp.nimetro.domain.entities.RouteSegment;
 
 public class FlatRateTariff implements Tariff {
@@ -12,5 +13,14 @@ public class FlatRateTariff implements Tariff {
     @Override
     public void calculateCost(RouteSegment segment, TariffCallback callback) {
         callback.onCostCalculated(price);
+    }
+
+    @Override
+    public JsonObject getJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "FlatRateTariff");
+        json.addProperty("price", price);
+
+        return json;
     }
 }
