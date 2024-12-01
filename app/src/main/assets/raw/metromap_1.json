@@ -4007,7 +4007,7 @@
       },
       {
         "id": "9",
-        "displayNumber": "9",
+        "displayNumber": "8a",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -4444,7 +4444,7 @@
       },
       {
         "id": "10",
-        "displayNumber": "10",
+        "displayNumber": "9",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -5046,7 +5046,7 @@
       },
       {
         "id": "11",
-        "displayNumber": "11",
+        "displayNumber": "10",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -5683,7 +5683,7 @@
       },
       {
         "id": "12",
-        "displayNumber": "12",
+        "displayNumber": "11",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -6421,7 +6421,7 @@
       },
       {
         "id": "13",
-        "displayNumber": "13",
+        "displayNumber": "12",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -6593,8 +6593,8 @@
       },
       {
         "id": "15",
-        "displayNumber": "15",
-        "displayShape": "CIRCLE",
+        "displayNumber": "14",
+        "displayShape": "DOUBLE_CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
@@ -7373,7 +7373,7 @@
       },
       {
         "id": "16",
-        "displayNumber": "16",
+        "displayNumber": "15",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -7568,7 +7568,7 @@
       },
       {
         "id": "17",
-        "displayNumber": "17",
+        "displayNumber": "16",
         "displayShape": "CIRCLE",
         "tariff": {
           "type": "FlatRateTariff",
@@ -7740,8 +7740,8 @@
       },
       {
         "id": "18",
-        "displayNumber": "18",
-        "displayShape": "CIRCLE",
+        "displayNumber": "D1",
+        "displayShape": "PARALLELOGRAM",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
@@ -8334,8 +8334,8 @@
       },
       {
         "id": "19",
-        "displayNumber": "19",
-        "displayShape": "CIRCLE",
+        "displayNumber": "D2",
+        "displayShape": "PARALLELOGRAM",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
@@ -9244,8 +9244,8 @@
       },
       {
         "id": "20",
-        "displayNumber": "20",
-        "displayShape": "CIRCLE",
+        "displayNumber": "D3",
+        "displayShape": "PARALLELOGRAM",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70
@@ -10176,8 +10176,8 @@
       },
       {
         "id": "21",
-        "displayNumber": "21",
-        "displayShape": "CIRCLE",
+        "displayNumber": "D4",
+        "displayShape": "PARALLELOGRAM",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 70

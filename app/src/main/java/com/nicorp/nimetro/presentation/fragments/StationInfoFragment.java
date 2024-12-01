@@ -132,6 +132,9 @@ public class StationInfoFragment extends Fragment {
         TextView lineNumber = view.findViewById(R.id.lineNumber);
         setLineNumberAndColor(lineNumber, station);
 
+        LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
+        addTransferCircles(transferCirclesContainer);
+
         // Вызов fetchESPSchedule
         fetchESPSchedule(station);
 
@@ -348,20 +351,26 @@ public class StationInfoFragment extends Fragment {
         Shape shape = getLineShapeForStation(transferStation);
         ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
         shapeDrawable.getPaint().setColor(Color.parseColor(getColorForStation(transferStation)));
-        shapeDrawable.setIntrinsicHeight(45); // Установите нужную высоту
-        shapeDrawable.setIntrinsicWidth(45);  // Установите нужную ширину
+        float density = getResources().getDisplayMetrics().density;
+        shapeDrawable.setIntrinsicHeight((int) (24 * density)); // Установите нужную высоту
+        shapeDrawable.setIntrinsicWidth((int) (24 * density));  // Установите нужную ширину
 
         transferCircle.setBackground(shapeDrawable);
         transferCircle.setGravity(Gravity.CENTER);
         transferCircle.setTextColor(Color.WHITE);
-        transferCircle.setTextSize(12);
-        transferCircle.setPadding(4, 4, 4, 4);
+        if (shape instanceof DoubleCircleShape) {
+            transferCircle.setTextColor(Color.BLACK);
+        }
+        transferCircle.setTextSize(11);
+        transferCircle.setPadding(3, 3, 3, 3);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(4, 0, 4, 8);
+        params.setMargins(2, 0, 2, 10);
+        Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+        transferCircle.setTypeface(customTypeface, Typeface.BOLD);
         transferCircle.setLayoutParams(params);
 
         return transferCircle;
