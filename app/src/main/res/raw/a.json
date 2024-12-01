@@ -10,15 +10,9 @@
     "lines": [
       {
         "id": "1",
-        "displayNumber": "1",
-        "displayShape": "CIRCLE",
         "name": "Сокольническая линия",
         "color": "#E40520",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -30,6 +24,10 @@
             "neighbors": [
               [
                 "METRO_101",
+                3
+              ],
+              [
+                "METRO_1505",
                 3
               ]
             ],
@@ -53,6 +51,10 @@
               ],
               [
                 "METRO_102",
+                3
+              ],
+              [
+                "METRO_1506",
                 3
               ]
             ],
@@ -100,6 +102,14 @@
               [
                 "METRO_104",
                 3
+              ],
+              [
+                "METRO_1226",
+                3
+              ],
+              [
+                "METRO_2014",
+                3
               ]
             ],
             "facilities": {
@@ -145,6 +155,10 @@
               ],
               [
                 "METRO_106",
+                3
+              ],
+              [
+                "METRO_80",
                 3
               ]
             ],
@@ -642,15 +656,9 @@
       },
       {
         "id": "2",
-        "displayNumber": "2",
-        "displayShape": "CIRCLE",
         "name": "Замоскворецкая линия",
         "color": "#46AF50",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -1201,15 +1209,9 @@
       },
       {
         "id": "3",
-        "displayNumber": "3",
-        "displayShape": "CIRCLE",
         "name": "Арбатско-Покровская линия",
         "color": "#0072BB",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -1714,15 +1716,9 @@
       },
       {
         "id": "4",
-        "displayNumber": "4",
-        "displayShape": "CIRCLE",
         "name": "Филевская линия",
         "color": "#27BCEF",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -1974,15 +1970,9 @@
       },
       {
         "id": "5",
-        "displayNumber": "5",
-        "displayShape": "CIRCLE",
         "name": "Кольцевая линия",
         "color": "#915133",
         "isCircle": true,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -2021,6 +2011,10 @@
               ],
               [
                 "METRO_91",
+                3
+              ],
+              [
+                "METRO_105",
                 3
               ]
             ],
@@ -2289,15 +2283,9 @@
       },
       {
         "id": "6",
-        "displayNumber": "6",
-        "displayShape": "CIRCLE",
         "name": "Калужско-Рижская линия",
         "color": "#FF8C00",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -2848,15 +2836,9 @@
       },
       {
         "id": "7",
-        "displayNumber": "7",
-        "displayShape": "CIRCLE",
         "name": "Таганско-Краснопресненская линия",
         "color": "#8B008B",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -3388,15 +3370,9 @@
       },
       {
         "id": "8",
-        "displayNumber": "8",
-        "displayShape": "CIRCLE",
         "name": "Калининская линия",
         "color": "#ffd702",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -3579,15 +3555,9 @@
       },
       {
         "id": "9",
-        "displayNumber": "8а",
-        "displayShape": "CIRCLE",
         "name": "Солнцевская линия",
         "color": "#ffd702",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -4012,15 +3982,9 @@
       },
       {
         "id": "10",
-        "displayNumber": "9",
-        "displayShape": "CIRCLE",
         "name": "Серпуховско-Тимирязевская линия",
         "color": "#808080",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -4594,15 +4558,9 @@
       },
       {
         "id": "11",
-        "displayNumber": "10",
-        "displayShape": "CIRCLE",
         "name": "Люблинско-Дмитровская линия",
         "color": "#ABC469",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -5199,15 +5157,9 @@
       },
       {
         "id": "12",
-        "displayNumber": "11",
-        "displayShape": "CIRCLE",
         "name": "Большая кольцевая линия",
         "color": "#A0C5BE",
         "isCircle": true,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -5822,6 +5774,14 @@
               [
                 "METRO_1227",
                 3
+              ],
+              [
+                "METRO_103",
+                3
+              ],
+              [
+                "METRO_2014",
+                3
               ]
             ],
             "facilities": {
@@ -5881,15 +5841,9 @@
       },
       {
         "id": "13",
-        "displayNumber": "12",
-        "displayShape": "CIRCLE",
         "name": "Бутовская линия",
         "color": "#AEB5CA",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -6049,8 +6003,6 @@
       },
       {
         "id": "15",
-        "displayNumber": "14",
-        "displayShape": "DOUBLE_CIRCLE",
         "name": "МЦК",
         "color": "#d6171b",
         "isCircle": true,
@@ -6181,6 +6133,10 @@
               [
                 "METRO_1506",
                 7
+              ],
+              [
+                "METRO_100",
+                3
               ]
             ],
             "facilities": {
@@ -6204,6 +6160,10 @@
               [
                 "METRO_1507",
                 8
+              ],
+              [
+                "METRO_101",
+                3
               ]
             ],
             "facilities": {
@@ -6769,15 +6729,9 @@
       },
       {
         "id": "16",
-        "displayNumber": "16",
-        "displayShape": "CIRCLE",
         "name": "Некрасовская линия",
         "color": "#CB80A2",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -6960,15 +6914,9 @@
       },
       {
         "id": "17",
-        "displayNumber": "17",
-        "displayShape": "CIRCLE",
         "name": "Троицкая линия",
         "color": "#256356",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "single",
         "stations": [
           {
@@ -7128,15 +7076,9 @@
       },
       {
         "id": "18",
-        "displayNumber": "D1",
-        "displayShape": "PARALLELOGRAM",
         "name": "МЦД1",
         "color": "#f6a600",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "double",
         "stations": [
           {
@@ -7710,15 +7652,9 @@
       },
       {
         "id": "19",
-        "displayNumber": "D2",
-        "displayShape": "PARALLELOGRAM",
         "name": "МЦД2",
         "color": "#ea4083",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "double",
         "stations": [
           {
@@ -8568,15 +8504,9 @@
       },
       {
         "id": "20",
-        "displayNumber": "D3",
-        "displayShape": "PARALLELOGRAM",
         "name": "МЦД3",
         "color": "#ea5b04",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "double",
         "stations": [
           {
@@ -8910,6 +8840,14 @@
               ],
               [
                 "METRO_2015",
+                3
+              ],
+              [
+                "METRO_103",
+                3
+              ],
+              [
+                "METRO_1226",
                 3
               ]
             ],
@@ -9472,15 +9410,9 @@
       },
       {
         "id": "21",
-        "displayNumber": "D4",
-        "displayShape": "PARALLELOGRAM",
         "name": "МЦД4",
         "color": "#3fb485",
         "isCircle": false,
-        "tariff": {
-          "type": "FlatRateTariff",
-          "price": 70
-        },
         "lineType": "double",
         "stations": [
           {
@@ -10314,6 +10246,39 @@
         ],
         "time": 3,
         "type": "regular"
+      },
+      {
+        "stations": [
+          "METRO_100",
+          "METRO_1505"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_101",
+          "METRO_1506"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_103",
+          "METRO_1226",
+          "METRO_2014"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_105",
+          "METRO_80"
+        ],
+        "time": 3,
+        "type": "default"
       }
     ],
     "intermediatePoints": [
