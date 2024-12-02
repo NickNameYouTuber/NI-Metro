@@ -731,6 +731,10 @@
               [
                 "METRO_201",
                 2
+              ],
+              [
+                "METRO_2008",
+                3
               ]
             ],
             "facilities": {
@@ -823,6 +827,14 @@
               [
                 "METRO_205",
                 3
+              ],
+              [
+                "METRO_1528",
+                3
+              ],
+              [
+                "METRO_1527",
+                3
               ]
             ],
             "facilities": {
@@ -892,6 +904,10 @@
               [
                 "METRO_208",
                 4
+              ],
+              [
+                "METRO_1201",
+                3
               ]
             ],
             "facilities": {
@@ -914,6 +930,10 @@
               ],
               [
                 "METRO_209",
+                3
+              ],
+              [
+                "METRO_89",
                 3
               ]
             ],
@@ -960,6 +980,14 @@
               ],
               [
                 "METRO_211",
+                3
+              ],
+              [
+                "METRO_710",
+                3
+              ],
+              [
+                "METRO_1014",
                 3
               ]
             ],
@@ -1015,6 +1043,14 @@
               [
                 "METRO_213",
                 3
+              ],
+              [
+                "METRO_807",
+                3
+              ],
+              [
+                "METRO_611",
+                3
               ]
             ],
             "facilities": {
@@ -1038,6 +1074,10 @@
               [
                 "METRO_214",
                 4
+              ],
+              [
+                "METRO_85",
+                3
               ]
             ],
             "facilities": {
@@ -1060,6 +1100,10 @@
               ],
               [
                 "METRO_215",
+                3
+              ],
+              [
+                "METRO_1515",
                 3
               ]
             ],
@@ -1130,6 +1174,10 @@
               [
                 "METRO_218",
                 4
+              ],
+              [
+                "METRO_1217",
+                3
               ]
             ],
             "facilities": {
@@ -1176,6 +1224,10 @@
               [
                 "METRO_220",
                 4
+              ],
+              [
+                "METRO_1928",
+                3
               ]
             ],
             "facilities": {
@@ -1244,6 +1296,10 @@
               ],
               [
                 "METRO_223",
+                3
+              ],
+              [
+                "METRO_1100",
                 3
               ]
             ],
@@ -1343,6 +1399,10 @@
               ],
               [
                 "METRO_303",
+                3
+              ],
+              [
+                "METRO_1906",
                 3
               ]
             ],
@@ -1459,6 +1519,14 @@
               [
                 "METRO_308",
                 4
+              ],
+              [
+                "METRO_400",
+                3
+              ],
+              [
+                "METRO_1207",
+                3
               ]
             ],
             "facilities": {
@@ -1481,6 +1549,10 @@
               ],
               [
                 "METRO_309",
+                3
+              ],
+              [
+                "METRO_1807",
                 3
               ]
             ],
@@ -1505,6 +1577,10 @@
               [
                 "METRO_310",
                 4
+              ],
+              [
+                "METRO_901",
+                3
               ]
             ],
             "facilities": {
@@ -1527,6 +1603,14 @@
               ],
               [
                 "METRO_311",
+                3
+              ],
+              [
+                "METRO_407",
+                3
+              ],
+              [
+                "METRO_81",
                 3
               ]
             ],
@@ -1629,8 +1713,8 @@
           {
             "id": "METRO_314",
             "name": "Курская",
-            "x": 1427,
-            "y": 943,
+            "x": 1422,
+            "y": 931,
             "textPosition": 8,
             "neighbors": [
               [
@@ -1639,6 +1723,22 @@
               ],
               [
                 "METRO_315",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -1652,8 +1752,8 @@
           {
             "id": "METRO_315",
             "name": "Бауманская",
-            "x": 1502,
-            "y": 869,
+            "x": 1492,
+            "y": 865,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1685,6 +1785,14 @@
               ],
               [
                 "METRO_317",
+                3
+              ],
+              [
+                "METRO_1225",
+                3
+              ],
+              [
+                "METRO_2015",
                 3
               ]
             ],
@@ -1731,6 +1839,10 @@
               ],
               [
                 "METRO_319",
+                3
+              ],
+              [
+                "METRO_1507",
                 3
               ]
             ],
@@ -1831,6 +1943,14 @@
               [
                 "METRO_401",
                 2
+              ],
+              [
+                "METRO_307",
+                3
+              ],
+              [
+                "METRO_1207",
+                3
               ]
             ],
             "facilities": {
@@ -1923,6 +2043,10 @@
               [
                 "METRO_405",
                 3
+              ],
+              [
+                "METRO_1808",
+                3
               ]
             ],
             "facilities": {
@@ -1946,6 +2070,14 @@
               [
                 "METRO_406",
                 4
+              ],
+              [
+                "METRO_1521",
+                3
+              ],
+              [
+                "METRO_2118",
+                3
               ]
             ],
             "facilities": {
@@ -1992,6 +2124,14 @@
               [
                 "METRO_408",
                 4
+              ],
+              [
+                "METRO_81",
+                3
+              ],
+              [
+                "METRO_310",
+                3
               ]
             ],
             "facilities": {
@@ -2107,6 +2247,22 @@
               [
                 "METRO_80",
                 4
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
+                3
               ]
             ],
             "facilities": {
@@ -2165,6 +2321,10 @@
               [
                 "METRO_88",
                 4
+              ],
+              [
+                "METRO_607",
+                3
               ]
             ],
             "facilities": {
@@ -2211,6 +2371,10 @@
               [
                 "METRO_90",
                 4
+              ],
+              [
+                "METRO_208",
+                3
               ]
             ],
             "facilities": {
@@ -2233,6 +2397,10 @@
               ],
               [
                 "METRO_81",
+                3
+              ],
+              [
+                "METRO_709",
                 3
               ]
             ],
@@ -2257,6 +2425,14 @@
               [
                 "METRO_82",
                 4
+              ],
+              [
+                "METRO_407",
+                3
+              ],
+              [
+                "METRO_310",
+                3
               ]
             ],
             "facilities": {
@@ -2307,6 +2483,10 @@
               [
                 "METRO_84",
                 4
+              ],
+              [
+                "METRO_612",
+                3
               ]
             ],
             "facilities": {
@@ -2353,6 +2533,10 @@
               [
                 "METRO_86",
                 4
+              ],
+              [
+                "METRO_213",
+                3
               ]
             ],
             "facilities": {
@@ -2375,6 +2559,14 @@
               ],
               [
                 "METRO_87",
+                3
+              ],
+              [
+                "METRO_713",
+                3
+              ],
+              [
+                "METRO_806",
                 3
               ]
             ],
@@ -2479,6 +2671,10 @@
               [
                 "METRO_604",
                 4
+              ],
+              [
+                "METRO_1502",
+                3
               ]
             ],
             "facilities": {
@@ -2538,7 +2734,7 @@
             "id": "METRO_606",
             "name": "Рижская",
             "x": 1330,
-            "y": 644,
+            "y": 635,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2547,6 +2743,10 @@
               ],
               [
                 "METRO_607",
+                3
+              ],
+              [
+                "METRO_1227",
                 3
               ]
             ],
@@ -2571,6 +2771,10 @@
               [
                 "METRO_608",
                 4
+              ],
+              [
+                "METRO_91",
+                3
               ]
             ],
             "facilities": {
@@ -2648,6 +2852,10 @@
               [
                 "METRO_611",
                 3
+              ],
+              [
+                "METRO_712",
+                3
               ]
             ],
             "facilities": {
@@ -2671,6 +2879,14 @@
               [
                 "METRO_612",
                 4
+              ],
+              [
+                "METRO_807",
+                3
+              ],
+              [
+                "METRO_212",
+                3
               ]
             ],
             "facilities": {
@@ -2693,6 +2909,10 @@
               ],
               [
                 "METRO_613",
+                3
+              ],
+              [
+                "METRO_83",
                 3
               ]
             ],
@@ -2739,6 +2959,10 @@
               ],
               [
                 "METRO_615",
+                3
+              ],
+              [
+                "METRO_1519",
                 3
               ]
             ],
@@ -2831,6 +3055,10 @@
               ],
               [
                 "METRO_619",
+                3
+              ],
+              [
+                "METRO_1213",
                 3
               ]
             ],
@@ -2943,6 +3171,10 @@
               [
                 "METRO_622",
                 3
+              ],
+              [
+                "METRO_1300",
+                3
               ]
             ],
             "facilities": {
@@ -3023,6 +3255,10 @@
               [
                 "METRO_703",
                 3
+              ],
+              [
+                "METRO_1908",
+                3
               ]
             ],
             "facilities": {
@@ -3069,6 +3305,10 @@
               [
                 "METRO_705",
                 3
+              ],
+              [
+                "METRO_1909",
+                3
               ]
             ],
             "facilities": {
@@ -3092,6 +3332,14 @@
               [
                 "METRO_706",
                 4
+              ],
+              [
+                "METRO_1525",
+                3
+              ],
+              [
+                "METRO_1526",
+                3
               ]
             ],
             "facilities": {
@@ -3114,6 +3362,10 @@
               ],
               [
                 "METRO_707",
+                3
+              ],
+              [
+                "METRO_1203",
                 3
               ]
             ],
@@ -3138,6 +3390,10 @@
               [
                 "METRO_708",
                 4
+              ],
+              [
+                "METRO_1810",
+                3
               ]
             ],
             "facilities": {
@@ -3184,6 +3440,10 @@
               [
                 "METRO_710",
                 4
+              ],
+              [
+                "METRO_90",
+                3
               ]
             ],
             "facilities": {
@@ -3206,6 +3466,14 @@
               ],
               [
                 "METRO_711",
+                3
+              ],
+              [
+                "METRO_1014",
+                3
+              ],
+              [
+                "METRO_210",
                 3
               ]
             ],
@@ -3253,6 +3521,10 @@
               [
                 "METRO_713",
                 3
+              ],
+              [
+                "METRO_610",
+                3
               ]
             ],
             "facilities": {
@@ -3276,6 +3548,14 @@
               [
                 "METRO_714",
                 4
+              ],
+              [
+                "METRO_806",
+                3
+              ],
+              [
+                "METRO_86",
+                3
               ]
             ],
             "facilities": {
@@ -3298,6 +3578,10 @@
               ],
               [
                 "METRO_715",
+                3
+              ],
+              [
+                "METRO_1110",
                 3
               ]
             ],
@@ -3322,6 +3606,10 @@
               [
                 "METRO_716",
                 4
+              ],
+              [
+                "METRO_1513",
+                3
               ]
             ],
             "facilities": {
@@ -3344,6 +3632,14 @@
               ],
               [
                 "METRO_717",
+                3
+              ],
+              [
+                "METRO_1921",
+                3
+              ],
+              [
+                "METRO_1221",
                 3
               ]
             ],
@@ -3391,6 +3687,10 @@
               [
                 "METRO_719",
                 3
+              ],
+              [
+                "METRO_2021",
+                3
               ]
             ],
             "facilities": {
@@ -3414,6 +3714,10 @@
               [
                 "METRO_720",
                 4
+              ],
+              [
+                "METRO_2022",
+                3
               ]
             ],
             "facilities": {
@@ -3436,6 +3740,10 @@
               ],
               [
                 "METRO_721",
+                3
+              ],
+              [
+                "METRO_1603",
                 3
               ]
             ],
@@ -3651,6 +3959,14 @@
               [
                 "METRO_807",
                 4
+              ],
+              [
+                "METRO_713",
+                3
+              ],
+              [
+                "METRO_86",
+                3
               ]
             ],
             "facilities": {
@@ -3670,6 +3986,14 @@
               [
                 "METRO_806",
                 4
+              ],
+              [
+                "METRO_212",
+                3
+              ],
+              [
+                "METRO_611",
+                3
               ]
             ],
             "facilities": {
@@ -3739,6 +4063,10 @@
               [
                 "METRO_902",
                 4
+              ],
+              [
+                "METRO_309",
+                3
               ]
             ],
             "facilities": {
@@ -4471,6 +4799,14 @@
               [
                 "METRO_1015",
                 2
+              ],
+              [
+                "METRO_710",
+                3
+              ],
+              [
+                "METRO_210",
+                3
               ]
             ],
             "facilities": {
@@ -4690,8 +5026,8 @@
           {
             "id": "METRO_1024",
             "name": "Алтуфьево",
-            "x": 1198,
-            "y": 278,
+            "x": 1200,
+            "y": 275,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4731,6 +5067,10 @@
               [
                 "METRO_1101",
                 2
+              ],
+              [
+                "METRO_222",
+                3
               ]
             ],
             "facilities": {
@@ -4961,6 +5301,10 @@
               [
                 "METRO_1111",
                 3
+              ],
+              [
+                "METRO_714",
+                3
               ]
             ],
             "facilities": {
@@ -5006,6 +5350,22 @@
               ],
               [
                 "METRO_1113",
+                3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_2124",
                 3
               ]
             ],
@@ -5371,6 +5731,10 @@
               [
                 "METRO_1202",
                 3
+              ],
+              [
+                "METRO_207",
+                3
               ]
             ],
             "facilities": {
@@ -5416,6 +5780,10 @@
               ],
               [
                 "METRO_1204",
+                3
+              ],
+              [
+                "METRO_706",
                 3
               ]
             ],
@@ -5508,6 +5876,14 @@
               ],
               [
                 "METRO_1208",
+                3
+              ],
+              [
+                "METRO_400",
+                3
+              ],
+              [
+                "METRO_307",
                 3
               ]
             ],
@@ -5651,6 +6027,10 @@
               [
                 "METRO_1214",
                 3
+              ],
+              [
+                "METRO_618",
+                3
               ]
             ],
             "facilities": {
@@ -5742,6 +6122,10 @@
               ],
               [
                 "METRO_1218",
+                3
+              ],
+              [
+                "METRO_217",
                 3
               ]
             ],
@@ -5835,6 +6219,14 @@
               [
                 "METRO_1222",
                 3
+              ],
+              [
+                "METRO_716",
+                3
+              ],
+              [
+                "METRO_1921",
+                3
               ]
             ],
             "facilities": {
@@ -5927,6 +6319,14 @@
               [
                 "METRO_1226",
                 3
+              ],
+              [
+                "METRO_316",
+                3
+              ],
+              [
+                "METRO_2015",
+                3
               ]
             ],
             "facilities": {
@@ -5980,6 +6380,10 @@
               ],
               [
                 "METRO_1228",
+                3
+              ],
+              [
+                "METRO_606",
                 3
               ]
             ],
@@ -6037,6 +6441,10 @@
             "neighbors": [
               [
                 "METRO_1301",
+                3
+              ],
+              [
+                "METRO_623",
                 3
               ]
             ],
@@ -6252,6 +6660,10 @@
               [
                 "METRO_1503",
                 4
+              ],
+              [
+                "METRO_603",
+                3
               ]
             ],
             "facilities": {
@@ -6375,6 +6787,10 @@
               [
                 "METRO_1508",
                 9
+              ],
+              [
+                "METRO_318",
+                3
               ]
             ],
             "facilities": {
@@ -6513,6 +6929,10 @@
               [
                 "METRO_1514",
                 15
+              ],
+              [
+                "METRO_715",
+                3
               ]
             ],
             "facilities": {
@@ -6559,6 +6979,10 @@
               [
                 "METRO_1516",
                 17
+              ],
+              [
+                "METRO_214",
+                3
               ]
             ],
             "facilities": {
@@ -6651,6 +7075,10 @@
               [
                 "METRO_1520",
                 21
+              ],
+              [
+                "METRO_614",
+                3
               ]
             ],
             "facilities": {
@@ -6701,6 +7129,14 @@
               [
                 "METRO_1522",
                 23
+              ],
+              [
+                "METRO_2118",
+                3
+              ],
+              [
+                "METRO_405",
+                3
               ]
             ],
             "facilities": {
@@ -6793,6 +7229,10 @@
               [
                 "METRO_1526",
                 27
+              ],
+              [
+                "METRO_705",
+                3
               ]
             ],
             "facilities": {
@@ -6816,6 +7256,10 @@
               [
                 "METRO_1527",
                 28
+              ],
+              [
+                "METRO_705",
+                3
               ]
             ],
             "facilities": {
@@ -6839,6 +7283,10 @@
               [
                 "METRO_1528",
                 29
+              ],
+              [
+                "METRO_204",
+                3
               ]
             ],
             "facilities": {
@@ -6862,6 +7310,10 @@
               [
                 "METRO_1529",
                 30
+              ],
+              [
+                "METRO_204",
+                3
               ]
             ],
             "facilities": {
@@ -7010,6 +7462,10 @@
               ],
               [
                 "METRO_1604",
+                3
+              ],
+              [
+                "METRO_720",
                 3
               ]
             ],
@@ -7466,6 +7922,10 @@
               [
                 "METRO_1808",
                 3
+              ],
+              [
+                "METRO_308",
+                3
               ]
             ],
             "facilities": {
@@ -7488,6 +7948,10 @@
               ],
               [
                 "METRO_1809",
+                3
+              ],
+              [
+                "METRO_404",
                 3
               ]
             ],
@@ -7534,6 +7998,10 @@
               ],
               [
                 "METRO_1811",
+                3
+              ],
+              [
+                "METRO_707",
                 3
               ]
             ],
@@ -8025,6 +8493,10 @@
               [
                 "METRO_1907",
                 3
+              ],
+              [
+                "METRO_302",
+                3
               ]
             ],
             "facilities": {
@@ -8071,6 +8543,10 @@
               [
                 "METRO_1909",
                 3
+              ],
+              [
+                "METRO_702",
+                3
               ]
             ],
             "facilities": {
@@ -8093,6 +8569,10 @@
               ],
               [
                 "METRO_1910",
+                3
+              ],
+              [
+                "METRO_704",
                 3
               ]
             ],
@@ -8244,8 +8724,8 @@
           {
             "id": "METRO_1916",
             "name": "Площадь трёх вокзалов",
-            "x": 1367,
-            "y": 768,
+            "x": 1387,
+            "y": 774,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8279,8 +8759,8 @@
           {
             "id": "METRO_1917",
             "name": "Курская",
-            "x": 1451,
-            "y": 941,
+            "x": 1455,
+            "y": 930,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8289,6 +8769,22 @@
               ],
               [
                 "METRO_1918",
+                3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_2124",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -8381,6 +8877,14 @@
               ],
               [
                 "METRO_1922",
+                3
+              ],
+              [
+                "METRO_716",
+                3
+              ],
+              [
+                "METRO_1221",
                 3
               ]
             ],
@@ -8542,6 +9046,10 @@
               ],
               [
                 "METRO_1929",
+                3
+              ],
+              [
+                "METRO_219",
                 3
               ]
             ],
@@ -8941,6 +9449,10 @@
               [
                 "METRO_2009",
                 3
+              ],
+              [
+                "METRO_200",
+                3
               ]
             ],
             "facilities": {
@@ -9045,8 +9557,8 @@
           {
             "id": "METRO_2013",
             "name": "Останкино",
-            "x": 1302,
-            "y": 541,
+            "x": 1307,
+            "y": 549,
             "textPosition": 0,
             "neighbors": [
               [
@@ -9109,6 +9621,14 @@
               ],
               [
                 "METRO_2016",
+                3
+              ],
+              [
+                "METRO_1225",
+                3
+              ],
+              [
+                "METRO_316",
                 3
               ]
             ],
@@ -9248,6 +9768,10 @@
               [
                 "METRO_2022",
                 3
+              ],
+              [
+                "METRO_718",
+                3
               ]
             ],
             "facilities": {
@@ -9270,6 +9794,10 @@
               ],
               [
                 "METRO_2023",
+                3
+              ],
+              [
+                "METRO_719",
                 3
               ]
             ],
@@ -10083,6 +10611,14 @@
               [
                 "METRO_2119",
                 3
+              ],
+              [
+                "METRO_1521",
+                3
+              ],
+              [
+                "METRO_405",
+                3
               ]
             ],
             "facilities": {
@@ -10187,8 +10723,8 @@
           {
             "id": "METRO_2123",
             "name": "Площадь трёх вокзалов",
-            "x": 1377,
-            "y": 756,
+            "x": 1373,
+            "y": 789,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10222,8 +10758,8 @@
           {
             "id": "METRO_2124",
             "name": "Курская",
-            "x": 1463,
-            "y": 957,
+            "x": 1470,
+            "y": 928,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10232,6 +10768,22 @@
               ],
               [
                 "METRO_2125",
+                3
+              ],
+              [
+                "METRO_314",
+                3
+              ],
+              [
+                "METRO_87",
+                3
+              ],
+              [
+                "METRO_1917",
+                3
+              ],
+              [
+                "METRO_1112",
                 3
               ]
             ],
@@ -10245,8 +10797,8 @@
           {
             "id": "METRO_2125",
             "name": "Серп и Молот",
-            "x": 1501,
-            "y": 992,
+            "x": 1499,
+            "y": 982,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10268,8 +10820,8 @@
           {
             "id": "METRO_2126",
             "name": "Нижегородская",
-            "x": 1698,
-            "y": 1014,
+            "x": 1699,
+            "y": 1007,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10291,8 +10843,8 @@
           {
             "id": "METRO_2127",
             "name": "Чухлинка",
-            "x": 1785,
-            "y": 986,
+            "x": 1796,
+            "y": 974,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10530,10 +11082,10 @@
       },
       {
         "stations": [
-          "METRO_1916",
           "METRO_105",
-          "METRO_80",
-          "METRO_2123"
+          "METRO_1916",
+          "METRO_2123",
+          "METRO_80"
         ],
         "time": 3,
         "type": "default"
@@ -10541,8 +11093,8 @@
       {
         "stations": [
           "METRO_107",
-          "METRO_609",
-          "METRO_1113"
+          "METRO_1113",
+          "METRO_609"
         ],
         "time": 3,
         "type": "default"
@@ -10558,10 +11110,10 @@
       },
       {
         "stations": [
-          "METRO_1013",
+          "METRO_312",
           "METRO_410",
           "METRO_110",
-          "METRO_312"
+          "METRO_1013"
         ],
         "time": 3,
         "type": "default"
@@ -10594,6 +11146,369 @@
         "stations": [
           "METRO_125",
           "METRO_1706"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_2008",
+          "METRO_200"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1528",
+          "METRO_204"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1527",
+          "METRO_204"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_207",
+          "METRO_1201"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_208",
+          "METRO_89"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_710",
+          "METRO_210",
+          "METRO_1014"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_807",
+          "METRO_611",
+          "METRO_212"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_213",
+          "METRO_85"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_214",
+          "METRO_1515"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1217",
+          "METRO_217"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_219",
+          "METRO_1928"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_222",
+          "METRO_1100"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_302",
+          "METRO_1906"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_400",
+          "METRO_307",
+          "METRO_1207"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1807",
+          "METRO_308"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_901",
+          "METRO_309"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_407",
+          "METRO_81",
+          "METRO_310"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_314",
+          "METRO_87",
+          "METRO_1917",
+          "METRO_2124",
+          "METRO_1112"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1225",
+          "METRO_316",
+          "METRO_2015"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1507",
+          "METRO_318"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1808",
+          "METRO_404"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1521",
+          "METRO_2118",
+          "METRO_405"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_603",
+          "METRO_1502"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1227",
+          "METRO_606"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_91",
+          "METRO_607"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_712",
+          "METRO_610"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_612",
+          "METRO_83"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_614",
+          "METRO_1519"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_618",
+          "METRO_1213"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1300",
+          "METRO_623"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_702",
+          "METRO_1908"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_704",
+          "METRO_1909"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1525",
+          "METRO_705"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1526",
+          "METRO_705"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1203",
+          "METRO_706"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1810",
+          "METRO_707"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_709",
+          "METRO_90"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_713",
+          "METRO_806",
+          "METRO_86"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_714",
+          "METRO_1110"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_715",
+          "METRO_1513"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_716",
+          "METRO_1921",
+          "METRO_1221"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_718",
+          "METRO_2021"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_719",
+          "METRO_2022"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_720",
+          "METRO_1603"
         ],
         "time": 3,
         "type": "default"
@@ -11007,7 +11922,7 @@
         ],
         "points": [
           {
-            "x": 1332,
+            "x": 1338,
             "y": 680
           },
           {
@@ -11403,22 +12318,6 @@
       {
         "neighborsId": [
           "METRO_1200",
-          "METRO_1228"
-        ],
-        "points": [
-          {
-            "x": 1057,
-            "y": 624
-          },
-          {
-            "x": 1120,
-            "y": 610
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1200",
           "METRO_1201"
         ],
         "points": [
@@ -11429,6 +12328,22 @@
           {
             "x": 936,
             "y": 686
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1200",
+          "METRO_1228"
+        ],
+        "points": [
+          {
+            "x": 1057,
+            "y": 624
+          },
+          {
+            "x": 1120,
+            "y": 610
           }
         ]
       },
@@ -11507,8 +12422,8 @@
             "y": 692
           },
           {
-            "x": 1349,
-            "y": 651
+            "x": 1350,
+            "y": 650
           }
         ]
       },
@@ -11691,22 +12606,6 @@
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1525"
-        ],
-        "points": [
-          {
-            "x": 684,
-            "y": 684
-          },
-          {
-            "x": 688,
-            "y": 670
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1524",
           "METRO_1523"
         ],
         "points": [
@@ -11717,6 +12616,22 @@
           {
             "x": 681,
             "y": 825
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1524",
+          "METRO_1525"
+        ],
+        "points": [
+          {
+            "x": 684,
+            "y": 684
+          },
+          {
+            "x": 688,
+            "y": 670
           }
         ]
       },
@@ -11823,12 +12738,12 @@
         ],
         "points": [
           {
-            "x": 1324,
-            "y": 645
+            "x": 1348,
+            "y": 683
           },
           {
-            "x": 1348,
-            "y": 751
+            "x": 1360,
+            "y": 709
           }
         ]
       },
@@ -11839,12 +12754,12 @@
         ],
         "points": [
           {
-            "x": 1413,
-            "y": 809
+            "x": 1402,
+            "y": 812
           },
           {
-            "x": 1438,
-            "y": 942
+            "x": 1423,
+            "y": 857
           }
         ]
       },

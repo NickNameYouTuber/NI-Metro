@@ -483,6 +483,8 @@ public class MetroMapView extends View {
                  drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
              } else if (transferStations.size() == 4) {
                  drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
+             } else if (transferStations.size() == 5) {
+                 drawTransferConnection(canvas, transferStations);
              }
          }
     }
@@ -994,6 +996,56 @@ public class MetroMapView extends View {
         drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
         drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x4, y4));
         drawPartialCircle(canvas, x4, y4, 20, 5, getAngle(x3, y3, x4, y4, x1, y1));
+    }
+
+    private void drawTransferConnection(Canvas canvas, List<Station> stations) {
+        if (stations == null || stations.size() < 2) {
+            return; // Нужно минимум 2 станции для соединения
+        }
+
+        // Получаем координаты всех точек и находим центр
+        float centerX = 0;
+        float centerY = 0;
+        float[] coordinates = new float[stations.size() * 2];
+
+        for (int i = 0; i < stations.size(); i++) {
+            float x = stations.get(i).getX() * COORDINATE_SCALE_FACTOR;
+            float y = stations.get(i).getY() * COORDINATE_SCALE_FACTOR;
+            coordinates[i * 2] = x;
+            coordinates[i * 2 + 1] = y;
+            centerX += x;
+            centerY += y;
+        }
+
+        centerX /= stations.size();
+        centerY /= stations.size();
+
+        // Рисуем линии между всеми точками через центр
+        for (int i = 0; i < stations.size(); i++) {
+            int nextIndex = (i + 1) % stations.size();
+            float x1 = coordinates[i * 2];
+            float y1 = coordinates[i * 2 + 1];
+            float x2 = coordinates[nextIndex * 2];
+            float y2 = coordinates[nextIndex * 2 + 1];
+
+            drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+        }
+
+        // Рисуем частичные окружности в каждой точке
+        for (int i = 0; i < stations.size(); i++) {
+            int prevIndex = (i - 1 + stations.size()) % stations.size();
+            int nextIndex = (i + 1) % stations.size();
+
+            float currentX = coordinates[i * 2];
+            float currentY = coordinates[i * 2 + 1];
+            float prevX = coordinates[prevIndex * 2];
+            float prevY = coordinates[prevIndex * 2 + 1];
+            float nextX = coordinates[nextIndex * 2];
+            float nextY = coordinates[nextIndex * 2 + 1];
+
+            drawPartialCircle(canvas, currentX, currentY, 20, 5,
+                    getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
+        }
     }
 
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
