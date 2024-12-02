@@ -477,15 +477,7 @@ public class MetroMapView extends View {
         }
          for (Transfer transfer : transfers) {
              List<Station> transferStations = transfer.getStations();
-             if (transferStations.size() == 2) {
-                 drawTransferConnection(canvas, transferStations.get(0), transferStations.get(1));
-             } else if (transferStations.size() == 3) {
-                 drawTransferConnectionTriangle(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2));
-             } else if (transferStations.size() == 4) {
-                 drawTransferConnectionQuad(canvas, transferStations.get(0), transferStations.get(1), transferStations.get(2), transferStations.get(3));
-             } else if (transferStations.size() == 5) {
-                 drawTransferConnection(canvas, transferStations);
-             }
+             drawTransferConnection(canvas, transferStations);
          }
     }
 
@@ -725,30 +717,6 @@ public class MetroMapView extends View {
         canvas.drawPath(path2, paint);
     }
 
-    private List<Point> interpolatePoints(List<Point> points) {
-        int n = points.size();
-        double[] x = new double[n];
-        double[] y = new double[n];
-
-        for (int i = 0; i < n; i++) {
-            x[i] = i;
-            y[i] = points.get(i).y;
-        }
-
-        SplineInterpolator interpolator = new SplineInterpolator();
-        PolynomialSplineFunction splineX = interpolator.interpolate(x, x);
-        PolynomialSplineFunction splineY = interpolator.interpolate(x, y);
-
-        List<Point> interpolatedPoints = new ArrayList<>();
-        for (double t = 0; t <= n - 1; t += 0.1) {
-            double interpolatedX = splineX.value(t);
-            double interpolatedY = splineY.value(t);
-            interpolatedPoints.add(new Point((int) interpolatedX, (int) interpolatedY));
-        }
-
-        return interpolatedPoints;
-    }
-
     private void drawIntermediatePoints(Canvas canvas) {
         Log.d("MetroMapView", "drawIntermediatePoints");
         for (Station station : stations) {
@@ -874,56 +842,6 @@ public class MetroMapView extends View {
         return null;
     }
 
-    private void drawTransferConnection(Canvas canvas, Station station1, Station station2) {
-        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
-        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
-        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
-        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
-
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-
-        float nx = dx / length;
-        float ny = dy / length;
-        float perpX = -ny * (TRANSFER_CAPSULE_WIDTH / 2);
-        float perpY = nx * (TRANSFER_CAPSULE_WIDTH / 2);
-
-        Path capsulePath = new Path();
-        capsulePath.moveTo(x1 + perpX, y1 + perpY);
-        capsulePath.lineTo(x2 + perpX, y2 + perpY);
-
-        float angle = (float) Math.toDegrees(Math.atan2(dy, dx));
-
-        RectF endCircle = new RectF(
-                x2 - TRANSFER_CAPSULE_WIDTH / 2,
-                y2 - TRANSFER_CAPSULE_WIDTH / 2,
-                x2 + TRANSFER_CAPSULE_WIDTH / 2,
-                y2 + TRANSFER_CAPSULE_WIDTH / 2
-        );
-        capsulePath.arcTo(endCircle, angle - 90, 180, false);
-
-        capsulePath.moveTo(x2 - perpX, y2 - perpY);
-        capsulePath.lineTo(x1 - perpX, y1 - perpY);
-
-        RectF startCircle = new RectF(
-                x1 - TRANSFER_CAPSULE_WIDTH / 2,
-                y1 - TRANSFER_CAPSULE_WIDTH / 2,
-                x1 + TRANSFER_CAPSULE_WIDTH / 2,
-                y1 + TRANSFER_CAPSULE_WIDTH / 2
-        );
-        capsulePath.arcTo(startCircle, angle + 90, 180, false);
-
-        capsulePath.close();
-
-        Paint capsuleFillPaint = new Paint(transferPaint);
-        capsuleFillPaint.setStyle(Paint.Style.FILL);
-        capsuleFillPaint.setColor(Color.WHITE);
-
-        canvas.drawPath(capsulePath, capsuleFillPaint);
-        canvas.drawPath(capsulePath, transferPaint);
-    }
-
     private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
         float dx = x2 - x1;
         float dy = y2 - y1;
@@ -952,50 +870,6 @@ public class MetroMapView extends View {
 
         RectF rectF = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
-    }
-
-    private void drawTransferConnectionTriangle(Canvas canvas, Station station1, Station station2, Station station3) {
-        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
-        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
-        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
-        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
-        float x3 = station3.getX() * COORDINATE_SCALE_FACTOR;
-        float y3 = station3.getY() * COORDINATE_SCALE_FACTOR;
-
-        float centerX = (x1 + x2 + x3) / 3;
-        float centerY = (y1 + y2 + y3) / 3;
-
-        drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
-        drawShiftedLine(canvas, x2, y2, x3, y3, centerX, centerY);
-        drawShiftedLine(canvas, x3, y3, x1, y1, centerX, centerY);
-
-        drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x3, y3, x1, y1, x2, y2));
-        drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
-        drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x1, y1));
-    }
-
-    private void drawTransferConnectionQuad(Canvas canvas, Station station1, Station station2, Station station3, Station station4) {
-        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
-        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
-        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
-        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
-        float x3 = station3.getX() * COORDINATE_SCALE_FACTOR;
-        float y3 = station3.getY() * COORDINATE_SCALE_FACTOR;
-        float x4 = station4.getX() * COORDINATE_SCALE_FACTOR;
-        float y4 = station4.getY() * COORDINATE_SCALE_FACTOR;
-
-        float centerX = (x1 + x2 + x3 + x4) / 4;
-        float centerY = (y1 + y2 + y3 + y4) / 4;
-
-        drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
-        drawShiftedLine(canvas, x2, y2, x3, y3, centerX, centerY);
-        drawShiftedLine(canvas, x3, y3, x4, y4, centerX, centerY);
-        drawShiftedLine(canvas, x4, y4, x1, y1, centerX, centerY);
-
-        drawPartialCircle(canvas, x1, y1, 20, 5, getAngle(x4, y4, x1, y1, x2, y2));
-        drawPartialCircle(canvas, x2, y2, 20, 5, getAngle(x1, y1, x2, y2, x3, y3));
-        drawPartialCircle(canvas, x3, y3, 20, 5, getAngle(x2, y2, x3, y3, x4, y4));
-        drawPartialCircle(canvas, x4, y4, 20, 5, getAngle(x3, y3, x4, y4, x1, y1));
     }
 
     private void drawTransferConnection(Canvas canvas, List<Station> stations) {

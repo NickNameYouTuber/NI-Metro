@@ -11283,9 +11283,9 @@
       },
       {
         "stations": [
-          "METRO_407",
+          "METRO_310",
           "METRO_81",
-          "METRO_310"
+          "METRO_407"
         ],
         "time": 3,
         "type": "default"
@@ -11457,9 +11457,9 @@
       },
       {
         "stations": [
-          "METRO_713",
+          "METRO_86",
           "METRO_806",
-          "METRO_86"
+          "METRO_713"
         ],
         "time": 3,
         "type": "default"
