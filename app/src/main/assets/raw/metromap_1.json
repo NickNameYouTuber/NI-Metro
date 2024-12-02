@@ -1713,8 +1713,8 @@
           {
             "id": "METRO_314",
             "name": "Курская",
-            "x": 1427,
-            "y": 943,
+            "x": 1422,
+            "y": 931,
             "textPosition": 8,
             "neighbors": [
               [
@@ -1752,8 +1752,8 @@
           {
             "id": "METRO_315",
             "name": "Бауманская",
-            "x": 1502,
-            "y": 869,
+            "x": 1492,
+            "y": 865,
             "textPosition": 0,
             "neighbors": [
               [
@@ -1775,8 +1775,8 @@
           {
             "id": "METRO_316",
             "name": "Электрозаводская",
-            "x": 1546,
-            "y": 825,
+            "x": 1553,
+            "y": 814,
             "textPosition": 0,
             "neighbors": [
               [
@@ -2348,6 +2348,10 @@
               [
                 "METRO_89",
                 3
+              ],
+              [
+                "METRO_1016",
+                3
               ]
             ],
             "facilities": {
@@ -2509,6 +2513,10 @@
               ],
               [
                 "METRO_85",
+                3
+              ],
+              [
+                "METRO_1011",
                 3
               ]
             ],
@@ -2734,7 +2742,7 @@
             "id": "METRO_606",
             "name": "Рижская",
             "x": 1330,
-            "y": 644,
+            "y": 635,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3821,6 +3829,10 @@
               [
                 "METRO_801",
                 2
+              ],
+              [
+                "METRO_2130",
+                3
               ]
             ],
             "facilities": {
@@ -3843,6 +3855,10 @@
               ],
               [
                 "METRO_802",
+                3
+              ],
+              [
+                "METRO_2129",
                 3
               ]
             ],
@@ -3890,6 +3906,10 @@
               [
                 "METRO_804",
                 3
+              ],
+              [
+                "METRO_1509",
+                3
               ]
             ],
             "facilities": {
@@ -3902,8 +3922,8 @@
           {
             "id": "METRO_804",
             "name": "Авиамоторная",
-            "x": 1637,
-            "y": 914,
+            "x": 1653,
+            "y": 906,
             "textPosition": 0,
             "neighbors": [
               [
@@ -3913,6 +3933,14 @@
               [
                 "METRO_805",
                 4
+              ],
+              [
+                "METRO_2017",
+                3
+              ],
+              [
+                "METRO_1223",
+                3
               ]
             ],
             "facilities": {
@@ -3935,6 +3963,14 @@
               ],
               [
                 "METRO_806",
+                3
+              ],
+              [
+                "METRO_1918",
+                3
+              ],
+              [
+                "METRO_1111",
                 3
               ]
             ],
@@ -4098,6 +4134,10 @@
               [
                 "METRO_903",
                 3
+              ],
+              [
+                "METRO_2116",
+                3
               ]
             ],
             "facilities": {
@@ -4191,6 +4231,10 @@
               [
                 "METRO_906",
                 4
+              ],
+              [
+                "METRO_1210",
+                3
               ]
             ],
             "facilities": {
@@ -4458,13 +4502,17 @@
           {
             "id": "METRO_1000",
             "name": "Бульвар Дмитрия Донского",
-            "x": 1178,
+            "x": 1175,
             "y": 1810,
             "textPosition": 0,
             "neighbors": [
               [
                 "METRO_1001",
                 2
+              ],
+              [
+                "METRO_1302",
+                3
               ]
             ],
             "facilities": {
@@ -4477,8 +4525,8 @@
           {
             "id": "METRO_1001",
             "name": "Аннино",
-            "x": 1176,
-            "y": 1778,
+            "x": 1175,
+            "y": 1776,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4523,7 +4571,7 @@
           {
             "id": "METRO_1003",
             "name": "Пражская",
-            "x": 1176,
+            "x": 1175,
             "y": 1707,
             "textPosition": 0,
             "neighbors": [
@@ -4603,6 +4651,10 @@
               [
                 "METRO_1007",
                 2
+              ],
+              [
+                "METRO_1215",
+                3
               ]
             ],
             "facilities": {
@@ -4672,6 +4724,10 @@
               [
                 "METRO_1010",
                 2
+              ],
+              [
+                "METRO_1517",
+                3
               ]
             ],
             "facilities": {
@@ -4718,6 +4774,10 @@
               [
                 "METRO_1012",
                 2
+              ],
+              [
+                "METRO_84",
+                3
               ]
             ],
             "facilities": {
@@ -4830,6 +4890,10 @@
               [
                 "METRO_1016",
                 2
+              ],
+              [
+                "METRO_1114",
+                3
               ]
             ],
             "facilities": {
@@ -4853,6 +4917,10 @@
               [
                 "METRO_1017",
                 2
+              ],
+              [
+                "METRO_88",
+                3
               ]
             ],
             "facilities": {
@@ -4876,6 +4944,14 @@
               [
                 "METRO_1018",
                 2
+              ],
+              [
+                "METRO_2121",
+                3
+              ],
+              [
+                "METRO_1200",
+                3
               ]
             ],
             "facilities": {
@@ -4899,6 +4975,10 @@
               [
                 "METRO_1019",
                 2
+              ],
+              [
+                "METRO_1913",
+                3
               ]
             ],
             "facilities": {
@@ -4911,8 +4991,8 @@
           {
             "id": "METRO_1019",
             "name": "Тимирязевская",
-            "x": 1089,
-            "y": 528,
+            "x": 1090,
+            "y": 524,
             "textPosition": 0,
             "neighbors": [
               [
@@ -4922,6 +5002,10 @@
               [
                 "METRO_1020",
                 2
+              ],
+              [
+                "METRO_1813",
+                3
               ]
             ],
             "facilities": {
@@ -4945,6 +5029,10 @@
               [
                 "METRO_1021",
                 2
+              ],
+              [
+                "METRO_1119",
+                3
               ]
             ],
             "facilities": {
@@ -4968,6 +5056,10 @@
               [
                 "METRO_1022",
                 2
+              ],
+              [
+                "METRO_1501",
+                3
               ]
             ],
             "facilities": {
@@ -5026,8 +5118,8 @@
           {
             "id": "METRO_1024",
             "name": "Алтуфьево",
-            "x": 1198,
-            "y": 278,
+            "x": 1200,
+            "y": 275,
             "textPosition": 0,
             "neighbors": [
               [
@@ -5232,6 +5324,10 @@
               [
                 "METRO_1108",
                 4
+              ],
+              [
+                "METRO_1220",
+                3
               ]
             ],
             "facilities": {
@@ -5254,6 +5350,10 @@
               ],
               [
                 "METRO_1109",
+                3
+              ],
+              [
+                "METRO_1514",
                 3
               ]
             ],
@@ -5278,6 +5378,10 @@
               [
                 "METRO_1110",
                 4
+              ],
+              [
+                "METRO_1514",
+                3
               ]
             ],
             "facilities": {
@@ -5328,6 +5432,14 @@
               [
                 "METRO_1112",
                 4
+              ],
+              [
+                "METRO_805",
+                3
+              ],
+              [
+                "METRO_1918",
+                3
               ]
             ],
             "facilities": {
@@ -5420,6 +5532,10 @@
               ],
               [
                 "METRO_1115",
+                3
+              ],
+              [
+                "METRO_1015",
                 3
               ]
             ],
@@ -5536,6 +5652,10 @@
               [
                 "METRO_1120",
                 4
+              ],
+              [
+                "METRO_1020",
+                3
               ]
             ],
             "facilities": {
@@ -5707,6 +5827,14 @@
               ],
               [
                 "METRO_1201",
+                3
+              ],
+              [
+                "METRO_2121",
+                3
+              ],
+              [
+                "METRO_1017",
                 3
               ]
             ],
@@ -5954,6 +6082,10 @@
               [
                 "METRO_1211",
                 3
+              ],
+              [
+                "METRO_905",
+                3
               ]
             ],
             "facilities": {
@@ -6003,6 +6135,10 @@
               ],
               [
                 "METRO_1213",
+                3
+              ],
+              [
+                "METRO_1700",
                 3
               ]
             ],
@@ -6076,6 +6212,10 @@
               ],
               [
                 "METRO_1216",
+                3
+              ],
+              [
+                "METRO_1006",
                 3
               ]
             ],
@@ -6196,6 +6336,10 @@
               [
                 "METRO_1221",
                 3
+              ],
+              [
+                "METRO_1107",
+                3
               ]
             ],
             "facilities": {
@@ -6250,6 +6394,18 @@
               [
                 "METRO_1223",
                 3
+              ],
+              [
+                "METRO_1607",
+                3
+              ],
+              [
+                "METRO_1511",
+                3
+              ],
+              [
+                "METRO_2126",
+                3
               ]
             ],
             "facilities": {
@@ -6262,8 +6418,8 @@
           {
             "id": "METRO_1223",
             "name": "Авиамоторная",
-            "x": 1648,
-            "y": 925,
+            "x": 1652,
+            "y": 926,
             "textPosition": 1,
             "neighbors": [
               [
@@ -6272,6 +6428,14 @@
               ],
               [
                 "METRO_1224",
+                3
+              ],
+              [
+                "METRO_804",
+                3
+              ],
+              [
+                "METRO_2017",
                 3
               ]
             ],
@@ -6492,6 +6656,10 @@
               [
                 "METRO_1303",
                 3
+              ],
+              [
+                "METRO_1000",
+                3
               ]
             ],
             "facilities": {
@@ -6636,6 +6804,10 @@
               ],
               [
                 "METRO_1502",
+                3
+              ],
+              [
+                "METRO_1021",
                 3
               ]
             ],
@@ -6837,6 +7009,10 @@
               [
                 "METRO_1510",
                 11
+              ],
+              [
+                "METRO_803",
+                3
               ]
             ],
             "facilities": {
@@ -6883,6 +7059,18 @@
               [
                 "METRO_1512",
                 13
+              ],
+              [
+                "METRO_1607",
+                3
+              ],
+              [
+                "METRO_2126",
+                3
+              ],
+              [
+                "METRO_1222",
+                3
               ]
             ],
             "facilities": {
@@ -6956,6 +7144,14 @@
               [
                 "METRO_1515",
                 16
+              ],
+              [
+                "METRO_1109",
+                3
+              ],
+              [
+                "METRO_1108",
+                3
               ]
             ],
             "facilities": {
@@ -7029,6 +7225,10 @@
               [
                 "METRO_1518",
                 19
+              ],
+              [
+                "METRO_1009",
+                3
               ]
             ],
             "facilities": {
@@ -7555,6 +7755,18 @@
               [
                 "METRO_1606",
                 3
+              ],
+              [
+                "METRO_1511",
+                3
+              ],
+              [
+                "METRO_2126",
+                3
+              ],
+              [
+                "METRO_1222",
+                3
               ]
             ],
             "facilities": {
@@ -7588,6 +7800,10 @@
             "neighbors": [
               [
                 "METRO_1701",
+                3
+              ],
+              [
+                "METRO_1212",
                 3
               ]
             ],
@@ -7761,6 +7977,10 @@
               [
                 "METRO_1801",
                 3
+              ],
+              [
+                "SUBURBAN_116",
+                0
               ]
             ],
             "facilities": {
@@ -7784,6 +8004,10 @@
               [
                 "METRO_1802",
                 3
+              ],
+              [
+                "SUBURBAN_115",
+                0
               ]
             ],
             "facilities": {
@@ -7807,6 +8031,10 @@
               [
                 "METRO_1803",
                 3
+              ],
+              [
+                "SUBURBAN_114",
+                0
               ]
             ],
             "facilities": {
@@ -7830,6 +8058,10 @@
               [
                 "METRO_1804",
                 3
+              ],
+              [
+                "SUBURBAN_108",
+                0
               ]
             ],
             "facilities": {
@@ -7853,6 +8085,10 @@
               [
                 "METRO_1805",
                 3
+              ],
+              [
+                "SUBURBAN_107",
+                0
               ]
             ],
             "facilities": {
@@ -7876,6 +8112,10 @@
               [
                 "METRO_1806",
                 3
+              ],
+              [
+                "SUBURBAN_106",
+                0
               ]
             ],
             "facilities": {
@@ -7899,6 +8139,10 @@
               [
                 "METRO_1807",
                 3
+              ],
+              [
+                "SUBURBAN_105",
+                0
               ]
             ],
             "facilities": {
@@ -7926,6 +8170,10 @@
               [
                 "METRO_308",
                 3
+              ],
+              [
+                "SUBURBAN_104",
+                0
               ]
             ],
             "facilities": {
@@ -7953,6 +8201,10 @@
               [
                 "METRO_404",
                 3
+              ],
+              [
+                "SUBURBAN_103",
+                0
               ]
             ],
             "facilities": {
@@ -7976,6 +8228,10 @@
               [
                 "METRO_1810",
                 3
+              ],
+              [
+                "SUBURBAN_102",
+                0
               ]
             ],
             "facilities": {
@@ -8003,6 +8259,10 @@
               [
                 "METRO_707",
                 3
+              ],
+              [
+                "SUBURBAN_101",
+                0
               ]
             ],
             "facilities": {
@@ -8026,6 +8286,10 @@
               [
                 "METRO_1812",
                 3
+              ],
+              [
+                "SUBURBAN_100",
+                0
               ]
             ],
             "facilities": {
@@ -8038,8 +8302,8 @@
           {
             "id": "METRO_1812",
             "name": "Савёловская",
-            "x": 1040,
-            "y": 666,
+            "x": 1045,
+            "y": 668,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8071,6 +8335,10 @@
               ],
               [
                 "METRO_1814",
+                3
+              ],
+              [
+                "METRO_1019",
                 3
               ]
             ],
@@ -8666,6 +8934,10 @@
               [
                 "METRO_1914",
                 3
+              ],
+              [
+                "METRO_1018",
+                3
               ]
             ],
             "facilities": {
@@ -8724,8 +8996,8 @@
           {
             "id": "METRO_1916",
             "name": "Площадь трёх вокзалов",
-            "x": 1367,
-            "y": 768,
+            "x": 1387,
+            "y": 774,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8759,8 +9031,8 @@
           {
             "id": "METRO_1917",
             "name": "Курская",
-            "x": 1451,
-            "y": 941,
+            "x": 1455,
+            "y": 930,
             "textPosition": 0,
             "neighbors": [
               [
@@ -8808,6 +9080,14 @@
               ],
               [
                 "METRO_1919",
+                3
+              ],
+              [
+                "METRO_805",
+                3
+              ],
+              [
+                "METRO_1111",
                 3
               ]
             ],
@@ -9557,8 +9837,8 @@
           {
             "id": "METRO_2013",
             "name": "Останкино",
-            "x": 1302,
-            "y": 541,
+            "x": 1307,
+            "y": 549,
             "textPosition": 0,
             "neighbors": [
               [
@@ -9675,6 +9955,14 @@
               ],
               [
                 "METRO_2018",
+                3
+              ],
+              [
+                "METRO_804",
+                3
+              ],
+              [
+                "METRO_1223",
                 3
               ]
             ],
@@ -10554,7 +10842,7 @@
           {
             "id": "METRO_2116",
             "name": "Минская",
-            "x": 729,
+            "x": 726,
             "y": 1211,
             "textPosition": 0,
             "neighbors": [
@@ -10564,6 +10852,10 @@
               ],
               [
                 "METRO_2117",
+                3
+              ],
+              [
+                "METRO_902",
                 3
               ]
             ],
@@ -10688,6 +10980,14 @@
               [
                 "METRO_2122",
                 3
+              ],
+              [
+                "METRO_1017",
+                3
+              ],
+              [
+                "METRO_1200",
+                3
               ]
             ],
             "facilities": {
@@ -10723,8 +11023,8 @@
           {
             "id": "METRO_2123",
             "name": "Площадь трёх вокзалов",
-            "x": 1377,
-            "y": 756,
+            "x": 1373,
+            "y": 789,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10758,8 +11058,8 @@
           {
             "id": "METRO_2124",
             "name": "Курская",
-            "x": 1463,
-            "y": 957,
+            "x": 1470,
+            "y": 928,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10797,8 +11097,8 @@
           {
             "id": "METRO_2125",
             "name": "Серп и Молот",
-            "x": 1501,
-            "y": 992,
+            "x": 1499,
+            "y": 982,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10820,8 +11120,8 @@
           {
             "id": "METRO_2126",
             "name": "Нижегородская",
-            "x": 1698,
-            "y": 1014,
+            "x": 1699,
+            "y": 1007,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10830,6 +11130,18 @@
               ],
               [
                 "METRO_2127",
+                3
+              ],
+              [
+                "METRO_1607",
+                3
+              ],
+              [
+                "METRO_1511",
+                3
+              ],
+              [
+                "METRO_1222",
                 3
               ]
             ],
@@ -10843,8 +11155,8 @@
           {
             "id": "METRO_2127",
             "name": "Чухлинка",
-            "x": 1785,
-            "y": 986,
+            "x": 1796,
+            "y": 974,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10900,6 +11212,10 @@
               [
                 "METRO_2130",
                 3
+              ],
+              [
+                "METRO_801",
+                3
               ]
             ],
             "facilities": {
@@ -10922,6 +11238,10 @@
               ],
               [
                 "METRO_2131",
+                3
+              ],
+              [
+                "METRO_800",
                 3
               ]
             ],
@@ -11082,10 +11402,10 @@
       },
       {
         "stations": [
-          "METRO_1916",
           "METRO_105",
-          "METRO_80",
-          "METRO_2123"
+          "METRO_1916",
+          "METRO_2123",
+          "METRO_80"
         ],
         "time": 3,
         "type": "default"
@@ -11093,8 +11413,8 @@
       {
         "stations": [
           "METRO_107",
-          "METRO_609",
-          "METRO_1113"
+          "METRO_1113",
+          "METRO_609"
         ],
         "time": 3,
         "type": "default"
@@ -11110,10 +11430,10 @@
       },
       {
         "stations": [
-          "METRO_1013",
+          "METRO_312",
           "METRO_410",
           "METRO_110",
-          "METRO_312"
+          "METRO_1013"
         ],
         "time": 3,
         "type": "default"
@@ -11193,8 +11513,8 @@
       {
         "stations": [
           "METRO_710",
-          "METRO_1014",
-          "METRO_210"
+          "METRO_210",
+          "METRO_1014"
         ],
         "time": 3,
         "type": "default"
@@ -11202,8 +11522,8 @@
       {
         "stations": [
           "METRO_807",
-          "METRO_212",
-          "METRO_611"
+          "METRO_611",
+          "METRO_212"
         ],
         "time": 3,
         "type": "default"
@@ -11283,9 +11603,9 @@
       },
       {
         "stations": [
-          "METRO_407",
+          "METRO_310",
           "METRO_81",
-          "METRO_310"
+          "METRO_407"
         ],
         "time": 3,
         "type": "default"
@@ -11457,9 +11777,9 @@
       },
       {
         "stations": [
-          "METRO_713",
+          "METRO_86",
           "METRO_806",
-          "METRO_86"
+          "METRO_713"
         ],
         "time": 3,
         "type": "default"
@@ -11509,6 +11829,195 @@
         "stations": [
           "METRO_720",
           "METRO_1603"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_2130",
+          "METRO_800"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_801",
+          "METRO_2129"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_803",
+          "METRO_1509"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_804",
+          "METRO_2017",
+          "METRO_1223"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_805",
+          "METRO_1918",
+          "METRO_1111"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_902",
+          "METRO_2116"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1210",
+          "METRO_905"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1021",
+          "METRO_1501"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1119",
+          "METRO_1020"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1813",
+          "METRO_1019"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1913",
+          "METRO_1018"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_2121",
+          "METRO_1017",
+          "METRO_1200"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1016",
+          "METRO_88"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1015",
+          "METRO_1114"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1011",
+          "METRO_84"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1517",
+          "METRO_1009"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1215",
+          "METRO_1006"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1000",
+          "METRO_1302"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1107",
+          "METRO_1220"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1109",
+          "METRO_1514"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1108",
+          "METRO_1514"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1607",
+          "METRO_1511",
+          "METRO_2126",
+          "METRO_1222"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": [
+          "METRO_1700",
+          "METRO_1212"
         ],
         "time": 3,
         "type": "default"
@@ -11922,7 +12431,7 @@
         ],
         "points": [
           {
-            "x": 1332,
+            "x": 1338,
             "y": 680
           },
           {
@@ -12422,8 +12931,8 @@
             "y": 692
           },
           {
-            "x": 1349,
-            "y": 651
+            "x": 1350,
+            "y": 650
           }
         ]
       },
@@ -12606,22 +13115,6 @@
       {
         "neighborsId": [
           "METRO_1524",
-          "METRO_1525"
-        ],
-        "points": [
-          {
-            "x": 684,
-            "y": 684
-          },
-          {
-            "x": 688,
-            "y": 670
-          }
-        ]
-      },
-      {
-        "neighborsId": [
-          "METRO_1524",
           "METRO_1523"
         ],
         "points": [
@@ -12632,6 +13125,22 @@
           {
             "x": 681,
             "y": 825
+          }
+        ]
+      },
+      {
+        "neighborsId": [
+          "METRO_1524",
+          "METRO_1525"
+        ],
+        "points": [
+          {
+            "x": 684,
+            "y": 684
+          },
+          {
+            "x": 688,
+            "y": 670
           }
         ]
       },
@@ -12738,12 +13247,12 @@
         ],
         "points": [
           {
-            "x": 1324,
-            "y": 645
+            "x": 1348,
+            "y": 683
           },
           {
-            "x": 1348,
-            "y": 751
+            "x": 1360,
+            "y": 709
           }
         ]
       },
@@ -12754,12 +13263,12 @@
         ],
         "points": [
           {
-            "x": 1413,
-            "y": 809
+            "x": 1402,
+            "y": 812
           },
           {
-            "x": 1438,
-            "y": 942
+            "x": 1423,
+            "y": 857
           }
         ]
       },
@@ -12828,6 +13337,10 @@
               [
                 "SUBURBAN_101",
                 3
+              ],
+              [
+                "METRO_1811",
+                0
               ]
             ],
             "facilities": {
@@ -12852,6 +13365,10 @@
               [
                 "SUBURBAN_102",
                 3
+              ],
+              [
+                "METRO_1810",
+                0
               ]
             ],
             "facilities": {
@@ -12876,6 +13393,10 @@
               [
                 "SUBURBAN_103",
                 3
+              ],
+              [
+                "METRO_1809",
+                0
               ]
             ],
             "facilities": {
@@ -12900,6 +13421,10 @@
               [
                 "SUBURBAN_104",
                 3
+              ],
+              [
+                "METRO_1808",
+                0
               ]
             ],
             "facilities": {
@@ -12924,6 +13449,10 @@
               [
                 "SUBURBAN_105",
                 3
+              ],
+              [
+                "METRO_1807",
+                0
               ]
             ],
             "facilities": {
@@ -12948,6 +13477,10 @@
               [
                 "SUBURBAN_106",
                 3
+              ],
+              [
+                "METRO_1806",
+                0
               ]
             ],
             "facilities": {
@@ -12972,6 +13505,10 @@
               [
                 "SUBURBAN_107",
                 3
+              ],
+              [
+                "METRO_1805",
+                0
               ]
             ],
             "facilities": {
@@ -12996,6 +13533,10 @@
               [
                 "SUBURBAN_108",
                 3
+              ],
+              [
+                "METRO_1804",
+                0
               ]
             ],
             "facilities": {
@@ -13024,6 +13565,10 @@
               [
                 "SUBURBAN_114",
                 3
+              ],
+              [
+                "METRO_1803",
+                0
               ]
             ],
             "facilities": {
@@ -13164,6 +13709,10 @@
               [
                 "SUBURBAN_115",
                 3
+              ],
+              [
+                "METRO_1802",
+                0
               ]
             ],
             "facilities": {
@@ -13188,6 +13737,10 @@
               [
                 "SUBURBAN_116",
                 3
+              ],
+              [
+                "METRO_1801",
+                0
               ]
             ],
             "facilities": {
@@ -13212,6 +13765,10 @@
               [
                 "SUBURBAN_117",
                 3
+              ],
+              [
+                "METRO_1800",
+                0
               ]
             ],
             "facilities": {
