@@ -23,4 +23,9 @@ public class FlatRateTariff implements Tariff {
 
         return json;
     }
+
+    @Override
+    public String getName() {
+        return "FlatRateTariff";
+    }
 }

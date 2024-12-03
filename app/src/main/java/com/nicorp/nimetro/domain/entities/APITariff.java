@@ -68,4 +68,9 @@ public class APITariff implements Tariff {
 
     }
 
+    @Override
+    public String getName() {
+        return "APITariff";
+    }
+
 }

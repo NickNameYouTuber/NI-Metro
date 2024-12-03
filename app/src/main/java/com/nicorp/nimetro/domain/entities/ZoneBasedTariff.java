@@ -26,4 +26,9 @@ public class ZoneBasedTariff implements Tariff {
 
         return json;
     }
+
+    @Override
+    public String getName() {
+        return "ZoneBasedTariff";
+    }
 }

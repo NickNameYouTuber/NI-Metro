@@ -384,7 +384,7 @@ public class RouteInfoFragment extends Fragment {
 
                 // Сохраняем view в тег для последующего доступа, включая тип линии
                 assert line != null;
-                String tag = station.getName() + "|" + line.getLineType();
+                String tag = station.getName() + "|" + line.getTariff().getName();
                 stationView.setTag(tag);
 
                 Log.d("RouteInfoFragmentT", "Station: " + tag.split("\\|")[0] + ", Line: " + tag.split("\\|")[1]);
@@ -431,14 +431,24 @@ public class RouteInfoFragment extends Fragment {
         List<RouteSegment> segments = splitRouteIntoSegments(route);
         for (RouteSegment segment : segments) {
             if (segment.getLine().getTariff() instanceof APITariff) {
-                fetchAndDisplaySuburbanSchedule(segment.getStations().get(0), segment.getStations().get(segment.getStations().size() - 1));
-                break; // Выходим после первого найденного сегмента с APITariff
+                // Check if it's the first station in the route
+                if (segment.getStations().get(0).equals(route.get(0))) {
+                    // Set up both RecyclerViews
+                    fetchAndDisplaySuburbanSchedule(segment.getStations().get(0),
+                            segment.getStations().get(segment.getStations().size() - 1),
+                            true);
+                } else {
+                    // Only set up the expanded view RecyclerView
+                    fetchAndDisplaySuburbanSchedule(segment.getStations().get(0),
+                            segment.getStations().get(segment.getStations().size() - 1),
+                            false);
+                }
             }
         }
     }
 
     // Запрос расписания поездов
-    private void fetchAndDisplaySuburbanSchedule(Station startStation, Station endStation) {
+    private void fetchAndDisplaySuburbanSchedule(Station startStation, Station endStation, boolean isFirstStation) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         String from = startStation.getESP();
         String to = endStation.getESP();
@@ -469,7 +479,7 @@ public class RouteInfoFragment extends Fragment {
                     List<YandexRaspResponse.Segment> segments = response.body().getSegments();
                     if (!segments.isEmpty()) {
                         List<YandexRaspResponse.Segment> nearestSegments = findNearestDepartureTimes(segments);
-                        displayNearestTrains(startStation, nearestSegments);
+                        displayNearestTrains(startStation, nearestSegments, isFirstStation);
                     } else {
                         Log.d("RouteInfoFragment", "No segments found for suburban schedule");
                     }
@@ -486,26 +496,34 @@ public class RouteInfoFragment extends Fragment {
     }
 
     // Отображение поездов на первой suburban станции
-    private void displayNearestTrains(Station startStation, List<YandexRaspResponse.Segment> segments) {
-        if (routeDetailsContainer == null) return;
+    private void displayNearestTrains(Station startStation, List<YandexRaspResponse.Segment> segments, boolean isFirstStation) {
+        if (getActivity() == null) return;
 
-        routeDetailsContainer.post(() -> {
-            // Ищем view по тегу с именем станции и типом линии
-            for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
-                View view = routeDetailsContainer.getChildAt(i);
-                String tag = (String) view.getTag();
-                if (tag != null && tag.startsWith(startStation.getName() + "|")) {
-                    String[] parts = tag.split("\\|");
-                    if (parts.length == 2 && "suburban".equals(parts[1])) {
-                        RecyclerView nearestTrainsRV = view.findViewById(R.id.nearestTrainsRV);
-                        if (nearestTrainsRV != null) {
-                            nearestTrainsRV.setVisibility(View.VISIBLE);
-                            nearestTrainsRV.setLayoutManager(
-                                    new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
-                            );
-                            setupTrainInfoAdapter(segments, nearestTrainsRV);
+        getActivity().runOnUiThread(() -> {
+            // Set up the collapsed view RecyclerView if this is the first station
+            if (isFirstStation && nearestTrainsRecyclerView != null) {
+                nearestTrainsRecyclerView.setVisibility(View.VISIBLE);
+                setupTrainInfoAdapter(segments, nearestTrainsRecyclerView);
+            }
+
+            // Set up the expanded view RecyclerView
+            if (routeDetailsContainer != null) {
+                for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
+                    View view = routeDetailsContainer.getChildAt(i);
+                    String tag = (String) view.getTag();
+                    if (tag != null && tag.startsWith(startStation.getName() + "|")) {
+                        String[] parts = tag.split("\\|");
+                        if (parts.length == 2 && "APITariff".equals(parts[1])) {
+                            RecyclerView nearestTrainsRV = view.findViewById(R.id.nearestTrainsRV);
+                            if (nearestTrainsRV != null) {
+                                nearestTrainsRV.setVisibility(View.VISIBLE);
+                                nearestTrainsRV.setLayoutManager(
+                                        new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
+                                );
+                                setupTrainInfoAdapter(segments, nearestTrainsRV);
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
