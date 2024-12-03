@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -66,7 +65,6 @@ public class RouteInfoFragment extends Fragment {
     private boolean isExpanded = false;
 
     private TextView routeTime;
-    private TextView nearestTrainsTextView;
     private TextView routeStationsCount;
     private TextView routeTransfersCount;
     private TextView routeTitle;
@@ -178,28 +176,21 @@ public class RouteInfoFragment extends Fragment {
         List<RouteSegment> segments = splitRouteIntoSegments(route);
         boolean flatRateTariffApplied = false;
 
-        // Сначала посчитаем все APITariff участки
         for (RouteSegment segment : segments) {
             Tariff tariff = segment.getLine().getTariff();
-            Log.d("RouteInfoFragment", "tariff = " + tariff.getName());
-            if (tariff != null && tariff instanceof APITariff) {
-                Log.d("RouteInfoFragment", "APITariff = " + tariff.getName());
-                tariff.calculateCost(segment, cost -> {
-                    totalCost.updateAndGet(v -> v + cost);
-                    callback.onCostCalculated(totalCost.get());
-                });
-            }
-        }
-
-        // Теперь посчитаем FlatRateTariff, если он есть и еще не был применён
-        for (RouteSegment segment : segments) {
-            Tariff tariff = segment.getLine().getTariff();
-            if (tariff != null && tariff instanceof FlatRateTariff && !flatRateTariffApplied) {
-                flatRateTariffApplied = true;
-                tariff.calculateCost(segment, cost -> {
-                    totalCost.updateAndGet(v -> v + cost);
-                    callback.onCostCalculated(totalCost.get());
-                });
+            if (tariff != null) {
+                if (tariff instanceof APITariff) {
+                    tariff.calculateCost(segment, cost -> {
+                        totalCost.updateAndGet(v -> v + cost);
+                        callback.onCostCalculated(totalCost.get());
+                    });
+                } else if (tariff instanceof FlatRateTariff && !flatRateTariffApplied) {
+                    flatRateTariffApplied = true;
+                    tariff.calculateCost(segment, cost -> {
+                        totalCost.updateAndGet(v -> v + cost);
+                        callback.onCostCalculated(totalCost.get());
+                    });
+                }
             }
         }
     }
@@ -216,7 +207,7 @@ public class RouteInfoFragment extends Fragment {
             }
 
             if (stationLine != currentLine) {
-                segments.add(new RouteSegment(currentSegment, currentLine, 0)); // Зоны пока не учитываем
+                segments.add(new RouteSegment(currentSegment, currentLine, 0));
                 currentSegment = new ArrayList<>();
                 currentLine = stationLine;
             }
@@ -225,7 +216,7 @@ public class RouteInfoFragment extends Fragment {
         }
 
         if (!currentSegment.isEmpty()) {
-            segments.add(new RouteSegment(currentSegment, currentLine, 0)); // Зоны пока не учитываем
+            segments.add(new RouteSegment(currentSegment, currentLine, 0));
         }
 
         return segments;
@@ -352,7 +343,6 @@ public class RouteInfoFragment extends Fragment {
                 Station station = route.get(i);
                 Line line = getLineForStation(station);
 
-                // Используем layout с RecyclerView для всех станций
                 View stationView = inflater.inflate(R.layout.item_route_station, container, false);
                 TextView stationName = stationView.findViewById(R.id.stationName);
                 View stationIndicator = stationView.findViewById(R.id.stationIndicator);
@@ -362,12 +352,10 @@ public class RouteInfoFragment extends Fragment {
                 stationName.setText(station.getName());
                 stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
 
-                // По умолчанию скрываем RecyclerView
                 if (nearestTrainsRV != null) {
                     nearestTrainsRV.setVisibility(View.GONE);
                 }
 
-                // Проверяем, является ли линия типа "double"
                 if (isLineDouble(station)) {
                     stationIndicatorDouble.setVisibility(View.VISIBLE);
                     stationIndicatorDouble.setBackgroundColor(Color.parseColor(station.getColor()));
@@ -384,8 +372,6 @@ public class RouteInfoFragment extends Fragment {
                     stationName.setTypeface(null, Typeface.BOLD);
                 }
 
-                // Сохраняем view в тег для последующего доступа, включая тип линии
-                assert line != null;
                 String tag = station.getName() + "|" + line.getTariff().getName();
                 stationView.setTag(tag);
 
@@ -422,7 +408,6 @@ public class RouteInfoFragment extends Fragment {
         layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         float expandedHeight = layoutExpanded.getMeasuredHeight();
         float density = getResources().getDisplayMetrics().density;
-        Log.d("RouteInfoFragment", "Expanded height: " + expandedHeight);
         if (expandedHeight > 500 * density) {
             expandedHeight = 500 * density;
         }
@@ -433,14 +418,11 @@ public class RouteInfoFragment extends Fragment {
         List<RouteSegment> segments = splitRouteIntoSegments(route);
         for (RouteSegment segment : segments) {
             if (segment.getLine().getTariff() instanceof APITariff) {
-                // Check if it's the first station in the route
                 if (segment.getStations().get(0).equals(route.get(0))) {
-                    // Set up both RecyclerViews
                     fetchAndDisplaySuburbanSchedule(segment.getStations().get(0),
                             segment.getStations().get(segment.getStations().size() - 1),
                             true);
                 } else {
-                    // Only set up the expanded view RecyclerView
                     fetchAndDisplaySuburbanSchedule(segment.getStations().get(0),
                             segment.getStations().get(segment.getStations().size() - 1),
                             false);
@@ -449,16 +431,12 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
-    // Запрос расписания поездов
     private void fetchAndDisplaySuburbanSchedule(Station startStation, Station endStation, boolean isFirstStation) {
         String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
         String from = startStation.getESP();
         String to = endStation.getESP();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
         String date = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        Log.d("RouteInfoFragment", "Fetching suburban schedule: from " + startStation.getName() +
-                " to " + endStation.getName() + " on " + date);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -497,18 +475,15 @@ public class RouteInfoFragment extends Fragment {
         });
     }
 
-    // Отображение поездов на первой suburban станции
     private void displayNearestTrains(Station startStation, List<YandexRaspResponse.Segment> segments, boolean isFirstStation) {
         if (getActivity() == null) return;
 
         getActivity().runOnUiThread(() -> {
-            // Set up the collapsed view RecyclerView if this is the first station
             if (isFirstStation && nearestTrainsRecyclerView != null) {
                 nearestTrainsRecyclerView.setVisibility(View.VISIBLE);
                 setupTrainInfoAdapter(segments, nearestTrainsRecyclerView);
             }
 
-            // Set up the expanded view RecyclerView
             if (routeDetailsContainer != null) {
                 for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
                     View view = routeDetailsContainer.getChildAt(i);
@@ -538,7 +513,6 @@ public class RouteInfoFragment extends Fragment {
 
         for (YandexRaspResponse.Segment segment : segments) {
             try {
-                Log.d("RouteInfoFragment", "Departure: " + segment.getDeparture());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
                 ZonedDateTime departureDateTime = ZonedDateTime.parse(segment.getDeparture(), formatter);
                 long difference = ChronoUnit.MINUTES.between(currentTime, departureDateTime);
@@ -555,8 +529,6 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void setupTrainInfoAdapter(List<YandexRaspResponse.Segment> segments, RecyclerView recyclerView) {
-        Log.d("RouteInfoFragment", "Setting up train info adapter with: " + segments.size() + " segments");
-        Log.d("RouteInfoFragment", "RecyclerView: " + recyclerView.toString());
         TrainInfoAdapter adapter = new TrainInfoAdapter(segments, () -> {
             FullScheduleDialogFragment dialogFragment = FullScheduleDialogFragment.newInstance(segments, route.get(0).getESP(), route.get(route.size() - 1).getESP());
             dialogFragment.show(getChildFragmentManager(), "FullScheduleDialogFragment");
