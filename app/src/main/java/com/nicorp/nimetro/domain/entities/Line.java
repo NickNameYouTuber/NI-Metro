@@ -137,4 +137,8 @@ public class Line implements Parcelable {
     public String getDisplayShape() {
         return displayShape;
     }
+
+    public boolean isAPITariffLine() {
+        return tariff instanceof APITariff;
+    }
 }

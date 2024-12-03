@@ -576,6 +576,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 .commit();
     }
 
+    public Station findStationByNameAndAPITariff(String stationName) {
+        for (Line line : allLines) {
+            if (line.getTariff() instanceof APITariff) {
+                for (Station station : line.getStations()) {
+                    if (station.getName().equals(stationName)) {
+                        return station;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private void showStationsList(List<Station> stations) {
         stationsRecyclerView.setVisibility(View.VISIBLE);
         stationsAdapter.setStations(stations);

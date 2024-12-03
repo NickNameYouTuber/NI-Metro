@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -343,19 +344,26 @@ public class RouteInfoFragment extends Fragment {
     private void populateRouteDetails(LinearLayout container) {
         container.post(() -> {
             container.removeAllViews();
-
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
             for (int i = 0; i < route.size(); i++) {
                 Station station = route.get(i);
+                Line line = getLineForStation(station);
 
+                // Используем layout с RecyclerView для всех станций
                 View stationView = inflater.inflate(R.layout.item_route_station, container, false);
                 TextView stationName = stationView.findViewById(R.id.stationName);
                 View stationIndicator = stationView.findViewById(R.id.stationIndicator);
                 View stationIndicatorDouble = stationView.findViewById(R.id.stationIndicatorDouble);
+                RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
 
                 stationName.setText(station.getName());
                 stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+
+                // По умолчанию скрываем RecyclerView
+                if (nearestTrainsRV != null) {
+                    nearestTrainsRV.setVisibility(View.GONE);
+                }
 
                 // Проверяем, является ли линия типа "double"
                 if (isLineDouble(station)) {
@@ -373,6 +381,13 @@ public class RouteInfoFragment extends Fragment {
                 if (i == 0 || i == route.size() - 1) {
                     stationName.setTypeface(null, Typeface.BOLD);
                 }
+
+                // Сохраняем view в тег для последующего доступа, включая тип линии
+                assert line != null;
+                String tag = station.getName() + "|" + line.getLineType();
+                stationView.setTag(tag);
+
+                Log.d("RouteInfoFragmentT", "Station: " + tag.split("\\|")[0] + ", Line: " + tag.split("\\|")[1]);
 
                 container.addView(stationView);
 
@@ -472,20 +487,26 @@ public class RouteInfoFragment extends Fragment {
 
     // Отображение поездов на первой suburban станции
     private void displayNearestTrains(Station startStation, List<YandexRaspResponse.Segment> segments) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        routeDetailsContainer.post(() -> {
-            for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
-                View stationView = routeDetailsContainer.getChildAt(i);
-                TextView stationName = stationView.findViewById(R.id.stationName);
+        if (routeDetailsContainer == null) return;
 
-                if (stationName != null && stationName.getText().toString().equals(startStation.getName())) {
-                    RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
-                    if (nearestTrainsRV != null) {
-                        nearestTrainsRV.setVisibility(View.VISIBLE);
-                        nearestTrainsRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-                        setupTrainInfoAdapter(segments, nearestTrainsRV);
+        routeDetailsContainer.post(() -> {
+            // Ищем view по тегу с именем станции и типом линии
+            for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
+                View view = routeDetailsContainer.getChildAt(i);
+                String tag = (String) view.getTag();
+                if (tag != null && tag.startsWith(startStation.getName() + "|")) {
+                    String[] parts = tag.split("\\|");
+                    if (parts.length == 2 && "suburban".equals(parts[1])) {
+                        RecyclerView nearestTrainsRV = view.findViewById(R.id.nearestTrainsRV);
+                        if (nearestTrainsRV != null) {
+                            nearestTrainsRV.setVisibility(View.VISIBLE);
+                            nearestTrainsRV.setLayoutManager(
+                                    new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
+                            );
+                            setupTrainInfoAdapter(segments, nearestTrainsRV);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         });
