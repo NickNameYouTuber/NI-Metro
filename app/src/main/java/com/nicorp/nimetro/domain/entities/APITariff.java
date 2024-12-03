@@ -8,6 +8,9 @@ import com.nicorp.nimetro.data.models.YandexRaspResponse;
 
 import org.json.JSONObject;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,17 +27,24 @@ public class APITariff implements Tariff {
                 .build();
 
         YandexRaspApi yandexRaspApi = retrofit.create(YandexRaspApi.class);
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", "e4d3d8fe-a921-4206-8048-8c7217648728", segment.getStations().get(0).getESP(), segment.getStations().get(segment.getStations().size() - 1).getESP(), "esr", "2024-11-24", 1000);
 
-        final int[] price = {0};
+        // Get current date in format YYYY-MM-DD
+        Date date = new Date();
+        String currentDate = date.toInstant().atZone(ZoneId.of("Europe/Moscow")).toLocalDate().toString();
+        Log.d("APITariff", "Current date: " + currentDate);
+
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", "e4d3d8fe-a921-4206-8048-8c7217648728", segment.getStations().get(0).getESP(), segment.getStations().get(segment.getStations().size() - 1).getESP(), "esr", currentDate, 1000);
 
         call.enqueue(new Callback<YandexRaspResponse>() {
             @Override
             public void onResponse(Call<YandexRaspResponse> call, Response<YandexRaspResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     YandexRaspResponse yandexRaspResponse = response.body();
+                    Log.d("APITariff", "Response: " + yandexRaspResponse);
                     if (yandexRaspResponse != null) {
                         for (YandexRaspResponse.Segment segment : yandexRaspResponse.getSegments()) {
+                            Log.d("APITariff", "Segment: " + segment);
+                            Log.d("APITariff", "TicketsInfo: " + segment.getTicketsInfo());
                             if (segment.getTicketsInfo() != null && !segment.getTicketsInfo().getPlaces().isEmpty()) {
                                 double price = segment.getTicketsInfo().getPlaces().get(0).getPrice().getWhole();
                                 Log.d("APITariff", "Price: " + price);

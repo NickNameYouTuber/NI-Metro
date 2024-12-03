@@ -176,28 +176,30 @@ public class RouteInfoFragment extends Fragment {
     private void calculateTotalCost(List<Station> route, TariffCallback callback) {
         AtomicReference<Double> totalCost = new AtomicReference<>(0.0);
         List<RouteSegment> segments = splitRouteIntoSegments(route);
-        boolean flatRateTariffApplied = false; // Флаг для отслеживания применения FlatRateTariff
+        boolean flatRateTariffApplied = false;
 
+        // Сначала посчитаем все APITariff участки
         for (RouteSegment segment : segments) {
             Tariff tariff = segment.getLine().getTariff();
-            Log.d("RouteInfoFragment", "Tariff = " + tariff);
-            if (tariff != null) {
-                if (tariff instanceof FlatRateTariff) {
-                    if (!flatRateTariffApplied) {
-                        // Применяем FlatRateTariff только один раз
-                        flatRateTariffApplied = true;
-                        tariff.calculateCost(segment, cost -> {
-                            totalCost.updateAndGet(v -> new Double((double) (v + cost)));
-                            callback.onCostCalculated(totalCost.get());
-                        });
-                    }
-                } else {
-                    // Для других тарифов просто добавляем стоимость
-                    tariff.calculateCost(segment, cost -> {
-                        totalCost.updateAndGet(v -> new Double((double) (v + cost)));
-                        callback.onCostCalculated(totalCost.get());
-                    });
-                }
+            Log.d("RouteInfoFragment", "tariff = " + tariff.getName());
+            if (tariff != null && tariff instanceof APITariff) {
+                Log.d("RouteInfoFragment", "APITariff = " + tariff.getName());
+                tariff.calculateCost(segment, cost -> {
+                    totalCost.updateAndGet(v -> v + cost);
+                    callback.onCostCalculated(totalCost.get());
+                });
+            }
+        }
+
+        // Теперь посчитаем FlatRateTariff, если он есть и еще не был применён
+        for (RouteSegment segment : segments) {
+            Tariff tariff = segment.getLine().getTariff();
+            if (tariff != null && tariff instanceof FlatRateTariff && !flatRateTariffApplied) {
+                flatRateTariffApplied = true;
+                tariff.calculateCost(segment, cost -> {
+                    totalCost.updateAndGet(v -> v + cost);
+                    callback.onCostCalculated(totalCost.get());
+                });
             }
         }
     }
