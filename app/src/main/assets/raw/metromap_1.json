@@ -11574,7 +11574,7 @@
           "METRO_1906"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
@@ -11725,7 +11725,7 @@
           "METRO_1908"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
@@ -11733,7 +11733,7 @@
           "METRO_1909"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
@@ -11741,7 +11741,7 @@
           "METRO_705"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
@@ -11749,7 +11749,7 @@
           "METRO_705"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
