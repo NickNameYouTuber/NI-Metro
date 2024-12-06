@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -475,10 +476,10 @@ public class MetroMapView extends View {
         if (transfers == null || transfers.isEmpty()) {
             return;
         }
-         for (Transfer transfer : transfers) {
-             List<Station> transferStations = transfer.getStations();
-             drawTransferConnection(canvas, transferStations);
-         }
+        for (Transfer transfer : transfers) {
+            List<Station> transferStations = transfer.getStations();
+            drawTransferConnection(canvas, transferStations, transfer.getType());
+        }
     }
 
     private void drawStations(Canvas canvas) {
@@ -855,6 +856,20 @@ public class MetroMapView extends View {
         canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
     }
 
+    private void drawDashedLine(Canvas canvas, float x1, float y1, float x2, float y2, Paint paint) {
+        Path path = new Path();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
+
+        Paint dashedPaint = new Paint();
+        dashedPaint.setColor(paint.getColor());
+        dashedPaint.setStyle(Paint.Style.STROKE);
+        dashedPaint.setStrokeWidth(paint.getStrokeWidth());
+        dashedPaint.setPathEffect(new DashPathEffect(new float[]{4, 12}, 0)); // Параметры пунктира
+
+        canvas.drawPath(path, dashedPaint);
+    }
+
     private void drawPartialCircle(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(transferPaint.getColor());
@@ -872,7 +887,7 @@ public class MetroMapView extends View {
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
-    private void drawTransferConnection(Canvas canvas, List<Station> stations) {
+    private void drawTransferConnection(Canvas canvas, List<Station> stations, String transferType) {
         if (stations == null || stations.size() < 2) {
             return; // Нужно минимум 2 станции для соединения
         }
@@ -902,23 +917,29 @@ public class MetroMapView extends View {
             float x2 = coordinates[nextIndex * 2];
             float y2 = coordinates[nextIndex * 2 + 1];
 
-            drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+            if (transferType.equals("ground")) {
+                drawDashedLine(canvas, x1, y1, x2, y2, transferPaint);
+            } else {
+                drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+            }
         }
 
-        // Рисуем частичные окружности в каждой точке
-        for (int i = 0; i < stations.size(); i++) {
-            int prevIndex = (i - 1 + stations.size()) % stations.size();
-            int nextIndex = (i + 1) % stations.size();
+        // Рисуем частичные окружности в каждой точке, если тип не "ground"
+        if (!transferType.equals("ground")) {
+            for (int i = 0; i < stations.size(); i++) {
+                int prevIndex = (i - 1 + stations.size()) % stations.size();
+                int nextIndex = (i + 1) % stations.size();
 
-            float currentX = coordinates[i * 2];
-            float currentY = coordinates[i * 2 + 1];
-            float prevX = coordinates[prevIndex * 2];
-            float prevY = coordinates[prevIndex * 2 + 1];
-            float nextX = coordinates[nextIndex * 2];
-            float nextY = coordinates[nextIndex * 2 + 1];
+                float currentX = coordinates[i * 2];
+                float currentY = coordinates[i * 2 + 1];
+                float prevX = coordinates[prevIndex * 2];
+                float prevY = coordinates[prevIndex * 2 + 1];
+                float nextX = coordinates[nextIndex * 2];
+                float nextY = coordinates[nextIndex * 2 + 1];
 
-            drawPartialCircle(canvas, currentX, currentY, 20, 5,
-                    getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
+                drawPartialCircle(canvas, currentX, currentY, 20, 5,
+                        getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
+            }
         }
     }
 
