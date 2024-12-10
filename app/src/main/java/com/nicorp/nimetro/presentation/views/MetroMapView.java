@@ -955,8 +955,9 @@ public class MetroMapView extends View {
         Paint dashedPaint = new Paint();
         dashedPaint.setColor(paint.getColor());
         dashedPaint.setStyle(Paint.Style.STROKE);
-        dashedPaint.setStrokeWidth(paint.getStrokeWidth());
-        dashedPaint.setPathEffect(new DashPathEffect(new float[]{5, 12}, 0)); // Параметры пунктира
+        dashedPaint.setStrokeWidth(paint.getStrokeWidth()-3);
+        float density = getResources().getDisplayMetrics().density;
+        dashedPaint.setPathEffect(new DashPathEffect(new float[]{density * 2, density * 4}, 0)); // Параметры пунктира
 
         // Сохраняем точки в массив
         transferConnectionPoints.add(new PointF(x1, y1));

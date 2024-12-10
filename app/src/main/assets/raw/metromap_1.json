@@ -11484,7 +11484,7 @@
           "METRO_204"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
@@ -11492,7 +11492,7 @@
           "METRO_204"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
