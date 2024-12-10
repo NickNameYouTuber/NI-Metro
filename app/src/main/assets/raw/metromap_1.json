@@ -3824,7 +3824,7 @@
             "name": "Новокосино",
             "x": 1822,
             "y": 730,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_801",
@@ -3847,7 +3847,7 @@
             "name": "Новогиреево",
             "x": 1781,
             "y": 772,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_800",
@@ -3874,7 +3874,7 @@
             "name": "Перово",
             "x": 1758,
             "y": 793,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_801",
@@ -3897,7 +3897,7 @@
             "name": "Шоссе Энтузиастов",
             "x": 1726,
             "y": 826,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_802",
@@ -3924,7 +3924,7 @@
             "name": "Авиамоторная",
             "x": 1653,
             "y": 906,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_803",
@@ -3955,7 +3955,7 @@
             "name": "Площадь Ильича",
             "x": 1502,
             "y": 1051,
-            "textPosition": 0,
+            "textPosition": 6,
             "neighbors": [
               [
                 "METRO_804",
@@ -3986,7 +3986,7 @@
             "name": "Марксистская",
             "x": 1428,
             "y": 1112,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_805",
@@ -4017,7 +4017,7 @@
             "name": "Третьяковская",
             "x": 1312,
             "y": 1113,
-            "textPosition": 0,
+            "textPosition": 2,
             "neighbors": [
               [
                 "METRO_806",
@@ -4059,7 +4059,7 @@
             "name": "Деловой центр",
             "x": 770,
             "y": 1000,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_901",
@@ -4082,7 +4082,7 @@
             "name": "Парк Победы",
             "x": 770,
             "y": 1124,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_900",
@@ -4117,7 +4117,7 @@
             "name": "Минская",
             "x": 727,
             "y": 1234,
-            "textPosition": 0,
+            "textPosition": 2,
             "neighbors": [
               [
                 "METRO_901",
@@ -4152,7 +4152,7 @@
             "name": "Ломоносовский проспект",
             "x": 728,
             "y": 1274,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_902",
@@ -4183,7 +4183,7 @@
             "name": "Раменки",
             "x": 727,
             "y": 1324,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_903",
@@ -4214,7 +4214,7 @@
             "name": "Мичуринский проспект",
             "x": 726,
             "y": 1376,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_904",
@@ -4249,7 +4249,7 @@
             "name": "Озёрная",
             "x": 701,
             "y": 1434,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_905",
@@ -4280,7 +4280,7 @@
             "name": "Говорово",
             "x": 675,
             "y": 1493,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_906",
@@ -4311,7 +4311,7 @@
             "name": "Солнцево",
             "x": 675,
             "y": 1543,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_907",
@@ -4342,7 +4342,7 @@
             "name": "Боровское шоссе",
             "x": 675,
             "y": 1594,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_908",
@@ -4373,7 +4373,7 @@
             "name": "Новопеределкино",
             "x": 675,
             "y": 1657,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_909",
@@ -4404,7 +4404,7 @@
             "name": "Рассказовка",
             "x": 675,
             "y": 1722,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_910",
@@ -4435,7 +4435,7 @@
             "name": "Пыхтино",
             "x": 676,
             "y": 1787,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_911",
@@ -4466,7 +4466,7 @@
             "name": "Аэропорт Внуково",
             "x": 676,
             "y": 1846,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_912",
