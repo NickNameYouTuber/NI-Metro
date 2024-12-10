@@ -762,34 +762,35 @@ public class MetroMapView extends View {
         switch (textPosition) {
             case 1: // Top
                 offsetX = -textWidth / 2;
-                offsetY = -textHeight - 10;
+                offsetY = -textHeight - 15;
                 break;
             case 2: // Top Right
                 offsetX = 20;
-                offsetY = -textHeight - 10;
+                offsetY = -textHeight - 15;
                 break;
             case 3: // Right
-                offsetX = 30;
+                offsetX = 35;
                 offsetY = 8;
                 break;
             case 4: // Bottom Right
                 offsetX = 20;
-                offsetY = textHeight + 10;
+                offsetY = textHeight + 15;
                 break;
             case 5: // Bottom
-                offsetY = textHeight + 30;
+                offsetY = textHeight + 35;
                 offsetX = -textWidth / 2;
                 break;
             case 6: // Bottom Left
-                offsetX = -textWidth / 2 - 10;
-                offsetY = textHeight + 10;
+                offsetX = -textWidth / 2 - 15;
+                offsetY = textHeight + 15;
                 break;
             case 7: // Left
-                offsetX = -textWidth - 30;
+                offsetX = -textWidth - 35;
+                offsetY = 8;
                 break;
             case 8: // Top Left
-                offsetX = -textWidth - 10;
-                offsetY = -textHeight - 10;
+                offsetX = -textWidth - 15;
+                offsetY = -textHeight - 15;
                 break;
             case 9: // Invisible
                 break;
@@ -800,6 +801,22 @@ public class MetroMapView extends View {
         }
 
         if (textPosition != 9) {
+            // Рисуем белый полупрозрачный фон под текстом
+            Paint backgroundPaint = new Paint();
+            backgroundPaint.setColor(Color.argb(190, 255, 255, 255)); // Белый цвет с 50% прозрачностью
+            backgroundPaint.setStyle(Paint.Style.FILL);
+
+            float paddingX = 10; // Отступы по горизонтали
+            float paddingY = 5;  // Отступы по вертикали
+
+            float backgroundLeft = cx + offsetX - paddingX;
+            float backgroundTop = cy + offsetY - paddingY - 15;
+            float backgroundRight = cx + offsetX + textWidth + paddingX;
+            float backgroundBottom = cy + offsetY + textHeight + paddingY - 15;
+
+            canvas.drawRect(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundPaint);
+
+            // Рисуем текст поверх фона
             canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
         }
     }

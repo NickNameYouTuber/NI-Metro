@@ -26,7 +26,7 @@
             "name": "Бульвар Рокоссовского",
             "x": 1486,
             "y": 466,
-            "textPosition": 1,
+            "textPosition": 2,
             "neighbors": [
               [
                 "METRO_101",
@@ -49,7 +49,7 @@
             "name": "Черкизовская",
             "x": 1485,
             "y": 512,
-            "textPosition": 3,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_100",
@@ -296,7 +296,7 @@
             "name": "Библиотека имени Ленина",
             "x": 1082,
             "y": 1089,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_109",
@@ -331,7 +331,7 @@
             "name": "Кропоткинская",
             "x": 991,
             "y": 1143,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_110",
@@ -404,7 +404,7 @@
             "name": "Спортивная",
             "x": 896,
             "y": 1238,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_113",
@@ -431,7 +431,7 @@
             "name": "Воробьёвы горы",
             "x": 821,
             "y": 1313,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_114",
@@ -454,7 +454,7 @@
             "name": "Университет",
             "x": 795,
             "y": 1387,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_115",
@@ -477,7 +477,7 @@
             "name": "Проспект Вернадского",
             "x": 795,
             "y": 1446,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_116",
@@ -504,7 +504,7 @@
             "name": "Юго-Западная",
             "x": 795,
             "y": 1503,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_117",
@@ -527,7 +527,7 @@
             "name": "Тропарёво",
             "x": 795,
             "y": 1553,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_118",
@@ -550,7 +550,7 @@
             "name": "Румянцево",
             "x": 795,
             "y": 1588,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_119",
@@ -573,7 +573,7 @@
             "name": "Саларьево",
             "x": 795,
             "y": 1624,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_120",
@@ -596,7 +596,7 @@
             "name": "Филатов Луг",
             "x": 793,
             "y": 1673,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_121",
@@ -619,7 +619,7 @@
             "name": "Прокшино",
             "x": 793,
             "y": 1719,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_122",
@@ -642,7 +642,7 @@
             "name": "Ольховая",
             "x": 821,
             "y": 1773,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_123",
@@ -665,7 +665,7 @@
             "name": "Новомосковская",
             "x": 868,
             "y": 1821,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_124",
@@ -692,7 +692,7 @@
             "name": "Потапово",
             "x": 940,
             "y": 1839,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_125",
@@ -726,7 +726,7 @@
             "name": "Ховрино",
             "x": 865,
             "y": 340,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_201",
@@ -749,7 +749,7 @@
             "name": "Беломорская",
             "x": 866,
             "y": 371,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_200",
@@ -772,7 +772,7 @@
             "name": "Речной вокзал",
             "x": 866,
             "y": 414,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_201",
@@ -795,7 +795,7 @@
             "name": "Водный стадион",
             "x": 866,
             "y": 460,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_202",
@@ -818,7 +818,7 @@
             "name": "Войковская",
             "x": 866,
             "y": 514,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_203",
@@ -849,7 +849,7 @@
             "name": "Сокол",
             "x": 866,
             "y": 608,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_204",
@@ -872,7 +872,7 @@
             "name": "Аэропорт",
             "x": 867,
             "y": 652,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_205",
@@ -895,7 +895,7 @@
             "name": "Динамо",
             "x": 905,
             "y": 744,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_206",
@@ -949,7 +949,7 @@
             "name": "Маяковская",
             "x": 1052,
             "y": 887,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_208",
@@ -972,7 +972,7 @@
             "name": "Тверская",
             "x": 1111,
             "y": 950,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_209",
@@ -1003,7 +1003,7 @@
             "name": "Театральная",
             "x": 1188,
             "y": 1026,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_210",
@@ -1034,7 +1034,7 @@
             "name": "Новокузнецкая",
             "x": 1298,
             "y": 1139,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_211",
@@ -1092,7 +1092,7 @@
             "name": "Автозаводская",
             "x": 1330,
             "y": 1339,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_213",
@@ -1119,7 +1119,7 @@
             "name": "Технопарк",
             "x": 1330,
             "y": 1417,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_214",
@@ -1142,7 +1142,7 @@
             "name": "Коломенская",
             "x": 1330,
             "y": 1467,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_215",
@@ -1165,7 +1165,7 @@
             "name": "Каширская",
             "x": 1330,
             "y": 1563,
-            "textPosition": 0,
+            "textPosition": 1,
             "neighbors": [
               [
                 "METRO_216",
@@ -1192,7 +1192,7 @@
             "name": "Кантемировская",
             "x": 1356,
             "y": 1612,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_217",
@@ -1215,7 +1215,7 @@
             "name": "Царицыно",
             "x": 1383,
             "y": 1637,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_218",
@@ -1242,7 +1242,7 @@
             "name": "Орехово",
             "x": 1455,
             "y": 1708,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_219",
@@ -1265,7 +1265,7 @@
             "name": "Домодедовская",
             "x": 1500,
             "y": 1752,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_220",
@@ -1288,7 +1288,7 @@
             "name": "Красногвардейская",
             "x": 1539,
             "y": 1796,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_221",
@@ -1315,7 +1315,7 @@
             "name": "Алма-атинская",
             "x": 1557,
             "y": 1862,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_222",
