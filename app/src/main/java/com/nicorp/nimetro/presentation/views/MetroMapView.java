@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -178,7 +179,7 @@ public class MetroMapView extends View {
 
         transferPaint = new Paint();
         transferPaint.setColor(Color.DKGRAY);
-        transferPaint.setStrokeWidth(5);
+        transferPaint.setStrokeWidth(10);
         transferPaint.setStyle(Paint.Style.STROKE);
 
         stationCenterPaint = new Paint();
@@ -843,33 +844,6 @@ public class MetroMapView extends View {
         return null;
     }
 
-    private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 20;
-        float shiftY = -(dx / length) * 20;
-
-        shiftX = -shiftX;
-        shiftY = -shiftY;
-
-        canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
-    }
-
-    private void drawDashedLine(Canvas canvas, float x1, float y1, float x2, float y2, Paint paint) {
-        Path path = new Path();
-        path.moveTo(x1, y1);
-        path.lineTo(x2, y2);
-
-        Paint dashedPaint = new Paint();
-        dashedPaint.setColor(paint.getColor());
-        dashedPaint.setStyle(Paint.Style.STROKE);
-        dashedPaint.setStrokeWidth(paint.getStrokeWidth());
-        dashedPaint.setPathEffect(new DashPathEffect(new float[]{5, 12}, 0)); // Параметры пунктира
-
-        canvas.drawPath(path, dashedPaint);
-    }
-
     private void drawPartialCircle(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(transferPaint.getColor());
@@ -887,60 +861,21 @@ public class MetroMapView extends View {
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
-    private void drawTransferConnection(Canvas canvas, List<Station> stations, String transferType) {
-        if (stations == null || stations.size() < 2) {
-            return; // Нужно минимум 2 станции для соединения
+    private void drawPartialCircleWithColor(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles, String color) {
+        Paint circleOutlinePaint = new Paint();
+        circleOutlinePaint.setColor(Color.parseColor(color));
+        circleOutlinePaint.setStyle(Paint.Style.STROKE);
+        circleOutlinePaint.setStrokeWidth(strokeWidth);
+
+        float startAngle = 0;
+        float sweepAngle = 0;
+        if (angles != null) {
+            startAngle = angles.get(1);
+            sweepAngle = angles.get(0);
         }
 
-        // Получаем координаты всех точек и находим центр
-        float centerX = 0;
-        float centerY = 0;
-        float[] coordinates = new float[stations.size() * 2];
-
-        for (int i = 0; i < stations.size(); i++) {
-            float x = stations.get(i).getX() * COORDINATE_SCALE_FACTOR;
-            float y = stations.get(i).getY() * COORDINATE_SCALE_FACTOR;
-            coordinates[i * 2] = x;
-            coordinates[i * 2 + 1] = y;
-            centerX += x;
-            centerY += y;
-        }
-
-        centerX /= stations.size();
-        centerY /= stations.size();
-
-        // Рисуем линии между всеми точками через центр
-        for (int i = 0; i < stations.size(); i++) {
-            int nextIndex = (i + 1) % stations.size();
-            float x1 = coordinates[i * 2];
-            float y1 = coordinates[i * 2 + 1];
-            float x2 = coordinates[nextIndex * 2];
-            float y2 = coordinates[nextIndex * 2 + 1];
-
-            if (transferType.equals("ground")) {
-                drawDashedLine(canvas, x1, y1, x2, y2, transferPaint);
-            } else {
-                drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
-            }
-        }
-
-        // Рисуем частичные окружности в каждой точке, если тип не "ground"
-        if (!transferType.equals("ground")) {
-            for (int i = 0; i < stations.size(); i++) {
-                int prevIndex = (i - 1 + stations.size()) % stations.size();
-                int nextIndex = (i + 1) % stations.size();
-
-                float currentX = coordinates[i * 2];
-                float currentY = coordinates[i * 2 + 1];
-                float prevX = coordinates[prevIndex * 2];
-                float prevY = coordinates[prevIndex * 2 + 1];
-                float nextX = coordinates[nextIndex * 2];
-                float nextY = coordinates[nextIndex * 2 + 1];
-
-                drawPartialCircle(canvas, currentX, currentY, 20, 5,
-                        getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
-            }
-        }
+        RectF rectF = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+        canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
@@ -974,6 +909,171 @@ public class MetroMapView extends View {
         }
 
         return new ArrayList<>(Arrays.asList((float) (360 - (angle * 180 / Math.PI)), (float) ((Math.atan2(vector2Y, vector2X) * 180 / Math.PI))));
+    }
+
+    private List<PointF> transferConnectionPoints = new ArrayList<>(); // Массив для хранения точек
+
+    private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
+
+        shiftX = -shiftX;
+        shiftY = -shiftY;
+
+        // Сохраняем точки в массив
+        transferConnectionPoints.add(new PointF(x1 + shiftX, y1 + shiftY));
+        transferConnectionPoints.add(new PointF(x2 + shiftX, y2 + shiftY));
+
+        canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
+    }
+
+    private void drawDashedLine(Canvas canvas, float x1, float y1, float x2, float y2, Paint paint) {
+        Path path = new Path();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
+
+        Paint dashedPaint = new Paint();
+        dashedPaint.setColor(paint.getColor());
+        dashedPaint.setStyle(Paint.Style.STROKE);
+        dashedPaint.setStrokeWidth(paint.getStrokeWidth());
+        dashedPaint.setPathEffect(new DashPathEffect(new float[]{5, 12}, 0)); // Параметры пунктира
+
+        // Сохраняем точки в массив
+        transferConnectionPoints.add(new PointF(x1, y1));
+        transferConnectionPoints.add(new PointF(x2, y2));
+
+        canvas.drawPath(path, dashedPaint);
+    }
+
+    private void drawHalfColoredLine(Canvas canvas, float x1, float y1, float x2, float y2, String color1, String color2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
+
+        shiftX = -shiftX;
+        shiftY = -shiftY;
+        canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
+
+        float startX = x1 + shiftX;
+        float startY = y1 + shiftY;
+        float endX = x2 + shiftX;
+        float endY = y2 + shiftY;
+
+        float halfX = (startX + endX) / 2;
+        float halfY = (startY + endY) / 2;
+
+        // Сохраняем точки в массив
+        transferConnectionPoints.add(new PointF(startX, startY));
+        transferConnectionPoints.add(new PointF(halfX, halfY));
+        transferConnectionPoints.add(new PointF(endX, endY));
+
+        // Рисуем первую половину линии с цветом color1
+        Paint paint1 = new Paint();
+        paint1.setColor(Color.parseColor(color2));
+        paint1.setStrokeWidth(10);
+        canvas.drawLine(startX, startY, halfX, halfY, paint1);
+
+        // Рисуем вторую половину линии с цветом color2
+        Paint paint2 = new Paint();
+        paint2.setColor(Color.parseColor(color1));
+        paint2.setStrokeWidth(10);
+        canvas.drawLine(halfX, halfY, endX, endY, paint2);
+    }
+
+    private void drawTransferConnection(Canvas canvas, List<Station> stations, String transferType) {
+        if (stations == null || stations.size() < 2) {
+            return; // Нужно минимум 2 станции для соединения
+        }
+
+        // Очищаем массив точек
+        transferConnectionPoints.clear();
+
+        // Получаем координаты всех точек и находим центр
+        float centerX = 0;
+        float centerY = 0;
+        float[] coordinates = new float[stations.size() * 2];
+
+        for (int i = 0; i < stations.size(); i++) {
+            float x = stations.get(i).getX() * COORDINATE_SCALE_FACTOR;
+            float y = stations.get(i).getY() * COORDINATE_SCALE_FACTOR;
+            coordinates[i * 2] = x;
+            coordinates[i * 2 + 1] = y;
+            centerX += x;
+            centerY += y;
+        }
+
+        centerX /= stations.size();
+        centerY /= stations.size();
+
+        // Рисуем линии между всеми точками через центр
+        for (int i = 0; i < stations.size(); i++) {
+            int nextIndex = (i + 1) % stations.size();
+            float x1 = coordinates[i * 2];
+            float y1 = coordinates[i * 2 + 1];
+            float x2 = coordinates[nextIndex * 2];
+            float y2 = coordinates[nextIndex * 2 + 1];
+
+            if (transferType.equals("crossplatform")) {
+                // Рисуем половины линии с разными цветами
+                drawHalfColoredLine(canvas, x1, y1, x2, y2, stations.get(i).getColor(), stations.get(nextIndex).getColor());
+            } else if (transferType.equals("ground")) {
+                drawDashedLine(canvas, x1, y1, x2, y2, transferPaint);
+            } else {
+                drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+            }
+        }
+
+        // Рисуем частичные окружности в каждой точке, если тип не "ground"
+        if (!transferType.equals("ground")) {
+            for (int i = 0; i < stations.size(); i++) {
+                int prevIndex = (i - 1 + stations.size()) % stations.size();
+                int nextIndex = (i + 1) % stations.size();
+
+                float currentX = coordinates[i * 2];
+                float currentY = coordinates[i * 2 + 1];
+                float prevX = coordinates[prevIndex * 2];
+                float prevY = coordinates[prevIndex * 2 + 1];
+                float nextX = coordinates[nextIndex * 2];
+                float nextY = coordinates[nextIndex * 2 + 1];
+
+                if (transferType.equals("crossplatform")) {
+                    // Рисуем частичный круг с цветом соседней станции
+                    drawPartialCircleWithColor(canvas, currentX, currentY, 20, 5,
+                            getAngle(prevX, prevY, currentX, currentY, nextX, nextY), stations.get(nextIndex).getColor());
+                } else {
+                    drawPartialCircle(canvas, currentX, currentY, 20, 5,
+                            getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
+                }
+            }
+        }
+
+        // Заливаем область белым цветом
+        fillTransferConnectionArea(canvas);
+    }
+
+    private void fillTransferConnectionArea(Canvas canvas) {
+        if (transferConnectionPoints.size() < 3) {
+            return; // Нужно минимум 3 точки для многоугольника
+        }
+
+        // Создаем путь для многоугольника
+        Path path = new Path();
+        path.moveTo(transferConnectionPoints.get(0).x, transferConnectionPoints.get(0).y);
+        for (int i = 1; i < transferConnectionPoints.size(); i++) {
+            path.lineTo(transferConnectionPoints.get(i).x, transferConnectionPoints.get(i).y);
+        }
+        path.close();
+
+        // Заливаем многоугольник белым цветом
+        Paint fillPaint = new Paint();
+        fillPaint.setColor(Color.WHITE);
+        fillPaint.setStyle(Paint.Style.FILL);
+        canvas.drawPath(path, fillPaint);
     }
 
     public void setTranslateX(float v) {

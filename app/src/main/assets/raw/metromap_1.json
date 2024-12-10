@@ -11685,7 +11685,7 @@
           "METRO_610"
         ],
         "time": 3,
-        "type": "default"
+        "type": "crossplatform"
       },
       {
         "stations": [
@@ -11815,7 +11815,7 @@
           "METRO_2021"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
