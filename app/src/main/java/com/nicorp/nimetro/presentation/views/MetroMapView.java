@@ -1060,10 +1060,10 @@ public class MetroMapView extends View {
 
                 if (transferType.equals("crossplatform")) {
                     // Рисуем частичный круг с цветом соседней станции
-                    drawPartialCircleWithColor(canvas, currentX, currentY, 20, 5,
+                    drawPartialCircleWithColor(canvas, currentX, currentY, 20, 6,
                             getAngle(prevX, prevY, currentX, currentY, nextX, nextY), stations.get(nextIndex).getColor());
                 } else {
-                    drawPartialCircle(canvas, currentX, currentY, 20, 5,
+                    drawPartialCircle(canvas, currentX, currentY, 20, 6,
                             getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
                 }
             }

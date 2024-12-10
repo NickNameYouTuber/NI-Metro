@@ -2238,7 +2238,7 @@
             "name": "Курская",
             "x": 1438,
             "y": 931,
-            "textPosition": 2,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_86",
@@ -2277,7 +2277,7 @@
             "name": "Комсомольская",
             "x": 1377,
             "y": 813,
-            "textPosition": 4,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_87",
@@ -2312,7 +2312,7 @@
             "name": "Проспект Мира",
             "x": 1287,
             "y": 745,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_80",
@@ -2339,7 +2339,7 @@
             "name": "Новослободская",
             "x": 1067,
             "y": 745,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_91",
@@ -2366,7 +2366,7 @@
             "name": "Белорусская",
             "x": 973,
             "y": 812,
-            "textPosition": 7,
+            "textPosition": 2,
             "neighbors": [
               [
                 "METRO_88",
@@ -2393,7 +2393,7 @@
             "name": "Краснопресненская",
             "x": 910,
             "y": 945,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_89",
@@ -2420,7 +2420,7 @@
             "name": "Киевская",
             "x": 910,
             "y": 1043,
-            "textPosition": 2,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_90",
@@ -2451,7 +2451,7 @@
             "name": "Парк культуры",
             "x": 969,
             "y": 1164,
-            "textPosition": 7,
+            "textPosition": 4,
             "neighbors": [
               [
                 "METRO_81",
@@ -2478,7 +2478,7 @@
             "name": "Октябрьская",
             "x": 1059,
             "y": 1234,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_82",
@@ -2505,7 +2505,7 @@
             "name": "Добрынинская",
             "x": 1189,
             "y": 1261,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_83",
@@ -2559,7 +2559,7 @@
             "name": "Таганская",
             "x": 1429,
             "y": 1087,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_85",
