@@ -1349,7 +1349,7 @@
             "name": "Пятницкое шоссе",
             "x": 558,
             "y": 392,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_301",
@@ -1368,7 +1368,7 @@
             "name": "Митино",
             "x": 558,
             "y": 439,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_300",
@@ -1391,7 +1391,7 @@
             "name": "Волоколамская",
             "x": 558,
             "y": 498,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_301",
@@ -1418,7 +1418,7 @@
             "name": "Мякинино",
             "x": 558,
             "y": 535,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_302",
@@ -1441,7 +1441,7 @@
             "name": "Строгино",
             "x": 558,
             "y": 603,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_303",
@@ -1464,7 +1464,7 @@
             "name": "Крылатское",
             "x": 558,
             "y": 669,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_304",
@@ -1487,7 +1487,7 @@
             "name": "Молодёжная",
             "x": 558,
             "y": 829,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_305",
@@ -1510,7 +1510,7 @@
             "name": "Кунцевская",
             "x": 592,
             "y": 1140,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_306",
@@ -1541,7 +1541,7 @@
             "name": "Славянский бульвар",
             "x": 643,
             "y": 1140,
-            "textPosition": 0,
+            "textPosition": 4,
             "neighbors": [
               [
                 "METRO_307",
@@ -1568,7 +1568,7 @@
             "name": "Парк Победы",
             "x": 770,
             "y": 1141,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_308",
@@ -1626,7 +1626,7 @@
             "name": "Смоленская",
             "x": 976,
             "y": 1046,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_310",
@@ -1649,7 +1649,7 @@
             "name": "Арбатская",
             "x": 1083,
             "y": 1047,
-            "textPosition": 0,
+            "textPosition": 1,
             "neighbors": [
               [
                 "METRO_311",
@@ -1684,7 +1684,7 @@
             "name": "Площадь Революции",
             "x": 1188,
             "y": 1049,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_312",
@@ -1715,7 +1715,7 @@
             "name": "Курская",
             "x": 1422,
             "y": 931,
-            "textPosition": 8,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_313",
@@ -1754,7 +1754,7 @@
             "name": "Бауманская",
             "x": 1492,
             "y": 865,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_314",
@@ -1777,7 +1777,7 @@
             "name": "Электрозаводская",
             "x": 1553,
             "y": 814,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_315",
@@ -1808,7 +1808,7 @@
             "name": "Семёновская",
             "x": 1593,
             "y": 777,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_316",
@@ -1831,7 +1831,7 @@
             "name": "Партизанская",
             "x": 1639,
             "y": 691,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_317",
@@ -1858,7 +1858,7 @@
             "name": "Измайловская",
             "x": 1639,
             "y": 589,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_318",
@@ -1881,7 +1881,7 @@
             "name": "Первомайская",
             "x": 1639,
             "y": 536,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_319",
@@ -1904,7 +1904,7 @@
             "name": "Щёлковская",
             "x": 1639,
             "y": 466,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_320",
@@ -1938,7 +1938,7 @@
             "name": "Кунцевская",
             "x": 608,
             "y": 1140,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_401",
@@ -1965,7 +1965,7 @@
             "name": "Пионерская",
             "x": 624,
             "y": 1123,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_400",
@@ -1988,7 +1988,7 @@
             "name": "Филёвский парк",
             "x": 646,
             "y": 1099,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_401",
@@ -2011,7 +2011,7 @@
             "name": "Багратионовская",
             "x": 673,
             "y": 1073,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_402",
@@ -2034,7 +2034,7 @@
             "name": "Фили",
             "x": 697,
             "y": 1047,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_403",
@@ -2061,7 +2061,7 @@
             "name": "Кутузовская",
             "x": 732,
             "y": 1045,
-            "textPosition": 0,
+            "textPosition": 1,
             "neighbors": [
               [
                 "METRO_404",
@@ -2092,7 +2092,7 @@
             "name": "Студенческая",
             "x": 809,
             "y": 1045,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_405",
@@ -2115,7 +2115,7 @@
             "name": "Киевская",
             "x": 899,
             "y": 1034,
-            "textPosition": 8,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_406",
@@ -2146,7 +2146,7 @@
             "name": "Смоленская",
             "x": 978,
             "y": 1012,
-            "textPosition": 0,
+            "textPosition": 1,
             "neighbors": [
               [
                 "METRO_407",
@@ -2169,7 +2169,7 @@
             "name": "Арбатская",
             "x": 1020,
             "y": 1018,
-            "textPosition": 0,
+            "textPosition": 2,
             "neighbors": [
               [
                 "METRO_408",
@@ -2192,7 +2192,7 @@
             "name": "Александровский сад",
             "x": 1083,
             "y": 1065,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_409",
@@ -11636,7 +11636,7 @@
           "METRO_318"
         ],
         "time": 3,
-        "type": "default"
+        "type": "ground"
       },
       {
         "stations": [
