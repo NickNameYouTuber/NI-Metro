@@ -6601,7 +6601,7 @@
             "name": "Битцевский парк",
             "x": 1044,
             "y": 1764,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1301",
@@ -6624,7 +6624,7 @@
             "name": "Лесопарковая",
             "x": 1121,
             "y": 1765,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1300",
@@ -6647,7 +6647,7 @@
             "name": "Улица Старокачаловская",
             "x": 1161,
             "y": 1825,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_1301",
@@ -6674,7 +6674,7 @@
             "name": "Улица Скобелевская",
             "x": 1161,
             "y": 1866,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1302",
@@ -6697,7 +6697,7 @@
             "name": "Бульвар адмирала Ушакова",
             "x": 1062,
             "y": 1892,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1303",
@@ -6720,7 +6720,7 @@
             "name": "Улица Горчакова",
             "x": 956,
             "y": 1890,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1304",
@@ -6743,7 +6743,7 @@
             "name": "Бунинская Аллея",
             "x": 868,
             "y": 1890,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1305",
@@ -7589,7 +7589,7 @@
             "name": "Некрасовка",
             "x": 1797,
             "y": 1650,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1601",
@@ -7608,7 +7608,7 @@
             "name": "Лухмановская",
             "x": 1797,
             "y": 1617,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1600",
@@ -7631,7 +7631,7 @@
             "name": "Улица Дмитриевского",
             "x": 1797,
             "y": 1569,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1601",
@@ -7654,7 +7654,7 @@
             "name": "Косино",
             "x": 1774,
             "y": 1462,
-            "textPosition": 0,
+            "textPosition": 5,
             "neighbors": [
               [
                 "METRO_1602",
@@ -7681,7 +7681,7 @@
             "name": "Юго-Восточная",
             "x": 1742,
             "y": 1255,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1603",
@@ -7704,7 +7704,7 @@
             "name": "Окская",
             "x": 1742,
             "y": 1199,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1604",
@@ -7727,7 +7727,7 @@
             "name": "Стахановская",
             "x": 1742,
             "y": 1083,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1605",
@@ -7750,7 +7750,7 @@
             "name": "Нижегородская",
             "x": 1728,
             "y": 1027,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_1606",
@@ -7796,7 +7796,7 @@
             "name": "Новаторская",
             "x": 913,
             "y": 1544,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_1701",
@@ -7816,10 +7816,10 @@
           },
           {
             "id": "METRO_1701",
-            "name": "Университет дружбы народов",
+            "name": "Ун-т дружбы народов",
             "x": 914,
             "y": 1617,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1700",
@@ -7842,7 +7842,7 @@
             "name": "Генерала Тюленева",
             "x": 914,
             "y": 1665,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1701",
@@ -7865,7 +7865,7 @@
             "name": "Тютчевская",
             "x": 914,
             "y": 1703,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1702",
@@ -7888,7 +7888,7 @@
             "name": "Корниловская",
             "x": 914,
             "y": 1739,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1703",
@@ -7911,7 +7911,7 @@
             "name": "Коммунарка",
             "x": 914,
             "y": 1775,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1704",
@@ -7934,7 +7934,7 @@
             "name": "Новомосковская",
             "x": 890,
             "y": 1810,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_1705",

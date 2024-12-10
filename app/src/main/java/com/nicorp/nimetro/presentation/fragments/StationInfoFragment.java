@@ -373,7 +373,76 @@ public class StationInfoFragment extends Fragment {
         transferCircle.setTypeface(customTypeface, Typeface.BOLD);
         transferCircle.setLayoutParams(params);
 
+        // Добавляем обработчик клика
+        transferCircle.setOnClickListener(v -> {
+            // Находим линию, к которой принадлежит станция перехода
+            Line transferLine = findLineForStation(transferStation);
+            if (transferLine != null) {
+                // Находим предыдущую и следующую станции на линии
+                Station prevTransferStation = findPrevStation(transferLine, transferStation);
+                Station nextTransferStation = findNextStation(transferLine, transferStation);
+
+                // Обновляем информацию в фрагменте
+                updateStationInfo(transferStation, transferLine, prevTransferStation, nextTransferStation, transfers);
+            }
+        });
+
         return transferCircle;
+    }
+
+    private Line findLineForStation(Station station) {
+        for (Line line : lines) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
+        return null;
+    }
+
+    private Station findPrevStation(Line line, Station currentStation) {
+        List<Station> stations = line.getStations();
+        int index = stations.indexOf(currentStation);
+        if (index > 0) {
+            return stations.get(index - 1);
+        }
+        return null;
+    }
+
+    private Station findNextStation(Line line, Station currentStation) {
+        List<Station> stations = line.getStations();
+        int index = stations.indexOf(currentStation);
+        if (index < stations.size() - 1) {
+            return stations.get(index + 1);
+        }
+        return null;
+    }
+
+    public void updateStationInfo(Station newStation, Line newLine, Station newPrevStation, Station newNextStation, List<Transfer> newTransfers) {
+        this.station = newStation;
+        this.line = newLine;
+        this.prevStation = newPrevStation;
+        this.nextStation = newNextStation;
+        this.transfers = newTransfers;
+
+        // Обновляем UI
+        TextView stationName = getView().findViewById(R.id.stationName);
+        stationName.setText(newStation.getName());
+
+        TextView prevStationName = getView().findViewById(R.id.prevStationName);
+        setStationNameVisibility(prevStationName, newPrevStation);
+
+        TextView nextStationName = getView().findViewById(R.id.nextStationName);
+        setStationNameVisibility(nextStationName, newNextStation);
+
+        TextView lineNumber = getView().findViewById(R.id.lineNumber);
+        setLineNumberAndColor(lineNumber, newStation);
+
+        LinearLayout transferCirclesContainer = getView().findViewById(R.id.transferCirclesContainer);
+        transferCirclesContainer.removeAllViews(); // Очищаем старые переходы
+        addTransferCircles(transferCirclesContainer); // Добавляем новые переходы
+
+        // Обновляем расписание (если нужно)
+        fetchESPSchedule(newStation);
     }
 
     private String getLineIdForStation(Station station) {
