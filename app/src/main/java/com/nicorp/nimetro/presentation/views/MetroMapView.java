@@ -41,8 +41,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * MetroMapView - пользовательский View для отображения карты метро.
+ * Поддерживает масштабирование, перемещение, отрисовку линий, станций, переходов и других объектов.
+ */
 public class MetroMapView extends View {
 
+    // Данные карты
     private List<Line> lines;
     private List<Station> stations;
     private List<Station> route;
@@ -54,6 +59,7 @@ public class MetroMapView extends View {
     private List<Line> grayedLines;
     private List<Station> grayedStations;
 
+    // Кисти для отрисовки
     private Paint linePaint;
     private Paint stationPaint;
     private Paint selectedStationPaint;
@@ -65,36 +71,50 @@ public class MetroMapView extends View {
     private Paint riverPaint;
     private Paint grayedPaint;
 
+    // Режим редактирования
     private boolean isEditMode = false;
 
+    // Слушатель кликов на станции
     private OnStationClickListener listener;
 
+    // Параметры масштабирования и перемещения
     public float scaleFactor = 1.0f;
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
+    // Детекторы жестов
     public GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
 
+    // Константы
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
     private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
 
+    // Фоновое изображение
     private Bitmap backgroundBitmap;
-    private Map<Float, Bitmap> cacheBitmaps = new HashMap<>(); // Кэшированные битмапы для разных уровней детализации
-    public boolean needsRedraw = true; // Флаг, указывающий на необходимость перерисовки
-    private Matrix transformMatrix; // Матрица трансформации для перемещения и масштабирования
-    private Bitmap cacheBitmap; // Битмап для кэширования всей карты
 
+    // Кэширование битмапов
+    private Map<Float, Bitmap> cacheBitmaps = new HashMap<>();
+    public boolean needsRedraw = true;
+    private Matrix transformMatrix;
+    private Bitmap cacheBitmap;
+
+    // Флаг активности карты метро
     private boolean isActiveMapMetro = true;
 
+    // Массив для хранения точек соединения переходов
+    private List<PointF> transferConnectionPoints = new ArrayList<>();
+
+    /**
+     * Конструкторы
+     */
     public MetroMapView(Context context) {
         super(context);
         init();
         translateY = -300;
         translateX = -1600;
         scaleFactor = 0.4f;
-
         updateTransformMatrix();
         invalidate();
     }
@@ -105,7 +125,6 @@ public class MetroMapView extends View {
         translateY = -300;
         translateX = -1600;
         scaleFactor = 0.4f;
-
         updateTransformMatrix();
         invalidate();
     }
@@ -116,11 +135,13 @@ public class MetroMapView extends View {
         translateY = -300;
         translateX = -1600;
         scaleFactor = 0.4f;
-
         updateTransformMatrix();
         invalidate();
     }
 
+    /**
+     * Геттеры для параметров масштабирования и перемещения
+     */
     public float getScaleFactor() {
         return scaleFactor;
     }
@@ -133,12 +154,18 @@ public class MetroMapView extends View {
         return translateY;
     }
 
+    /**
+     * Установка режима редактирования
+     */
     public void setEditMode(boolean editMode) {
         isEditMode = editMode;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Инициализация View
+     */
     private void init() {
         initializePaints();
         initializeGestureDetectors();
@@ -148,6 +175,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Инициализация кистей
+     */
     private void initializePaints() {
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
@@ -170,8 +200,6 @@ public class MetroMapView extends View {
         routePaint = new Paint();
         routePaint.setColor(Color.YELLOW);
         routePaint.setStrokeWidth(9);
-
-        int colorOnSurface = Color.WHITE;
 
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
@@ -197,6 +225,9 @@ public class MetroMapView extends View {
         grayedPaint.setStrokeWidth(9);
     }
 
+    /**
+     * Инициализация детекторов жестов
+     */
     private void initializeGestureDetectors() {
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -215,13 +246,16 @@ public class MetroMapView extends View {
                 scaleFactor *= detector.getScaleFactor();
                 scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 2.0f));
                 updateTransformMatrix();
-                needsRedraw = true; // Помечаем, что требуется перерисовка
+                needsRedraw = true;
                 invalidate();
                 return true;
             }
         });
     }
 
+    /**
+     * Обновление матрицы трансформации
+     */
     public void updateTransformMatrix() {
         Log.d("MetroMapView", "Transform matrix: " + translateX + ", " + translateY + ", " + scaleFactor);
         transformMatrix.reset();
@@ -229,23 +263,35 @@ public class MetroMapView extends View {
         transformMatrix.postScale(scaleFactor, scaleFactor);
     }
 
+    /**
+     * Загрузка фонового изображения
+     */
     private void loadBackgroundBitmap() {
         Log.d("MetroMapView", "Loading background bitmap...");
         backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.metro_map);
     }
 
+    /**
+     * Очистка маршрута
+     */
     public void clearRoute() {
         this.route = null;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Очистка выбранных станций
+     */
     public void clearSelectedStations() {
         this.selectedStations = null;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Установка данных карты
+     */
     public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects, List<Line> grayedLines, List<Station> grayedStations) {
         this.lines = lines;
         this.stations = stations;
@@ -254,44 +300,57 @@ public class MetroMapView extends View {
         this.mapObjects = mapObjects;
         this.grayedLines = grayedLines;
         this.grayedStations = grayedStations;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Установка маршрута
+     */
     public void setRoute(List<Station> route) {
         this.route = route;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Установка выбранных станций
+     */
     public void setSelectedStations(List<Station> selectedStations) {
         this.selectedStations = selectedStations;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Установка слушателя кликов на станции
+     */
     public void setOnStationClickListener(OnStationClickListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Установка активности карты метро
+     */
     public void setActiveMap(boolean isMetroMap) {
         this.isActiveMapMetro = isMetroMap;
-        needsRedraw = true; // Помечаем, что требуется перерисовка
+        needsRedraw = true;
         invalidate();
     }
 
+    /**
+     * Отрисовка View
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Если необходима перерисовка кэша
         if (needsRedraw) {
             Log.d("MetroMapView", "Redrawing cache...");
             createCacheBitmap(10000, 10000);
             needsRedraw = false;
         }
 
-        // Выбираем подходящий уровень детализации
         float lodScaleFactor = getLodScaleFactor();
         Bitmap cacheBitmap = cacheBitmaps.get(lodScaleFactor);
         if (cacheBitmap == null) {
@@ -299,10 +358,12 @@ public class MetroMapView extends View {
             cacheBitmaps.put(lodScaleFactor, cacheBitmap);
         }
 
-        // Отрисовываем кэшированный битмап с применением трансформации
         canvas.drawBitmap(cacheBitmap, transformMatrix, null);
     }
 
+    /**
+     * Определение уровня детализации
+     */
     private float getLodScaleFactor() {
         if (scaleFactor < 0.5f) {
             return 0.5f;
@@ -313,34 +374,38 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Изменение размера View
+     */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (w > 0 && h > 0) {
-            // Создаем кэш-битмап при изменении размера view
             createCacheBitmap(w, h);
             needsRedraw = true;
         }
     }
 
+    /**
+     * Создание кэш-битмапа
+     */
     private Bitmap createCacheBitmap(int width, int height) {
-        // Освобождаем память от старого битмапа, если он существует
         cacheBitmaps = new HashMap<>();
         cacheBitmap = null;
         Log.d("MetroMapView", "Cache bitmap cleared");
 
-        // Создаем новый битмап для кэширования
         Bitmap cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas cacheCanvas = new Canvas(cacheBitmap);
 
-        // Отрисовываем все элементы карты в кэш
         drawMapContents(cacheCanvas);
 
         return cacheBitmap;
     }
 
+    /**
+     * Отрисовка содержимого карты
+     */
     private void drawMapContents(Canvas canvas) {
-        // Отрисовка фонового изображения
         if (backgroundBitmap != null) {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
@@ -365,6 +430,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка затененной карты
+     */
     private void drawGrayedMap(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
         Paint grayedLinePaint = new Paint(grayedPaint);
@@ -420,6 +488,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка рек
+     */
     private void drawRivers(Canvas canvas) {
         if (rivers != null) {
             for (River river : rivers) {
@@ -428,6 +499,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка линий
+     */
     private void drawLines(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
 
@@ -464,6 +538,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Поиск станции по ID
+     */
     private Station findStationById(String id, List<Station> stations) {
         for (Station station : stations) {
             if (station.getId().equals(id)) {
@@ -473,6 +550,9 @@ public class MetroMapView extends View {
         return null;
     }
 
+    /**
+     * Отрисовка переходов
+     */
     private void drawTransfers(Canvas canvas) {
         if (transfers == null || transfers.isEmpty()) {
             return;
@@ -483,6 +563,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка станций
+     */
     private void drawStations(Canvas canvas) {
         for (Station station : stations) {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
@@ -500,6 +583,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка маршрута
+     */
     private void drawRoute(Canvas canvas) {
         if (route != null && route.size() > 1) {
             for (int i = 0; i < route.size() - 1; i++) {
@@ -510,6 +596,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка объектов карты
+     */
     private void drawMapObjects(Canvas canvas) {
         if (mapObjects != null) {
             for (MapObject mapObject : mapObjects) {
@@ -518,6 +607,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка объекта карты
+     */
     private void drawMapObject(Canvas canvas, MapObject mapObject) {
         float objectX = mapObject.getPosition().x * COORDINATE_SCALE_FACTOR;
         float objectY = mapObject.getPosition().y * COORDINATE_SCALE_FACTOR;
@@ -536,6 +628,9 @@ public class MetroMapView extends View {
         canvas.drawText(mapObject.getdisplayNumber(), objectX + 40, objectY, objectPaint);
     }
 
+    /**
+     * Отрисовка реки
+     */
     private void drawRiver(Canvas canvas, River river) {
         List<Point> points = river.getPoints();
         int width = river.getWidth();
@@ -569,6 +664,9 @@ public class MetroMapView extends View {
         canvas.drawPath(riverPath, riverPaint);
     }
 
+    /**
+     * Вычисление длины реки
+     */
     private float calculateRiverLength(List<Point> points) {
         float riverLength = 0;
         for (int i = 1; i < points.size(); i++) {
@@ -579,6 +677,9 @@ public class MetroMapView extends View {
         return riverLength;
     }
 
+    /**
+     * Отрисовка линии с промежуточными точками
+     */
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType, Paint paint) {
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
@@ -609,6 +710,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка маршрута с промежуточными точками
+     */
     private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
         List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
@@ -630,6 +734,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка двойной линии
+     */
     private void drawDoubleLine(Canvas canvas, Station station1, Station station2, Paint paint) {
         float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
         float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
@@ -655,23 +762,23 @@ public class MetroMapView extends View {
         canvas.drawLine(x1, y1, x2, y2, whitePaint);
     }
 
+    /**
+     * Отрисовка двойной кривой Безье
+     */
     private void drawDoubleBezierCurve(Canvas canvas, Point start, Point control1, Point control2, Point end, Paint paint) {
-        // Создаем две кривые Безье, смещенные относительно друг друга
         Path path1 = new Path();
         Path path2 = new Path();
         Path fillPath = new Path();
 
         paint.setStrokeWidth(6);
 
-        // Вычисляем смещение для кривых
-        float offset = 2.5f; // Смещение в пикселях (половина ширины линии)
+        float offset = 2.5f;
         float dx = end.x - start.x;
         float dy = end.y - start.y;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
         float nx = dy / length;
         float ny = -dx / length;
 
-        // Точки для первой кривой (смещение вправо)
         float x1Start = (start.x + nx * offset) * COORDINATE_SCALE_FACTOR;
         float y1Start = (start.y + ny * offset) * COORDINATE_SCALE_FACTOR;
         float x1Control1 = (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR;
@@ -681,7 +788,6 @@ public class MetroMapView extends View {
         float x1End = (end.x + nx * offset) * COORDINATE_SCALE_FACTOR;
         float y1End = (end.y + ny * offset) * COORDINATE_SCALE_FACTOR;
 
-        // Точки для второй кривой (смещение влево)
         float x2Start = (start.x - nx * offset) * COORDINATE_SCALE_FACTOR;
         float y2Start = (start.y - ny * offset) * COORDINATE_SCALE_FACTOR;
         float x2Control1 = (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR;
@@ -691,34 +797,31 @@ public class MetroMapView extends View {
         float x2End = (end.x - nx * offset) * COORDINATE_SCALE_FACTOR;
         float y2End = (end.y - ny * offset) * COORDINATE_SCALE_FACTOR;
 
-        // Первая кривая
         path1.moveTo(x1Start, y1Start);
         path1.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
 
-        // Вторая кривая
         path2.moveTo(x2Start, y2Start);
         path2.cubicTo(x2Control1, y2Control1, x2Control2, y2Control2, x2End, y2End);
 
-        // Создаем путь для заливки
         fillPath.moveTo(x1Start, y1Start);
         fillPath.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
         fillPath.lineTo(x2End, y2End);
         fillPath.cubicTo(x2Control2, y2Control2, x2Control1, y2Control1, x2Start, y2Start);
-        fillPath.close(); // Замыкаем путь
+        fillPath.close();
 
-        // Устанавливаем белую заливку
         Paint fillPaint = new Paint();
         fillPaint.setColor(Color.WHITE);
         fillPaint.setStyle(Paint.Style.FILL);
 
-        // Заливаем область между кривыми
         canvas.drawPath(fillPath, fillPaint);
 
-        // Рисуем обе кривые
         canvas.drawPath(path1, paint);
         canvas.drawPath(path2, paint);
     }
 
+    /**
+     * Отрисовка промежуточных точек
+     */
     private void drawIntermediatePoints(Canvas canvas) {
         Log.d("MetroMapView", "drawIntermediatePoints");
         for (Station station : stations) {
@@ -731,6 +834,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка промежуточных точек
+     */
     private void drawIntermediatePoints(Canvas canvas, List<Point> intermediatePoints, Paint paint) {
         for (Point point : intermediatePoints) {
             Log.d("MetroMapView", "drawIntermediatePoints: " + point.x + " " + point.y);
@@ -738,6 +844,9 @@ public class MetroMapView extends View {
         }
     }
 
+    /**
+     * Отрисовка кривой Безье
+     */
     private void drawBezierCurve(Canvas canvas, Point start, Point control1, Point control2, Point end, Paint paint) {
         Path path = new Path();
         paint.setStyle(Paint.Style.STROKE);
@@ -750,6 +859,9 @@ public class MetroMapView extends View {
         canvas.drawPath(path, paint);
     }
 
+    /**
+     * Отрисовка текста в зависимости от позиции
+     */
     private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
@@ -801,13 +913,12 @@ public class MetroMapView extends View {
         }
 
         if (textPosition != 9) {
-            // Рисуем белый полупрозрачный фон под текстом
             Paint backgroundPaint = new Paint();
-            backgroundPaint.setColor(Color.argb(190, 255, 255, 255)); // Белый цвет с 50% прозрачностью
+            backgroundPaint.setColor(Color.argb(190, 255, 255, 255));
             backgroundPaint.setStyle(Paint.Style.FILL);
 
-            float paddingX = 10; // Отступы по горизонтали
-            float paddingY = 5;  // Отступы по вертикали
+            float paddingX = 10;
+            float paddingY = 5;
 
             float backgroundLeft = cx + offsetX - paddingX;
             float backgroundTop = cy + offsetY - paddingY - 15;
@@ -816,18 +927,19 @@ public class MetroMapView extends View {
 
             canvas.drawRect(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundPaint);
 
-            // Рисуем текст поверх фона
             canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
         }
     }
 
+    /**
+     * Обработка событий касания
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = scaleGestureDetector.onTouchEvent(event);
         result = gestureDetector.onTouchEvent(event) || result;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            // Преобразуем координаты касания с учетом трансформации
             float[] point = new float[] {event.getX(), event.getY()};
             Matrix inverseMatrix = new Matrix();
             transformMatrix.invert(inverseMatrix);
@@ -849,6 +961,9 @@ public class MetroMapView extends View {
         return result || super.onTouchEvent(event);
     }
 
+    /**
+     * Поиск станции по координатам
+     */
     public Station findStationAt(float x, float y) {
         Log.d("MetroMapView", "Finding station at " + x + ", " + y);
         List<Station> activeStations = stations;
@@ -861,6 +976,9 @@ public class MetroMapView extends View {
         return null;
     }
 
+    /**
+     * Отрисовка частичного круга
+     */
     private void drawPartialCircle(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(transferPaint.getColor());
@@ -878,6 +996,9 @@ public class MetroMapView extends View {
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
+    /**
+     * Отрисовка частичного круга с цветом
+     */
     private void drawPartialCircleWithColor(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles, String color) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(Color.parseColor(color));
@@ -895,6 +1016,9 @@ public class MetroMapView extends View {
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
+    /**
+     * Вычисление угла
+     */
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
         double dx1 = x2 - x1;
         double dy1 = y2 - y1;
@@ -928,8 +1052,9 @@ public class MetroMapView extends View {
         return new ArrayList<>(Arrays.asList((float) (360 - (angle * 180 / Math.PI)), (float) ((Math.atan2(vector2Y, vector2X) * 180 / Math.PI))));
     }
 
-    private List<PointF> transferConnectionPoints = new ArrayList<>(); // Массив для хранения точек
-
+    /**
+     * Отрисовка смещенной линии
+     */
     private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
         float dx = x2 - x1;
         float dy = y2 - y1;
@@ -940,13 +1065,15 @@ public class MetroMapView extends View {
         shiftX = -shiftX;
         shiftY = -shiftY;
 
-        // Сохраняем точки в массив
         transferConnectionPoints.add(new PointF(x1 + shiftX, y1 + shiftY));
         transferConnectionPoints.add(new PointF(x2 + shiftX, y2 + shiftY));
 
         canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
     }
 
+    /**
+     * Отрисовка пунктирной линии
+     */
     private void drawDashedLine(Canvas canvas, float x1, float y1, float x2, float y2, Paint paint) {
         Path path = new Path();
         path.moveTo(x1, y1);
@@ -957,15 +1084,17 @@ public class MetroMapView extends View {
         dashedPaint.setStyle(Paint.Style.STROKE);
         dashedPaint.setStrokeWidth(paint.getStrokeWidth()-3);
         float density = getResources().getDisplayMetrics().density;
-        dashedPaint.setPathEffect(new DashPathEffect(new float[]{density * 2, density * 4}, 0)); // Параметры пунктира
+        dashedPaint.setPathEffect(new DashPathEffect(new float[]{density * 2, density * 4}, 0));
 
-        // Сохраняем точки в массив
         transferConnectionPoints.add(new PointF(x1, y1));
         transferConnectionPoints.add(new PointF(x2, y2));
 
         canvas.drawPath(path, dashedPaint);
     }
 
+    /**
+     * Отрисовка половины линии с разными цветами
+     */
     private void drawHalfColoredLine(Canvas canvas, float x1, float y1, float x2, float y2, String color1, String color2) {
         float dx = x2 - x1;
         float dy = y2 - y1;
@@ -985,33 +1114,31 @@ public class MetroMapView extends View {
         float halfX = (startX + endX) / 2;
         float halfY = (startY + endY) / 2;
 
-        // Сохраняем точки в массив
         transferConnectionPoints.add(new PointF(startX, startY));
         transferConnectionPoints.add(new PointF(halfX, halfY));
         transferConnectionPoints.add(new PointF(endX, endY));
 
-        // Рисуем первую половину линии с цветом color1
         Paint paint1 = new Paint();
         paint1.setColor(Color.parseColor(color2));
         paint1.setStrokeWidth(10);
         canvas.drawLine(startX, startY, halfX, halfY, paint1);
 
-        // Рисуем вторую половину линии с цветом color2
         Paint paint2 = new Paint();
         paint2.setColor(Color.parseColor(color1));
         paint2.setStrokeWidth(10);
         canvas.drawLine(halfX, halfY, endX, endY, paint2);
     }
 
+    /**
+     * Отрисовка соединения перехода
+     */
     private void drawTransferConnection(Canvas canvas, List<Station> stations, String transferType) {
         if (stations == null || stations.size() < 2) {
-            return; // Нужно минимум 2 станции для соединения
+            return;
         }
 
-        // Очищаем массив точек
         transferConnectionPoints.clear();
 
-        // Получаем координаты всех точек и находим центр
         float centerX = 0;
         float centerY = 0;
         float[] coordinates = new float[stations.size() * 2];
@@ -1028,7 +1155,6 @@ public class MetroMapView extends View {
         centerX /= stations.size();
         centerY /= stations.size();
 
-        // Рисуем линии между всеми точками через центр
         for (int i = 0; i < stations.size(); i++) {
             int nextIndex = (i + 1) % stations.size();
             float x1 = coordinates[i * 2];
@@ -1037,7 +1163,6 @@ public class MetroMapView extends View {
             float y2 = coordinates[nextIndex * 2 + 1];
 
             if (transferType.equals("crossplatform")) {
-                // Рисуем половины линии с разными цветами
                 drawHalfColoredLine(canvas, x1, y1, x2, y2, stations.get(i).getColor(), stations.get(nextIndex).getColor());
             } else if (transferType.equals("ground")) {
                 drawDashedLine(canvas, x1, y1, x2, y2, transferPaint);
@@ -1046,7 +1171,6 @@ public class MetroMapView extends View {
             }
         }
 
-        // Рисуем частичные окружности в каждой точке, если тип не "ground"
         if (!transferType.equals("ground")) {
             for (int i = 0; i < stations.size(); i++) {
                 int prevIndex = (i - 1 + stations.size()) % stations.size();
@@ -1060,7 +1184,6 @@ public class MetroMapView extends View {
                 float nextY = coordinates[nextIndex * 2 + 1];
 
                 if (transferType.equals("crossplatform")) {
-                    // Рисуем частичный круг с цветом соседней станции
                     drawPartialCircleWithColor(canvas, currentX, currentY, 20, 6,
                             getAngle(prevX, prevY, currentX, currentY, nextX, nextY), stations.get(nextIndex).getColor());
                 } else {
@@ -1070,16 +1193,17 @@ public class MetroMapView extends View {
             }
         }
 
-        // Заливаем область белым цветом
         fillTransferConnectionArea(canvas);
     }
 
+    /**
+     * Заливка области перехода
+     */
     private void fillTransferConnectionArea(Canvas canvas) {
         if (transferConnectionPoints.size() < 3) {
-            return; // Нужно минимум 3 точки для многоугольника
+            return;
         }
 
-        // Создаем путь для многоугольника
         Path path = new Path();
         path.moveTo(transferConnectionPoints.get(0).x, transferConnectionPoints.get(0).y);
         for (int i = 1; i < transferConnectionPoints.size(); i++) {
@@ -1087,13 +1211,15 @@ public class MetroMapView extends View {
         }
         path.close();
 
-        // Заливаем многоугольник белым цветом
         Paint fillPaint = new Paint();
         fillPaint.setColor(Color.WHITE);
         fillPaint.setStyle(Paint.Style.FILL);
         canvas.drawPath(path, fillPaint);
     }
 
+    /**
+     * Установка смещения по X
+     */
     public void setTranslateX(float v) {
         translateX = v;
         updateTransformMatrix();
@@ -1101,6 +1227,9 @@ public class MetroMapView extends View {
         invalidate();
     }
 
+    /**
+     * Установка смещения по Y
+     */
     public void setTranslateY(float v) {
         translateY = v;
         updateTransformMatrix();
@@ -1108,18 +1237,26 @@ public class MetroMapView extends View {
         invalidate();
     }
 
+    /**
+     * Получение матрицы трансформации
+     */
     public Matrix getTransformMatrix() {
         return transformMatrix;
     }
 
+    /**
+     * Интерфейс для обработки кликов на станции
+     */
     public interface OnStationClickListener {
         void onStationClick(Station station);
     }
 
+    /**
+     * Освобождение ресурсов при удалении View
+     */
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        // Освобождаем память
         for (Bitmap bitmap : cacheBitmaps.values()) {
             if (bitmap != null && !bitmap.isRecycled()) {
                 bitmap.recycle();
