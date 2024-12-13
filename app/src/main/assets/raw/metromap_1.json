@@ -6050,7 +6050,7 @@
             "name": "Аминьевская",
             "x": 669,
             "y": 1297,
-            "textPosition": 9,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1208",
@@ -7972,7 +7972,7 @@
             "name": "Одинцово",
             "x": 539,
             "y": 1342,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1801",
@@ -7995,7 +7995,7 @@
             "name": "Баковка",
             "x": 538,
             "y": 1314,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1800",
@@ -8022,7 +8022,7 @@
             "name": "Сколково",
             "x": 539,
             "y": 1286,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1801",
@@ -8049,7 +8049,7 @@
             "name": "Немчиновка",
             "x": 538,
             "y": 1261,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1802",
@@ -8076,7 +8076,7 @@
             "name": "Сетунь",
             "x": 545,
             "y": 1234,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_1803",
@@ -8103,7 +8103,7 @@
             "name": "Рабочий Посёлок",
             "x": 574,
             "y": 1208,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_1804",
@@ -8130,7 +8130,7 @@
             "name": "Кунцевская",
             "x": 605,
             "y": 1181,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_1805",
@@ -10480,7 +10480,7 @@
             "name": "Апрелевка",
             "x": 550,
             "y": 1895,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2101",
@@ -10499,7 +10499,7 @@
             "name": "Победа",
             "x": 550,
             "y": 1853,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2100",
@@ -10522,7 +10522,7 @@
             "name": "Крёкшино",
             "x": 550,
             "y": 1817,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2101",
@@ -10545,7 +10545,7 @@
             "name": "Санино",
             "x": 550,
             "y": 1779,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2102",
@@ -10568,7 +10568,7 @@
             "name": "Кокошкино",
             "x": 550,
             "y": 1733,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2103",
@@ -10591,7 +10591,7 @@
             "name": "Толстопальцево",
             "x": 550,
             "y": 1690,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2104",
@@ -10614,7 +10614,7 @@
             "name": "Лесной Городок",
             "x": 550,
             "y": 1649,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2105",
@@ -10637,7 +10637,7 @@
             "name": "Внуково",
             "x": 550,
             "y": 1610,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2106",
@@ -10660,7 +10660,7 @@
             "name": "Мичуринец",
             "x": 550,
             "y": 1568,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2107",
@@ -10683,7 +10683,7 @@
             "name": "Переделкино",
             "x": 550,
             "y": 1531,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2108",
@@ -10706,7 +10706,7 @@
             "name": "Новопеределкино",
             "x": 570,
             "y": 1488,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_2111",
@@ -10725,7 +10725,7 @@
             "name": "Солнечная",
             "x": 550,
             "y": 1438,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2109",
@@ -10752,7 +10752,7 @@
             "name": "Мещерская",
             "x": 568,
             "y": 1383,
-            "textPosition": 0,
+            "textPosition": 4,
             "neighbors": [
               [
                 "METRO_2111",
@@ -10775,7 +10775,7 @@
             "name": "Очаково",
             "x": 617,
             "y": 1320,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "METRO_2112",
@@ -10798,7 +10798,7 @@
             "name": "Аминьевская",
             "x": 659,
             "y": 1282,
-            "textPosition": 0,
+            "textPosition": 9,
             "neighbors": [
               [
                 "METRO_2113",
@@ -10821,7 +10821,7 @@
             "name": "Матвеевская",
             "x": 697,
             "y": 1246,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "METRO_2114",
@@ -13468,7 +13468,7 @@
             "name": "Кунцевская",
             "x": 605,
             "y": 1181,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_104",
@@ -13496,7 +13496,7 @@
             "name": "Рабочий посёлок",
             "x": 574,
             "y": 1208,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_105",
@@ -13524,7 +13524,7 @@
             "name": "Сетунь",
             "x": 545,
             "y": 1234,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_106",
@@ -13552,7 +13552,7 @@
             "name": "Немчиновка",
             "x": 538,
             "y": 1261,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_107",
@@ -13584,7 +13584,7 @@
             "name": "Ромашково",
             "x": 500,
             "y": 1263,
-            "textPosition": 0,
+            "textPosition": 1,
             "neighbors": [
               [
                 "SUBURBAN_108",
@@ -13608,7 +13608,7 @@
             "name": "Раздоры",
             "x": 467,
             "y": 1263,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_109",
@@ -13632,7 +13632,7 @@
             "name": "Барвиха",
             "x": 430,
             "y": 1293,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_110",
@@ -13656,7 +13656,7 @@
             "name": "Ильинское",
             "x": 430,
             "y": 1320,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_111",
@@ -13680,7 +13680,7 @@
             "name": "Усово",
             "x": 431,
             "y": 1354,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_112",
@@ -13700,7 +13700,7 @@
             "name": "Сколково",
             "x": 539,
             "y": 1286,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_108",
@@ -13728,7 +13728,7 @@
             "name": "Баковка",
             "x": 538,
             "y": 1314,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_114",
@@ -13756,7 +13756,7 @@
             "name": "Одинцово",
             "x": 539,
             "y": 1342,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_115",
@@ -13784,7 +13784,7 @@
             "name": "Отрадное",
             "x": 506,
             "y": 1369,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_116",
@@ -13808,7 +13808,7 @@
             "name": "Пионерская",
             "x": 474,
             "y": 1394,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_117",
@@ -13832,7 +13832,7 @@
             "name": "Перхушково",
             "x": 436,
             "y": 1420,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_118",
@@ -13856,7 +13856,7 @@
             "name": "Здравница",
             "x": 400,
             "y": 1450,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_119",
@@ -13880,7 +13880,7 @@
             "name": "Жаворонки",
             "x": 362,
             "y": 1484,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_120",
@@ -13904,7 +13904,7 @@
             "name": "Дачное",
             "x": 330,
             "y": 1517,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_121",
@@ -13928,7 +13928,7 @@
             "name": "Малые Вязёмы",
             "x": 296,
             "y": 1553,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_122",
@@ -13952,7 +13952,7 @@
             "name": "Голицыно",
             "x": 270,
             "y": 1588,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_123",
@@ -13980,7 +13980,7 @@
             "name": "Захарово",
             "x": 231,
             "y": 1567,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_124",
@@ -14004,7 +14004,7 @@
             "name": "Хлюпино",
             "x": 192,
             "y": 1548,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_125",
@@ -14028,7 +14028,7 @@
             "name": "Скоротово",
             "x": 147,
             "y": 1530,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_126",
@@ -14052,7 +14052,7 @@
             "name": "Звенигород",
             "x": 104,
             "y": 1513,
-            "textPosition": 0,
+            "textPosition": 7,
             "neighbors": [
               [
                 "SUBURBAN_127",
@@ -14072,7 +14072,7 @@
             "name": "Сушкинская",
             "x": 247,
             "y": 1632,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_124",
@@ -14096,7 +14096,7 @@
             "name": "Петелино",
             "x": 244,
             "y": 1676,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_129",
@@ -14120,7 +14120,7 @@
             "name": "Часцовская",
             "x": 244,
             "y": 1718,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_130",
@@ -14144,7 +14144,7 @@
             "name": "Кубинка-1",
             "x": 245,
             "y": 1763,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_131",
@@ -14168,7 +14168,7 @@
             "name": "Чапаевка",
             "x": 245,
             "y": 1807,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_132",
@@ -14192,7 +14192,7 @@
             "name": "Полушкино",
             "x": 244,
             "y": 1852,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_133",
@@ -14216,7 +14216,7 @@
             "name": "Санаторная",
             "x": 245,
             "y": 1893,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_134",
@@ -14240,7 +14240,7 @@
             "name": "Тучково",
             "x": 244,
             "y": 1937,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_135",
@@ -14264,7 +14264,7 @@
             "name": "Театральная",
             "x": 245,
             "y": 1975,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_136",
@@ -14288,7 +14288,7 @@
             "name": "Садовая",
             "x": 245,
             "y": 2020,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_137",
@@ -14312,7 +14312,7 @@
             "name": "Дорохово",
             "x": 245,
             "y": 2061,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_138",
@@ -14336,7 +14336,7 @@
             "name": "Партизанская",
             "x": 245,
             "y": 2107,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_139",
@@ -14360,7 +14360,7 @@
             "name": "Шаликово",
             "x": 245,
             "y": 2150,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_140",
@@ -14384,7 +14384,7 @@
             "name": "Кукаринская",
             "x": 246,
             "y": 2191,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_141",
@@ -14408,7 +14408,7 @@
             "name": "109 км",
             "x": 246,
             "y": 2232,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_142",
@@ -14432,7 +14432,7 @@
             "name": "Можайск",
             "x": 246,
             "y": 2276,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_143",
@@ -14456,7 +14456,7 @@
             "name": "Бородино",
             "x": 246,
             "y": 2318,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_144",
@@ -14480,7 +14480,7 @@
             "name": "Колочь",
             "x": 246,
             "y": 2358,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_145",
@@ -14504,7 +14504,7 @@
             "name": "Уваровка",
             "x": 246,
             "y": 2395,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_146",
@@ -14528,7 +14528,7 @@
             "name": "144 км",
             "x": 246,
             "y": 2435,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_147",
@@ -14552,7 +14552,7 @@
             "name": "147 км",
             "x": 246,
             "y": 2478,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_148",
@@ -14576,7 +14576,7 @@
             "name": "Дровнино",
             "x": 246,
             "y": 2522,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_149",
@@ -14600,7 +14600,7 @@
             "name": "Батюшково",
             "x": 246,
             "y": 2560,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_150",
@@ -14624,7 +14624,7 @@
             "name": "Колесники",
             "x": 246,
             "y": 2607,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_151",
@@ -14648,7 +14648,7 @@
             "name": "Гагарин",
             "x": 246,
             "y": 2659,
-            "textPosition": 0,
+            "textPosition": 3,
             "neighbors": [
               [
                 "SUBURBAN_152",
