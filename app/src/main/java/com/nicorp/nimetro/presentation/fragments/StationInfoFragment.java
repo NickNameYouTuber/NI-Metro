@@ -105,8 +105,22 @@ public class StationInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_station_info, container, false);
 
-        view.setMinimumWidth(LinearLayout.LayoutParams.MATCH_PARENT);
+        // Находим TextView для предыдущей и следующей станции
+        TextView prevStationName = view.findViewById(R.id.prevStationName);
+        TextView nextStationName = view.findViewById(R.id.nextStationName);
 
+        // Устанавливаем видимость и иконки в зависимости от isCircle
+        if (line.isCircle()) {
+            // Если линия круговая, используем стрелки по часовой и против часовой
+            setStationNameDrawable(prevStationName, R.drawable.ic_clockwise);
+            setStationNameDrawable(nextStationName, R.drawable.ic_counter_clockwise);
+        } else {
+            // Если линия не круговая, используем стрелки вверх и вниз
+            setStationNameDrawable(prevStationName, R.drawable.ic_arrow_up);
+            setStationNameDrawable(nextStationName, R.drawable.ic_arrow_down);
+        }
+
+        // Остальная логика
         TextView stationName = view.findViewById(R.id.stationName);
         stationName.setText(station.getName());
         Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
@@ -114,10 +128,7 @@ public class StationInfoFragment extends Fragment {
         prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
         nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
 
-        TextView prevStationName = view.findViewById(R.id.prevStationName);
         setStationNameVisibility(prevStationName, prevStation);
-
-        TextView nextStationName = view.findViewById(R.id.nextStationName);
         setStationNameVisibility(nextStationName, nextStation);
 
         TextView fromButton = view.findViewById(R.id.fromButton);
@@ -139,6 +150,18 @@ public class StationInfoFragment extends Fragment {
         fetchESPSchedule(station);
 
         return view;
+    }
+
+    /**
+     * Устанавливает drawableStart для TextView
+     *
+     * @param textView TextView, для которого нужно установить иконку
+     * @param drawableResId ID ресурса иконки
+     */
+    private void setStationNameDrawable(TextView textView, int drawableResId) {
+        if (textView != null) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(drawableResId, 0, 0, 0);
+        }
     }
 
     private void fetchESPSchedule(Station station) {
