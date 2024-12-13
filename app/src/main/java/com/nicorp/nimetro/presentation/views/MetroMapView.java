@@ -368,8 +368,8 @@ public class MetroMapView extends View {
                 // Проверяем, находятся ли станции на одной линии
                 Line line = findLineForConnection(station1, station2);
                 if (line != null) {
-                    // Рисуем линию маршрута
-                    drawRouteWithIntermediatePoints(canvas, station1, station2);
+                    // Рисуем линию маршрута с учетом типа линии
+                    drawRouteWithIntermediatePoints(canvas, station1, station2, line.getLineType());
                 } else {
                     // Если станции не на одной линии, рисуем переход
                     drawTransferBetweenStations(canvas, station1, station2);
@@ -466,28 +466,43 @@ public class MetroMapView extends View {
     /**
      * Draw the route with intermediate points
      */
-    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
-        // Определяем порядок станций
-        Station firstStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
-        Station secondStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
+    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType) {
+        List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
 
-        List<Point> intermediatePoints = firstStation.getIntermediatePoints(secondStation);
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
-            canvas.drawLine(firstStation.getX() * COORDINATE_SCALE_FACTOR, firstStation.getY() * COORDINATE_SCALE_FACTOR,
-                    secondStation.getX() * COORDINATE_SCALE_FACTOR, secondStation.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+            // Если нет промежуточных точек, рисуем прямую линию
+            if (lineType.equals("double")) {
+                drawDoubleLine(canvas, station1, station2, routePaint);
+            } else {
+                canvas.drawLine(
+                        station1.getX() * COORDINATE_SCALE_FACTOR,
+                        station1.getY() * COORDINATE_SCALE_FACTOR,
+                        station2.getX() * COORDINATE_SCALE_FACTOR,
+                        station2.getY() * COORDINATE_SCALE_FACTOR,
+                        routePaint
+                );
+            }
         } else if (intermediatePoints.size() == 1) {
-            float startX = firstStation.getX() * COORDINATE_SCALE_FACTOR;
-            float startY = firstStation.getY() * COORDINATE_SCALE_FACTOR;
+            // Если есть одна промежуточная точка, рисуем две прямые линии
+            float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
+            float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
             float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
             float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+
             canvas.drawLine(startX, startY, endX, endY, routePaint);
-            canvas.drawLine(endX, endY, secondStation.getX() * COORDINATE_SCALE_FACTOR, secondStation.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+            canvas.drawLine(endX, endY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
         } else if (intermediatePoints.size() == 2) {
-            Point start = new Point(firstStation.getX(), firstStation.getY());
+            // Если есть две промежуточные точки, рисуем кривую Безье
+            Point start = new Point(station1.getX(), station1.getY());
             Point control1 = intermediatePoints.get(0);
             Point control2 = intermediatePoints.get(1);
-            Point end = new Point(secondStation.getX(), secondStation.getY());
-            drawBezierCurve(canvas, start, control1, control2, end, routePaint);
+            Point end = new Point(station2.getX(), station2.getY());
+
+            if (lineType.equals("double")) {
+                drawDoubleBezierCurve(canvas, start, control1, control2, end, routePaint);
+            } else {
+                drawBezierCurve(canvas, start, control1, control2, end, routePaint);
+            }
         }
     }
 
