@@ -356,7 +356,6 @@ public class MetroMapView extends View {
      * Отрисовка маршрута с учетом переходов
      */
     private void drawRoute(Canvas canvas, int routeSaveCount) {
-        Log.d("MetroMapView", "Draw route size: " + route.size());
         if (route != null && route.size() > 1) {
             for (int i = 0; i < route.size() - 1; i++) {
                 Station station1 = route.get(i);
@@ -437,6 +436,11 @@ public class MetroMapView extends View {
      * Поиск перехода между станциями
      */
     private Transfer findTransferBetweenStations(Station station1, Station station2) {
+        // Проверяем, что transfers не null
+        if (transfers == null) {
+            return null;
+        }
+
         for (Transfer transfer : transfers) {
             if (transfer.getStations().contains(station1) && transfer.getStations().contains(station2)) {
                 return transfer;
@@ -447,6 +451,11 @@ public class MetroMapView extends View {
 
     private Line findLineForConnection(Station station1, Station station2) {
         for (Line line : lines) {
+            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
+                return line;
+            }
+        }
+        for (Line line : grayedLines) {
             if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
                 return line;
             }
