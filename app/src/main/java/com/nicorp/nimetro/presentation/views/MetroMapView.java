@@ -325,19 +325,161 @@ public class MetroMapView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        // Рисуем кэшированный битмап на 0-м слое
         if (needsRedraw) {
             createCacheBitmap(10000, 10000);
             needsRedraw = false;
         }
-
         float lodScaleFactor = getLodScaleFactor();
         Bitmap cacheBitmap = cacheBitmaps.get(lodScaleFactor);
         if (cacheBitmap == null) {
             cacheBitmap = createCacheBitmap(6000, 7000);
             cacheBitmaps.put(lodScaleFactor, cacheBitmap);
         }
-
         canvas.drawBitmap(cacheBitmap, transformMatrix, null);
+    }
+
+    /**
+     * Применяет полупрозрачный оверлей поверх всей карты
+     */
+    private void applyDarkOverlay(Canvas canvas, int overlaySaveCount) {
+        Paint overlayPaint = new Paint();
+        overlayPaint.setColor(Color.argb(150, 0, 0, 0)); // Полупрозрачный черный цвет (альфа 150 из 255)
+        overlayPaint.setStyle(Paint.Style.FILL);
+
+        // Рисуем оверлей поверх всей карты
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), overlayPaint);
+        canvas.restoreToCount(overlaySaveCount);
+    }
+
+    /**
+     * Отрисовка маршрута с учетом переходов
+     */
+    private void drawRoute(Canvas canvas, int routeSaveCount) {
+        Log.d("MetroMapView", "Draw route size: " + route.size());
+        if (route != null && route.size() > 1) {
+            for (int i = 0; i < route.size() - 1; i++) {
+                Station station1 = route.get(i);
+                Station station2 = route.get(i + 1);
+
+                // Устанавливаем цвет линии для отрисовки
+                routePaint.setColor(Color.parseColor(station1.getColor()));
+                routePaint.setStrokeWidth(15);
+
+                // Проверяем, находятся ли станции на одной линии
+                Line line = findLineForConnection(station1, station2);
+                if (line != null) {
+                    // Рисуем линию маршрута
+                    drawRouteWithIntermediatePoints(canvas, station1, station2);
+                } else {
+                    // Если станции не на одной линии, рисуем переход
+                    drawTransferBetweenStations(canvas, station1, station2);
+                }
+
+                // Рисуем станции на маршруте
+                float stationX = station1.getX() * COORDINATE_SCALE_FACTOR;
+                float stationY = station1.getY() * COORDINATE_SCALE_FACTOR;
+                canvas.drawCircle(stationX, stationY, 10, whitePaint); // Белый круг
+                stationPaint.setColor(Color.parseColor(station1.getColor()));
+                canvas.drawCircle(stationX, stationY, 14, stationPaint); // Цветная обводка
+
+                if (selectedStations != null && selectedStations.contains(station1)) {
+                    canvas.drawCircle(stationX, stationY, 20, selectedStationPaint); // Зеленая обводка для выбранной станции
+                }
+
+                // Рисуем название станции
+                drawTextBasedOnPosition(canvas, station1.getName(), stationX, stationY, station1.getTextPosition(), textPaint, true);
+            }
+
+            // Рисуем последнюю станцию
+            Station lastStation = route.get(route.size() - 1);
+            float lastStationX = lastStation.getX() * COORDINATE_SCALE_FACTOR;
+            float lastStationY = lastStation.getY() * COORDINATE_SCALE_FACTOR;
+
+            // Отрисовываем белый круг и цветную обводка для последней станции
+            canvas.drawCircle(lastStationX, lastStationY, 10, whitePaint); // Белый круг
+            stationPaint.setColor(Color.parseColor(lastStation.getColor()));
+            canvas.drawCircle(lastStationX, lastStationY, 14, stationPaint); // Цветная обводка
+
+            // Если последняя станция выбрана, рисуем зеленую обводку
+            if (selectedStations != null && selectedStations.contains(lastStation)) {
+                canvas.drawCircle(lastStationX, lastStationY, 20, selectedStationPaint); // Зеленая обводка
+            }
+
+            // Рисуем название последней станции
+            drawTextBasedOnPosition(canvas, lastStation.getName(), lastStationX, lastStationY, lastStation.getTextPosition(), textPaint, true);
+        }
+
+        canvas.restoreToCount(routeSaveCount);
+    }
+
+    /**
+     * Отрисовка перехода между станциями
+     */
+    private void drawTransferBetweenStations(Canvas canvas, Station station1, Station station2) {
+        // Ищем переход между станциями
+        Transfer transfer = findTransferBetweenStations(station1, station2);
+        if (transfer != null) {
+            // Рисуем переход
+            drawTransferConnection(canvas, Arrays.asList(station1, station2), transfer.getType());
+        } else {
+            // Если переход не найден, рисуем пунктирную линию как индикатор перехода
+            drawDashedLine(canvas,
+                    station1.getX() * COORDINATE_SCALE_FACTOR,
+                    station1.getY() * COORDINATE_SCALE_FACTOR,
+                    station2.getX() * COORDINATE_SCALE_FACTOR,
+                    station2.getY() * COORDINATE_SCALE_FACTOR,
+                    transferPaint);
+        }
+    }
+
+    /**
+     * Поиск перехода между станциями
+     */
+    private Transfer findTransferBetweenStations(Station station1, Station station2) {
+        for (Transfer transfer : transfers) {
+            if (transfer.getStations().contains(station1) && transfer.getStations().contains(station2)) {
+                return transfer;
+            }
+        }
+        return null;
+    }
+
+    private Line findLineForConnection(Station station1, Station station2) {
+        for (Line line : lines) {
+            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
+                return line;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Draw the route with intermediate points
+     */
+    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
+        // Определяем порядок станций
+        Station firstStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
+        Station secondStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
+
+        List<Point> intermediatePoints = firstStation.getIntermediatePoints(secondStation);
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            canvas.drawLine(firstStation.getX() * COORDINATE_SCALE_FACTOR, firstStation.getY() * COORDINATE_SCALE_FACTOR,
+                    secondStation.getX() * COORDINATE_SCALE_FACTOR, secondStation.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+        } else if (intermediatePoints.size() == 1) {
+            float startX = firstStation.getX() * COORDINATE_SCALE_FACTOR;
+            float startY = firstStation.getY() * COORDINATE_SCALE_FACTOR;
+            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
+            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+            canvas.drawLine(startX, startY, endX, endY, routePaint);
+            canvas.drawLine(endX, endY, secondStation.getX() * COORDINATE_SCALE_FACTOR, secondStation.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+        } else if (intermediatePoints.size() == 2) {
+            Point start = new Point(firstStation.getX(), firstStation.getY());
+            Point control1 = intermediatePoints.get(0);
+            Point control2 = intermediatePoints.get(1);
+            Point end = new Point(secondStation.getX(), secondStation.getY());
+            drawBezierCurve(canvas, start, control1, control2, end, routePaint);
+        }
     }
 
     /**
@@ -383,6 +525,9 @@ public class MetroMapView extends View {
     /**
      * Отрисовка содержимого карты
      */
+    /**
+     * Отрисовка содержимого карты
+     */
     private void drawMapContents(Canvas canvas) {
         if (backgroundBitmap != null) {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
@@ -397,12 +542,17 @@ public class MetroMapView extends View {
             drawLines(canvas);
             drawTransfers(canvas);
             drawStations(canvas);
-            drawRoute(canvas);
             drawMapObjects(canvas);
 
             if (isEditMode) {
                 drawIntermediatePoints(canvas);
             }
+        }
+
+        // Рисуем оверлей и маршрут в drawMapContents
+        if (route != null && route.size() > 1) {
+            applyDarkOverlay(canvas, canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null));
+            drawRoute(canvas, canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null));
         }
     }
 
@@ -459,7 +609,7 @@ public class MetroMapView extends View {
             canvas.drawCircle(stationX, stationY, 10, whitePaint);
             canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
 
-            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), grayedTextPaint);
+            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), grayedTextPaint, false);
         }
     }
 
@@ -554,22 +704,22 @@ public class MetroMapView extends View {
                 canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
             }
 
-            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint);
+            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint, false);
         }
     }
 
     /**
      * Отрисовка маршрута
      */
-    private void drawRoute(Canvas canvas) {
-        if (route != null && route.size() > 1) {
-            for (int i = 0; i < route.size() - 1; i++) {
-                Station station1 = route.get(i);
-                Station station2 = route.get(i + 1);
-                drawRouteWithIntermediatePoints(canvas, station1, station2);
-            }
-        }
-    }
+//    private void drawRoute(Canvas canvas) {
+//        if (route != null && route.size() > 1) {
+//            for (int i = 0; i < route.size() - 1; i++) {
+//                Station station1 = route.get(i);
+//                Station station2 = route.get(i + 1);
+//                drawRouteWithIntermediatePoints(canvas, station1, station2);
+//            }
+//        }
+//    }
 
     /**
      * Отрисовка объектов карты
@@ -688,26 +838,26 @@ public class MetroMapView extends View {
     /**
      * Отрисовка маршрута с промежуточными точками
      */
-    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
-        List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
-        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
-            canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
-                    station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
-        } else if (intermediatePoints.size() == 1) {
-            float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
-            float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
-            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
-            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
-            canvas.drawLine(startX, startY, endX, endY, routePaint);
-            canvas.drawLine(endX, endY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
-        } else if (intermediatePoints.size() == 2) {
-            Point start = new Point(station1.getX(), station1.getY());
-            Point control1 = intermediatePoints.get(0);
-            Point control2 = intermediatePoints.get(1);
-            Point end = new Point(station2.getX(), station2.getY());
-            drawBezierCurve(canvas, start, control1, control2, end, routePaint);
-        }
-    }
+//    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2) {
+//        List<Point> intermediatePoints = station1.getIntermediatePoints(station2);
+//        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+//            canvas.drawLine(station1.getX() * COORDINATE_SCALE_FACTOR, station1.getY() * COORDINATE_SCALE_FACTOR,
+//                    station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+//        } else if (intermediatePoints.size() == 1) {
+//            float startX = station1.getX() * COORDINATE_SCALE_FACTOR;
+//            float startY = station1.getY() * COORDINATE_SCALE_FACTOR;
+//            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
+//            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+//            canvas.drawLine(startX, startY, endX, endY, routePaint);
+//            canvas.drawLine(endX, endY, station2.getX() * COORDINATE_SCALE_FACTOR, station2.getY() * COORDINATE_SCALE_FACTOR, routePaint);
+//        } else if (intermediatePoints.size() == 2) {
+//            Point start = new Point(station1.getX(), station1.getY());
+//            Point control1 = intermediatePoints.get(0);
+//            Point control2 = intermediatePoints.get(1);
+//            Point end = new Point(station2.getX(), station2.getY());
+//            drawBezierCurve(canvas, start, control1, control2, end, routePaint);
+//        }
+//    }
 
     /**
      * Отрисовка двойной линии
@@ -834,8 +984,16 @@ public class MetroMapView extends View {
 
     /**
      * Отрисовка текста в зависимости от позиции
+     *
+     * @param canvas        Canvas для отрисовки
+     * @param text          Текст для отрисовки
+     * @param cx            Центральная X-координата
+     * @param cy            Центральная Y-координата
+     * @param textPosition  Позиция текста (1-9)
+     * @param paint         Кисть для отрисовки текста
+     * @param isRouteText   Флаг, указывающий, что текст относится к маршруту
      */
-    private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint) {
+    private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint, boolean isRouteText) {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
         float textWidth = bounds.width();
@@ -887,7 +1045,11 @@ public class MetroMapView extends View {
 
         if (textPosition != 9) {
             Paint backgroundPaint = new Paint();
-            backgroundPaint.setColor(Color.argb(190, 255, 255, 255));
+            if (isRouteText) {
+                backgroundPaint.setColor(Color.parseColor("#696969")); // Цвет подложки для маршрута
+            } else {
+                backgroundPaint.setColor(Color.argb(190, 255, 255, 255)); // Обычный цвет подложки
+            }
             backgroundPaint.setStyle(Paint.Style.FILL);
 
             float paddingX = 10;
@@ -899,6 +1061,13 @@ public class MetroMapView extends View {
             float backgroundBottom = cy + offsetY + textHeight + paddingY - 15;
 
             canvas.drawRect(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundPaint);
+
+            // Устанавливаем цвет текста
+            if (isRouteText) {
+                paint.setColor(Color.WHITE); // Белый текст для маршрута
+            } else {
+                paint.setColor(Color.BLACK); // Обычный цвет текста
+            }
 
             canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
         }
