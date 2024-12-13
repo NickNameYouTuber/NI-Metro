@@ -30,9 +30,6 @@ import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
-import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,7 +80,7 @@ public class MetroMapView extends View {
     private float translateY = 0.0f;
 
     // Детекторы жестов
-    public GestureDetector gestureDetector;
+    private GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
 
     // Константы
@@ -112,31 +109,16 @@ public class MetroMapView extends View {
     public MetroMapView(Context context) {
         super(context);
         init();
-        translateY = -300;
-        translateX = -1600;
-        scaleFactor = 0.4f;
-        updateTransformMatrix();
-        invalidate();
     }
 
     public MetroMapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
-        translateY = -300;
-        translateX = -1600;
-        scaleFactor = 0.4f;
-        updateTransformMatrix();
-        invalidate();
     }
 
     public MetroMapView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
-        translateY = -300;
-        translateX = -1600;
-        scaleFactor = 0.4f;
-        updateTransformMatrix();
-        invalidate();
     }
 
     /**
@@ -257,7 +239,6 @@ public class MetroMapView extends View {
      * Обновление матрицы трансформации
      */
     public void updateTransformMatrix() {
-        Log.d("MetroMapView", "Transform matrix: " + translateX + ", " + translateY + ", " + scaleFactor);
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
         transformMatrix.postScale(scaleFactor, scaleFactor);
@@ -267,7 +248,6 @@ public class MetroMapView extends View {
      * Загрузка фонового изображения
      */
     private void loadBackgroundBitmap() {
-        Log.d("MetroMapView", "Loading background bitmap...");
         backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.metro_map);
     }
 
@@ -346,7 +326,6 @@ public class MetroMapView extends View {
         super.onDraw(canvas);
 
         if (needsRedraw) {
-            Log.d("MetroMapView", "Redrawing cache...");
             createCacheBitmap(10000, 10000);
             needsRedraw = false;
         }
@@ -392,7 +371,6 @@ public class MetroMapView extends View {
     private Bitmap createCacheBitmap(int width, int height) {
         cacheBitmaps = new HashMap<>();
         cacheBitmap = null;
-        Log.d("MetroMapView", "Cache bitmap cleared");
 
         Bitmap cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas cacheCanvas = new Canvas(cacheBitmap);
@@ -411,12 +389,10 @@ public class MetroMapView extends View {
         }
 
         if (grayedLines != null && grayedStations != null && !grayedLines.isEmpty() && !grayedStations.isEmpty()) {
-            Log.d("MetroMapView", "Station 1: " + grayedStations.get(0).getName());
             drawGrayedMap(canvas);
         }
 
         if (lines != null && stations != null) {
-            Log.d("MetroMapView", "Station 2: " + stations.get(0).getName());
             drawRivers(canvas);
             drawLines(canvas);
             drawTransfers(canvas);
@@ -450,8 +426,7 @@ public class MetroMapView extends View {
                 for (Station.Neighbor neighbor : station.getNeighbors()) {
                     Station neighborStation = findStationById(neighbor.getStation().getId(), grayedStations);
                     if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        Log.d("MetroMapView", "Drawing connection: " + station.getId() + " - " + neighborStation.getId());
-                        String connectionKey = Integer.parseInt( station.getId().split("_")[1]) < Integer.parseInt(neighborStation.getId().split("_")[1])
+                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
                                 ? station.getId() + "-" + neighborStation.getId()
                                 : neighborStation.getId() + "-" + station.getId();
 
@@ -466,7 +441,7 @@ public class MetroMapView extends View {
             if (line.isCircle() && line.getStations().size() > 1) {
                 Station firstStation = line.getStations().get(0);
                 Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = Integer.parseInt(firstStation.getId().split("_")[1]) < Integer.parseInt(lastStation.getId().split("_")[1])
+                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
                         ? firstStation.getId() + "-" + lastStation.getId()
                         : lastStation.getId() + "-" + firstStation.getId();
 
@@ -823,7 +798,6 @@ public class MetroMapView extends View {
      * Отрисовка промежуточных точек
      */
     private void drawIntermediatePoints(Canvas canvas) {
-        Log.d("MetroMapView", "drawIntermediatePoints");
         for (Station station : stations) {
             if (station.getIntermediatePoints() != null) {
                 for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
@@ -839,7 +813,6 @@ public class MetroMapView extends View {
      */
     private void drawIntermediatePoints(Canvas canvas, List<Point> intermediatePoints, Paint paint) {
         for (Point point : intermediatePoints) {
-            Log.d("MetroMapView", "drawIntermediatePoints: " + point.x + " " + point.y);
             canvas.drawCircle(point.x * COORDINATE_SCALE_FACTOR, point.y * COORDINATE_SCALE_FACTOR, 10, paint);
         }
     }
@@ -948,13 +921,8 @@ public class MetroMapView extends View {
             float y = point[1];
             Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
             if (clickedStation != null && listener != null) {
-                Log.d("MetroMapView", "Station clicked: " + clickedStation.getName());
                 listener.onStationClick(clickedStation);
                 return true;
-            } else if (clickedStation == null) {
-                Log.d("MetroMapView", "Map clicked");
-            } else if (listener == null) {
-                Log.d("MetroMapView", "Listener is null");
             }
         }
 
@@ -965,11 +933,9 @@ public class MetroMapView extends View {
      * Поиск станции по координатам
      */
     public Station findStationAt(float x, float y) {
-        Log.d("MetroMapView", "Finding station at " + x + ", " + y);
         List<Station> activeStations = stations;
         for (Station station : activeStations) {
             if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
-                Log.d("MetroMapView", "Found station at " + x + ", " + y + ": " + station.getName());
                 return station;
             }
         }
