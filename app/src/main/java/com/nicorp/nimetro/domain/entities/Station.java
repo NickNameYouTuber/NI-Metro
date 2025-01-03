@@ -1,6 +1,9 @@
 package com.nicorp.nimetro.domain.entities;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -20,6 +23,13 @@ public class Station implements Parcelable {
     private int textPosition;
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints; // Изменение структуры данных
+    public boolean isVisible(Rect visibleRect) {
+        return visibleRect.contains((int) x, (int) y);
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawCircle(x, y, 10, paint); // Example: draw a circle for the station
+    }
 
     public Station(String id, String name, int x, int y, String ESP, String color, Facilities facilities, int textPosition) {
         this.id = id;

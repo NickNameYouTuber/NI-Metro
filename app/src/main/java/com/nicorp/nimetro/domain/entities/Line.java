@@ -1,5 +1,8 @@
 package com.nicorp.nimetro.domain.entities;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -73,6 +76,27 @@ public class Line implements Parcelable {
         dest.writeString(displayNumber);
         dest.writeString(displayShape);
         // Tariff не может быть просто так сериализован, нужно будет добавить логику для этого
+    }
+
+    public boolean isVisible(Rect visibleRect) {
+        for (Station station : stations) {
+            if (station.isVisible(visibleRect)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        for (Station station : stations) {
+            station.draw(canvas, paint);
+        }
+        // Draw the line connecting the stations
+        for (int i = 0; i < stations.size() - 1; i++) {
+            Station start = stations.get(i);
+            Station end = stations.get(i + 1);
+            canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+        }
     }
 
     public String getId() {

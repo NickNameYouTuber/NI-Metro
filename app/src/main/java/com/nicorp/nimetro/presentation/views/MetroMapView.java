@@ -96,6 +96,9 @@ public class MetroMapView extends View {
     public boolean needsRedraw = true;
     private Matrix transformMatrix;
     private Bitmap cacheBitmap;
+    // Константы
+    private Bitmap bufferBitmap;
+    private Canvas bufferCanvas;
 
     // Флаг активности карты метро
     private boolean isActiveMapMetro = true;
@@ -317,26 +320,140 @@ public class MetroMapView extends View {
         needsRedraw = true;
         invalidate();
     }
-
+    private void createBufferBitmap() {
+        if (bufferBitmap != null) {
+            bufferBitmap.recycle();
+        }
+        bufferBitmap = Bitmap.createBitmap(getWidth(), getHeight(),
+                Bitmap.Config.ARGB_8888);
+        bufferCanvas = new Canvas(bufferBitmap);
+        needsRedraw = false;
+    }
     /**
      * Отрисовка View
      */
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        if (bufferBitmap == null || needsRedraw) {
+            createBufferBitmap();
+        }
 
-        // Рисуем кэшированный битмап на 0-м слое
-        if (needsRedraw) {
-            createCacheBitmap(10000, 10000);
-            needsRedraw = false;
+        // Применяем трансформации
+        transformMatrix.reset();
+        transformMatrix.postTranslate(translateX, translateY);
+        transformMatrix.postScale(scaleFactor, scaleFactor);
+
+        // Отрисовываем фон, если он есть
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(backgroundBitmap, transformMatrix, null);
         }
-        float lodScaleFactor = getLodScaleFactor();
-        Bitmap cacheBitmap = cacheBitmaps.get(lodScaleFactor);
-        if (cacheBitmap == null) {
-            cacheBitmap = createCacheBitmap(6000, 7000);
-            cacheBitmaps.put(lodScaleFactor, cacheBitmap);
+        drawMapContents(canvas);
+    }
+
+    private void drawLines(Canvas canvas) {
+        Set<String> drawnConnections = new HashSet<>();
+
+        for (Line line : lines) {
+            linePaint.setColor(Color.parseColor(line.getColor()));
+            for (Station station : line.getStations()) {
+                for (Station.Neighbor neighbor : station.getNeighbors()) {
+                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
+                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
+                                ? station.getId() + "-" + neighborStation.getId()
+                                : neighborStation.getId() + "-" + station.getId();
+
+                        if (!drawnConnections.contains(connectionKey)) {
+                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType(), linePaint);
+                            drawnConnections.add(connectionKey);
+                        }
+                    }
+                }
+            }
+
+            if (line.isCircle() && line.getStations().size() > 1) {
+                Station firstStation = line.getStations().get(0);
+                Station lastStation = line.getStations().get(line.getStations().size() - 1);
+                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
+                        ? firstStation.getId() + "-" + lastStation.getId()
+                        : lastStation.getId() + "-" + firstStation.getId();
+
+                if (!drawnConnections.contains(connectionKey)) {
+                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType(), linePaint);
+                    drawnConnections.add(connectionKey);
+                }
+            }
         }
-        canvas.drawBitmap(cacheBitmap, transformMatrix, null);
+    }
+
+    /**
+     * Отрисовка линии с промежуточными точками
+     */
+    private void drawLineWithIntermediatePoints(Canvas canvas, Line line) {
+        List<Station> stations = line.getStations();
+        if (stations.size() < 2) return;
+
+        for (int i = 0; i < stations.size() - 1; i++) {
+            Station station1 = stations.get(i);
+            Station station2 = stations.get(i + 1);
+
+            // Отрисовываем линию с учетом промежуточных точек и типа линии
+            drawLineWithIntermediatePoints(canvas, station1, station2, line.getLineType(), linePaint);
+        }
+
+        // Если линия замкнута, рисуем соединение между последней и первой станцией
+        if (line.isCircle() && stations.size() > 1) {
+            Station firstStation = stations.get(0);
+            Station lastStation = stations.get(stations.size() - 1);
+            drawLineWithIntermediatePoints(canvas, lastStation, firstStation, line.getLineType(), linePaint);
+        }
+    }
+
+
+    private void drawStation(Canvas canvas, Station station) {
+        float x = station.getX() * COORDINATE_SCALE_FACTOR;
+        float y = station.getY() * COORDINATE_SCALE_FACTOR;
+
+        canvas.save();
+        canvas.concat(transformMatrix);
+        canvas.drawCircle(x, y, 10, stationPaint);
+        canvas.restore();
+    }
+
+    private void drawMapObjects(Canvas canvas, Rect visibleRect) {
+        // Draw lines, stations, rivers, etc. within the visibleRect
+        for (Line line : grayedLines) {
+            if (line.isVisible(visibleRect)) {
+                line.draw(canvas, linePaint);
+            }
+        }
+        for (Station station : grayedStations) {
+            if (station.isVisible(visibleRect)) {
+                station.draw(canvas, stationPaint);
+            }
+        }
+        // Draw other map objects similarly
+    }
+
+    // Gesture listeners for handling zoom and pan
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            translateX -= distanceX / scaleFactor;
+            translateY -= distanceY / scaleFactor;
+            invalidate();
+            return true;
+        }
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
+            invalidate();
+            return true;
+        }
     }
 
     /**
@@ -530,11 +647,12 @@ public class MetroMapView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (w > 0 && h > 0) {
-            createCacheBitmap(w, h);
+            bufferBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            bufferCanvas = new Canvas(bufferBitmap);
+            transformMatrix = new Matrix();
             needsRedraw = true;
         }
     }
-
     /**
      * Создание кэш-битмапа
      */
@@ -655,41 +773,41 @@ public class MetroMapView extends View {
     /**
      * Отрисовка линий
      */
-    private void drawLines(Canvas canvas) {
-        Set<String> drawnConnections = new HashSet<>();
-
-        for (Line line : lines) {
-            linePaint.setColor(Color.parseColor(line.getColor()));
-            for (Station station : line.getStations()) {
-                for (Station.Neighbor neighbor : station.getNeighbors()) {
-                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
-                                ? station.getId() + "-" + neighborStation.getId()
-                                : neighborStation.getId() + "-" + station.getId();
-
-                        if (!drawnConnections.contains(connectionKey)) {
-                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType(), linePaint);
-                            drawnConnections.add(connectionKey);
-                        }
-                    }
-                }
-            }
-
-            if (line.isCircle() && line.getStations().size() > 1) {
-                Station firstStation = line.getStations().get(0);
-                Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
-                        ? firstStation.getId() + "-" + lastStation.getId()
-                        : lastStation.getId() + "-" + firstStation.getId();
-
-                if (!drawnConnections.contains(connectionKey)) {
-                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType(), linePaint);
-                    drawnConnections.add(connectionKey);
-                }
-            }
-        }
-    }
+//    private void drawLines(Canvas canvas) {
+//        Set<String> drawnConnections = new HashSet<>();
+//
+//        for (Line line : lines) {
+//            linePaint.setColor(Color.parseColor(line.getColor()));
+//            for (Station station : line.getStations()) {
+//                for (Station.Neighbor neighbor : station.getNeighbors()) {
+//                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
+//                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+//                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
+//                                ? station.getId() + "-" + neighborStation.getId()
+//                                : neighborStation.getId() + "-" + station.getId();
+//
+//                        if (!drawnConnections.contains(connectionKey)) {
+//                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType(), linePaint);
+//                            drawnConnections.add(connectionKey);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (line.isCircle() && line.getStations().size() > 1) {
+//                Station firstStation = line.getStations().get(0);
+//                Station lastStation = line.getStations().get(line.getStations().size() - 1);
+//                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
+//                        ? firstStation.getId() + "-" + lastStation.getId()
+//                        : lastStation.getId() + "-" + firstStation.getId();
+//
+//                if (!drawnConnections.contains(connectionKey)) {
+//                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType(), linePaint);
+//                    drawnConnections.add(connectionKey);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Поиск станции по ID
@@ -707,20 +825,31 @@ public class MetroMapView extends View {
      * Отрисовка переходов
      */
     private void drawTransfers(Canvas canvas) {
+        // Save the canvas state
+        canvas.save();
+        // Apply the transformation matrix
+        canvas.concat(transformMatrix);
+
         if (transfers == null || transfers.isEmpty()) {
+            System.out.println("No transfers to draw");
             return;
         }
+        System.out.println("Drawing " + transfers.size() + " transfers");
         for (Transfer transfer : transfers) {
-            List<Station> transferStations = transfer.getStations();
-            drawTransferConnection(canvas, transferStations, transfer.getType());
+            System.out.println("Transfer type: " + transfer.getType() + " with " + transfer.getStations().size() + " stations");
+            drawTransferConnection(canvas, transfer.getStations(), transfer.getType());
         }
+        canvas.restore();
     }
 
-    /**
-     * Отрисовка станций
-     */
     private void drawStations(Canvas canvas) {
+        // Save the canvas state
+        canvas.save();
+        // Apply the transformation matrix
+        canvas.concat(transformMatrix);
+
         for (Station station : stations) {
+            System.out.println(station.getName());
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
@@ -734,6 +863,9 @@ public class MetroMapView extends View {
 
             drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint, false);
         }
+
+        // Restore the canvas state
+        canvas.restore();
     }
 
     /**
@@ -834,38 +966,64 @@ public class MetroMapView extends View {
      * Отрисовка линии с промежуточными точками
      */
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType, Paint paint) {
-        // Сортируем станции по ID
+        // Save canvas state
+        canvas.save();
+
+        // Apply transformation matrix
+        canvas.concat(transformMatrix);
+
+        // Get stations by ID order
         Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
         Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
 
         List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
 
+        // Set paint properties
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setAntiAlias(true);
+
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            // Draw direct line
             if (lineType.equals("double")) {
                 drawDoubleLine(canvas, startStation, endStation, paint);
             } else {
-                paint.setStrokeWidth(10);
-                canvas.drawLine(startStation.getX() * COORDINATE_SCALE_FACTOR, startStation.getY() * COORDINATE_SCALE_FACTOR,
-                        endStation.getX() * COORDINATE_SCALE_FACTOR, endStation.getY() * COORDINATE_SCALE_FACTOR, paint);
+                canvas.drawLine(
+                        startStation.getX() * COORDINATE_SCALE_FACTOR,
+                        startStation.getY() * COORDINATE_SCALE_FACTOR,
+                        endStation.getX() * COORDINATE_SCALE_FACTOR,
+                        endStation.getY() * COORDINATE_SCALE_FACTOR,
+                        paint
+                );
             }
         } else if (intermediatePoints.size() == 1) {
+            // Draw two segments with one intermediate point
             float startX = startStation.getX() * COORDINATE_SCALE_FACTOR;
             float startY = startStation.getY() * COORDINATE_SCALE_FACTOR;
-            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
-            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
-            canvas.drawLine(startX, startY, endX, endY, paint);
-            canvas.drawLine(endX, endY, endStation.getX() * COORDINATE_SCALE_FACTOR, endStation.getY() * COORDINATE_SCALE_FACTOR, paint);
+            float middleX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
+            float middleY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
+            float endX = endStation.getX() * COORDINATE_SCALE_FACTOR;
+            float endY = endStation.getY() * COORDINATE_SCALE_FACTOR;
+
+            canvas.drawLine(startX, startY, middleX, middleY, paint);
+            canvas.drawLine(middleX, middleY, endX, endY, paint);
         } else if (intermediatePoints.size() == 2) {
+            // Draw Bezier curve with two control points
             Point start = new Point(startStation.getX(), startStation.getY());
             Point control1 = intermediatePoints.get(0);
             Point control2 = intermediatePoints.get(1);
             Point end = new Point(endStation.getX(), endStation.getY());
+
             if (lineType.equals("double")) {
                 drawDoubleBezierCurve(canvas, start, control1, control2, end, paint);
             } else {
                 drawBezierCurve(canvas, start, control1, control2, end, paint);
             }
         }
+
+        // Restore canvas state
+        canvas.restore();
     }
 
     /**
@@ -1236,6 +1394,8 @@ public class MetroMapView extends View {
         transferConnectionPoints.add(new PointF(x1 + shiftX, y1 + shiftY));
         transferConnectionPoints.add(new PointF(x2 + shiftX, y2 + shiftY));
 
+        transferPaint.setColor(Color.BLACK);
+        transferPaint.setStrokeWidth(10);
         canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
     }
 
@@ -1305,15 +1465,17 @@ public class MetroMapView extends View {
             return;
         }
 
-        transferConnectionPoints.clear();
+        transferConnectionPoints = new ArrayList<>();
 
         float centerX = 0;
         float centerY = 0;
         float[] coordinates = new float[stations.size() * 2];
 
+        // Вычисляем координаты и центр
         for (int i = 0; i < stations.size(); i++) {
-            float x = stations.get(i).getX() * COORDINATE_SCALE_FACTOR;
-            float y = stations.get(i).getY() * COORDINATE_SCALE_FACTOR;
+            Station station = stations.get(i);
+            float x = station.getX() * COORDINATE_SCALE_FACTOR;
+            float y = station.getY() * COORDINATE_SCALE_FACTOR;
             coordinates[i * 2] = x;
             coordinates[i * 2 + 1] = y;
             centerX += x;
@@ -1323,6 +1485,13 @@ public class MetroMapView extends View {
         centerX /= stations.size();
         centerY /= stations.size();
 
+        // Создаем новый объект Paint для каждой отрисовки
+        Paint currentPaint = new Paint(transferPaint);
+        currentPaint.setStyle(Paint.Style.STROKE);
+        currentPaint.setStrokeWidth(10);
+        currentPaint.setColor(Color.BLACK);
+
+        // Рисуем линии переходов
         for (int i = 0; i < stations.size(); i++) {
             int nextIndex = (i + 1) % stations.size();
             float x1 = coordinates[i * 2];
@@ -1330,16 +1499,28 @@ public class MetroMapView extends View {
             float x2 = coordinates[nextIndex * 2];
             float y2 = coordinates[nextIndex * 2 + 1];
 
-            if (transferType.equals("crossplatform")) {
-                drawHalfColoredLine(canvas, x1, y1, x2, y2, stations.get(i).getColor(), stations.get(nextIndex).getColor());
-            } else if (transferType.equals("ground")) {
-                drawDashedLine(canvas, x1, y1, x2, y2, transferPaint);
-            } else {
-                drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+            switch (transferType.toLowerCase()) {
+                case "crossplatform":
+                    drawHalfColoredLine(canvas, x1, y1, x2, y2,
+                            stations.get(i).getColor(),
+                            stations.get(nextIndex).getColor());
+                    break;
+                case "ground":
+                    drawDashedLine(canvas, x1, y1, x2, y2, currentPaint);
+                    break;
+                default: // regular
+                    drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
+                    break;
             }
         }
 
-        if (!transferType.equals("ground")) {
+        // Заполняем область перехода
+        if (!transferConnectionPoints.isEmpty()) {
+            fillTransferConnectionArea(canvas);
+        }
+
+        // Рисуем точки соединения
+        if (!transferType.equalsIgnoreCase("ground")) {
             for (int i = 0; i < stations.size(); i++) {
                 int prevIndex = (i - 1 + stations.size()) % stations.size();
                 int nextIndex = (i + 1) % stations.size();
@@ -1351,17 +1532,16 @@ public class MetroMapView extends View {
                 float nextX = coordinates[nextIndex * 2];
                 float nextY = coordinates[nextIndex * 2 + 1];
 
-                if (transferType.equals("crossplatform")) {
+                List<Float> angles = getAngle(prevX, prevY, currentX, currentY, nextX, nextY);
+
+                if (transferType.equalsIgnoreCase("crossplatform")) {
                     drawPartialCircleWithColor(canvas, currentX, currentY, 20, 6,
-                            getAngle(prevX, prevY, currentX, currentY, nextX, nextY), stations.get(nextIndex).getColor());
+                            angles, stations.get(nextIndex).getColor());
                 } else {
-                    drawPartialCircle(canvas, currentX, currentY, 20, 6,
-                            getAngle(prevX, prevY, currentX, currentY, nextX, nextY));
+                    drawPartialCircle(canvas, currentX, currentY, 20, 6, angles);
                 }
             }
         }
-
-        fillTransferConnectionArea(canvas);
     }
 
     /**
