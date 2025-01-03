@@ -473,6 +473,10 @@ public class MetroMapView extends View {
      * Отрисовка маршрута с учетом переходов
      */
     private void drawRoute(Canvas canvas, int routeSaveCount) {
+        // Save the canvas state
+        canvas.save();
+        // Apply the transformation matrix
+        canvas.concat(transformMatrix);
         if (route != null && route.size() > 1) {
             for (int i = 0; i < route.size() - 1; i++) {
                 Station station1 = route.get(i);
@@ -526,7 +530,7 @@ public class MetroMapView extends View {
             drawTextBasedOnPosition(canvas, lastStation.getName(), lastStationX, lastStationY, lastStation.getTextPosition(), textPaint, true);
         }
 
-        canvas.restoreToCount(routeSaveCount);
+        canvas.restore();
     }
 
     /**
