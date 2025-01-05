@@ -64,7 +64,6 @@ public class MetroMapView extends View {
     public ScaleGestureDetector scaleGestureDetector;
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
     private static final float CLICK_RADIUS = 30.0f;
-    private static final float TRANSFER_CAPSULE_WIDTH = 40.0f;
     private Bitmap backgroundBitmap;
     private Map<Float, Bitmap> cacheBitmaps = new HashMap<>();
     public boolean needsRedraw = true;
@@ -310,63 +309,6 @@ public class MetroMapView extends View {
         }
     }
 
-    private void drawLineWithIntermediatePoints(Canvas canvas, Line line) {
-        List<Station> stations = line.getStations();
-        if (stations.size() < 2) return;
-        for (int i = 0; i < stations.size() - 1; i++) {
-            Station station1 = stations.get(i);
-            Station station2 = stations.get(i + 1);
-            drawLineWithIntermediatePoints(canvas, station1, station2, line.getLineType(), linePaint);
-        }
-        if (line.isCircle() && stations.size() > 1) {
-            Station firstStation = stations.get(0);
-            Station lastStation = stations.get(stations.size() - 1);
-            drawLineWithIntermediatePoints(canvas, lastStation, firstStation, line.getLineType(), linePaint);
-        }
-    }
-
-    private void drawStation(Canvas canvas, Station station) {
-        float x = station.getX() * COORDINATE_SCALE_FACTOR;
-        float y = station.getY() * COORDINATE_SCALE_FACTOR;
-        canvas.save();
-        canvas.concat(transformMatrix);
-        canvas.drawCircle(x, y, 10, stationPaint);
-        canvas.restore();
-    }
-
-    private void drawMapObjects(Canvas canvas, Rect visibleRect) {
-        for (Line line : grayedLines) {
-            if (line.isVisible(visibleRect)) {
-                line.draw(canvas, linePaint);
-            }
-        }
-        for (Station station : grayedStations) {
-            if (station.isVisible(visibleRect)) {
-                station.draw(canvas, stationPaint);
-            }
-        }
-    }
-
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            translateX -= distanceX / scaleFactor;
-            translateY -= distanceY / scaleFactor;
-            invalidate();
-            return true;
-        }
-    }
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
-            invalidate();
-            return true;
-        }
-    }
-
     private void applyDarkOverlay(Canvas canvas, int overlaySaveCount) {
         Paint overlayPaint = new Paint();
         overlayPaint.setColor(Color.argb(150, 0, 0, 0));
@@ -490,16 +432,6 @@ public class MetroMapView extends View {
         }
     }
 
-    private float getLodScaleFactor() {
-        if (scaleFactor < 0.5f) {
-            return 0.5f;
-        } else if (scaleFactor < 1.0f) {
-            return 1.0f;
-        } else {
-            return 2.0f;
-        }
-    }
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -511,14 +443,6 @@ public class MetroMapView extends View {
         }
     }
 
-    private Bitmap createCacheBitmap(int width, int height) {
-        cacheBitmaps = new HashMap<>();
-        cacheBitmap = null;
-        Bitmap cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas cacheCanvas = new Canvas(cacheBitmap);
-        drawMapContents(cacheCanvas);
-        return cacheBitmap;
-    }
     // Add this method to calculate the visible viewport in map coordinates
     private void updateVisibleViewport() {
         float[] points = {
