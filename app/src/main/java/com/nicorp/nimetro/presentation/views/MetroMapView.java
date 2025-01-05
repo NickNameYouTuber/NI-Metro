@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MetroMapView extends View {
+    private RectF visibleViewport = new RectF();
     private List<Line> lines;
     private List<Station> stations;
     private List<Station> route;
@@ -188,10 +189,12 @@ public class MetroMapView extends View {
         });
     }
 
+    // Update transform matrix and viewport
     public void updateTransformMatrix() {
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
         transformMatrix.postScale(scaleFactor, scaleFactor);
+        updateVisibleViewport();
     }
 
     private void loadBackgroundBitmap() {
@@ -267,33 +270,41 @@ public class MetroMapView extends View {
         drawMapContents(canvas);
     }
 
+    // Modify drawLines to check visibility
     private void drawLines(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
+
         for (Line line : lines) {
             linePaint.setColor(Color.parseColor(line.getColor()));
+
             for (Station station : line.getStations()) {
+                float stationX = station.getX();
+                float stationY = station.getY();
+
                 for (Station.Neighbor neighbor : station.getNeighbors()) {
-                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
-                                ? station.getId() + "-" + neighborStation.getId()
-                                : neighborStation.getId() + "-" + station.getId();
-                        if (!drawnConnections.contains(connectionKey)) {
-                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType(), linePaint);
-                            drawnConnections.add(connectionKey);
+                    Station neighborStation = findStationById(
+                            neighbor.getStation().getId(), stations);
+
+                    if (neighborStation != null &&
+                            line.getLineIdForStation(neighborStation) != null) {
+
+                        float neighborX = neighborStation.getX();
+                        float neighborY = neighborStation.getY();
+
+                        // Only draw if line segment is visible
+                        if (isLineVisible(stationX, stationY, neighborX, neighborY)) {
+                            String connectionKey = station.getId().compareTo(
+                                    neighborStation.getId()) < 0
+                                    ? station.getId() + "-" + neighborStation.getId()
+                                    : neighborStation.getId() + "-" + station.getId();
+
+                            if (!drawnConnections.contains(connectionKey)) {
+                                drawLineWithIntermediatePoints(canvas, station,
+                                        neighborStation, line.getLineType(), linePaint);
+                                drawnConnections.add(connectionKey);
+                            }
                         }
                     }
-                }
-            }
-            if (line.isCircle() && line.getStations().size() > 1) {
-                Station firstStation = line.getStations().get(0);
-                Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
-                        ? firstStation.getId() + "-" + lastStation.getId()
-                        : lastStation.getId() + "-" + firstStation.getId();
-                if (!drawnConnections.contains(connectionKey)) {
-                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType(), linePaint);
-                    drawnConnections.add(connectionKey);
                 }
             }
         }
@@ -508,14 +519,84 @@ public class MetroMapView extends View {
         drawMapContents(cacheCanvas);
         return cacheBitmap;
     }
+    // Add this method to calculate the visible viewport in map coordinates
+    private void updateVisibleViewport() {
+        float[] points = {
+                0, 0,
+                getWidth(), getHeight()
+        };
 
+        // Convert screen coordinates to map coordinates
+        Matrix inverse = new Matrix();
+        transformMatrix.invert(inverse);
+        inverse.mapPoints(points);
+
+        // Добавляем отступы к видимой области
+        float padding = 150; // Отступ в пикселях
+        visibleViewport.set(
+                (points[0] / COORDINATE_SCALE_FACTOR) - padding,
+                (points[1] / COORDINATE_SCALE_FACTOR) - padding,
+                (points[2] / COORDINATE_SCALE_FACTOR) + padding,
+                (points[3] / COORDINATE_SCALE_FACTOR) + padding
+        );
+    }
+
+    // Add this method to check if a point is visible
+    private boolean isPointVisible(float x, float y) {
+        return visibleViewport.contains(x, y);
+    }
+
+    // Add this method to check if a line segment is visible
+    private boolean isLineVisible(float x1, float y1, float x2, float y2) {
+        // Check if either endpoint is visible
+        if (isPointVisible(x1, y1) || isPointVisible(x2, y2)) {
+            return true;
+        }
+
+        // Check if line intersects viewport
+        return lineIntersectsRect(x1, y1, x2, y2,
+                visibleViewport.left, visibleViewport.top,
+                visibleViewport.right, visibleViewport.bottom);
+    }
+
+    private boolean lineIntersectsRect(float x1, float y1, float x2, float y2,
+                                       float rectLeft, float rectTop,
+                                       float rectRight, float rectBottom) {
+        // Cohen-Sutherland algorithm for line-rectangle intersection
+        int code1 = computeOutCode(x1, y1, rectLeft, rectTop, rectRight, rectBottom);
+        int code2 = computeOutCode(x2, y2, rectLeft, rectTop, rectRight, rectBottom);
+
+        while (true) {
+            if ((code1 | code2) == 0) return true;  // Line is inside
+            if ((code1 & code2) != 0) return false; // Line is outside
+
+            return true; // Line intersects
+        }
+    }
+
+    private int computeOutCode(float x, float y, float rectLeft, float rectTop,
+                               float rectRight, float rectBottom) {
+        int code = 0;
+        if (x < rectLeft) code |= 1;
+        if (x > rectRight) code |= 2;
+        if (y < rectTop) code |= 4;
+        if (y > rectBottom) code |= 8;
+        return code;
+    }
+
+    // Modify drawMapContents to update viewport
     private void drawMapContents(Canvas canvas) {
+        updateVisibleViewport();
+
         if (backgroundBitmap != null) {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
-        if (grayedLines != null && grayedStations != null && !grayedLines.isEmpty() && !grayedStations.isEmpty()) {
+
+        if (grayedLines != null && grayedStations != null &&
+                !grayedLines.isEmpty() && !grayedStations.isEmpty()) {
             drawGrayedMap(canvas);
         }
+
         if (lines != null && stations != null) {
             drawRivers(canvas);
             drawLines(canvas);
@@ -526,9 +607,12 @@ public class MetroMapView extends View {
                 drawIntermediatePoints(canvas);
             }
         }
+
         if (route != null && route.size() > 1) {
-            applyDarkOverlay(canvas, canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null));
-            drawRoute(canvas, canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null));
+            applyDarkOverlay(canvas, canvas.saveLayer(0, 0,
+                    canvas.getWidth(), canvas.getHeight(), null));
+            drawRoute(canvas, canvas.saveLayer(0, 0,
+                    canvas.getWidth(), canvas.getHeight(), null));
         }
     }
 
@@ -606,20 +690,36 @@ public class MetroMapView extends View {
         canvas.restore();
     }
 
+    // Modify drawStations to check visibility
     private void drawStations(Canvas canvas) {
         canvas.save();
         canvas.concat(transformMatrix);
+
         for (Station station : stations) {
-            float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
-            float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
-            canvas.drawCircle(stationX, stationY, 10, whitePaint);
-            stationPaint.setColor(Color.parseColor(station.getColor()));
-            canvas.drawCircle(stationX, stationY, 14, stationPaint);
-            if (selectedStations != null && selectedStations.contains(station)) {
-                canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
+            float stationX = station.getX();
+            float stationY = station.getY();
+
+            // Only draw if station is visible
+            if (isPointVisible(stationX, stationY)) {
+                float screenX = stationX * COORDINATE_SCALE_FACTOR;
+                float screenY = stationY * COORDINATE_SCALE_FACTOR;
+
+                canvas.drawCircle(screenX, screenY, 10, whitePaint);
+                stationPaint.setColor(Color.parseColor(station.getColor()));
+                canvas.drawCircle(screenX, screenY, 14, stationPaint);
+
+                if (selectedStations != null &&
+                        selectedStations.contains(station)) {
+                    canvas.drawCircle(screenX, screenY, 20,
+                            selectedStationPaint);
+                }
+
+                drawTextBasedOnPosition(canvas, station.getName(),
+                        screenX, screenY, station.getTextPosition(),
+                        textPaint, false);
             }
-            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), textPaint, false);
         }
+
         canvas.restore();
     }
 
@@ -891,23 +991,32 @@ public class MetroMapView extends View {
         }
     }
 
+    // Update transform methods to trigger viewport update
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = scaleGestureDetector.onTouchEvent(event);
         result = gestureDetector.onTouchEvent(event) || result;
+
         if (event.getAction() == MotionEvent.ACTION_UP) {
+            updateVisibleViewport();
             float[] point = new float[] {event.getX(), event.getY()};
             Matrix inverseMatrix = new Matrix();
             transformMatrix.invert(inverseMatrix);
             inverseMatrix.mapPoints(point);
+
             float x = point[0];
             float y = point[1];
-            Station clickedStation = findStationAt(x / COORDINATE_SCALE_FACTOR, y / COORDINATE_SCALE_FACTOR);
+
+            Station clickedStation = findStationAt(
+                    x / COORDINATE_SCALE_FACTOR,
+                    y / COORDINATE_SCALE_FACTOR);
+
             if (clickedStation != null && listener != null) {
                 listener.onStationClick(clickedStation);
                 return true;
             }
         }
+
         return result || super.onTouchEvent(event);
     }
 
