@@ -23,6 +23,7 @@
                 android:name=".presentation.activities.EditMapActivity"
             android:exported="false" />
         <activity
+            android:hardwareAccelerated="true"
             android:name=".presentation.activities.MainActivity"
             android:exported="true">
             <intent-filter>

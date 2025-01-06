@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -74,6 +75,9 @@ public class MetroMapView extends View {
     private boolean isActiveMapMetro = true;
     private List<PointF> transferConnectionPoints = new ArrayList<>();
 
+
+    
+
     // Конструкторы и инициализация
     public MetroMapView(Context context) {
         super(context);
@@ -97,6 +101,16 @@ public class MetroMapView extends View {
         if (isEditMode) {
             loadBackgroundBitmap();
         }
+
+        // Центрируем карту после того, как View будет готова
+        post(new Runnable() {
+            @Override
+            public void run() {
+                if (stations != null && !stations.isEmpty()) {
+                    centerMap();
+                }
+            }
+        });
     }
 
     private void initializePaints() {
@@ -172,7 +186,9 @@ public class MetroMapView extends View {
     }
 
     // Методы для работы с данными
-    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects, List<Line> grayedLines, List<Station> grayedStations) {
+    public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers,
+                        List<River> rivers, List<MapObject> mapObjects,
+                        List<Line> grayedLines, List<Station> grayedStations) {
         this.lines = lines;
         this.stations = stations;
         this.transfers = transfers;
@@ -202,6 +218,7 @@ public class MetroMapView extends View {
 
     public void setActiveMap(boolean isMetroMap) {
         this.isActiveMapMetro = isMetroMap;
+        updateTransformMatrix(); // Обновляем матрицу трансформации
         needsRedraw = true;
         invalidate();
     }
@@ -245,38 +262,124 @@ public class MetroMapView extends View {
     private void drawMapContents(Canvas canvas) {
         updateVisibleViewport();
 
+        // Save initial canvas state
+        int mainSaveCount = canvas.save();
+
+        // Apply main transformation once
+        canvas.concat(transformMatrix);
+
         if (backgroundBitmap != null) {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
 
-        if (grayedLines != null && grayedStations != null &&
-                !grayedLines.isEmpty() && !grayedStations.isEmpty()) {
+        // Draw grayed lines/stations with transform
+        if (grayedLines != null && !grayedLines.isEmpty()) {
+            int saveCount = canvas.save();
             drawGrayedMap(canvas);
+            canvas.restoreToCount(saveCount);
         }
 
+        // Draw active map elements with transform
         if (lines != null && stations != null) {
+            int saveCount = canvas.save();
             drawRivers(canvas);
             drawLines(canvas);
+
+
             drawTransfers(canvas);
             drawStations(canvas);
+
+
             drawMapObjects(canvas);
+
             if (isEditMode) {
                 drawIntermediatePoints(canvas);
             }
+            canvas.restoreToCount(saveCount);
         }
 
+        // Draw route overlay with transform
         if (route != null && route.size() > 1) {
-            applyDarkOverlay(canvas, canvas.saveLayer(0, 0,
-                    canvas.getWidth(), canvas.getHeight(), null));
-            drawRoute(canvas, canvas.saveLayer(0, 0,
-                    canvas.getWidth(), canvas.getHeight(), null));
+            int saveCount = canvas.save();
+            applyDarkOverlay(canvas, saveCount);
+            drawRoute(canvas, saveCount);
+            canvas.restoreToCount(saveCount);
         }
+
+        // Restore main canvas state
+        canvas.restoreToCount(mainSaveCount);
+
+        updateVisibleViewport();
+    }
+
+    // Add this method to center the map
+    private void centerMap() {
+        if (stations == null || stations.isEmpty()) {
+            return;
+        }
+
+        // Find map bounds
+        float minX = Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE;
+        float maxY = Float.MIN_VALUE;
+
+        for (Station station : stations) {
+            float x = station.getX() * COORDINATE_SCALE_FACTOR;
+            float y = station.getY() * COORDINATE_SCALE_FACTOR;
+
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+        }
+
+        // Calculate map dimensions
+        float mapWidth = maxX - minX;
+        float mapHeight = maxY - minY;
+
+        // Calculate map center
+        float mapCenterX = minX + (mapWidth / 2);
+        float mapCenterY = minY + (mapHeight / 2);
+
+        // Calculate view center
+        float viewCenterX = getWidth() / 2f;
+        float viewCenterY = getHeight() / 2f;
+        Log.d("centerMap", "viewCenterX: " + viewCenterX + ", viewCenterY: " + viewCenterY);
+        Log.d("centerMap", "mapCenterX: " + mapCenterX + ", mapCenterY: " + mapCenterY);
+
+        // Calculate required translation to center map
+        translateX = viewCenterX - mapCenterX;
+        translateY = viewCenterY - mapCenterY;
+
+        updateTransformMatrix();
+        invalidate();
+    }
+
+    private boolean isInGrayedLines(List<Line> linesToCheck) {
+        if (grayedLines == null || linesToCheck == null) {
+            return false;
+        }
+
+        // Проверяем, являются ли линии частью grayedLines
+        Set<String> grayedLineIds = new HashSet<>();
+        for (Line line : grayedLines) {
+            grayedLineIds.add(line.getId());
+        }
+
+        for (Line line : linesToCheck) {
+            if (!grayedLineIds.contains(line.getId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void drawLines(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
 
         for (Line line : lines) {
+            Log.d("drawLines", "line: " + line.getName());
             linePaint.setColor(Color.parseColor(line.getColor()));
 
             for (Station station : line.getStations()) {
@@ -313,26 +416,25 @@ public class MetroMapView extends View {
     }
 
     private void drawStations(Canvas canvas) {
-        canvas.save();
-        canvas.concat(transformMatrix);
-
         for (Station station : stations) {
             float stationX = station.getX();
             float stationY = station.getY();
+            Log.d("drawStations", "station: " + station.getName());
+            Log.d("drawStations", "stationX: " + stationX + ", stationY: " + stationY);
 
-            // Only draw if station is visible
+            // Отрисовываем только видимые станции
             if (isPointVisible(stationX, stationY)) {
                 float screenX = stationX * COORDINATE_SCALE_FACTOR;
                 float screenY = stationY * COORDINATE_SCALE_FACTOR;
+                Log.d("drawStations", "COORDINATE_SCALE_FACTOR: " + COORDINATE_SCALE_FACTOR);
+                Log.d("drawStations", "screenX: " + screenX + ", screenY: " + screenY);
 
                 canvas.drawCircle(screenX, screenY, 10, whitePaint);
                 stationPaint.setColor(Color.parseColor(station.getColor()));
                 canvas.drawCircle(screenX, screenY, 14, stationPaint);
 
-                if (selectedStations != null &&
-                        selectedStations.contains(station)) {
-                    canvas.drawCircle(screenX, screenY, 20,
-                            selectedStationPaint);
+                if (selectedStations != null && selectedStations.contains(station)) {
+                    canvas.drawCircle(screenX, screenY, 20, selectedStationPaint);
                 }
 
                 drawTextBasedOnPosition(canvas, station.getName(),
@@ -340,20 +442,16 @@ public class MetroMapView extends View {
                         textPaint, false);
             }
         }
-
-        canvas.restore();
     }
 
     private void drawTransfers(Canvas canvas) {
-        canvas.save();
-        canvas.concat(transformMatrix);
+
         if (transfers == null || transfers.isEmpty()) {
             return;
         }
         for (Transfer transfer : transfers) {
             drawTransferConnection(canvas, transfer.getStations(), transfer.getType());
         }
-        canvas.restore();
     }
 
     private void drawRivers(Canvas canvas) {
@@ -414,8 +512,6 @@ public class MetroMapView extends View {
     }
 
     private void drawRoute(Canvas canvas, int routeSaveCount) {
-        canvas.save();
-        canvas.concat(transformMatrix);
         if (route != null && route.size() > 1) {
             for (int i = 0; i < route.size() - 1; i++) {
                 Station station1 = route.get(i);
@@ -449,7 +545,6 @@ public class MetroMapView extends View {
             }
             drawTextBasedOnPosition(canvas, lastStation.getName(), lastStationX, lastStationY, lastStation.getTextPosition(), textPaint, true);
         }
-        canvas.restore();
     }
 
     private void drawTransferBetweenStations(Canvas canvas, Station station1, Station station2) {
@@ -506,44 +601,72 @@ public class MetroMapView extends View {
         Set<String> drawnConnections = new HashSet<>();
         Paint grayedLinePaint = new Paint(grayedPaint);
         grayedLinePaint.setStrokeWidth(9);
-        Paint grayedStationPaint = new Paint(grayedPaint);
-        grayedStationPaint.setStyle(Paint.Style.STROKE);
-        grayedStationPaint.setStrokeWidth(7);
-        Paint grayedTextPaint = new Paint(grayedPaint);
-        grayedTextPaint.setTextSize(20);
+
+        // Отрисовка серых линий
         for (Line line : grayedLines) {
-            for (Station station : line.getStations()) {
-                for (Station.Neighbor neighbor : station.getNeighbors()) {
-                    Station neighborStation = findStationById(neighbor.getStation().getId(), grayedStations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
-                                ? station.getId() + "-" + neighborStation.getId()
-                                : neighborStation.getId() + "-" + station.getId();
-                        if (!drawnConnections.contains(connectionKey)) {
-                            drawLineWithIntermediatePoints(canvas, station, neighborStation, line.getLineType(), grayedLinePaint);
-                            drawnConnections.add(connectionKey);
-                        }
+            drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint);
+        }
+
+        Log.d("drawGrayedMap", "grayedLines: " + grayedLines.size());
+        Log.d("drawGrayedMap", "lines: " + lines.size());
+        Log.d("drawGrayedMap", "isActiveMapMetro: " + isActiveMapMetro);
+        Log.d("drawGrayedMap", "isInGrayedLines(lines): " + isInGrayedLines(lines));
+        Log.d("drawGrayedMap", "isInGrayedLines(grayedLines): " + isInGrayedLines(grayedLines));
+        // Отрисовка станций только если это не активная карта
+//        if ((!isActiveMapMetro && isInGrayedLines(lines) && isInGrayedLines(grayedLines))) {
+//            Paint grayedStationPaint = new Paint(grayedPaint);
+//            grayedStationPaint.setStyle(Paint.Style.STROKE);
+//            grayedStationPaint.setStrokeWidth(7);
+//            Paint grayedTextPaint = new Paint(grayedPaint);
+//            grayedTextPaint.setTextSize(20);
+//
+//            for (Station station : grayedStations) {
+//                float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
+//                float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
+//                canvas.drawCircle(stationX, stationY, 10, whitePaint);
+//                canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
+//                drawTextBasedOnPosition(canvas, station.getName(),
+//                        stationX, stationY, station.getTextPosition(),
+//                        grayedTextPaint, false);
+//            }
+//        }
+    }
+
+    private void drawGrayedLines(Canvas canvas, Line line,
+                                 Set<String> drawnConnections, Paint grayedLinePaint) {
+        for (Station station : line.getStations()) {
+            for (Station.Neighbor neighbor : station.getNeighbors()) {
+                Station neighborStation = findStationById(
+                        neighbor.getStation().getId(), grayedStations);
+                if (neighborStation != null &&
+                        line.getLineIdForStation(neighborStation) != null) {
+                    String connectionKey = station.getId().compareTo(
+                            neighborStation.getId()) < 0
+                            ? station.getId() + "-" + neighborStation.getId()
+                            : neighborStation.getId() + "-" + station.getId();
+                    if (!drawnConnections.contains(connectionKey)) {
+                        drawLineWithIntermediatePoints(canvas, station,
+                                neighborStation, line.getLineType(), grayedLinePaint);
+                        drawnConnections.add(connectionKey);
                     }
                 }
             }
-            if (line.isCircle() && line.getStations().size() > 1) {
-                Station firstStation = line.getStations().get(0);
-                Station lastStation = line.getStations().get(line.getStations().size() - 1);
-                String connectionKey = firstStation.getId().compareTo(lastStation.getId()) < 0
-                        ? firstStation.getId() + "-" + lastStation.getId()
-                        : lastStation.getId() + "-" + firstStation.getId();
-                if (!drawnConnections.contains(connectionKey)) {
-                    drawLineWithIntermediatePoints(canvas, firstStation, lastStation, line.getLineType(), grayedLinePaint);
-                    drawnConnections.add(connectionKey);
-                }
-            }
         }
-        for (Station station : grayedStations) {
-            float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
-            float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
-            canvas.drawCircle(stationX, stationY, 10, whitePaint);
-            canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
-            drawTextBasedOnPosition(canvas, station.getName(), stationX, stationY, station.getTextPosition(), grayedTextPaint, false);
+
+        // Обработка круговых линий
+        if (line.isCircle() && line.getStations().size() > 1) {
+            Station firstStation = line.getStations().get(0);
+            Station lastStation = line.getStations().get(
+                    line.getStations().size() - 1);
+            String connectionKey = firstStation.getId().compareTo(
+                    lastStation.getId()) < 0
+                    ? firstStation.getId() + "-" + lastStation.getId()
+                    : lastStation.getId() + "-" + firstStation.getId();
+            if (!drawnConnections.contains(connectionKey)) {
+                drawLineWithIntermediatePoints(canvas, firstStation,
+                        lastStation, line.getLineType(), grayedLinePaint);
+                drawnConnections.add(connectionKey);
+            }
         }
     }
 
@@ -565,8 +688,6 @@ public class MetroMapView extends View {
     }
 
     private void drawLineWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType, Paint paint) {
-        canvas.save();
-        canvas.concat(transformMatrix);
         Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
         Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
         List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
@@ -606,7 +727,6 @@ public class MetroMapView extends View {
                 drawBezierCurve(canvas, start, control1, control2, end, paint);
             }
         }
-        canvas.restore();
     }
 
     private void drawDoubleLine(Canvas canvas, Station station1, Station station2, Paint paint) {
@@ -932,7 +1052,6 @@ public class MetroMapView extends View {
         overlayPaint.setColor(Color.argb(150, 0, 0, 0));
         overlayPaint.setStyle(Paint.Style.FILL);
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), overlayPaint);
-        canvas.restoreToCount(overlaySaveCount);
     }
 
     // Методы для работы с геометрией и видимостью
@@ -955,7 +1074,7 @@ public class MetroMapView extends View {
         inverse.mapPoints(points);
 
         // Добавляем отступы к видимой области
-        float padding = 150; // Отступ в пикселях
+        float padding = 100; // Отступ в пикселях
         visibleViewport.set(
                 (points[0] / COORDINATE_SCALE_FACTOR) - padding,
                 (points[1] / COORDINATE_SCALE_FACTOR) - padding,
@@ -1141,6 +1260,12 @@ public class MetroMapView extends View {
             }
         }
         cacheBitmaps.clear();
+    }
+
+    public void setEditMode(boolean editMode) {
+        isEditMode = editMode;
+        needsRedraw = true;
+        invalidate();
     }
 
     // Интерфейсы и геттеры/сеттеры
