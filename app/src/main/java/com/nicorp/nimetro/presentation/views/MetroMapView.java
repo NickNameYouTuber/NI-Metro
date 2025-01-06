@@ -259,6 +259,104 @@ public class MetroMapView extends View {
         needsRedraw = false;
     }
 
+    private class LinePath {
+        Path path;
+        String color;
+        Path innerPath; // Добавляем поле для внутреннего пути
+        Paint whitePaint; // Добавляем поле для белой заливки
+
+        LinePath(Path path, String color) {
+            this.path = path;
+            this.color = color;
+        }
+
+        LinePath(Path path, String color, Path innerPath, Paint whitePaint) {
+            this.path = path;
+            this.color = color;
+            this.innerPath = innerPath;
+            this.whitePaint = whitePaint;
+        }
+    }
+
+    private class StationPath {
+        Path path;
+        String color;
+
+        StationPath(Path path, String color) {
+            this.path = path;
+            this.color = color;
+        }
+    }
+    private class MapPathCache {
+        List<LinePath> linesPaths = new ArrayList<>();
+        List<StationPath> stationsPaths = new ArrayList<>();
+        Path transfersPath = new Path();
+        Path riversPath = new Path();
+        List<PartialCircle> partialCircles = new ArrayList<>();
+        Path convexHullPath = new Path(); // Добавляем путь для выпуклой оболочки
+        boolean isInitialized = false;
+    }
+
+    private List<PointF> calculateConvexHull(List<PointF> points) {
+        if (points.size() <= 3) {
+            return points;
+        }
+
+        // Сортируем точки по координатам
+        points.sort((a, b) -> Float.compare(a.x, b.x) != 0 ? Float.compare(a.x, b.x) : Float.compare(a.y, b.y));
+
+        // Верхняя и нижняя части выпуклой оболочки
+        List<PointF> upper = new ArrayList<>();
+        List<PointF> lower = new ArrayList<>();
+
+        for (PointF point : points) {
+            while (upper.size() >= 2 && cross(upper.get(upper.size() - 2), upper.get(upper.size() - 1), point) <= 0) {
+                upper.remove(upper.size() - 1);
+            }
+            upper.add(point);
+        }
+
+        for (int i = points.size() - 1; i >= 0; i--) {
+            PointF point = points.get(i);
+            while (lower.size() >= 2 && cross(lower.get(lower.size() - 2), lower.get(lower.size() - 1), point) <= 0) {
+                lower.remove(lower.size() - 1);
+            }
+            lower.add(point);
+        }
+
+        // Убираем последнюю точку, так как она дублируется
+        upper.remove(upper.size() - 1);
+        lower.remove(lower.size() - 1);
+
+        // Объединяем верхнюю и нижнюю части
+        upper.addAll(lower);
+        return upper;
+    }
+
+    private float cross(PointF o, PointF a, PointF b) {
+        return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    }
+
+    private class PartialCircle {
+        float centerX;
+        float centerY;
+        float radius;
+        float strokeWidth;
+        List<Float> angles;
+        String color;
+
+        PartialCircle(float centerX, float centerY, float radius, float strokeWidth, List<Float> angles, String color) {
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.radius = radius;
+            this.strokeWidth = strokeWidth;
+            this.angles = angles;
+            this.color = color;
+        }
+    }
+    private MapPathCache pathCache = new MapPathCache();
+
+    // Замените метод drawMapContents на:
     private void drawMapContents(Canvas canvas) {
         updateVisibleViewport();
 
@@ -272,6 +370,11 @@ public class MetroMapView extends View {
             canvas.drawBitmap(backgroundBitmap, 0, 0, null);
         }
 
+        // Initialize or update path cache if needed
+        if (!pathCache.isInitialized || needsRedraw) {
+            updatePathCache();
+        }
+
         // Draw grayed lines/stations with transform
         if (grayedLines != null && !grayedLines.isEmpty()) {
             int saveCount = canvas.save();
@@ -279,23 +382,63 @@ public class MetroMapView extends View {
             canvas.restoreToCount(saveCount);
         }
 
-        // Draw active map elements with transform
-        if (lines != null && stations != null) {
-            int saveCount = canvas.save();
-            drawRivers(canvas);
-            drawLines(canvas);
+        // Draw cached paths
+        if (rivers != null) {
+            canvas.drawPath(pathCache.riversPath, riverPaint);
+        }
 
+        for (LinePath linePath : pathCache.linesPaths) {
+            linePaint.setColor(Color.parseColor(linePath.color));
+            canvas.drawPath(linePath.path, linePaint);
 
-            drawTransfers(canvas);
-            drawStations(canvas);
-
-
-            drawMapObjects(canvas);
-
-            if (isEditMode) {
-                drawIntermediatePoints(canvas);
+            if (linePath.innerPath != null) {
+                canvas.drawPath(linePath.innerPath, linePath.whitePaint);
             }
-            canvas.restoreToCount(saveCount);
+        }
+
+        // Отрисовываем переходы из кэша
+        canvas.drawPath(pathCache.transfersPath, transferPaint);
+
+        // Отрисовываем частичные круги из кэша
+        for (PartialCircle partialCircle : pathCache.partialCircles) {
+            if (partialCircle.color != null) {
+                drawPartialCircleWithColor(canvas,
+                        partialCircle.centerX, partialCircle.centerY,
+                        partialCircle.radius, partialCircle.strokeWidth,
+                        partialCircle.angles, partialCircle.color);
+            } else {
+                drawPartialCircle(canvas,
+                        partialCircle.centerX, partialCircle.centerY,
+                        partialCircle.radius, partialCircle.strokeWidth,
+                        partialCircle.angles);
+            }
+        }
+
+        // Отрисовываем выпуклую оболочку для заливки переходов
+        Paint fillPaint = new Paint();
+        fillPaint.setColor(Color.WHITE);
+        fillPaint.setStyle(Paint.Style.FILL);
+        canvas.drawPath(pathCache.convexHullPath, fillPaint);
+
+        // Отрисовываем станции с белой заливкой и цветной обводкой
+        for (StationPath stationPath : pathCache.stationsPaths) {
+            Paint stationFillPaint = new Paint();
+            stationFillPaint.setColor(Color.WHITE);
+            stationFillPaint.setStyle(Paint.Style.FILL);
+            canvas.drawPath(stationPath.path, stationFillPaint);
+
+            Paint strokePaint = new Paint();
+            strokePaint.setColor(Color.parseColor(stationPath.color));
+            strokePaint.setStyle(Paint.Style.STROKE);
+            strokePaint.setStrokeWidth(7);
+            canvas.drawPath(stationPath.path, strokePaint);
+        }
+
+        // Draw non-cached elements
+        drawMapObjects(canvas);
+
+        if (isEditMode) {
+            drawIntermediatePoints(canvas);
         }
 
         // Draw route overlay with transform
@@ -309,7 +452,465 @@ public class MetroMapView extends View {
         // Restore main canvas state
         canvas.restoreToCount(mainSaveCount);
 
-        updateVisibleViewport();
+        needsRedraw = false;
+    }
+
+    private void addTransferPathToCache(Transfer transfer) {
+        List<Station> stations = transfer.getStations();
+        if (stations == null || stations.size() < 2) {
+            return;
+        }
+
+        // Массив для хранения координат станций
+        float[] coordinates = new float[stations.size() * 2];
+        for (int i = 0; i < stations.size(); i++) {
+            Station station = stations.get(i);
+            float x = station.getX() * COORDINATE_SCALE_FACTOR;
+            float y = station.getY() * COORDINATE_SCALE_FACTOR;
+            coordinates[i * 2] = x;
+            coordinates[i * 2 + 1] = y;
+        }
+
+        // Отрисовка линий перехода
+        for (int i = 0; i < stations.size(); i++) {
+            int nextIndex = (i + 1) % stations.size();
+            float x1 = coordinates[i * 2];
+            float y1 = coordinates[i * 2 + 1];
+            float x2 = coordinates[nextIndex * 2];
+            float y2 = coordinates[nextIndex * 2 + 1];
+
+            switch (transfer.getType().toLowerCase()) {
+                case "crossplatform":
+                    addHalfColoredLineToCache(x1, y1, x2, y2,
+                            stations.get(i).getColor(),
+                            stations.get(nextIndex).getColor());
+                    break;
+                case "ground":
+                    addDashedLineToCache(x1, y1, x2, y2);
+                    break;
+                default:
+                    addShiftedLineToCache(x1, y1, x2, y2);
+                    break;
+            }
+        }
+
+        // Отрисовка частичных кругов
+        if (!transfer.getType().equalsIgnoreCase("ground")) {
+            for (int i = 0; i < stations.size(); i++) {
+                int prevIndex = (i - 1 + stations.size()) % stations.size();
+                int nextIndex = (i + 1) % stations.size();
+                float currentX = coordinates[i * 2];
+                float currentY = coordinates[i * 2 + 1];
+                float prevX = coordinates[prevIndex * 2];
+                float prevY = coordinates[prevIndex * 2 + 1];
+                float nextX = coordinates[nextIndex * 2];
+                float nextY = coordinates[nextIndex * 2 + 1];
+                List<Float> angles = getAngle(prevX, prevY, currentX, currentY, nextX, nextY);
+
+                if (transfer.getType().equalsIgnoreCase("crossplatform")) {
+                    pathCache.partialCircles.add(new PartialCircle(
+                            currentX, currentY, 20, 6,
+                            angles, stations.get(nextIndex).getColor()
+                    ));
+                } else {
+                    pathCache.partialCircles.add(new PartialCircle(
+                            currentX, currentY, 20, 6,
+                            angles, null
+                    ));
+                }
+            }
+        }
+
+        // Создание выпуклой оболочки для заливки
+        if (transferConnectionPoints.size() >= 3) {
+            List<PointF> convexHullPoints = calculateConvexHull(transferConnectionPoints);
+            if (!convexHullPoints.isEmpty()) {
+                pathCache.convexHullPath.moveTo(convexHullPoints.get(0).x, convexHullPoints.get(0).y);
+                for (int i = 1; i < convexHullPoints.size(); i++) {
+                    pathCache.convexHullPath.lineTo(convexHullPoints.get(i).x, convexHullPoints.get(i).y);
+                }
+                pathCache.convexHullPath.close();
+            }
+        }
+    }
+
+    private void addShiftedLineToCache(float x1, float y1, float x2, float y2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
+        shiftX = -shiftX;
+        shiftY = -shiftY;
+
+        pathCache.transfersPath.moveTo(x1 + shiftX, y1 + shiftY);
+        pathCache.transfersPath.lineTo(x2 + shiftX, y2 + shiftY);
+    }
+
+    private void addDashedLineToCache(float x1, float y1, float x2, float y2) {
+        pathCache.transfersPath.moveTo(x1, y1);
+        pathCache.transfersPath.lineTo(x2, y2);
+    }
+
+    private void addHalfColoredLineToCache(float x1, float y1, float x2, float y2, String color1, String color2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
+        shiftX = -shiftX;
+        shiftY = -shiftY;
+
+        float halfX = (x1 + x2) / 2;
+        float halfY = (y1 + y2) / 2;
+
+        pathCache.transfersPath.moveTo(x1 + shiftX, y1 + shiftY);
+        pathCache.transfersPath.lineTo(halfX + shiftX, halfY + shiftY);
+
+        pathCache.transfersPath.moveTo(halfX + shiftX, halfY + shiftY);
+        pathCache.transfersPath.lineTo(x2 + shiftX, y2 + shiftY);
+    }
+
+    private Line findLineForStation(Station station) {
+        for (Line line : lines) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
+        return null;
+    }
+
+
+
+
+    // Добавьте новый метод для обновления кэша путей:
+    private void updatePathCache() {
+        // Очищаем все пути
+        pathCache.linesPaths.clear();
+        pathCache.stationsPaths.clear();
+        pathCache.transfersPath.reset();
+        pathCache.riversPath.reset();
+        pathCache.partialCircles.clear();
+        pathCache.convexHullPath.reset(); // Очищаем путь выпуклой оболочки
+
+        // Кэшируем пути для рек
+        if (rivers != null) {
+            for (River river : rivers) {
+                List<Point> points = river.getPoints();
+                if (points.size() >= 2) {
+                    Path riverPath = new Path();
+                    riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR,
+                            points.get(0).y * COORDINATE_SCALE_FACTOR);
+                    for (int i = 1; i < points.size(); i++) {
+                        riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR,
+                                points.get(i).y * COORDINATE_SCALE_FACTOR);
+                    }
+                    pathCache.riversPath.addPath(riverPath);
+                }
+            }
+        }
+
+        // Кэшируем пути для линий метро
+        Set<String> drawnConnections = new HashSet<>();
+        for (Line line : lines) {
+            Path linePath = new Path();
+            String lineColor = line.getColor();
+
+            for (Station station : line.getStations()) {
+                for (Station.Neighbor neighbor : station.getNeighbors()) {
+                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
+                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
+                                ? station.getId() + "-" + neighborStation.getId()
+                                : neighborStation.getId() + "-" + station.getId();
+
+                        if (!drawnConnections.contains(connectionKey)) {
+                            addLinePathToCache(station, neighborStation, line.getLineType(), linePath);
+                            drawnConnections.add(connectionKey);
+                        }
+                    }
+                }
+            }
+
+            pathCache.linesPaths.add(new LinePath(linePath, lineColor));
+        }
+
+        // Кэшируем пути для станций с цветом линии
+        for (Station station : stations) {
+            float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
+            float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
+
+            // Находим линию, к которой принадлежит станция
+            Line stationLine = findLineForStation(station);
+            String stationColor = stationLine != null ? stationLine.getColor() : "#000000";
+
+            // Создаем путь для станции
+            Path stationPath = new Path();
+            stationPath.addCircle(stationX, stationY, 14, Path.Direction.CW);
+
+            // Добавляем путь станции в кэш с цветом линии
+            pathCache.stationsPaths.add(new StationPath(stationPath, stationColor));
+        }
+
+        // Кэшируем пути для переходов, частичных кругов и выпуклой оболочки
+        if (transfers != null) {
+            for (Transfer transfer : transfers) {
+                addTransferPathToCache(transfer);
+            }
+        }
+
+        // Рассчитываем выпуклую оболочку для заливки переходов
+        List<PointF> convexHullPoints = calculateConvexHull(transferConnectionPoints);
+        if (!convexHullPoints.isEmpty()) {
+            pathCache.convexHullPath.moveTo(convexHullPoints.get(0).x, convexHullPoints.get(0).y);
+            for (int i = 1; i < convexHullPoints.size(); i++) {
+                pathCache.convexHullPath.lineTo(convexHullPoints.get(i).x, convexHullPoints.get(i).y);
+            }
+            pathCache.convexHullPath.close();
+        }
+
+        pathCache.isInitialized = true;
+    }
+
+    private void addLinePathToCache(Station station1, Station station2, String lineType, Path linePath) {
+        Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
+        Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
+        List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
+
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            if (lineType.equals("double")) {
+                // Обработка двойной прямой линии
+                addDoubleStraightLineToCache(startStation, endStation, linePath);
+            } else {
+                // Обработка обычной прямой линии
+                addQuadrilateralLinePathToCache(startStation, endStation, linePath);
+            }
+        } else if (intermediatePoints.size() == 1) {
+            // Обработка линии с одной промежуточной точкой
+            addQuadrilateralWithIntermediatePointPathToCache(startStation, endStation, intermediatePoints.get(0), linePath);
+        } else if (intermediatePoints.size() == 2 && lineType.equals("double")) {
+            // Обработка двойной кривой линии
+            addDoubleQuadrilateralBezierPathToCache(startStation, endStation, intermediatePoints, linePath);
+        } else if (intermediatePoints.size() == 2) {
+            // Обработка обычной кривой линии
+            addQuadrilateralBezierPathToCache(startStation, endStation, intermediatePoints, linePath);
+        }
+    }
+
+    private void addQuadrilateralLinePathToCache(Station station1, Station station2, Path linePath) {
+        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
+        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
+        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
+        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float nx = -dy / length;
+        float ny = dx / length;
+        float offset = 6f; // Установите одинаковую ширину для всех линий
+
+        // Создаем четырехугольный путь
+        linePath.moveTo(x1 + nx * offset, y1 + ny * offset);
+        linePath.lineTo(x2 + nx * offset, y2 + ny * offset);
+        linePath.lineTo(x2 - nx * offset, y2 - ny * offset);
+        linePath.lineTo(x1 - nx * offset, y1 - ny * offset);
+        linePath.close();
+    }
+
+    private void addQuadrilateralWithIntermediatePointPathToCache(Station startStation, Station endStation, Point middlePoint, Path linePath) {
+        float startX = startStation.getX() * COORDINATE_SCALE_FACTOR;
+        float startY = startStation.getY() * COORDINATE_SCALE_FACTOR;
+        float middleX = middlePoint.x * COORDINATE_SCALE_FACTOR;
+        float middleY = middlePoint.y * COORDINATE_SCALE_FACTOR;
+        float endX = endStation.getX() * COORDINATE_SCALE_FACTOR;
+        float endY = endStation.getY() * COORDINATE_SCALE_FACTOR;
+
+        float offset = 6f; // Установите одинаковую ширину для всех линий
+
+        // Вычисляем перпендикулярные векторы для обоих сегментов
+        float dx1 = middleX - startX;
+        float dy1 = middleY - startY;
+        float length1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+        float nx1 = -dy1 / length1;
+        float ny1 = dx1 / length1;
+
+        float dx2 = endX - middleX;
+        float dy2 = endY - middleY;
+        float length2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        float nx2 = -dy2 / length2;
+        float ny2 = dx2 / length2;
+
+        // Создаем замкнутый четырехугольный путь
+        linePath.moveTo(startX + nx1 * offset, startY + ny1 * offset);
+        linePath.lineTo(middleX + nx1 * offset, middleY + ny1 * offset);
+        linePath.lineTo(middleX + nx2 * offset, middleY + ny2 * offset);
+        linePath.lineTo(endX + nx2 * offset, endY + ny2 * offset);
+        linePath.lineTo(endX - nx2 * offset, endY - ny2 * offset);
+        linePath.lineTo(middleX - nx2 * offset, middleY - ny2 * offset);
+        linePath.lineTo(middleX - nx1 * offset, middleY - ny1 * offset);
+        linePath.lineTo(startX - nx1 * offset, startY - ny1 * offset);
+        linePath.close();
+    }
+
+    private void addDoubleQuadrilateralBezierPathToCache(Station startStation, Station endStation, List<Point> intermediatePoints, Path linePath) {
+        Point start = new Point(startStation.getX(), startStation.getY());
+        Point control1 = intermediatePoints.get(0);
+        Point control2 = intermediatePoints.get(1);
+        Point end = new Point(endStation.getX(), endStation.getY());
+
+        float offset = 3f; // Смещение для верхней и нижней кривых
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float nx = dy / length;
+        float ny = -dx / length;
+
+        // Верхняя кривая
+        float x1Start = (start.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Start = (start.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control1 = (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control1 = (control1.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control2 = (control2.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control2 = (control2.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1End = (end.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1End = (end.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+
+        // Нижняя кривая
+        float x2Start = (start.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Start = (start.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control1 = (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control1 = (control1.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control2 = (control2.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control2 = (control2.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2End = (end.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2End = (end.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+
+        // Создаем замкнутый четырехугольник из верхней и нижней кривых
+        Path outerPath = new Path();
+        outerPath.moveTo(x1Start, y1Start);
+        outerPath.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
+        outerPath.lineTo(x2End, y2End);
+        outerPath.cubicTo(x2Control2, y2Control2, x2Control1, y2Control1, x2Start, y2Start);
+        outerPath.close();
+
+        // Создаем внутреннюю белую кривую (четырехугольную)
+        Path innerPath = new Path();
+        float innerOffset = offset / 2; // Смещение для внутренней кривой (половина от внешнего)
+
+        // Верхняя внутренняя кривая
+        float x1InnerStart = (start.x + nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y1InnerStart = (start.y + ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x1InnerControl1 = (control1.x + nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y1InnerControl1 = (control1.y + ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x1InnerControl2 = (control2.x + nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y1InnerControl2 = (control2.y + ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x1InnerEnd = (end.x + nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y1InnerEnd = (end.y + ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+
+        // Нижняя внутренняя кривая
+        float x2InnerStart = (start.x - nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y2InnerStart = (start.y - ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x2InnerControl1 = (control1.x - nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y2InnerControl1 = (control1.y - ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x2InnerControl2 = (control2.x - nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y2InnerControl2 = (control2.y - ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float x2InnerEnd = (end.x - nx * innerOffset) * COORDINATE_SCALE_FACTOR;
+        float y2InnerEnd = (end.y - ny * innerOffset) * COORDINATE_SCALE_FACTOR;
+
+        // Создаем замкнутый четырехугольник для внутренней кривой
+        innerPath.moveTo(x1InnerStart, y1InnerStart);
+        innerPath.cubicTo(x1InnerControl1, y1InnerControl1, x1InnerControl2, y1InnerControl2, x1InnerEnd, y1InnerEnd);
+        innerPath.lineTo(x2InnerEnd, y2InnerEnd);
+        innerPath.cubicTo(x2InnerControl2, y2InnerControl2, x2InnerControl1, y2InnerControl1, x2InnerStart, y2InnerStart);
+        innerPath.close();
+
+        // Устанавливаем цвет для внутренней кривой (белый)
+        Paint whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        whitePaint.setStyle(Paint.Style.FILL); // Заливка белым цветом
+        whitePaint.setStrokeWidth(6); // Ширина линии
+
+        // Добавляем внешний и внутренний пути в кэш
+        pathCache.linesPaths.add(new LinePath(outerPath, startStation.getColor(), innerPath, whitePaint));
+    }
+
+    private void addDoubleStraightLineToCache(Station station1, Station station2, Path linePath) {
+        float x1 = station1.getX() * COORDINATE_SCALE_FACTOR;
+        float y1 = station1.getY() * COORDINATE_SCALE_FACTOR;
+        float x2 = station2.getX() * COORDINATE_SCALE_FACTOR;
+        float y2 = station2.getY() * COORDINATE_SCALE_FACTOR;
+
+        // Вычисляем перпендикулярный вектор для смещения
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float nx = -dy / length; // Нормаль по оси X
+        float ny = dx / length;  // Нормаль по оси Y
+
+        float offset = 6f; // Смещение для двойной линии
+
+        // Внешние линии
+        Path outerPath = new Path();
+        outerPath.moveTo(x1 + nx * offset, y1 + ny * offset);
+        outerPath.lineTo(x2 + nx * offset, y2 + ny * offset);
+        outerPath.lineTo(x2 - nx * offset, y2 - ny * offset);
+        outerPath.lineTo(x1 - nx * offset, y1 - ny * offset);
+        outerPath.close();
+
+        // Внутренняя белая линия
+        Path innerPath = new Path();
+        innerPath.moveTo(x1, y1);
+        innerPath.lineTo(x2, y2);
+
+        // Устанавливаем цвет для внутренней линии (белый)
+        Paint whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        whitePaint.setStyle(Paint.Style.STROKE);
+        whitePaint.setStrokeWidth(6);
+
+        // Добавляем внешний и внутренний пути в кэш
+        pathCache.linesPaths.add(new LinePath(outerPath, station1.getColor(), innerPath, whitePaint));
+    }
+
+    private void addQuadrilateralBezierPathToCache(Station startStation, Station endStation, List<Point> intermediatePoints, Path linePath) {
+        Point start = new Point(startStation.getX(), startStation.getY());
+        Point control1 = intermediatePoints.get(0);
+        Point control2 = intermediatePoints.get(1);
+        Point end = new Point(endStation.getX(), endStation.getY());
+
+        float offset = 3f; // Уменьшаем offset до 2.5f для соответствия с QuadrilateralLine
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float nx = dy / length;
+        float ny = -dx / length;
+
+        // Верхняя кривая
+        float x1Start = (start.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Start = (start.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control1 = (control1.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control1 = (control1.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1Control2 = (control2.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1Control2 = (control2.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x1End = (end.x + nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y1End = (end.y + ny * offset) * COORDINATE_SCALE_FACTOR;
+
+        // Нижняя кривая
+        float x2Start = (start.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Start = (start.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control1 = (control1.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control1 = (control1.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2Control2 = (control2.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2Control2 = (control2.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+        float x2End = (end.x - nx * offset) * COORDINATE_SCALE_FACTOR;
+        float y2End = (end.y - ny * offset) * COORDINATE_SCALE_FACTOR;
+
+        // Создаем замкнутый четырехугольный путь
+        linePath.moveTo(x1Start, y1Start);
+        linePath.cubicTo(x1Control1, y1Control1, x1Control2, y1Control2, x1End, y1End);
+        linePath.lineTo(x2End, y2End);
+        linePath.cubicTo(x2Control2, y2Control2, x2Control1, y2Control1, x2Start, y2Start);
+        linePath.close();
     }
 
     // Add this method to center the map
