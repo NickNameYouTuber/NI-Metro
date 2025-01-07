@@ -139,7 +139,7 @@ public class MetroMapView extends View {
 
         transferPaint = new Paint();
         transferPaint.setColor(Color.DKGRAY);
-        transferPaint.setStrokeWidth(10);
+        transferPaint.setStrokeWidth(6);
         transferPaint.setStyle(Paint.Style.STROKE);
 
         stationCenterPaint = new Paint();
@@ -291,6 +291,15 @@ public class MetroMapView extends View {
         Path riversPath = new Path();
         List<PartialCircle> partialCircles = new ArrayList<>();
         Path convexHullPath = new Path(); // Добавляем путь для выпуклой оболочки
+        boolean isInitialized = false;
+    }
+
+    // Обновляем класс RoutePathCache, добавляя поля для переходов
+    private class RoutePathCache {
+        List<LinePath> routeLinesPaths = new ArrayList<>();
+        List<StationPath> routeStationsPaths = new ArrayList<>();
+        Path transfersPath = new Path();
+        List<PartialCircle> partialCircles = new ArrayList<>();
         boolean isInitialized = false;
     }
 
@@ -450,6 +459,20 @@ public class MetroMapView extends View {
                 updateRouteCache();
             }
 
+            // Draw route transfers
+            Paint whiteTransferPaint = new Paint(transferPaint);
+            whiteTransferPaint.setColor(Color.LTGRAY);
+            whiteTransferPaint.setStrokeWidth(6);
+            canvas.drawPath(routePathCache.transfersPath, whiteTransferPaint);
+
+            // Draw route partial circles
+            for (PartialCircle partialCircle : routePathCache.partialCircles) {
+                drawPartialCircleWithColor(canvas,
+                        partialCircle.centerX, partialCircle.centerY,
+                        partialCircle.radius, partialCircle.strokeWidth,
+                        partialCircle.angles, partialCircle.color);
+            }
+
             // Draw route lines
             for (LinePath routeLinePath : routePathCache.routeLinesPaths) {
                 routePaint.setColor(Color.parseColor(routeLinePath.color));
@@ -602,26 +625,22 @@ public class MetroMapView extends View {
         return null;
     }
 
-    // Класс для кэширования маршрута
-    private class RoutePathCache {
-        List<LinePath> routeLinesPaths = new ArrayList<>();
-        List<StationPath> routeStationsPaths = new ArrayList<>();
-        boolean isInitialized = false;
-    }
-
     private RoutePathCache routePathCache = new RoutePathCache();
 
-    // Обновление кэша маршрута
     private void updateRouteCache() {
         if (route == null || route.isEmpty()) {
             routePathCache.routeLinesPaths.clear();
             routePathCache.routeStationsPaths.clear();
+            routePathCache.transfersPath.reset();
+            routePathCache.partialCircles.clear();
             routePathCache.isInitialized = false;
             return;
         }
 
         routePathCache.routeLinesPaths.clear();
         routePathCache.routeStationsPaths.clear();
+        routePathCache.transfersPath.reset();
+        routePathCache.partialCircles.clear();
 
         for (int i = 0; i < route.size() - 1; i++) {
             Station station1 = route.get(i);
@@ -633,10 +652,8 @@ public class MetroMapView extends View {
                 addLinePathToCache(station1, station2, line.getLineType(), routeLinePath);
                 routePathCache.routeLinesPaths.add(new LinePath(routeLinePath, line.getColor()));
             } else {
-                // Обработка переходов между станциями
-                Path transferPath = new Path();
-                addTransferPathToCache(new Transfer(Arrays.asList(station1, station2), 1, "ground"));
-                routePathCache.routeLinesPaths.add(new LinePath(transferPath, "#000000"));
+                // Это переход между станциями
+                addRouteTransferPathToCache(station1, station2);
             }
         }
 
@@ -653,6 +670,64 @@ public class MetroMapView extends View {
         }
 
         routePathCache.isInitialized = true;
+    }
+
+    private void addRouteTransferPathToCache(Station station1, Station station2) {
+        List<Station> stations = Arrays.asList(station1, station2);
+
+        // Массив для хранения координат станций
+        float[] coordinates = new float[stations.size() * 2];
+        for (int i = 0; i < stations.size(); i++) {
+            Station station = stations.get(i);
+            float x = station.getX() * COORDINATE_SCALE_FACTOR;
+            float y = station.getY() * COORDINATE_SCALE_FACTOR;
+            coordinates[i * 2] = x;
+            coordinates[i * 2 + 1] = y;
+        }
+
+        // Отрисовка линии перехода
+        float x1 = coordinates[0];
+        float y1 = coordinates[1];
+        float x2 = coordinates[2];
+        float y2 = coordinates[3];
+
+        // Вычисляем перпендикулярный вектор для смещения
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float shiftX = (dy / length) * 20;
+        float shiftY = -(dx / length) * 20;
+        shiftX = -shiftX;
+        shiftY = -shiftY;
+
+        // Создаем замкнутый четырехугольник
+        Path transferPath = new Path();
+        transferPath.moveTo(x1 + shiftX, y1 + shiftY);  // Верхняя точка первой линии
+        transferPath.lineTo(x2 + shiftX, y2 + shiftY);  // Верхняя точка второй линии
+        transferPath.lineTo(x2 - shiftX, y2 - shiftY);  // Нижняя точка второй линии
+        transferPath.lineTo(x1 - shiftX, y1 - shiftY);  // Нижняя точка первой линии
+        transferPath.close();  // Замыкаем фигуру
+
+        // Добавляем путь в кэш
+        routePathCache.transfersPath.addPath(transferPath);
+
+        // Добавляем частичные круги
+        for (int i = 0; i < stations.size(); i++) {
+            int prevIndex = (i - 1 + stations.size()) % stations.size();
+            int nextIndex = (i + 1) % stations.size();
+            float currentX = coordinates[i * 2];
+            float currentY = coordinates[i * 2 + 1];
+            float prevX = coordinates[prevIndex * 2];
+            float prevY = coordinates[prevIndex * 2 + 1];
+            float nextX = coordinates[nextIndex * 2];
+            float nextY = coordinates[nextIndex * 2 + 1];
+            List<Float> angles = getAngle(prevX, prevY, currentX, currentY, nextX, nextY);
+
+            routePathCache.partialCircles.add(new PartialCircle(
+                    currentX, currentY, 20, 6,
+                    angles, "#cccccc"  // Используем белый цвет для переходов в маршруте
+            ));
+        }
     }
 
     // Добавьте новый метод для обновления кэша путей:
