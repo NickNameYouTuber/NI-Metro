@@ -75,9 +75,6 @@ public class MetroMapView extends View {
     private boolean isActiveMapMetro = true;
     private List<PointF> transferConnectionPoints = new ArrayList<>();
 
-
-    
-
     // Конструкторы и инициализация
     public MetroMapView(Context context) {
         super(context);
@@ -357,6 +354,7 @@ public class MetroMapView extends View {
     private MapPathCache pathCache = new MapPathCache();
 
     // Замените метод drawMapContents на:
+    // Обновленный метод drawMapContents
     private void drawMapContents(Canvas canvas) {
         updateVisibleViewport();
 
@@ -387,6 +385,7 @@ public class MetroMapView extends View {
             canvas.drawPath(pathCache.riversPath, riverPaint);
         }
 
+        // Draw lines
         for (LinePath linePath : pathCache.linesPaths) {
             linePaint.setColor(Color.parseColor(linePath.color));
             canvas.drawPath(linePath.path, linePaint);
@@ -396,10 +395,10 @@ public class MetroMapView extends View {
             }
         }
 
-        // Отрисовываем переходы из кэша
+        // Draw transfers
         canvas.drawPath(pathCache.transfersPath, transferPaint);
 
-        // Отрисовываем частичные круги из кэша
+        // Draw partial circles
         for (PartialCircle partialCircle : pathCache.partialCircles) {
             if (partialCircle.color != null) {
                 drawPartialCircleWithColor(canvas,
@@ -414,13 +413,13 @@ public class MetroMapView extends View {
             }
         }
 
-        // Отрисовываем выпуклую оболочку для заливки переходов
+        // Draw convex hull
         Paint fillPaint = new Paint();
         fillPaint.setColor(Color.WHITE);
         fillPaint.setStyle(Paint.Style.FILL);
         canvas.drawPath(pathCache.convexHullPath, fillPaint);
 
-        // Отрисовываем станции с белой заливкой и цветной обводкой
+        // Draw stations
         for (StationPath stationPath : pathCache.stationsPaths) {
             Paint stationFillPaint = new Paint();
             stationFillPaint.setColor(Color.WHITE);
@@ -434,19 +433,42 @@ public class MetroMapView extends View {
             canvas.drawPath(stationPath.path, strokePaint);
         }
 
-        // Draw non-cached elements
+        // Draw map objects
         drawMapObjects(canvas);
 
         if (isEditMode) {
             drawIntermediatePoints(canvas);
         }
 
-        // Draw route overlay with transform
+        // Draw dark overlay and route if exists
         if (route != null && route.size() > 1) {
-            int saveCount = canvas.save();
-            applyDarkOverlay(canvas, saveCount);
-            drawRoute(canvas, saveCount);
-            canvas.restoreToCount(saveCount);
+            // Apply dark overlay
+            applyDarkOverlay(canvas, mainSaveCount);
+
+            // Update route cache if needed
+            if (!routePathCache.isInitialized || needsRedraw) {
+                updateRouteCache();
+            }
+
+            // Draw route lines
+            for (LinePath routeLinePath : routePathCache.routeLinesPaths) {
+                routePaint.setColor(Color.parseColor(routeLinePath.color));
+                canvas.drawPath(routeLinePath.path, routePaint);
+            }
+
+            // Draw route stations
+            for (StationPath routeStationPath : routePathCache.routeStationsPaths) {
+                Paint stationFillPaint = new Paint();
+                stationFillPaint.setColor(Color.WHITE);
+                stationFillPaint.setStyle(Paint.Style.FILL);
+                canvas.drawPath(routeStationPath.path, stationFillPaint);
+
+                Paint strokePaint = new Paint();
+                strokePaint.setColor(Color.parseColor(routeStationPath.color));
+                strokePaint.setStyle(Paint.Style.STROKE);
+                strokePaint.setStrokeWidth(7);
+                canvas.drawPath(routeStationPath.path, strokePaint);
+            }
         }
 
         // Restore main canvas state
@@ -580,8 +602,58 @@ public class MetroMapView extends View {
         return null;
     }
 
+    // Класс для кэширования маршрута
+    private class RoutePathCache {
+        List<LinePath> routeLinesPaths = new ArrayList<>();
+        List<StationPath> routeStationsPaths = new ArrayList<>();
+        boolean isInitialized = false;
+    }
 
+    private RoutePathCache routePathCache = new RoutePathCache();
 
+    // Обновление кэша маршрута
+    private void updateRouteCache() {
+        if (route == null || route.isEmpty()) {
+            routePathCache.routeLinesPaths.clear();
+            routePathCache.routeStationsPaths.clear();
+            routePathCache.isInitialized = false;
+            return;
+        }
+
+        routePathCache.routeLinesPaths.clear();
+        routePathCache.routeStationsPaths.clear();
+
+        for (int i = 0; i < route.size() - 1; i++) {
+            Station station1 = route.get(i);
+            Station station2 = route.get(i + 1);
+            Line line = findLineForConnection(station1, station2);
+
+            if (line != null) {
+                Path routeLinePath = new Path();
+                addLinePathToCache(station1, station2, line.getLineType(), routeLinePath);
+                routePathCache.routeLinesPaths.add(new LinePath(routeLinePath, line.getColor()));
+            } else {
+                // Обработка переходов между станциями
+                Path transferPath = new Path();
+                addTransferPathToCache(new Transfer(Arrays.asList(station1, station2), 1, "ground"));
+                routePathCache.routeLinesPaths.add(new LinePath(transferPath, "#000000"));
+            }
+        }
+
+        // Добавляем станции маршрута в кэш
+        for (Station station : route) {
+            Path stationPath = new Path();
+            stationPath.addCircle(
+                    station.getX() * COORDINATE_SCALE_FACTOR,
+                    station.getY() * COORDINATE_SCALE_FACTOR,
+                    14,
+                    Path.Direction.CW
+            );
+            routePathCache.routeStationsPaths.add(new StationPath(stationPath, station.getColor()));
+        }
+
+        routePathCache.isInitialized = true;
+    }
 
     // Добавьте новый метод для обновления кэша путей:
     private void updatePathCache() {
@@ -976,93 +1048,6 @@ public class MetroMapView extends View {
         return true;
     }
 
-    private void drawLines(Canvas canvas) {
-        Set<String> drawnConnections = new HashSet<>();
-
-        for (Line line : lines) {
-            Log.d("drawLines", "line: " + line.getName());
-            linePaint.setColor(Color.parseColor(line.getColor()));
-
-            for (Station station : line.getStations()) {
-                float stationX = station.getX();
-                float stationY = station.getY();
-
-                for (Station.Neighbor neighbor : station.getNeighbors()) {
-                    Station neighborStation = findStationById(
-                            neighbor.getStation().getId(), stations);
-
-                    if (neighborStation != null &&
-                            line.getLineIdForStation(neighborStation) != null) {
-
-                        float neighborX = neighborStation.getX();
-                        float neighborY = neighborStation.getY();
-
-                        // Only draw if line segment is visible
-                        if (isLineVisible(stationX, stationY, neighborX, neighborY)) {
-                            String connectionKey = station.getId().compareTo(
-                                    neighborStation.getId()) < 0
-                                    ? station.getId() + "-" + neighborStation.getId()
-                                    : neighborStation.getId() + "-" + station.getId();
-
-                            if (!drawnConnections.contains(connectionKey)) {
-                                drawLineWithIntermediatePoints(canvas, station,
-                                        neighborStation, line.getLineType(), linePaint);
-                                drawnConnections.add(connectionKey);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void drawStations(Canvas canvas) {
-        for (Station station : stations) {
-            float stationX = station.getX();
-            float stationY = station.getY();
-            Log.d("drawStations", "station: " + station.getName());
-            Log.d("drawStations", "stationX: " + stationX + ", stationY: " + stationY);
-
-            // Отрисовываем только видимые станции
-            if (isPointVisible(stationX, stationY)) {
-                float screenX = stationX * COORDINATE_SCALE_FACTOR;
-                float screenY = stationY * COORDINATE_SCALE_FACTOR;
-                Log.d("drawStations", "COORDINATE_SCALE_FACTOR: " + COORDINATE_SCALE_FACTOR);
-                Log.d("drawStations", "screenX: " + screenX + ", screenY: " + screenY);
-
-                canvas.drawCircle(screenX, screenY, 10, whitePaint);
-                stationPaint.setColor(Color.parseColor(station.getColor()));
-                canvas.drawCircle(screenX, screenY, 14, stationPaint);
-
-                if (selectedStations != null && selectedStations.contains(station)) {
-                    canvas.drawCircle(screenX, screenY, 20, selectedStationPaint);
-                }
-
-                drawTextBasedOnPosition(canvas, station.getName(),
-                        screenX, screenY, station.getTextPosition(),
-                        textPaint, false);
-            }
-        }
-    }
-
-    private void drawTransfers(Canvas canvas) {
-
-        if (transfers == null || transfers.isEmpty()) {
-            return;
-        }
-        for (Transfer transfer : transfers) {
-            drawTransferConnection(canvas, transfer.getStations(), transfer.getType());
-        }
-    }
-
-    private void drawRivers(Canvas canvas) {
-        if (rivers != null) {
-            for (River river : rivers) {
-                drawRiver(canvas, river);
-            }
-        }
-    }
-
     private void drawMapObjects(Canvas canvas) {
         if (mapObjects != null) {
             for (MapObject mapObject : mapObjects) {
@@ -1086,118 +1071,6 @@ public class MetroMapView extends View {
         canvas.drawText(mapObject.getdisplayNumber(), objectX + 40, objectY, objectPaint);
     }
 
-    private void drawRiver(Canvas canvas, River river) {
-        List<Point> points = river.getPoints();
-        int width = river.getWidth();
-        if (points.size() < 2) {
-            return;
-        }
-        Path riverPath = new Path();
-        riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR, points.get(0).y * COORDINATE_SCALE_FACTOR);
-        for (int i = 1; i < points.size(); i++) {
-            riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR, points.get(i).y * COORDINATE_SCALE_FACTOR);
-        }
-        float riverLength = calculateRiverLength(points);
-        Point startPoint = points.get(0);
-        Point endPoint = points.get(points.size() - 1);
-        int[] fadeColors = {Color.parseColor("#00000000"), Color.parseColor("#ADD8E6"), Color.parseColor("#ADD8E6"), Color.parseColor("#00000000")};
-        float fadeMargin = 40 / riverLength;
-        float[] fadePositions = {0.0f, fadeMargin, 1.0f - fadeMargin, 1.0f};
-        LinearGradient fadeGradient = new LinearGradient(
-                startPoint.x * COORDINATE_SCALE_FACTOR, startPoint.y * COORDINATE_SCALE_FACTOR,
-                endPoint.x * COORDINATE_SCALE_FACTOR, endPoint.y * COORDINATE_SCALE_FACTOR,
-                fadeColors, fadePositions, Shader.TileMode.CLAMP);
-        riverPaint.setShader(fadeGradient);
-        riverPaint.setStrokeWidth(width);
-        canvas.drawPath(riverPath, riverPaint);
-    }
-
-    private void drawRoute(Canvas canvas, int routeSaveCount) {
-        if (route != null && route.size() > 1) {
-            for (int i = 0; i < route.size() - 1; i++) {
-                Station station1 = route.get(i);
-                Station station2 = route.get(i + 1);
-                routePaint.setColor(Color.parseColor(station1.getColor()));
-                routePaint.setStrokeWidth(15);
-                Line line = findLineForConnection(station1, station2);
-                if (line != null) {
-                    drawRouteWithIntermediatePoints(canvas, station1, station2, line.getLineType());
-                } else {
-                    drawTransferBetweenStations(canvas, station1, station2);
-                }
-                float stationX = station1.getX() * COORDINATE_SCALE_FACTOR;
-                float stationY = station1.getY() * COORDINATE_SCALE_FACTOR;
-                canvas.drawCircle(stationX, stationY, 10, whitePaint);
-                stationPaint.setColor(Color.parseColor(station1.getColor()));
-                canvas.drawCircle(stationX, stationY, 14, stationPaint);
-                if (selectedStations != null && selectedStations.contains(station1)) {
-                    canvas.drawCircle(stationX, stationY, 20, selectedStationPaint);
-                }
-                drawTextBasedOnPosition(canvas, station1.getName(), stationX, stationY, station1.getTextPosition(), textPaint, true);
-            }
-            Station lastStation = route.get(route.size() - 1);
-            float lastStationX = lastStation.getX() * COORDINATE_SCALE_FACTOR;
-            float lastStationY = lastStation.getY() * COORDINATE_SCALE_FACTOR;
-            canvas.drawCircle(lastStationX, lastStationY, 10, whitePaint);
-            stationPaint.setColor(Color.parseColor(lastStation.getColor()));
-            canvas.drawCircle(lastStationX, lastStationY, 14, stationPaint);
-            if (selectedStations != null && selectedStations.contains(lastStation)) {
-                canvas.drawCircle(lastStationX, lastStationY, 20, selectedStationPaint);
-            }
-            drawTextBasedOnPosition(canvas, lastStation.getName(), lastStationX, lastStationY, lastStation.getTextPosition(), textPaint, true);
-        }
-    }
-
-    private void drawTransferBetweenStations(Canvas canvas, Station station1, Station station2) {
-        Transfer transfer = findTransferBetweenStations(station1, station2);
-        if (transfer != null) {
-            drawTransferConnection(canvas, Arrays.asList(station1, station2), transfer.getType());
-        } else {
-            drawDashedLine(canvas,
-                    station1.getX() * COORDINATE_SCALE_FACTOR,
-                    station1.getY() * COORDINATE_SCALE_FACTOR,
-                    station2.getX() * COORDINATE_SCALE_FACTOR,
-                    station2.getY() * COORDINATE_SCALE_FACTOR,
-                    transferPaint);
-        }
-    }
-
-    private void drawRouteWithIntermediatePoints(Canvas canvas, Station station1, Station station2, String lineType) {
-        Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
-        Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
-        List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
-        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
-            if (lineType.equals("double")) {
-                drawDoubleLine(canvas, startStation, endStation, routePaint);
-            } else {
-                canvas.drawLine(
-                        startStation.getX() * COORDINATE_SCALE_FACTOR,
-                        startStation.getY() * COORDINATE_SCALE_FACTOR,
-                        endStation.getX() * COORDINATE_SCALE_FACTOR,
-                        endStation.getY() * COORDINATE_SCALE_FACTOR,
-                        routePaint
-                );
-            }
-        } else if (intermediatePoints.size() == 1) {
-            float startX = startStation.getX() * COORDINATE_SCALE_FACTOR;
-            float startY = startStation.getY() * COORDINATE_SCALE_FACTOR;
-            float endX = intermediatePoints.get(0).x * COORDINATE_SCALE_FACTOR;
-            float endY = intermediatePoints.get(0).y * COORDINATE_SCALE_FACTOR;
-            canvas.drawLine(startX, startY, endX, endY, routePaint);
-            canvas.drawLine(endX, endY, endStation.getX() * COORDINATE_SCALE_FACTOR, endStation.getY() * COORDINATE_SCALE_FACTOR, routePaint);
-        } else if (intermediatePoints.size() == 2) {
-            Point start = new Point(startStation.getX(), startStation.getY());
-            Point control1 = intermediatePoints.get(0);
-            Point control2 = intermediatePoints.get(1);
-            Point end = new Point(endStation.getX(), endStation.getY());
-            if (lineType.equals("double")) {
-                drawDoubleBezierCurve(canvas, start, control1, control2, end, routePaint);
-            } else {
-                drawBezierCurve(canvas, start, control1, control2, end, routePaint);
-            }
-        }
-    }
-
     private void drawGrayedMap(Canvas canvas) {
         Set<String> drawnConnections = new HashSet<>();
         Paint grayedLinePaint = new Paint(grayedPaint);
@@ -1214,23 +1087,6 @@ public class MetroMapView extends View {
         Log.d("drawGrayedMap", "isInGrayedLines(lines): " + isInGrayedLines(lines));
         Log.d("drawGrayedMap", "isInGrayedLines(grayedLines): " + isInGrayedLines(grayedLines));
         // Отрисовка станций только если это не активная карта
-//        if ((!isActiveMapMetro && isInGrayedLines(lines) && isInGrayedLines(grayedLines))) {
-//            Paint grayedStationPaint = new Paint(grayedPaint);
-//            grayedStationPaint.setStyle(Paint.Style.STROKE);
-//            grayedStationPaint.setStrokeWidth(7);
-//            Paint grayedTextPaint = new Paint(grayedPaint);
-//            grayedTextPaint.setTextSize(20);
-//
-//            for (Station station : grayedStations) {
-//                float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
-//                float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
-//                canvas.drawCircle(stationX, stationY, 10, whitePaint);
-//                canvas.drawCircle(stationX, stationY, 14, grayedStationPaint);
-//                drawTextBasedOnPosition(canvas, station.getName(),
-//                        stationX, stationY, station.getTextPosition(),
-//                        grayedTextPaint, false);
-//            }
-//        }
     }
 
     private void drawGrayedLines(Canvas canvas, Line line,
@@ -1406,202 +1262,6 @@ public class MetroMapView extends View {
         canvas.drawPath(path2, paint);
     }
 
-    private void drawTextBasedOnPosition(Canvas canvas, String text, float cx, float cy, int textPosition, Paint paint, boolean isRouteText) {
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        float textWidth = bounds.width();
-        float textHeight = bounds.height();
-        float offsetX = 0;
-        float offsetY = 0;
-        switch (textPosition) {
-            case 1:
-                offsetX = -textWidth / 2;
-                offsetY = -textHeight - 15;
-                break;
-            case 2:
-                offsetX = 20;
-                offsetY = -textHeight - 15;
-                break;
-            case 3:
-                offsetX = 35;
-                offsetY = 8;
-                break;
-            case 4:
-                offsetX = 20;
-                offsetY = textHeight + 15;
-                break;
-            case 5:
-                offsetY = textHeight + 35;
-                offsetX = -textWidth / 2;
-                break;
-            case 6:
-                offsetX = -textWidth / 2 - 15;
-                offsetY = textHeight + 15;
-                break;
-            case 7:
-                offsetX = -textWidth - 35;
-                offsetY = 8;
-                break;
-            case 8:
-                offsetX = -textWidth - 15;
-                offsetY = -textHeight - 15;
-                break;
-            case 9:
-                break;
-            default:
-                offsetX = -textWidth / 2;
-                offsetY = textHeight / 2;
-                break;
-        }
-        if (textPosition != 9) {
-            Paint backgroundPaint = new Paint();
-            if (isRouteText) {
-                backgroundPaint.setColor(Color.parseColor("#696969"));
-            } else {
-                backgroundPaint.setColor(Color.argb(190, 255, 255, 255));
-            }
-            backgroundPaint.setStyle(Paint.Style.FILL);
-            float paddingX = 10;
-            float paddingY = 5;
-            float backgroundLeft = cx + offsetX - paddingX;
-            float backgroundTop = cy + offsetY - paddingY - 15;
-            float backgroundRight = cx + offsetX + textWidth + paddingX;
-            float backgroundBottom = cy + offsetY + textHeight + paddingY - 15;
-            canvas.drawRect(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundPaint);
-            if (isRouteText) {
-                paint.setColor(Color.WHITE);
-            } else {
-                paint.setColor(Color.BLACK);
-            }
-            canvas.drawText(text, cx + offsetX, cy + offsetY, paint);
-        }
-    }
-
-    private void drawTransferConnection(Canvas canvas, List<Station> stations, String transferType) {
-        if (stations == null || stations.size() < 2) {
-            return;
-        }
-        transferConnectionPoints = new ArrayList<>();
-        float centerX = 0;
-        float centerY = 0;
-        float[] coordinates = new float[stations.size() * 2];
-        for (int i = 0; i < stations.size(); i++) {
-            Station station = stations.get(i);
-            float x = station.getX() * COORDINATE_SCALE_FACTOR;
-            float y = station.getY() * COORDINATE_SCALE_FACTOR;
-            coordinates[i * 2] = x;
-            coordinates[i * 2 + 1] = y;
-            centerX += x;
-            centerY += y;
-        }
-        centerX /= stations.size();
-        centerY /= stations.size();
-        Paint currentPaint = new Paint(transferPaint);
-        currentPaint.setStyle(Paint.Style.STROKE);
-        currentPaint.setStrokeWidth(10);
-        currentPaint.setColor(Color.BLACK);
-        for (int i = 0; i < stations.size(); i++) {
-            int nextIndex = (i + 1) % stations.size();
-            float x1 = coordinates[i * 2];
-            float y1 = coordinates[i * 2 + 1];
-            float x2 = coordinates[nextIndex * 2];
-            float y2 = coordinates[nextIndex * 2 + 1];
-            switch (transferType.toLowerCase()) {
-                case "crossplatform":
-                    drawHalfColoredLine(canvas, x1, y1, x2, y2,
-                            stations.get(i).getColor(),
-                            stations.get(nextIndex).getColor());
-                    break;
-                case "ground":
-                    drawDashedLine(canvas, x1, y1, x2, y2, currentPaint);
-                    break;
-                default:
-                    drawShiftedLine(canvas, x1, y1, x2, y2, centerX, centerY);
-                    break;
-            }
-        }
-        if (!transferConnectionPoints.isEmpty()) {
-            fillTransferConnectionArea(canvas);
-        }
-        if (!transferType.equalsIgnoreCase("ground")) {
-            for (int i = 0; i < stations.size(); i++) {
-                int prevIndex = (i - 1 + stations.size()) % stations.size();
-                int nextIndex = (i + 1) % stations.size();
-                float currentX = coordinates[i * 2];
-                float currentY = coordinates[i * 2 + 1];
-                float prevX = coordinates[prevIndex * 2];
-                float prevY = coordinates[prevIndex * 2 + 1];
-                float nextX = coordinates[nextIndex * 2];
-                float nextY = coordinates[nextIndex * 2 + 1];
-                List<Float> angles = getAngle(prevX, prevY, currentX, currentY, nextX, nextY);
-                if (transferType.equalsIgnoreCase("crossplatform")) {
-                    drawPartialCircleWithColor(canvas, currentX, currentY, 20, 6,
-                            angles, stations.get(nextIndex).getColor());
-                } else {
-                    drawPartialCircle(canvas, currentX, currentY, 20, 6, angles);
-                }
-            }
-        }
-    }
-
-    private void drawShiftedLine(Canvas canvas, float x1, float y1, float x2, float y2, float centerX, float centerY) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 20;
-        float shiftY = -(dx / length) * 20;
-        shiftX = -shiftX;
-        shiftY = -shiftY;
-        transferConnectionPoints.add(new PointF(x1 + shiftX, y1 + shiftY));
-        transferConnectionPoints.add(new PointF(x2 + shiftX, y2 + shiftY));
-        transferPaint.setColor(Color.BLACK);
-        transferPaint.setStrokeWidth(10);
-        canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
-    }
-
-    private void drawDashedLine(Canvas canvas, float x1, float y1, float x2, float y2, Paint paint) {
-        Path path = new Path();
-        path.moveTo(x1, y1);
-        path.lineTo(x2, y2);
-        Paint dashedPaint = new Paint();
-        dashedPaint.setColor(paint.getColor());
-        dashedPaint.setStyle(Paint.Style.STROKE);
-        dashedPaint.setStrokeWidth(paint.getStrokeWidth()-3);
-        float density = getResources().getDisplayMetrics().density;
-        dashedPaint.setPathEffect(new DashPathEffect(new float[]{density * 2, density * 4}, 0));
-        transferConnectionPoints.add(new PointF(x1, y1));
-        transferConnectionPoints.add(new PointF(x2, y2));
-        canvas.drawPath(path, dashedPaint);
-    }
-
-    private void drawHalfColoredLine(Canvas canvas, float x1, float y1, float x2, float y2, String color1, String color2) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-        float shiftX = (dy / length) * 20;
-        float shiftY = -(dx / length) * 20;
-        shiftX = -shiftX;
-        shiftY = -shiftY;
-        canvas.drawLine(x1 + shiftX, y1 + shiftY, x2 + shiftX, y2 + shiftY, transferPaint);
-        float startX = x1 + shiftX;
-        float startY = y1 + shiftY;
-        float endX = x2 + shiftX;
-        float endY = y2 + shiftY;
-        float halfX = (startX + endX) / 2;
-        float halfY = (startY + endY) / 2;
-        transferConnectionPoints.add(new PointF(startX, startY));
-        transferConnectionPoints.add(new PointF(halfX, halfY));
-        transferConnectionPoints.add(new PointF(endX, endY));
-        Paint paint1 = new Paint();
-        paint1.setColor(Color.parseColor(color2));
-        paint1.setStrokeWidth(10);
-        canvas.drawLine(startX, startY, halfX, halfY, paint1);
-        Paint paint2 = new Paint();
-        paint2.setColor(Color.parseColor(color1));
-        paint2.setStrokeWidth(10);
-        canvas.drawLine(halfX, halfY, endX, endY, paint2);
-    }
-
     private void drawPartialCircle(Canvas canvas, float centerX, float centerY, float radius, float strokeWidth, List<Float> angles) {
         Paint circleOutlinePaint = new Paint();
         circleOutlinePaint.setColor(transferPaint.getColor());
@@ -1632,27 +1292,22 @@ public class MetroMapView extends View {
         canvas.drawArc(rectF, startAngle, sweepAngle, false, circleOutlinePaint);
     }
 
-    private void fillTransferConnectionArea(Canvas canvas) {
-        if (transferConnectionPoints.size() < 3) {
-            return;
-        }
-        Path path = new Path();
-        path.moveTo(transferConnectionPoints.get(0).x, transferConnectionPoints.get(0).y);
-        for (int i = 1; i < transferConnectionPoints.size(); i++) {
-            path.lineTo(transferConnectionPoints.get(i).x, transferConnectionPoints.get(i).y);
-        }
-        path.close();
-        Paint fillPaint = new Paint();
-        fillPaint.setColor(Color.WHITE);
-        fillPaint.setStyle(Paint.Style.FILL);
-        canvas.drawPath(path, fillPaint);
-    }
-
-    private void applyDarkOverlay(Canvas canvas, int overlaySaveCount) {
+    // Метод для отрисовки тёмного оверлея
+    private void applyDarkOverlay(Canvas canvas, int saveCount) {
         Paint overlayPaint = new Paint();
-        overlayPaint.setColor(Color.argb(150, 0, 0, 0));
+        overlayPaint.setColor(Color.argb(150, 0, 0, 0)); // Полупрозрачный черный цвет
         overlayPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), overlayPaint);
+
+        // Восстанавливаем состояние canvas до исходного
+        canvas.restoreToCount(saveCount);
+        // Сохраняем новое состояние
+        saveCount = canvas.save();
+
+        // Рисуем затемнение на всей области canvas
+        canvas.drawRect(0, 0, getWidth(), getHeight(), overlayPaint);
+
+        // Применяем трансформацию для последующей отрисовки маршрута
+        canvas.concat(transformMatrix);
     }
 
     // Методы для работы с геометрией и видимостью
@@ -1682,47 +1337,6 @@ public class MetroMapView extends View {
                 (points[2] / COORDINATE_SCALE_FACTOR) + padding,
                 (points[3] / COORDINATE_SCALE_FACTOR) + padding
         );
-    }
-
-    private boolean isPointVisible(float x, float y) {
-        return visibleViewport.contains(x, y);
-    }
-
-    private boolean isLineVisible(float x1, float y1, float x2, float y2) {
-        // Check if either endpoint is visible
-        if (isPointVisible(x1, y1) || isPointVisible(x2, y2)) {
-            return true;
-        }
-
-        // Check if line intersects viewport
-        return lineIntersectsRect(x1, y1, x2, y2,
-                visibleViewport.left, visibleViewport.top,
-                visibleViewport.right, visibleViewport.bottom);
-    }
-
-    private boolean lineIntersectsRect(float x1, float y1, float x2, float y2,
-                                       float rectLeft, float rectTop,
-                                       float rectRight, float rectBottom) {
-        // Cohen-Sutherland algorithm for line-rectangle intersection
-        int code1 = computeOutCode(x1, y1, rectLeft, rectTop, rectRight, rectBottom);
-        int code2 = computeOutCode(x2, y2, rectLeft, rectTop, rectRight, rectBottom);
-
-        while (true) {
-            if ((code1 | code2) == 0) return true;  // Line is inside
-            if ((code1 & code2) != 0) return false; // Line is outside
-
-            return true; // Line intersects
-        }
-    }
-
-    private int computeOutCode(float x, float y, float rectLeft, float rectTop,
-                               float rectRight, float rectBottom) {
-        int code = 0;
-        if (x < rectLeft) code |= 1;
-        if (x > rectRight) code |= 2;
-        if (y < rectTop) code |= 4;
-        if (y > rectBottom) code |= 8;
-        return code;
     }
 
     // Методы для работы с жестами и событиями
@@ -1774,18 +1388,6 @@ public class MetroMapView extends View {
         return null;
     }
 
-    private Transfer findTransferBetweenStations(Station station1, Station station2) {
-        if (transfers == null) {
-            return null;
-        }
-        for (Transfer transfer : transfers) {
-            if (transfer.getStations().contains(station1) && transfer.getStations().contains(station2)) {
-                return transfer;
-            }
-        }
-        return null;
-    }
-
     private Line findLineForConnection(Station station1, Station station2) {
         for (Line line : lines) {
             if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
@@ -1798,16 +1400,6 @@ public class MetroMapView extends View {
             }
         }
         return null;
-    }
-
-    private float calculateRiverLength(List<Point> points) {
-        float riverLength = 0;
-        for (int i = 1; i < points.size(); i++) {
-            Point p1 = points.get(i - 1);
-            Point p2 = points.get(i);
-            riverLength += Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-        }
-        return riverLength;
     }
 
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
@@ -1904,3 +1496,4 @@ public class MetroMapView extends View {
         return transformMatrix;
     }
 }
+
