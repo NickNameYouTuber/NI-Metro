@@ -298,12 +298,17 @@ public class MetroMapView extends View {
     private class StationPath {
         Path path;
         String color;
+        int textPosition; // Позиция текста (0-8, 9 - не отображать)
+        String stationName; // Название станции
 
-        StationPath(Path path, String color) {
+        StationPath(Path path, String color, int textPosition, String stationName) {
             this.path = path;
             this.color = color;
+            this.textPosition = textPosition;
+            this.stationName = stationName;
         }
     }
+
     private class MapPathCache {
         List<LinePath> linesPaths = new ArrayList<>();
         List<StationPath> stationsPaths = new ArrayList<>();
@@ -382,8 +387,6 @@ public class MetroMapView extends View {
     }
     private MapPathCache pathCache = new MapPathCache();
 
-    // Замените метод drawMapContents на:
-    // Обновленный метод drawMapContents
     private void drawMapContents(Canvas canvas) {
         updateVisibleViewport();
 
@@ -460,6 +463,11 @@ public class MetroMapView extends View {
             strokePaint.setStyle(Paint.Style.STROKE);
             strokePaint.setStrokeWidth(7);
             canvas.drawPath(stationPath.path, strokePaint);
+
+            // Отрисовка текста станции
+            if (stationPath.textPosition != 9) { // 9 - не отображать текст
+                drawStationText(canvas, stationPath);
+            }
         }
 
         // Draw map objects
@@ -511,6 +519,11 @@ public class MetroMapView extends View {
                 strokePaint.setStyle(Paint.Style.STROKE);
                 strokePaint.setStrokeWidth(7);
                 canvas.drawPath(routeStationPath.path, strokePaint);
+
+                // Отрисовка текста станции маршрута
+                if (routeStationPath.textPosition != 9) { // 9 - не отображать текст
+                    drawStationText(canvas, routeStationPath);
+                }
             }
         }
 
@@ -518,6 +531,79 @@ public class MetroMapView extends View {
         canvas.restoreToCount(mainSaveCount);
 
         needsRedraw = false;
+    }
+
+    private void drawStationText(Canvas canvas, StationPath stationPath) {
+        // Create paint for measurements
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextSize(20);
+
+        // Get station center coordinates
+        RectF bounds = new RectF();
+        stationPath.path.computeBounds(bounds, true);
+        float stationX = bounds.centerX();
+        float stationY = bounds.centerY();
+        float textOffset = 50; // Base offset from station
+
+        // Default center position
+        float textX = stationX;
+        float textY = stationY;
+        Paint.Align textAlign = Paint.Align.CENTER;
+
+        // Adjust position and alignment based on text position
+        switch (stationPath.textPosition) {
+            case 0: // center
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 1: // 12 o'clock
+                textY -= textOffset;
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 2: // 1:30
+                textX += textOffset * 0.7f;
+                textY -= textOffset * 0.7f;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 3: // 3 o'clock
+                textX += textOffset;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 4: // 4:30
+                textX += textOffset * 0.7f;
+                textY += textOffset * 0.7f;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 5: // 6 o'clock
+                textY += textOffset;
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 6: // 7:30
+                textX -= textOffset * 0.7f;
+                textY += textOffset * 0.7f;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            case 7: // 9 o'clock
+                textX -= textOffset;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            case 8: // 10:30
+                textX -= textOffset * 0.7f;
+                textY -= textOffset * 0.7f;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            default:
+                return; // Don't draw text
+        }
+
+        // Apply text alignment
+        textPaint.setTextAlign(textAlign);
+
+        // Add small vertical adjustment to center text vertically
+        textY += textPaint.getTextSize() / 3;
+
+        // Draw text
+        canvas.drawText(stationPath.stationName, textX, textY, textPaint);
     }
 
     private void addTransferPathToCache(Transfer transfer) {
@@ -686,7 +772,7 @@ public class MetroMapView extends View {
                     14,
                     Path.Direction.CW
             );
-            routePathCache.routeStationsPaths.add(new StationPath(stationPath, station.getColor()));
+            routePathCache.routeStationsPaths.add(new StationPath(stationPath, station.getColor(), station.getTextPosition(), station.getName()));
         }
 
         routePathCache.isInitialized = true;
@@ -750,7 +836,6 @@ public class MetroMapView extends View {
         }
     }
 
-    // Добавьте новый метод для обновления кэша путей:
     private void updatePathCache() {
         // Очищаем все пути
         pathCache.linesPaths.clear();
@@ -758,7 +843,7 @@ public class MetroMapView extends View {
         pathCache.transfersPath.reset();
         pathCache.riversPath.reset();
         pathCache.partialCircles.clear();
-        pathCache.convexHullPath.reset(); // Очищаем путь выпуклой оболочки
+        pathCache.convexHullPath.reset();
 
         // Кэшируем пути для рек
         if (rivers != null) {
@@ -802,7 +887,7 @@ public class MetroMapView extends View {
             pathCache.linesPaths.add(new LinePath(linePath, lineColor));
         }
 
-        // Кэшируем пути для станций с цветом линии
+        // Кэшируем пути для станций с цветом линии и текстом
         for (Station station : stations) {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
@@ -815,8 +900,8 @@ public class MetroMapView extends View {
             Path stationPath = new Path();
             stationPath.addCircle(stationX, stationY, 14, Path.Direction.CW);
 
-            // Добавляем путь станции в кэш с цветом линии
-            pathCache.stationsPaths.add(new StationPath(stationPath, stationColor));
+            // Добавляем путь станции в кэш с цветом линии и текстом
+            pathCache.stationsPaths.add(new StationPath(stationPath, stationColor, station.getTextPosition(), station.getName()));
         }
 
         // Кэшируем пути для переходов, частичных кругов и выпуклой оболочки
