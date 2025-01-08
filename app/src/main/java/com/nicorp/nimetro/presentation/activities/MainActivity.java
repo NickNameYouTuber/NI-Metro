@@ -221,16 +221,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void updateMapData() {
         Log.d("MetroMapView_MainActivity", "isMetroMap " + isMetroMap);
         if (isMetroMap) {
-            Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
-            Log.d("MetroMapView_MainActivity", "Gray Station 1: " + grayedStations.get(0).getName());
-            Log.d("MetroMapView_MainActivity", "Transfer 1: " + transfers.get(0).getStations().get(0).getName());
             metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
         } else {
-            Log.d("MetroMapView_MainActivity", "Station 1: " + stations.get(0).getName());
-            Log.d("MetroMapView_MainActivity", "Gray Station 1: " + grayedStations.get(0).getName());
             metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
         }
-        metroMapView.setActiveMap(isMetroMap);
     }
 
     private void loadMapData(JSONObject mapData, List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) throws JSONException {

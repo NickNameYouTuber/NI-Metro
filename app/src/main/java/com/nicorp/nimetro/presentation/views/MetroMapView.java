@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -29,6 +30,7 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +74,6 @@ public class MetroMapView extends View {
     private Bitmap cacheBitmap;
     private Bitmap bufferBitmap;
     private Canvas bufferCanvas;
-    private boolean isActiveMapMetro = true;
     private List<PointF> transferConnectionPoints = new ArrayList<>();
 
     // Конструкторы и инициализация
@@ -182,18 +183,38 @@ public class MetroMapView extends View {
         });
     }
 
-    // Методы для работы с данными
     public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers,
                         List<River> rivers, List<MapObject> mapObjects,
                         List<Line> grayedLines, List<Station> grayedStations) {
-        this.lines = lines;
-        this.stations = stations;
-        this.transfers = transfers;
-        this.rivers = rivers;
-        this.mapObjects = mapObjects;
-        this.grayedLines = grayedLines;
-        this.grayedStations = grayedStations;
+        // Clear all path caches first
+        pathCache = new MapPathCache();
+        routePathCache = new RoutePathCache();
+
+        // Clear all existing collections
+        this.lines = new ArrayList<>(lines != null ? lines : Collections.emptyList());
+        this.stations = new ArrayList<>(stations != null ? stations : Collections.emptyList());
+        this.transfers = new ArrayList<>(transfers != null ? transfers : Collections.emptyList());
+        this.rivers = new ArrayList<>(rivers != null ? rivers : Collections.emptyList());
+        this.mapObjects = new ArrayList<>(mapObjects != null ? mapObjects : Collections.emptyList());
+        this.grayedLines = new ArrayList<>(grayedLines != null ? grayedLines : Collections.emptyList());
+        this.grayedStations = new ArrayList<>(grayedStations != null ? grayedStations : Collections.emptyList());
+
+        // Clear the buffer bitmap
+        if (bufferBitmap != null) {
+            bufferBitmap.recycle();
+            bufferBitmap = null;
+        }
+
+        // Reset the route if any
+        route = null;
+
+        // Force redraw
         needsRedraw = true;
+
+        // Reset transformation if needed
+        updateTransformMatrix();
+
+        // Request complete redraw
         invalidate();
     }
 
@@ -213,13 +234,6 @@ public class MetroMapView extends View {
         this.listener = listener;
     }
 
-    public void setActiveMap(boolean isMetroMap) {
-        this.isActiveMapMetro = isMetroMap;
-        updateTransformMatrix(); // Обновляем матрицу трансформации
-        needsRedraw = true;
-        invalidate();
-    }
-
     public void clearRoute() {
         this.route = null;
         needsRedraw = true;
@@ -232,18 +246,22 @@ public class MetroMapView extends View {
         invalidate();
     }
 
-    // Методы для работы с отрисовкой
     @Override
     protected void onDraw(Canvas canvas) {
         if (bufferBitmap == null || needsRedraw) {
+            // Create new buffer bitmap if needed
             createBufferBitmap();
         }
+
+        // Set white background first
+        canvas.drawColor(Color.WHITE); // Add this line to set white background
+
+        // Apply transformation
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
         transformMatrix.postScale(scaleFactor, scaleFactor);
-        if (backgroundBitmap != null) {
-            canvas.drawBitmap(backgroundBitmap, transformMatrix, null);
-        }
+
+        // Draw map contents
         drawMapContents(canvas);
     }
 
@@ -253,6 +271,8 @@ public class MetroMapView extends View {
         }
         bufferBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         bufferCanvas = new Canvas(bufferBitmap);
+        // Fill buffer with white background
+        bufferCanvas.drawColor(Color.WHITE); // Add this line
         needsRedraw = false;
     }
 
@@ -1025,7 +1045,7 @@ public class MetroMapView extends View {
         Point control2 = intermediatePoints.get(1);
         Point end = new Point(endStation.getX(), endStation.getY());
 
-        float offset = 3f; // Уменьшаем offset до 2.5f для соответствия с QuadrilateralLine
+        float offset = 2.5f; // Уменьшаем offset до 2.5f для соответствия с QuadrilateralLine
         float dx = end.x - start.x;
         float dy = end.y - start.y;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
@@ -1104,25 +1124,6 @@ public class MetroMapView extends View {
         invalidate();
     }
 
-    private boolean isInGrayedLines(List<Line> linesToCheck) {
-        if (grayedLines == null || linesToCheck == null) {
-            return false;
-        }
-
-        // Проверяем, являются ли линии частью grayedLines
-        Set<String> grayedLineIds = new HashSet<>();
-        for (Line line : grayedLines) {
-            grayedLineIds.add(line.getId());
-        }
-
-        for (Line line : linesToCheck) {
-            if (!grayedLineIds.contains(line.getId())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void drawMapObjects(Canvas canvas) {
         if (mapObjects != null) {
             for (MapObject mapObject : mapObjects) {
@@ -1155,13 +1156,6 @@ public class MetroMapView extends View {
         for (Line line : grayedLines) {
             drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint);
         }
-
-        Log.d("drawGrayedMap", "grayedLines: " + grayedLines.size());
-        Log.d("drawGrayedMap", "lines: " + lines.size());
-        Log.d("drawGrayedMap", "isActiveMapMetro: " + isActiveMapMetro);
-        Log.d("drawGrayedMap", "isInGrayedLines(lines): " + isInGrayedLines(lines));
-        Log.d("drawGrayedMap", "isInGrayedLines(grayedLines): " + isInGrayedLines(grayedLines));
-        // Отрисовка станций только если это не активная карта
     }
 
     private void drawGrayedLines(Canvas canvas, Line line,
