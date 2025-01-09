@@ -221,9 +221,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void updateMapData() {
         Log.d("MetroMapView_MainActivity", "isMetroMap " + isMetroMap);
         if (isMetroMap) {
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
+            if (lines != null && !lines.isEmpty() && stations != null && !stations.isEmpty()) {
+                metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
+            } else {
+                Log.e("MainActivity", "Metro data is empty or null");
+            }
         } else {
-            metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
+            if (grayedLines != null && !grayedLines.isEmpty() && grayedStations != null && !grayedStations.isEmpty()) {
+                metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
+            } else {
+                Log.e("MainActivity", "Suburban data is empty or null");
+            }
         }
     }
 
@@ -540,11 +548,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
 
             for (Station.Neighbor neighbor : current.getNeighbors()) {
+                Station neighborStation = neighbor.getStation(); // Use getStation() instead of getStationId()
                 int distance = distances.get(current) + neighbor.getTime();
-                if (distance < distances.get(neighbor.getStation())) {
-                    distances.put(neighbor.getStation(), distance);
-                    previous.put(neighbor.getStation(), current);
-                    queue.add(neighbor.getStation());
+                if (distance < distances.get(neighborStation)) {
+                    distances.put(neighborStation, distance);
+                    previous.put(neighborStation, current);
+                    queue.add(neighborStation);
                 }
             }
         }

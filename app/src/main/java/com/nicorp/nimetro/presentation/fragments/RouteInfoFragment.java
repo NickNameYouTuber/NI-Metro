@@ -233,7 +233,10 @@ public class RouteInfoFragment extends Fragment {
 
     private void setupCloseButton(View view) {
         ImageView closeButton = view.findViewById(R.id.closeButton);
-        closeButton.setOnClickListener(v -> dismiss());
+        closeButton.setOnClickListener(v -> {
+
+            dismiss();
+        });
     }
 
     private void setupSwipeGestureDetector(View view) {
@@ -260,16 +263,23 @@ public class RouteInfoFragment extends Fragment {
 
     private void dismiss() {
         if (getActivity() != null) {
+            // Удаляем фрагмент
             getActivity().getSupportFragmentManager().beginTransaction()
                     .remove(this)
                     .commit();
+
+            // Очищаем маршрут на карте
             if (metroMapView != null) {
                 metroMapView.clearRoute();
                 metroMapView.clearSelectedStations();
             }
+
+            // Очищаем ввод маршрута в активности
             if (mainActivity != null) {
                 mainActivity.clearRouteInputs();
             }
+
+            Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }
     }
 

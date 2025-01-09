@@ -68,13 +68,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="20dp"
         android:drawableStart="@drawable/ic_arrow_down"
         android:drawablePadding="4dp"
         android:text="Красносельская"
         android:textColor="@android:color/black"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="@+id/prevStationName"
         app:layout_constraintTop_toBottomOf="@+id/prevStationName" />
 
@@ -83,13 +81,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
         android:orientation="horizontal"
         android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lineColorStrip">
+        app:layout_constraintStart_toEndOf="@+id/lineColorStrip"
+        app:layout_constraintTop_toBottomOf="@+id/nextStationName">
 
         <TextView
             android:id="@+id/fromButton"

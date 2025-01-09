@@ -78,6 +78,7 @@ public class MetroMapView extends View {
     private Bitmap bufferBitmap;
     private Canvas bufferCanvas;
     private List<PointF> transferConnectionPoints = new ArrayList<>();
+    private boolean isSelectionBlocked = false; // Флаг для блокировки выбора станций
 
     // Конструкторы и инициализация
     public MetroMapView(Context context) {
@@ -198,6 +199,13 @@ public class MetroMapView extends View {
 
                 // Запускаем анимацию инерции
                 startInertiaAnimation(finalVelocityX, finalVelocityY);
+
+                // Если маршрут построен, игнорируем клики по станциям
+                if (route != null) {
+                    velocityTracker.recycle();
+                    velocityTracker = null;
+                    return result || super.onTouchEvent(event);
+                }
 
                 // Обработка клика по станции
                 updateVisibleViewport();
@@ -341,6 +349,8 @@ public class MetroMapView extends View {
 
     public void setRoute(List<Station> route) {
         this.route = route;
+        isSelectionBlocked = true; // Блокируем выбор станций
+        updateRouteCache(); // Очищаем кэш перед обновлением
         needsRedraw = true;
         invalidate();
     }
@@ -356,9 +366,11 @@ public class MetroMapView extends View {
     }
 
     public void clearRoute() {
-        this.route = null;
-        needsRedraw = true;
-        invalidate();
+        this.route = null; // Очищаем текущий маршрут
+        isSelectionBlocked = false; // Разблокируем выбор станций
+        updateRouteCache(); // Очищаем кэш маршрута
+        needsRedraw = true; // Указываем, что нужно перерисовать карту
+        invalidate(); // Запускаем перерисовку
     }
 
     public void clearSelectedStations() {
@@ -641,9 +653,9 @@ public class MetroMapView extends View {
                 strokePaint.setStrokeWidth(7);
                 canvas.drawPath(routeStationPath.path, strokePaint);
 
-                // Отрисовка текста станции маршрута
+                // Отрисовка текста станции маршрута белым цветом
                 if (routeStationPath.textPosition != 9) { // 9 - не отображать текст
-                    drawStationText(canvas, routeStationPath);
+                    drawRouteStationText(canvas, routeStationPath);
                 }
             }
         }
@@ -864,11 +876,13 @@ public class MetroMapView extends View {
             return;
         }
 
+        // Очищаем кэш перед построением нового маршрута
         routePathCache.routeLinesPaths.clear();
         routePathCache.routeStationsPaths.clear();
         routePathCache.transfersPath.reset();
         routePathCache.partialCircles.clear();
 
+        // Построение нового маршрута
         for (int i = 0; i < route.size() - 1; i++) {
             Station station1 = route.get(i);
             Station station2 = route.get(i + 1);
@@ -897,6 +911,79 @@ public class MetroMapView extends View {
         }
 
         routePathCache.isInitialized = true;
+    }
+
+    private void drawRouteStationText(Canvas canvas, StationPath routeStationPath) {
+        // Создаем paint для текста
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.WHITE); // Устанавливаем белый цвет текста
+        textPaint.setTextSize(20); // Размер текста
+        textPaint.setAntiAlias(true); // Включаем сглаживание
+
+        // Получаем координаты центра станции
+        RectF bounds = new RectF();
+        routeStationPath.path.computeBounds(bounds, true);
+        float stationX = bounds.centerX();
+        float stationY = bounds.centerY();
+        float textOffset = 50; // Смещение текста от станции
+
+        // Позиционируем текст в зависимости от textPosition
+        float textX = stationX;
+        float textY = stationY;
+        Paint.Align textAlign = Paint.Align.CENTER;
+
+        switch (routeStationPath.textPosition) {
+            case 0: // center
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 1: // 12 o'clock
+                textY -= textOffset;
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 2: // 1:30
+                textX += textOffset * 0.7f;
+                textY -= textOffset * 0.7f;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 3: // 3 o'clock
+                textX += textOffset;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 4: // 4:30
+                textX += textOffset * 0.7f;
+                textY += textOffset * 0.7f;
+                textAlign = Paint.Align.LEFT;
+                break;
+            case 5: // 6 o'clock
+                textY += textOffset;
+                textAlign = Paint.Align.CENTER;
+                break;
+            case 6: // 7:30
+                textX -= textOffset * 0.7f;
+                textY += textOffset * 0.7f;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            case 7: // 9 o'clock
+                textX -= textOffset;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            case 8: // 10:30
+                textX -= textOffset * 0.7f;
+                textY -= textOffset * 0.7f;
+                textAlign = Paint.Align.RIGHT;
+                break;
+            default:
+                return; // Не отображать текст
+        }
+
+        // Устанавливаем выравнивание текста
+        textPaint.setTextAlign(textAlign);
+
+        // Добавляем небольшое вертикальное смещение для центрирования текста
+        textY += textPaint.getTextSize() / 3;
+
+        // Отрисовываем текст
+        canvas.drawText(routeStationPath.stationName, textX, textY, textPaint);
     }
 
     private void addRouteTransferPathToCache(Station station1, Station station2) {

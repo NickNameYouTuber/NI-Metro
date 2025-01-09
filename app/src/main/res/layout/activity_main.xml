@@ -94,10 +94,11 @@
 
             <ImageButton
                 android:id="@+id/icon_m"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="M Icon"
+                android:scaleType="fitXY"
                 android:src="@drawable/ic_m_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -151,6 +152,18 @@
         app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
         app:layout_constraintStart_toStartOf="@+id/linearLayout2"
          />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/stationInfoViewPager"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
+        app:layout_constraintHeight_max="500dp"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/switchMapButton"

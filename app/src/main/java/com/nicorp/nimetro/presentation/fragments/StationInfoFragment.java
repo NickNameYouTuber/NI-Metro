@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
@@ -125,8 +127,8 @@ public class StationInfoFragment extends Fragment {
         stationName.setText(station.getName());
         Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
 
-        prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
-        nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
+//        prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
+//        nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
 
         setStationNameVisibility(prevStationName, prevStation);
         setStationNameVisibility(nextStationName, nextStation);
@@ -141,10 +143,11 @@ public class StationInfoFragment extends Fragment {
         closeButton.setOnClickListener(v -> dismiss());
 
         TextView lineNumber = view.findViewById(R.id.lineNumber);
-        setLineNumberAndColor(lineNumber, station);
+        View lineColorStrip = view.findViewById(R.id.lineColorStrip);
+        setLineNumberAndColor(lineNumber, lineColorStrip, station);
 
-        LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
-        addTransferCircles(transferCirclesContainer);
+//        LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
+//        addTransferCircles(transferCirclesContainer);
 
         // Вызов fetchESPSchedule
         fetchESPSchedule(station);
@@ -304,48 +307,55 @@ public class StationInfoFragment extends Fragment {
         dismiss();
     }
 
-    private void setLineNumberAndColor(TextView lineNumber, Station station) {
+    private void setLineNumberAndColor(TextView lineNumber, View lineColorStrip, Station station) {
         String lineId = String.valueOf(line.getLineDisplayNumberForStation(station));
         lineNumber.setText(lineId);
 
-        Shape shape = getLineShapeForStation(station);
-        if (shape != null) {
-            ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
-            shapeDrawable.getPaint().setColor(Color.parseColor(station.getColor()));
-            shapeDrawable.setIntrinsicHeight(40); // Установите нужную высоту
-            shapeDrawable.setIntrinsicWidth(40);  // Установите нужную ширину
-            lineNumber.setBackground(shapeDrawable);
-        } else {
-            lineNumber.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
-        }
+        lineColorStrip.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
 
+        Shape shape = getLineShapeForStation(station);
         float density = getResources().getDisplayMetrics().density;
-        lineNumber.setGravity(Gravity.CENTER);
-        if (shape instanceof DoubleCircleShape) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    (int) (30*density),
-                    (int) (30*density)
-            );
-            lineNumber.setLayoutParams(params);
-            lineNumber.setTextColor(Color.BLACK);
-            lineNumber.setTextSize(14);
-        } else if (shape instanceof ParallelogramShape) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    (int) (40*density),
-                    (int) (30*density)
-            );
-            lineNumber.setLayoutParams(params);
-            lineNumber.setTextColor(Color.WHITE);
-            lineNumber.setTextSize(14);
-        } else {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    (int) (30*density),
-                    (int) (30*density)
-            );
-            lineNumber.setLayoutParams(params);
-            lineNumber.setTextColor(Color.WHITE);
-            lineNumber.setTextSize(15);
-        }
+
+        // Создаем LayerDrawable для комбинации отступов и формы
+        ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
+        shapeDrawable.getPaint().setColor(Color.parseColor(station.getColor()));
+
+        // Добавляем отступы к drawable
+        int margin = (int) (8 * density);
+        Drawable[] layers = new Drawable[]{shapeDrawable};
+        LayerDrawable layerDrawable = new LayerDrawable(layers);
+        layerDrawable.setLayerInset(0, margin, margin, 0, 0); // left, top, right, bottom
+
+        lineNumber.setBackground(layerDrawable);
+
+//        // Остальной код остается тем же
+//        lineNumber.setGravity(Gravity.CENTER);
+//        if (shape instanceof DoubleCircleShape) {
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                    (int) (30*density),
+//                    (int) (30*density)
+//            );
+//            lineNumber.setLayoutParams(params);
+//            lineNumber.setTextColor(Color.BLACK);
+//            lineNumber.setTextSize(14);
+//        } else if (shape instanceof ParallelogramShape) {
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                    (int) (40*density),
+//                    (int) (30*density)
+//            );
+//            lineNumber.setLayoutParams(params);
+//            lineNumber.setTextColor(Color.WHITE);
+//            lineNumber.setTextSize(14);
+//        } else {
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                    (int) (30*density),
+//                    (int) (30*density)
+//            );
+//            lineNumber.setLayoutParams(params);
+//            lineNumber.setTextColor(Color.WHITE);
+//            lineNumber.setTextSize(15);
+//        }
+
         Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
         lineNumber.setTypeface(customTypeface, Typeface.BOLD);
         lineNumber.setPadding(4, 4, 4, 4);
@@ -458,11 +468,12 @@ public class StationInfoFragment extends Fragment {
         setStationNameVisibility(nextStationName, newNextStation);
 
         TextView lineNumber = getView().findViewById(R.id.lineNumber);
-        setLineNumberAndColor(lineNumber, newStation);
+        View lineColorStrip = getView().findViewById(R.id.lineColorStrip);
+        setLineNumberAndColor(lineNumber, lineColorStrip, newStation);
 
-        LinearLayout transferCirclesContainer = getView().findViewById(R.id.transferCirclesContainer);
-        transferCirclesContainer.removeAllViews(); // Очищаем старые переходы
-        addTransferCircles(transferCirclesContainer); // Добавляем новые переходы
+//        LinearLayout transferCirclesContainer = getView().findViewById(R.id.transferCirclesContainer);
+//        transferCirclesContainer.removeAllViews(); // Очищаем старые переходы
+//        addTransferCircles(transferCirclesContainer); // Добавляем новые переходы
 
         // Обновляем расписание (если нужно)
         fetchESPSchedule(newStation);
@@ -490,7 +501,7 @@ public class StationInfoFragment extends Fragment {
                 } else if (line.getDisplayShape().equals("CIRCLE")) {
                     return new CircleShape(Color.parseColor(line.getColor()));
                 } else if (line.getDisplayShape().equals("DOUBLE_CIRCLE")) {
-                    return new DoubleCircleShape(Color.parseColor(line.getColor()));
+                    return new CircleShape(Color.parseColor(line.getColor()));
                 } else if (line.getDisplayShape().equals("PARALLELOGRAM")) {
                     return new ParallelogramShape(Color.parseColor(line.getColor()));
                 }
