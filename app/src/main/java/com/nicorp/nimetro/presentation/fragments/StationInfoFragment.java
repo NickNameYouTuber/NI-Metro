@@ -107,6 +107,9 @@ public class StationInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_station_info, container, false);
 
+        prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
+        nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
+
         // Находим TextView для предыдущей и следующей станции
         TextView prevStationName = view.findViewById(R.id.prevStationName);
         TextView nextStationName = view.findViewById(R.id.nextStationName);
@@ -277,10 +280,10 @@ public class StationInfoFragment extends Fragment {
 
     private void showESPArrivalTime(List<String> arrivalTimePrev, List<String> arrivalTimeNext) {
         if (arrivalTimePrev != null) {
-            prevStationArrivalTime.setText(String.join(", ", arrivalTimePrev));
+            prevStationArrivalTime.setText(String.join(", ", arrivalTimePrev)); // Ошибка здесь
         }
         if (arrivalTimeNext != null) {
-            nextStationArrivalTime.setText(String.join(", ", arrivalTimeNext));
+            nextStationArrivalTime.setText(String.join(", ", arrivalTimeNext)); // И здесь
         }
     }
 
