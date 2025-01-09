@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,6 +30,7 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.domain.entities.ZoneBasedTariff;
+import com.nicorp.nimetro.presentation.adapters.StationPagerAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.presentation.fragments.RouteInfoFragment;
@@ -294,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             transfers.add(new Transfer(transferStations, time, type));
         }
 
+
         JSONArray riversArray = mapData.getJSONArray("rivers");
         for (int i = 0; i < riversArray.length(); i++) {
             JSONObject riverObject = riversArray.getJSONObject(i);
@@ -436,8 +439,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Station nextStation = null;
         Line curline = null;
 
+        // Поиск линии и соседних станций
         for (Line line : lines) {
-            Log.d("MainActivity", "Line: " + line.getName());
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
                 if (lineStations.get(i).equals(station)) {
@@ -448,12 +451,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         nextStation = lineStations.get(i + 1);
                     }
                     curline = line;
+                    Log.d("MainActivity", "Line found: " + line.getName());
                     break;
                 }
             }
         }
         for (Line line : grayedLines) {
-            Log.d("MainActivity", "Line: " + line.getName());
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
                 if (lineStations.get(i).equals(station)) {
@@ -464,20 +467,30 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         nextStation = lineStations.get(i + 1);
                     }
                     curline = line;
+                    Log.d("MainActivity", "Line found: " + line.getName());
                     break;
                 }
             }
         }
 
+        // Очистка предыдущего фрагмента
         clearFrameLayout();
 
-        Log.d("MainActivity", "station fragment inputs " + curline.getName() + ", " + station.getName());
-        StationInfoFragment fragment = StationInfoFragment.newInstance(curline, station, prevStation, nextStation, transfers, lines, grayedLines);
-        fragment.setOnStationInfoListener(this);
+        // Создание и установка адаптера для ViewPager2
+        StationPagerAdapter pagerAdapter = new StationPagerAdapter(
+                this, station, curline, prevStation, nextStation,
+                transfers, lines, grayedLines, this
+        );
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.frameLayout, fragment)
-                .commit();
+        ViewPager2 stationPager = findViewById(R.id.stationPager);
+        stationPager.setAdapter(pagerAdapter);
+        stationPager.setVisibility(View.VISIBLE); // Показываем ViewPager2
+    }
+
+    @Override
+    public void onDismiss() {
+        ViewPager2 stationPager = findViewById(R.id.stationPager);
+        stationPager.setVisibility(View.GONE); // Скрываем ViewPager2
     }
 
     private void clearFrameLayout() {

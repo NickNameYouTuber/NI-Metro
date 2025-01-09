@@ -536,15 +536,14 @@ public class StationInfoFragment extends Fragment {
     }
 
     private void dismiss() {
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .remove(this)
-                    .commit();
+        if (listener != null) {
+            listener.onDismiss();
         }
     }
 
     public interface OnStationInfoListener {
         void onSetStart(Station station, boolean fromStationInfoFragment);
         void onSetEnd(Station station, boolean fromStationInfoFragment);
+        void onDismiss(); // Добавляем новый метод для закрытия ViewPager2
     }
 }

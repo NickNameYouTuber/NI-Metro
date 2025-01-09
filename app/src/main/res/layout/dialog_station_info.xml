@@ -41,13 +41,12 @@
         android:id="@+id/stationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:text="Сокольники"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/lineNumber"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -98,11 +97,11 @@
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
             android:background="@drawable/rounded_button_background"
-            android:padding="10dp"
+            android:padding="8dp"
             android:text="Отсюда"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
@@ -112,11 +111,11 @@
             android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:background="@drawable/rounded_button_background"
-            android:padding="10dp"
+            android:padding="8dp"
             android:text="Сюда"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
 

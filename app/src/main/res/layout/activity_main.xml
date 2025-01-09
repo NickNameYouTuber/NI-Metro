@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white">
 
+    <!-- Первое текстовое поле -->
     <com.nicorp.nimetro.presentation.views.MetroMapView
         android:id="@+id/metroMapView"
         android:layout_width="match_parent"
@@ -18,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <!-- Первое текстовое поле -->
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -154,7 +154,7 @@
          />
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/stationInfoViewPager"
+        android:id="@+id/stationPager"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -162,8 +162,7 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
         app:layout_constraintHeight_max="500dp"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        android:visibility="gone" />
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2" />
 
     <ImageView
         android:id="@+id/switchMapButton"
