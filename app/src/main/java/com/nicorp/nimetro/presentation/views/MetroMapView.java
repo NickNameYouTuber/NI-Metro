@@ -1,5 +1,6 @@
 package com.nicorp.nimetro.presentation.views;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +22,11 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
@@ -61,8 +66,6 @@ public class MetroMapView extends View {
     private boolean isEditMode = false;
     private OnStationClickListener listener;
     public float scaleFactor = 1.0f;
-    private float translateX = 0.0f;
-    private float translateY = 0.0f;
     private GestureDetector gestureDetector;
     public ScaleGestureDetector scaleGestureDetector;
     public static final float COORDINATE_SCALE_FACTOR = 2.5f;
@@ -156,16 +159,134 @@ public class MetroMapView extends View {
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
         grayedPaint.setStrokeWidth(9);
+
     }
 
+    private VelocityTracker velocityTracker;
+    private ValueAnimator inertiaAnimator;
+    private float translateX = 0f;
+    private float translateY = 0f;
+    private float velocityX = 0f;
+    private float velocityY = 0f;
+    private static final float FOLLOW_FACTOR = 0.85f;
+    private static final float FRICTION = 0.9f; // Коэффициент трения
+    private static final float MIN_VELOCITY = 0.1f; // Минимальная скорость для остановки
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain();
+        }
+        velocityTracker.addMovement(event);
+
+        boolean result = scaleGestureDetector.onTouchEvent(event);
+        result = gestureDetector.onTouchEvent(event) || result;
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // Останавливаем текущую анимацию инерции при новом касании
+                if (inertiaAnimator != null && inertiaAnimator.isRunning()) {
+                    inertiaAnimator.cancel();
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+                // Вычисляем финальную скорость
+                velocityTracker.computeCurrentVelocity(1000); // в пикселях в секунду
+                float finalVelocityX = velocityTracker.getXVelocity() * FOLLOW_FACTOR;
+                float finalVelocityY = velocityTracker.getYVelocity() * FOLLOW_FACTOR;
+
+                // Запускаем анимацию инерции
+                startInertiaAnimation(finalVelocityX, finalVelocityY);
+
+                // Обработка клика по станции
+                updateVisibleViewport();
+                float[] point = new float[] {event.getX(), event.getY()};
+                Matrix inverseMatrix = new Matrix();
+                transformMatrix.invert(inverseMatrix);
+                inverseMatrix.mapPoints(point);
+
+                float x = point[0];
+                float y = point[1];
+
+                Station clickedStation = findStationAt(
+                        x / COORDINATE_SCALE_FACTOR,
+                        y / COORDINATE_SCALE_FACTOR);
+
+                if (clickedStation != null && listener != null) {
+                    listener.onStationClick(clickedStation);
+                    velocityTracker.recycle();
+                    velocityTracker = null;
+                    return true;
+                }
+
+                velocityTracker.recycle();
+                velocityTracker = null;
+                break;
+        }
+
+        return result || super.onTouchEvent(event);
+    }
+
+    private void startInertiaAnimation(float initialVelocityX, float initialVelocityY) {
+        if (Math.abs(initialVelocityX) < MIN_VELOCITY && Math.abs(initialVelocityY) < MIN_VELOCITY) {
+            return;
+        }
+
+        if (inertiaAnimator != null && inertiaAnimator.isRunning()) {
+            inertiaAnimator.cancel();
+        }
+
+        velocityX = initialVelocityX;
+        velocityY = initialVelocityY;
+
+        inertiaAnimator = ValueAnimator.ofFloat(1f, 0f);
+        inertiaAnimator.setDuration(1000); // Длительность затухания
+        inertiaAnimator.setInterpolator(new LinearInterpolator());
+
+        inertiaAnimator.addUpdateListener(animation -> {
+            // Применяем трение
+            velocityX *= FRICTION;
+            velocityY *= FRICTION;
+
+            // Обновляем позицию
+            translateX += velocityX / scaleFactor / 60; // делим на 60 для нормализации скорости
+            translateY += velocityY / scaleFactor / 60;
+
+            // Останавливаем анимацию если скорость слишком мала
+            if (Math.abs(velocityX) < MIN_VELOCITY && Math.abs(velocityY) < MIN_VELOCITY) {
+                inertiaAnimator.cancel();
+                return;
+            }
+
+            updateTransformMatrix();
+            invalidate();
+        });
+
+        inertiaAnimator.start();
+    }
     private void initializeGestureDetectors() {
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                translateX -= distanceX / scaleFactor;
-                translateY -= distanceY / scaleFactor;
+                // Применяем коэффициент следования для более плавного движения
+                velocityX = -distanceX * FOLLOW_FACTOR;
+                velocityY = -distanceY * FOLLOW_FACTOR;
+
+                // Обновляем позицию напрямую
+                translateX += velocityX / scaleFactor;
+                translateY += velocityY / scaleFactor;
+
                 updateTransformMatrix();
                 invalidate();
+                return true;
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                // Сбрасываем скорость при новом касании
+                velocityX = 0;
+                velocityY = 0;
                 return true;
             }
         });
@@ -1491,35 +1612,6 @@ public class MetroMapView extends View {
                 (points[2] / COORDINATE_SCALE_FACTOR) + padding,
                 (points[3] / COORDINATE_SCALE_FACTOR) + padding
         );
-    }
-
-    // Методы для работы с жестами и событиями
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        boolean result = scaleGestureDetector.onTouchEvent(event);
-        result = gestureDetector.onTouchEvent(event) || result;
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            updateVisibleViewport();
-            float[] point = new float[] {event.getX(), event.getY()};
-            Matrix inverseMatrix = new Matrix();
-            transformMatrix.invert(inverseMatrix);
-            inverseMatrix.mapPoints(point);
-
-            float x = point[0];
-            float y = point[1];
-
-            Station clickedStation = findStationAt(
-                    x / COORDINATE_SCALE_FACTOR,
-                    y / COORDINATE_SCALE_FACTOR);
-
-            if (clickedStation != null && listener != null) {
-                listener.onStationClick(clickedStation);
-                return true;
-            }
-        }
-
-        return result || super.onTouchEvent(event);
     }
 
     public Station findStationAt(float x, float y) {
