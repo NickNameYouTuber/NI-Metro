@@ -14729,6 +14729,7 @@
             "name": "Парк 'Фили'",
             "x": 600,
             "y": 1000,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT1_S2",
@@ -14747,6 +14748,7 @@
             "name": "Сердце Столицы",
             "x": 650,
             "y": 1000,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT1_S1",
@@ -14760,14 +14762,14 @@
             "schedule": "6:00 - 22:00",
             "escalators": 0,
             "elevators": 0,
-            "exits": ["Выход 1"],
-            "textPosition": 0
+            "exits": ["Выход 1"]
           },
           {
             "id": "RT1_S3",
             "name": "Береговой",
             "x": 680,
             "y": 1020,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT1_S2",
@@ -14790,6 +14792,7 @@
             "name": "Кутузовская",
             "x": 740,
             "y": 1020,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT1_S3",
@@ -14812,6 +14815,7 @@
             "name": "Сити-Центр",
             "x": 790,
             "y": 1020,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT1_S4",
@@ -14834,6 +14838,7 @@
             "name": "Сити-Багр.",
             "x": 830,
             "y": 1020,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT1_S5",
@@ -14856,6 +14861,7 @@
             "name": "Краснопресненский парк",
             "x": 880,
             "y": 1000,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT1_S6",
@@ -14878,6 +14884,7 @@
             "name": "Трехгорный",
             "x": 950,
             "y": 1000,
+            "textPosition": 3,
             "neighbors": [
               [
                 "RT1_S7",
@@ -14900,6 +14907,7 @@
             "name": "Киевский",
             "x": 950,
             "y": 1050,
+            "textPosition": 3,
             "neighbors": [
               [
                 "RT1_S8",
@@ -14945,6 +14953,7 @@
             "name": "ЗИЛ",
             "x": 1280,
             "y": 1330,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT2_S2",
@@ -14963,6 +14972,7 @@
             "name": "Автозаводский мост",
             "x": 1260,
             "y": 1350,
+            "textPosition": 7,
             "neighbors": [
               [
                 "RT2_S1",
@@ -14985,6 +14995,7 @@
             "name": "Нагатинский",
             "x": 1260,
             "y": 1440,
+            "textPosition": 7,
             "neighbors": [
               [
                 "RT2_S2",
@@ -15007,6 +15018,7 @@
             "name": "Затон Новинки",
             "x": 1300,
             "y": 1440,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT2_S3",
@@ -15032,6 +15044,7 @@
             "name": "Кленовый бульвар",
             "x": 1350,
             "y": 1440,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT2_S4",
@@ -15054,6 +15067,7 @@
             "name": "ЮРВ",
             "x": 1400,
             "y": 1440,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT2_S5",
@@ -15076,6 +15090,7 @@
             "name": "Нагатинский затон",
             "x": 1500,
             "y": 1440,
+            "textPosition": 1,
             "neighbors": [
               [
                 "RT2_S6",
@@ -15098,6 +15113,7 @@
             "name": "Коломенская наб.",
             "x": 1520,
             "y": 1460,
+            "textPosition": 3,
             "neighbors": [
               [
                 "RT2_S7",
@@ -15120,6 +15136,7 @@
             "name": "Печатники",
             "x": 1500,
             "y": 1500,
+            "textPosition": 5,
             "neighbors": [
               [
                 "RT2_S8",
