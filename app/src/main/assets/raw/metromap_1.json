@@ -14708,5 +14708,48 @@
     "intermediatePoints": [],
     "rivers": [],
     "objects": []
+  },
+  "rivertram_map": {
+    "lines": [
+      {
+        "id": "RT1",
+        "name": "Речной трамвай 1",
+        "color": "#0000FF",
+        "isCircle": false,
+        "lineType": "single",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 50.0
+        },
+        "stations": [
+          {
+            "id": "RT1_S1",
+            "name": "Пристань 1",
+            "x": 100,
+            "y": 200,
+            "schedule": "6:00 - 22:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": ["Выход 1", "Выход 2"],
+            "textPosition": 0
+          },
+          {
+            "id": "RT1_S2",
+            "name": "Пристань 2",
+            "x": 150,
+            "y": 250,
+            "schedule": "6:00 - 22:00",
+            "escalators": 0,
+            "elevators": 0,
+            "exits": ["Выход 1"],
+            "textPosition": 0
+          }
+        ]
+      }
+    ],
+    "transfers": [],
+    "intermediatePoints": [],
+    "rivers": [],
+    "objects": []
   }
 }

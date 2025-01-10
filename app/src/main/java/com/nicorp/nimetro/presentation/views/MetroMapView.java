@@ -53,6 +53,14 @@ public class MetroMapView extends View {
     private List<MapObject> mapObjects;
     private List<Line> grayedLines;
     private List<Station> grayedStations;
+    private List<Line> riverTramLines; // Список линий речного трамвая
+    private List<Station> riverTramStations; // Список станций речного трамвая
+    private List<Transfer> riverTramTransfers; // Список переходов речного трамвая
+    private List<River> riverTramRivers; // Список рек для речного трамвая
+    private List<MapObject> riverTramMapObjects; // Список объектов на карте речного трамвая
+
+    private Paint riverTramPaint; // Paint для отрисовки линий речного трамвая
+    private List<LinePath> riverTramLinesPaths; // Кэш путей для линий речного трамвая
     private Paint linePaint;
     private Paint stationPaint;
     private Paint selectedStationPaint;
@@ -116,6 +124,11 @@ public class MetroMapView extends View {
     }
 
     private void initializePaints() {
+        riverTramPaint = new Paint();
+        riverTramPaint.setColor(Color.BLUE); // Установите цвет для речного трамвая
+        riverTramPaint.setStrokeWidth(10); // Установите ширину линии
+        riverTramPaint.setStyle(Paint.Style.STROKE);
+
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
         linePaint.setStrokeWidth(15);
@@ -155,7 +168,7 @@ public class MetroMapView extends View {
         riverPaint = new Paint();
         riverPaint.setColor(Color.parseColor("#e3f2f9"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(30);
+        riverPaint.setStrokeWidth(25);
 
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
@@ -558,6 +571,12 @@ public class MetroMapView extends View {
             if (linePath.innerPath != null) {
                 canvas.drawPath(linePath.innerPath, linePath.whitePaint);
             }
+        }
+
+        // Отрисовка линий речного трамвая
+        for (LinePath linePath : riverTramLinesPaths) {
+            riverTramPaint.setColor(Color.parseColor(linePath.color));
+            canvas.drawPath(linePath.path, riverTramPaint);
         }
 
         // Draw transfers

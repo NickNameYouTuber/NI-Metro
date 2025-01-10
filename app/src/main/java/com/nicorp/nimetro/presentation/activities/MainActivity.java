@@ -56,6 +56,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private Station selectedStartStation;
     private Station selectedEndStation;
     private List<Station> selectedStations;
+    private List<Line> riverTramLines; // Список линий речного трамвая
+    private List<Station> riverTramStations; // Список станций речного трамвая
+    private List<Transfer> riverTramTransfers; // Список переходов речного трамвая
+    private List<River> riverTramRivers; // Список рек для речного трамвая
+    private List<MapObject> riverTramMapObjects; // Список объектов на карте речного трамвая
 
     private TextInputLayout startStationLayout;
     private TextInputLayout endStationLayout;
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private StationsAdapter stationsAdapter;
 
     private boolean isMetroMap = true; // Флаг для определения текущей карты
+    private boolean isSuburbanMap = false;
+    private boolean isRiverTramMap = false;
 
     /**
      * Called when the activity is first created.
@@ -79,24 +86,47 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Инициализация всех списков
+        rivers = new ArrayList<>();
+        stations = new ArrayList<>();
+        lines = new ArrayList<>();
+        grayedStations = new ArrayList<>();
+        grayedLines = new ArrayList<>();
+        selectedStations = new ArrayList<>();
+        riverTramLines = new ArrayList<>();
+        riverTramStations = new ArrayList<>();
+        riverTramTransfers = new ArrayList<>();
+        riverTramRivers = new ArrayList<>();
+        riverTramMapObjects = new ArrayList<>();
+        transfers = new ArrayList<>();
+        mapObjects = new ArrayList<>();
+        grayedTransfers = new ArrayList<>();
+        grayedRivers = new ArrayList<>();
+        grayedMapObjects = new ArrayList<>();
+        allLines = new ArrayList<>();
+
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         ImageView switchMapButton = findViewById(R.id.switchMapButton);
         switchMapButton.setOnClickListener(v -> {
-            isMetroMap = !isMetroMap;
-            Log.d("MainActivity", "Switched map to " + (isMetroMap ? "metro" : "suburban"));
             if (isMetroMap) {
-                Log.d("MainActivity", "SwTest");
+                isMetroMap = false;
+                isSuburbanMap = false;
+                isRiverTramMap = true;
+                switchMapButton.setImageResource(R.drawable.river_tram_icon);
+            } else if (isSuburbanMap) {
+                isMetroMap = true;
+                isSuburbanMap = false;
+                isRiverTramMap = false;
                 switchMapButton.setImageResource(R.drawable.metro_map_icon);
-                Log.d("MainActivity", "SwTest");
             } else {
-                Log.d("MainActivity", "SwTest");
+                isMetroMap = false;
+                isSuburbanMap = true;
+                isRiverTramMap = false;
                 switchMapButton.setImageResource(R.drawable.suburban_map_icon);
-                Log.d("MainActivity", "SwTest");
             }
-            Log.d("MainActivity", "Switched map to " + (isMetroMap ? "metro" : "suburban"));
             updateMapData();
         });
 
@@ -186,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
             JSONObject metroMapData = jsonObject.optJSONObject("metro_map");
             JSONObject suburbanMapData = jsonObject.optJSONObject("suburban_map");
+            JSONObject riverTramMapData = jsonObject.optJSONObject("rivertram_map");
 
             // Загружаем данные для метро
             if (metroMapData != null) {
@@ -195,6 +226,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             // Загружаем данные для электричек, если они есть
             if (suburbanMapData != null) {
                 loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
+            }
+
+            // Загружаем данные для речного трамвая
+            if (riverTramMapData != null) {
+                loadMapData(riverTramMapData, riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects);
             }
 
             // Объединяем станции и добавляем соседей
@@ -207,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
             if (suburbanMapData != null) {
                 addNeighbors(suburbanMapData, allStations);
+            }
+            if (riverTramMapData != null) {
+                addNeighbors(riverTramMapData, allStations);
             }
 
             allLines = new ArrayList<>(lines);
@@ -238,6 +277,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private void loadMapData(JSONObject mapData, List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) throws JSONException {
+        if (lines == null) lines = new ArrayList<>();
+        if (stations == null) stations = new ArrayList<>();
+        if (transfers == null) transfers = new ArrayList<>();
+        if (rivers == null) rivers = new ArrayList<>();
+        if (mapObjects == null) mapObjects = new ArrayList<>();
         JSONArray linesArray = mapData.getJSONArray("lines");
 
         for (int i = 0; i < linesArray.length(); i++) {
