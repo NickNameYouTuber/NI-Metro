@@ -177,7 +177,7 @@ public class MetroMapView extends View {
         riverPaint = new Paint();
         riverPaint.setColor(Color.parseColor("#e3f2f9"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(25);
+        riverPaint.setStrokeWidth(30);
 
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
@@ -1818,13 +1818,27 @@ public class MetroMapView extends View {
     }
 
     public Station findStationAt(float x, float y) {
-        List<Station> activeStations = stations;
+        // Выбираем список станций в зависимости от активной карты
+        List<Station> activeStations = getActiveStations();
+
         for (Station station : activeStations) {
-            if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR && Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
+            if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR &&
+                    Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
                 return station;
             }
         }
         return null;
+    }
+
+    private List<Station> getActiveStations() {
+        if (isMetroMap) {
+            return stations;
+        } else if (isSuburbanMap) {
+            return suburbanStations;
+        } else if (isRiverTramMap) {
+            return riverTramStations;
+        }
+        return Collections.emptyList(); // Возвращаем пустой список, если ни одна карта не активна
     }
 
     // Вспомогательные методы
@@ -1843,7 +1857,12 @@ public class MetroMapView extends View {
                 return line;
             }
         }
-        for (Line line : grayedLines) {
+        for (Line line : suburbanLines) {
+            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
+                return line;
+            }
+        }
+        for (Line line : riverTramLines) {
             if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
                 return line;
             }

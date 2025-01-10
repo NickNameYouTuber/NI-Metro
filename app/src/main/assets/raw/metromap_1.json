@@ -13330,9 +13330,9 @@
           {"x": 1430, "y": 1170},
           {"x": 1430, "y": 1210},
           {"x": 1260, "y": 1350},
-          {"x": 1260, "y": 1400},
-          {"x": 1500, "y": 1400},
-          {"x": 1520, "y": 1420},
+          {"x": 1260, "y": 1440},
+          {"x": 1500, "y": 1440},
+          {"x": 1520, "y": 1460},
           {"x": 1520, "y": 1480},
           {"x": 1400, "y": 1600},
           {"x": 1450, "y": 1650},
@@ -14713,20 +14713,22 @@
     "lines": [
       {
         "id": "RT1",
+        "displayNumber": "1",
+        "displayShape": "SQUARE",
         "name": "Речной трамвай 1",
-        "color": "#0000FF",
+        "color": "#af64bc",
         "isCircle": false,
         "lineType": "single",
         "tariff": {
           "type": "FlatRateTariff",
-          "price": 50.0
+          "price": 150.0
         },
         "stations": [
           {
             "id": "RT1_S1",
-            "name": "Пристань 1",
-            "x": 100,
-            "y": 200,
+            "name": "Парк 'Фили'",
+            "x": 600,
+            "y": 1000,
             "neighbors": [
               [
                 "RT1_S2",
@@ -14742,12 +14744,16 @@
           },
           {
             "id": "RT1_S2",
-            "name": "Пристань 2",
-            "x": 150,
-            "y": 250,
+            "name": "Сердце Столицы",
+            "x": 650,
+            "y": 1000,
             "neighbors": [
               [
                 "RT1_S1",
+                3
+              ],
+              [
+                "RT1_S3",
                 3
               ]
             ],
@@ -14756,6 +14762,376 @@
             "elevators": 0,
             "exits": ["Выход 1"],
             "textPosition": 0
+          },
+          {
+            "id": "RT1_S3",
+            "name": "Береговой",
+            "x": 680,
+            "y": 1020,
+            "neighbors": [
+              [
+                "RT1_S2",
+                3
+              ],
+              [
+                "RT1_S4",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S4",
+            "name": "Кутузовская",
+            "x": 740,
+            "y": 1020,
+            "neighbors": [
+              [
+                "RT1_S3",
+                3
+              ],
+              [
+                "RT1_S5",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S5",
+            "name": "Сити-Центр",
+            "x": 790,
+            "y": 1020,
+            "neighbors": [
+              [
+                "RT1_S4",
+                3
+              ],
+              [
+                "RT1_S6",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S6",
+            "name": "Сити-Багр.",
+            "x": 830,
+            "y": 1020,
+            "neighbors": [
+              [
+                "RT1_S5",
+                3
+              ],
+              [
+                "RT1_S7",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S7",
+            "name": "Краснопресненский парк",
+            "x": 880,
+            "y": 1000,
+            "neighbors": [
+              [
+                "RT1_S6",
+                3
+              ],
+              [
+                "RT1_S8",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S8",
+            "name": "Трехгорный",
+            "x": 950,
+            "y": 1000,
+            "neighbors": [
+              [
+                "RT1_S7",
+                3
+              ],
+              [
+                "RT1_S9",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT1_S9",
+            "name": "Киевский",
+            "x": 950,
+            "y": 1050,
+            "neighbors": [
+              [
+                "RT1_S8",
+                3
+              ],
+              [
+                "METRO_310",
+                3
+              ],
+              [
+                "METRO_407",
+                3
+              ],
+              [
+                "METRO_81",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          }
+        ]
+      },
+      {
+        "id": "RT2",
+        "displayNumber": "2",
+        "displayShape": "SQUARE",
+        "name": "Речной трамвай 2",
+        "color": "#af64bc",
+        "isCircle": false,
+        "lineType": "single",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 150.0
+        },
+        "stations": [
+          {
+            "id": "RT2_S1",
+            "name": "ЗИЛ",
+            "x": 1280,
+            "y": 1330,
+            "neighbors": [
+              [
+                "RT2_S2",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S2",
+            "name": "Автозаводский мост",
+            "x": 1260,
+            "y": 1350,
+            "neighbors": [
+              [
+                "RT2_S1",
+                3
+              ],
+              [
+                "RT2_S3",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S3",
+            "name": "Нагатинский",
+            "x": 1260,
+            "y": 1440,
+            "neighbors": [
+              [
+                "RT2_S2",
+                3
+              ],
+              [
+                "RT2_S4",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S4",
+            "name": "Затон Новинки",
+            "x": 1300,
+            "y": 1440,
+            "neighbors": [
+              [
+                "RT2_S3",
+                3
+              ],
+              [
+                "RT2_S5",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": [
+                "Выход 1",
+                "Выход 2"
+              ]
+            }
+          },
+          {
+            "id": "RT2_S5",
+            "name": "Кленовый бульвар",
+            "x": 1350,
+            "y": 1440,
+            "neighbors": [
+              [
+                "RT2_S4",
+                3
+              ],
+              [
+                "RT2_S6",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S6",
+            "name": "ЮРВ",
+            "x": 1400,
+            "y": 1440,
+            "neighbors": [
+              [
+                "RT2_S5",
+                3
+              ],
+              [
+                "RT2_S7",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S7",
+            "name": "Нагатинский затон",
+            "x": 1500,
+            "y": 1440,
+            "neighbors": [
+              [
+                "RT2_S6",
+                3
+              ],
+              [
+                "RT2_S8",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S8",
+            "name": "Коломенская наб.",
+            "x": 1520,
+            "y": 1460,
+            "neighbors": [
+              [
+                "RT2_S7",
+                3
+              ],
+              [
+                "RT2_S9",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "RT2_S9",
+            "name": "Печатники",
+            "x": 1500,
+            "y": 1500,
+            "neighbors": [
+              [
+                "RT2_S8",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
           }
         ]
       }

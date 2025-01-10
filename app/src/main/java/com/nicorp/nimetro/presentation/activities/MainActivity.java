@@ -522,24 +522,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Station nextStation = null;
         Line curline = null;
 
+        // Получаем список линий в зависимости от активной карты
+        List<Line> activeLines = getActiveLines();
+
         // Поиск линии и соседних станций
-        for (Line line : lines) {
-            List<Station> lineStations = line.getStations();
-            for (int i = 0; i < lineStations.size(); i++) {
-                if (lineStations.get(i).equals(station)) {
-                    if (i > 0) {
-                        prevStation = lineStations.get(i - 1);
-                    }
-                    if (i < lineStations.size() - 1) {
-                        nextStation = lineStations.get(i + 1);
-                    }
-                    curline = line;
-                    Log.d("MainActivity", "Line found: " + line.getName());
-                    break;
-                }
-            }
-        }
-        for (Line line : suburbanLines) {
+        for (Line line : activeLines) {
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
                 if (lineStations.get(i).equals(station)) {
@@ -568,6 +555,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         ViewPager2 stationPager = findViewById(R.id.stationPager);
         stationPager.setAdapter(pagerAdapter);
         stationPager.setVisibility(View.VISIBLE); // Показываем ViewPager2
+    }
+
+    // Метод для получения активных линий в зависимости от текущей карты
+    private List<Line> getActiveLines() {
+        if (isMetroMap) {
+            return lines;
+        } else if (isSuburbanMap) {
+            return suburbanLines;
+        } else if (isRiverTramMap) {
+            return riverTramLines;
+        }
+        return Collections.emptyList(); // Возвращаем пустой список, если ни одна карта не активна
     }
 
     @Override
@@ -630,6 +629,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         List<Station> allStations = new ArrayList<>(stations);
         allStations.addAll(suburbanStations);
+        allStations.addAll(riverTramStations);
 
         for (Station station : allStations) {
             distances.put(station, Integer.MAX_VALUE);
