@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         startStationEditText = findViewById(R.id.startStationEditText);
         endStationEditText = findViewById(R.id.endStationEditText);
         stationsRecyclerView = findViewById(R.id.stationsRecyclerView);
-
+        rivers = new ArrayList<>();
         stations = new ArrayList<>();
         lines = new ArrayList<>();
         grayedStations = new ArrayList<>();
@@ -297,18 +297,42 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
 
 
-        JSONArray riversArray = mapData.getJSONArray("rivers");
-        for (int i = 0; i < riversArray.length(); i++) {
-            JSONObject riverObject = riversArray.getJSONObject(i);
-            JSONArray pointsArray = riverObject.getJSONArray("points");
-            List<Point> riverPoints = new ArrayList<>();
-            for (int j = 0; j < pointsArray.length(); j++) {
-                JSONObject pointObject = pointsArray.getJSONObject(j);
-                Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
-                riverPoints.add(point);
+        if (mapData.has("rivers")) { // Проверяем, есть ли ключ "rivers" в JSON
+            JSONArray riversArray = mapData.getJSONArray("rivers");
+            for (int i = 0; i < riversArray.length(); i++) {
+                JSONObject riverObject = riversArray.getJSONObject(i);
+
+                // Проверяем, есть ли ключ "points" в объекте реки
+                if (riverObject.has("points")) {
+                    JSONArray pointsArray = riverObject.getJSONArray("points");
+                    List<Point> riverPoints = new ArrayList<>();
+
+                    // Парсим точки реки
+                    for (int j = 0; j < pointsArray.length(); j++) {
+                        JSONObject pointObject = pointsArray.getJSONObject(j);
+
+                        // Проверяем, есть ли ключи "x" и "y" в объекте точки
+                        if (pointObject.has("x") && pointObject.has("y")) {
+                            int x = pointObject.getInt("x");
+                            int y = pointObject.getInt("y");
+                            Point point = new Point(x, y);
+                            riverPoints.add(point);
+                        } else {
+                            Log.e("RiverParsing", "Missing 'x' or 'y' in point object at index " + j);
+                        }
+                    }
+
+                    // Парсим ширину реки (если есть, иначе используем значение по умолчанию)
+                    int width = riverObject.optInt("width", 10); // Значение по умолчанию: 10
+
+                    // Создаем объект River и добавляем его в список рек
+                    rivers.add(new River(riverPoints, width));
+                } else {
+                    Log.e("RiverParsing", "Missing 'points' array in river object at index " + i);
+                }
             }
-            int width = riverObject.optInt("width", 10);
-            rivers.add(new River(riverPoints, width));
+        } else {
+            Log.e("RiverParsing", "No 'rivers' array found in map data");
         }
 
         JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");

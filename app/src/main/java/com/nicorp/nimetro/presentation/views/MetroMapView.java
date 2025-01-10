@@ -153,9 +153,9 @@ public class MetroMapView extends View {
         stationCenterPaint.setStrokeWidth(7);
 
         riverPaint = new Paint();
-        riverPaint.setColor(Color.parseColor("#CCE0EA"));
+        riverPaint.setColor(Color.parseColor("#e3f2f9"));
         riverPaint.setStyle(Paint.Style.STROKE);
-        riverPaint.setStrokeWidth(10);
+        riverPaint.setStrokeWidth(30);
 
         grayedPaint = new Paint();
         grayedPaint.setColor(Color.parseColor("#D9D9D9"));
