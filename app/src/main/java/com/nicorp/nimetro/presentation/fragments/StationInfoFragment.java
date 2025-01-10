@@ -130,11 +130,22 @@ public class StationInfoFragment extends Fragment {
         stationName.setText(station.getName());
         Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
 
-//        prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
-//        nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
-
-        setStationNameVisibility(prevStationName, prevStation);
-        setStationNameVisibility(nextStationName, nextStation);
+        // Если станция конечная, отображаем только одну станцию (prev или next)
+        if (prevStation == null || nextStation == null) {
+            if (prevStation != null) {
+                // Если есть только предыдущая станция, отображаем ее в nextStationName
+                setStationNameVisibility(nextStationName, prevStation);
+                prevStationName.setVisibility(View.INVISIBLE); // Используем INVISIBLE вместо GONE
+            } else if (nextStation != null) {
+                // Если есть только следующая станция, отображаем ее в prevStationName
+                setStationNameVisibility(prevStationName, nextStation);
+                nextStationName.setVisibility(View.INVISIBLE); // Используем INVISIBLE вместо GONE
+            }
+        } else {
+            // Если есть обе станции, отображаем их как обычно
+            setStationNameVisibility(prevStationName, prevStation);
+            setStationNameVisibility(nextStationName, nextStation);
+        }
 
         TextView fromButton = view.findViewById(R.id.fromButton);
         fromButton.setOnClickListener(v -> onFromButtonClick());
@@ -148,9 +159,6 @@ public class StationInfoFragment extends Fragment {
         TextView lineNumber = view.findViewById(R.id.lineNumber);
         View lineColorStrip = view.findViewById(R.id.lineColorStrip);
         setLineNumberAndColor(lineNumber, lineColorStrip, station);
-
-//        LinearLayout transferCirclesContainer = view.findViewById(R.id.transferCirclesContainer);
-//        addTransferCircles(transferCirclesContainer);
 
         // Вызов fetchESPSchedule
         fetchESPSchedule(station);

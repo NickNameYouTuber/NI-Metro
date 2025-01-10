@@ -13,7 +13,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="00:00"
         app:layout_constraintBottom_toBottomOf="@+id/prevStationName"
         app:layout_constraintStart_toEndOf="@+id/prevStationName"
         app:layout_constraintTop_toTopOf="@+id/prevStationName" />
@@ -23,7 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="00:00"
         app:layout_constraintBottom_toBottomOf="@+id/nextStationName"
         app:layout_constraintStart_toEndOf="@+id/nextStationName"
         app:layout_constraintTop_toTopOf="@+id/nextStationName" />
