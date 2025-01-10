@@ -14907,7 +14907,7 @@
             "name": "Киевский",
             "x": 950,
             "y": 1050,
-            "textPosition": 4,
+            "textPosition": 3,
             "neighbors": [
               [
                 "RT1_S8",
