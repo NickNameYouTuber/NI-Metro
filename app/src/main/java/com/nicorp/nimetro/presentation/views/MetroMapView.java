@@ -1,5 +1,9 @@
 package com.nicorp.nimetro.presentation.views;
 
+import static com.nicorp.nimetro.presentation.activities.MainActivity.isMetroMap;
+import static com.nicorp.nimetro.presentation.activities.MainActivity.isRiverTramMap;
+import static com.nicorp.nimetro.presentation.activities.MainActivity.isSuburbanMap;
+
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -58,6 +62,11 @@ public class MetroMapView extends View {
     private List<Transfer> riverTramTransfers; // Список переходов речного трамвая
     private List<River> riverTramRivers; // Список рек для речного трамвая
     private List<MapObject> riverTramMapObjects; // Список объектов на карте речного трамвая
+    private List<Line> suburbanLines; // Список линий речного трамвая
+    private List<Station> suburbanStations; // Список станций речного трамвая
+    private List<Transfer> suburbanTransfers; // Список переходов речного трамвая
+    private List<River> suburbanRivers; // Список рек для речного трамвая
+    private List<MapObject> suburbanMapObjects; // Список объектов на карте речного трамвая
 
     private Paint riverTramPaint; // Paint для отрисовки линий речного трамвая
     private List<LinePath> riverTramLinesPaths; // Кэш путей для линий речного трамвая
@@ -325,6 +334,50 @@ public class MetroMapView extends View {
         });
     }
 
+    public void setData(List<Line> metroLines, List<Station> metroStations, List<Transfer> metroTransfers, List<River> metroRivers, List<MapObject> metroMapObjects,
+                        List<Line> suburbanLines, List<Station> suburbanStations, List<Transfer> suburbanTransfers, List<River> suburbanRivers, List<MapObject> suburbanMapObjects,
+                        List<Line> riverTramLines, List<Station> riverTramStations, List<Transfer> riverTramTransfers, List<River> riverTramRivers, List<MapObject> riverTramMapObjects,
+                        boolean isMetroMap, boolean isSuburbanMap, boolean isRiverTramMap) {
+        // Инициализация всех списков, если они null
+        this.lines = metroLines != null ? metroLines : Collections.emptyList();
+        this.stations = metroStations != null ? metroStations : Collections.emptyList();
+        this.transfers = metroTransfers != null ? metroTransfers : Collections.emptyList();
+        this.rivers = metroRivers != null ? metroRivers : Collections.emptyList();
+        this.mapObjects = metroMapObjects != null ? metroMapObjects : Collections.emptyList();
+        this.suburbanLines = suburbanLines != null ? suburbanLines : Collections.emptyList();
+        this.suburbanStations = suburbanStations != null ? suburbanStations : Collections.emptyList();
+        this.suburbanTransfers = suburbanTransfers != null ? suburbanTransfers : Collections.emptyList();
+        this.suburbanRivers = suburbanRivers != null ? suburbanRivers : Collections.emptyList();
+        this.suburbanMapObjects = suburbanMapObjects != null ? suburbanMapObjects : Collections.emptyList();
+        this.riverTramLines = riverTramLines != null ? riverTramLines : Collections.emptyList();
+        this.riverTramStations = riverTramStations != null ? riverTramStations : Collections.emptyList();
+        this.riverTramTransfers = riverTramTransfers != null ? riverTramTransfers : Collections.emptyList();
+        this.riverTramRivers = riverTramRivers != null ? riverTramRivers : Collections.emptyList();
+        this.riverTramMapObjects = riverTramMapObjects != null ? riverTramMapObjects : Collections.emptyList();
+
+        // Очистка кэша
+        pathCache = new MapPathCache();
+        routePathCache = new RoutePathCache();
+
+        // Очистка буфера
+        if (bufferBitmap != null) {
+            bufferBitmap.recycle();
+            bufferBitmap = null;
+        }
+
+        // Сброс маршрута
+        route = null;
+
+        // Установка флага для перерисовки
+        needsRedraw = true;
+
+        // Обновление матрицы трансформации
+        updateTransformMatrix();
+
+        // Запрос на перерисовку
+        invalidate();
+    }
+
     public void setData(List<Line> lines, List<Station> stations, List<Transfer> transfers,
                         List<River> rivers, List<MapObject> mapObjects,
                         List<Line> grayedLines, List<Station> grayedStations) {
@@ -395,19 +448,23 @@ public class MetroMapView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (bufferBitmap == null || needsRedraw) {
-            // Create new buffer bitmap if needed
             createBufferBitmap();
         }
 
-        // Set white background first
-        canvas.drawColor(Color.WHITE); // Add this line to set white background
+        // Очищаем холст
+        canvas.drawColor(Color.WHITE);
 
-        // Apply transformation
+        // Обновляем кэш, если нужно
+        if (needsRedraw) {
+            updatePathCache();
+        }
+
+        // Применяем трансформацию
         transformMatrix.reset();
         transformMatrix.postTranslate(translateX, translateY);
         transformMatrix.postScale(scaleFactor, scaleFactor);
 
-        // Draw map contents
+        // Отрисовываем карту
         drawMapContents(canvas);
     }
 
@@ -552,11 +609,11 @@ public class MetroMapView extends View {
         }
 
         // Draw grayed lines/stations with transform
-        if (grayedLines != null && !grayedLines.isEmpty()) {
+//        if (grayedLines != null && !grayedLines.isEmpty()) {
             int saveCount = canvas.save();
             drawGrayedMap(canvas);
             canvas.restoreToCount(saveCount);
-        }
+//        }
 
         // Draw cached paths
         if (rivers != null) {
@@ -573,11 +630,11 @@ public class MetroMapView extends View {
             }
         }
 
-        // Отрисовка линий речного трамвая
-        for (LinePath linePath : riverTramLinesPaths) {
-            riverTramPaint.setColor(Color.parseColor(linePath.color));
-            canvas.drawPath(linePath.path, riverTramPaint);
-        }
+//        // Отрисовка линий речного трамвая
+//        for (LinePath linePath : riverTramLines) {
+//            riverTramPaint.setColor(Color.parseColor(linePath.color));
+//            canvas.drawPath(linePath.path, riverTramPaint);
+//        }
 
         // Draw transfers
         canvas.drawPath(pathCache.transfersPath, transferPaint);
@@ -880,6 +937,16 @@ public class MetroMapView extends View {
                 return line;
             }
         }
+        for (Line line : suburbanLines) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
+        for (Line line : riverTramLines) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
         return null;
     }
 
@@ -1064,7 +1131,7 @@ public class MetroMapView extends View {
     }
 
     private void updatePathCache() {
-        // Очищаем все пути
+        // Очищаем кэш перед обновлением
         pathCache.linesPaths.clear();
         pathCache.stationsPaths.clear();
         pathCache.transfersPath.reset();
@@ -1072,24 +1139,41 @@ public class MetroMapView extends View {
         pathCache.partialCircles.clear();
         pathCache.convexHullPath.reset();
 
-        // Кэшируем пути для рек
+        // Выбираем данные для отрисовки в зависимости от текущей карты
+        if (isMetroMap) {
+            drawColoredMap(lines, stations, transfers, rivers, mapObjects);
+        } else if (isSuburbanMap) {
+            drawColoredMap(suburbanLines, suburbanStations, suburbanTransfers, rivers, suburbanMapObjects);
+        } else if (isRiverTramMap) {
+            drawColoredMap(riverTramLines, riverTramStations, riverTramTransfers, rivers, riverTramMapObjects);
+        }
+    }
+
+    private void drawColoredMap(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) {
+        // Очищаем кэш перед отрисовкой
+        pathCache.linesPaths.clear();
+        pathCache.stationsPaths.clear();
+        pathCache.transfersPath.reset();
+        pathCache.riversPath.reset();
+        pathCache.partialCircles.clear();
+        pathCache.convexHullPath.reset();
+
+        // Отрисовка рек
         if (rivers != null) {
             for (River river : rivers) {
                 List<Point> points = river.getPoints();
                 if (points.size() >= 2) {
                     Path riverPath = new Path();
-                    riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR,
-                            points.get(0).y * COORDINATE_SCALE_FACTOR);
+                    riverPath.moveTo(points.get(0).x * COORDINATE_SCALE_FACTOR, points.get(0).y * COORDINATE_SCALE_FACTOR);
                     for (int i = 1; i < points.size(); i++) {
-                        riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR,
-                                points.get(i).y * COORDINATE_SCALE_FACTOR);
+                        riverPath.lineTo(points.get(i).x * COORDINATE_SCALE_FACTOR, points.get(i).y * COORDINATE_SCALE_FACTOR);
                     }
                     pathCache.riversPath.addPath(riverPath);
                 }
             }
         }
 
-        // Кэшируем пути для линий метро
+        // Отрисовка линий
         Set<String> drawnConnections = new HashSet<>();
         for (Line line : lines) {
             Path linePath = new Path();
@@ -1114,39 +1198,33 @@ public class MetroMapView extends View {
             pathCache.linesPaths.add(new LinePath(linePath, lineColor));
         }
 
-        // Кэшируем пути для станций с цветом линии и текстом
+        // Отрисовка станций
         for (Station station : stations) {
             float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
             float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
 
-            // Находим линию, к которой принадлежит станция
             Line stationLine = findLineForStation(station);
             String stationColor = stationLine != null ? stationLine.getColor() : "#000000";
 
-            // Создаем путь для станции
             Path stationPath = new Path();
             stationPath.addCircle(stationX, stationY, 14, Path.Direction.CW);
 
-            // Добавляем путь станции в кэш с цветом линии и текстом
             pathCache.stationsPaths.add(new StationPath(stationPath, stationColor, station.getTextPosition(), station.getName()));
         }
 
-        // Кэшируем пути для переходов, частичных кругов и выпуклой оболочки
+        // Отрисовка переходов
         if (transfers != null) {
             for (Transfer transfer : transfers) {
                 addTransferPathToCache(transfer);
             }
         }
 
-        // Рассчитываем выпуклую оболочку для заливки переходов
-        List<PointF> convexHullPoints = calculateConvexHull(transferConnectionPoints);
-        if (!convexHullPoints.isEmpty()) {
-            pathCache.convexHullPath.moveTo(convexHullPoints.get(0).x, convexHullPoints.get(0).y);
-            for (int i = 1; i < convexHullPoints.size(); i++) {
-                pathCache.convexHullPath.lineTo(convexHullPoints.get(i).x, convexHullPoints.get(i).y);
-            }
-            pathCache.convexHullPath.close();
-        }
+//        // Отрисовка объектов
+//        if (mapObjects != null) {
+//            for (MapObject mapObject : mapObjects) {
+//                drawMapObject(mapObject);
+//            }
+//        }
 
         pathCache.isInitialized = true;
     }
@@ -1464,18 +1542,37 @@ public class MetroMapView extends View {
         Paint grayedLinePaint = new Paint(grayedPaint);
         grayedLinePaint.setStrokeWidth(9);
 
-        // Отрисовка серых линий
-        for (Line line : grayedLines) {
-            drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint);
+        // Отрисовка серых линий для пригорода, если выбрана карта метро или речного трамвая
+        if (!isSuburbanMap) {
+            for (Line line : suburbanLines) {
+                drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint, suburbanStations);
+            }
+        }
+
+        // Отрисовка серых линий для речного трамвая, если выбрана карта метро или пригорода
+        if (!isRiverTramMap) {
+            for (Line line : riverTramLines) {
+                drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint, riverTramStations);
+            }
+        }
+
+        // Отрисовка серых линий для метро, если выбрана карта пригорода или речного трамвая
+        if (!isMetroMap) {
+            for (Line line : lines) {
+                drawGrayedLines(canvas, line, drawnConnections, grayedLinePaint, stations);
+            }
         }
     }
 
     private void drawGrayedLines(Canvas canvas, Line line,
-                                 Set<String> drawnConnections, Paint grayedLinePaint) {
+                                 Set<String> drawnConnections, Paint grayedLinePaint, List<Station> grayedStations) {
         for (Station station : line.getStations()) {
+            Log.d("drawGrayedLines", "station: " + station);
             for (Station.Neighbor neighbor : station.getNeighbors()) {
+                Log.d("drawGrayedLines", "neighbor: " + neighbor.getStation().getName());
                 Station neighborStation = findStationById(
-                        neighbor.getStation().getId(), grayedStations);
+                        neighbor.getStation().getId(), line.getStations());
+                Log.d("drawGrayedLines", "neighborStation: " + neighborStation);
                 if (neighborStation != null &&
                         line.getLineIdForStation(neighborStation) != null) {
                     String connectionKey = station.getId().compareTo(

@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private MetroMapView metroMapView;
     private List<Station> stations;
     private List<Line> lines;
-    private List<Station> grayedStations;
-    private List<Line> grayedLines;
+    private List<Station> suburbanStations;
+    private List<Line> suburbanLines;
     private Station selectedStartStation;
     private Station selectedEndStation;
     private List<Station> selectedStations;
@@ -69,9 +69,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
 
-    private boolean isMetroMap = true; // Флаг для определения текущей карты
-    private boolean isSuburbanMap = false;
-    private boolean isRiverTramMap = false;
+    public static boolean isMetroMap = true; // Флаг для определения текущей карты
+    public static boolean isSuburbanMap = false;
+    public static boolean isRiverTramMap = false;
 
     /**
      * Called when the activity is first created.
@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         rivers = new ArrayList<>();
         stations = new ArrayList<>();
         lines = new ArrayList<>();
-        grayedStations = new ArrayList<>();
-        grayedLines = new ArrayList<>();
+        suburbanStations = new ArrayList<>();
+        suburbanLines = new ArrayList<>();
         selectedStations = new ArrayList<>();
         riverTramLines = new ArrayList<>();
         riverTramStations = new ArrayList<>();
@@ -100,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         riverTramMapObjects = new ArrayList<>();
         transfers = new ArrayList<>();
         mapObjects = new ArrayList<>();
-        grayedTransfers = new ArrayList<>();
-        grayedRivers = new ArrayList<>();
-        grayedMapObjects = new ArrayList<>();
+        suburbanTransfers = new ArrayList<>();
+        suburbanRivers = new ArrayList<>();
+        suburbanMapObjects = new ArrayList<>();
         allLines = new ArrayList<>();
 
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
@@ -145,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         rivers = new ArrayList<>();
         stations = new ArrayList<>();
         lines = new ArrayList<>();
-        grayedStations = new ArrayList<>();
-        grayedLines = new ArrayList<>();
+        suburbanStations = new ArrayList<>();
+        suburbanLines = new ArrayList<>();
         selectedStations = new ArrayList<>();
         metroMapView.setOnStationClickListener(this);
 
@@ -202,9 +202,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private List<Transfer> transfers = new ArrayList<>();
     private List<River> rivers;
     private List<MapObject> mapObjects;
-    private List<Transfer> grayedTransfers;
-    private List<River> grayedRivers;
-    private List<MapObject> grayedMapObjects;
+    private List<Transfer> suburbanTransfers;
+    private List<River> suburbanRivers;
+    private List<MapObject> suburbanMapObjects;
     private List<Line> allLines;
 
     public List<Line> getAllLines() {
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             // Загружаем данные для электричек, если они есть
             if (suburbanMapData != null) {
-                loadMapData(suburbanMapData, grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects);
+                loadMapData(suburbanMapData, suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects);
             }
 
             // Загружаем данные для речного трамвая
@@ -236,7 +236,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             // Объединяем станции и добавляем соседей
             List<Station> allStations = new ArrayList<>(stations);
             if (suburbanMapData != null) {
-                allStations.addAll(grayedStations);
+                allStations.addAll(suburbanStations);
+            }
+            if (riverTramMapData != null) {
+                allStations.addAll(riverTramStations);
             }
             if (metroMapData != null) {
                 addNeighbors(metroMapData, allStations);
@@ -250,7 +253,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
             allLines = new ArrayList<>(lines);
             if (suburbanMapData != null) {
-                allLines.addAll(grayedLines);
+                allLines.addAll(suburbanLines);
+            }
+            if (riverTramMapData != null) {
+                allLines.addAll(riverTramLines);
             }
 
             updateMapData();
@@ -262,17 +268,26 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void updateMapData() {
         Log.d("MetroMapView_MainActivity", "isMetroMap " + isMetroMap);
         if (isMetroMap) {
-            if (lines != null && !lines.isEmpty() && stations != null && !stations.isEmpty()) {
-                metroMapView.setData(lines, stations, transfers, rivers, mapObjects, grayedLines, grayedStations);
-            } else {
-                Log.e("MainActivity", "Metro data is empty or null");
-            }
-        } else {
-            if (grayedLines != null && !grayedLines.isEmpty() && grayedStations != null && !grayedStations.isEmpty()) {
-                metroMapView.setData(grayedLines, grayedStations, grayedTransfers, grayedRivers, grayedMapObjects, lines, stations);
-            } else {
-                Log.e("MainActivity", "Suburban data is empty or null");
-            }
+            metroMapView.setData(
+                    lines, stations, transfers, rivers, mapObjects,
+                    suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
+                    riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
+                    true, false, false
+            );
+        } else if (isSuburbanMap) {
+            metroMapView.setData(
+                    lines, stations, transfers, rivers, mapObjects,
+                    suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
+                    riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
+                    false, true, false
+            );
+        } else if (isRiverTramMap) {
+            metroMapView.setData(
+                    lines, stations, transfers, rivers, mapObjects,
+                    suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
+                    riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
+                    false, false, true
+            );
         }
     }
 
@@ -524,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 }
             }
         }
-        for (Line line : grayedLines) {
+        for (Line line : suburbanLines) {
             List<Station> lineStations = line.getStations();
             for (int i = 0; i < lineStations.size(); i++) {
                 if (lineStations.get(i).equals(station)) {
@@ -547,7 +562,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         // Создание и установка адаптера для ViewPager2
         StationPagerAdapter pagerAdapter = new StationPagerAdapter(
                 this, station, curline, prevStation, nextStation,
-                transfers, lines, grayedLines, this
+                transfers, lines, suburbanLines, this
         );
 
         ViewPager2 stationPager = findViewById(R.id.stationPager);
@@ -614,7 +629,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
         List<Station> allStations = new ArrayList<>(stations);
-        allStations.addAll(grayedStations);
+        allStations.addAll(suburbanStations);
 
         for (Station station : allStations) {
             distances.put(station, Integer.MAX_VALUE);

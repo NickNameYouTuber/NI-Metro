@@ -14727,17 +14727,30 @@
             "name": "Пристань 1",
             "x": 100,
             "y": 200,
-            "schedule": "6:00 - 22:00",
-            "escalators": 0,
-            "elevators": 0,
-            "exits": ["Выход 1", "Выход 2"],
-            "textPosition": 0
+            "neighbors": [
+              [
+                "RT1_S2",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "6:00 - 22:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": ["Выход 1", "Выход 2"]
+            }
           },
           {
             "id": "RT1_S2",
             "name": "Пристань 2",
             "x": 150,
             "y": 250,
+            "neighbors": [
+              [
+                "RT1_S1",
+                3
+              ]
+            ],
             "schedule": "6:00 - 22:00",
             "escalators": 0,
             "elevators": 0,
