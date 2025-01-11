@@ -1818,12 +1818,16 @@ public class MetroMapView extends View {
     }
 
     public Station findStationAt(float x, float y) {
-        // Выбираем список станций в зависимости от активной карты
         List<Station> activeStations = getActiveStations();
-
         for (Station station : activeStations) {
-            if (Math.abs(station.getX() - x) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR &&
-                    Math.abs(station.getY() - y) < CLICK_RADIUS / COORDINATE_SCALE_FACTOR) {
+            // Проверяем, попадает ли точка в область станции
+            float stationX = station.getX();
+            float stationY = station.getY();
+            float radius = 20; // Радиус области вокруг станции
+
+            Log.d("findStationAt", "stationX: " + stationX + ", stationY: " + stationY + ", x: " + x + ", y: " + y);
+
+            if (Math.abs(stationX - x) < radius && Math.abs(stationY - y) < radius) {
                 return station;
             }
         }
