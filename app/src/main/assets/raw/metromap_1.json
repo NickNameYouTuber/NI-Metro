@@ -15480,6 +15480,1426 @@
             }
           }
         ]
+      },
+      {
+        "id": "3",
+        "displayNumber": "3",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Павелецкая линия",
+        "color": "#9ac638",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "SUBURBAN_300",
+            "name": "Павелецкий вокзал",
+            "x": 1330,
+            "y": 1240,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_301", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_301",
+            "name": "Дербеневская",
+            "x": 1330,
+            "y": 1280,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_300", 3],
+              ["SUBURBAN_302", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_302",
+            "name": "Тульская",
+            "x": 1330,
+            "y": 1320,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_301", 3],
+              ["SUBURBAN_303", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_303",
+            "name": "Верхние Котлы",
+            "x": 1330,
+            "y": 1360,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_302", 3],
+              ["SUBURBAN_304", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_304",
+            "name": "Нагатинская",
+            "x": 1330,
+            "y": 1400,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_303", 3],
+              ["SUBURBAN_305", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_305",
+            "name": "Варшавская",
+            "x": 1330,
+            "y": 1440,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_304", 3],
+              ["SUBURBAN_306", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_306",
+            "name": "Чертаново",
+            "x": 1330,
+            "y": 1480,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_305", 3],
+              ["SUBURBAN_307", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_307",
+            "name": "Котляково",
+            "x": 1330,
+            "y": 1520,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_306", 3],
+              ["SUBURBAN_308", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_308",
+            "name": "Бирюлёво-Тов.",
+            "x": 1330,
+            "y": 1560,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_307", 3],
+              ["SUBURBAN_309", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_309",
+            "name": "Бирюлёво-Пасс.",
+            "x": 1330,
+            "y": 1600,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_308", 3],
+              ["SUBURBAN_310", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_310",
+            "name": "Булатниково",
+            "x": 1330,
+            "y": 1640,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_309", 3],
+              ["SUBURBAN_311", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_311",
+            "name": "Расторгуево",
+            "x": 1330,
+            "y": 1680,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_310", 3],
+              ["SUBURBAN_312", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_312",
+            "name": "Калинина",
+            "x": 1330,
+            "y": 1720,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_311", 3],
+              ["SUBURBAN_313", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_313",
+            "name": "Ленинская",
+            "x": 1330,
+            "y": 1760,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_312", 3],
+              ["SUBURBAN_314", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_314",
+            "name": "32 км",
+            "x": 1330,
+            "y": 1800,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_313", 3],
+              ["SUBURBAN_315", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_315",
+            "name": "Домодедово",
+            "x": 1330,
+            "y": 1840,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_314", 3],
+              ["SUBURBAN_316", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_316",
+            "name": "Взлётная",
+            "x": 1330,
+            "y": 1880,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_315", 3],
+              ["SUBURBAN_317", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_317",
+            "name": "Востряково",
+            "x": 1330,
+            "y": 1920,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_316", 3],
+              ["SUBURBAN_318", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_318",
+            "name": "Белые столбы",
+            "x": 1330,
+            "y": 1960,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_317", 3],
+              ["SUBURBAN_319", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_319",
+            "name": "52 км",
+            "x": 1330,
+            "y": 2000,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_318", 3],
+              ["SUBURBAN_320", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_320",
+            "name": "Барыбино",
+            "x": 1330,
+            "y": 2040,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_319", 3],
+              ["SUBURBAN_321", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_321",
+            "name": "Вельяминово",
+            "x": 1330,
+            "y": 2080,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_320", 3],
+              ["SUBURBAN_322", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_322",
+            "name": "Привалово",
+            "x": 1330,
+            "y": 2120,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_321", 3],
+              ["SUBURBAN_323", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_323",
+            "name": "Шугарово",
+            "x": 1330,
+            "y": 2160,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_322", 3],
+              ["SUBURBAN_324", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_324",
+            "name": "85 км",
+            "x": 1330,
+            "y": 2200,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_323", 3],
+              ["SUBURBAN_325", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_325",
+            "name": "Жилево",
+            "x": 1330,
+            "y": 2240,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_324", 3],
+              ["SUBURBAN_326", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_326",
+            "name": "Ситенка",
+            "x": 1330,
+            "y": 2280,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_325", 3],
+              ["SUBURBAN_327", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_327",
+            "name": "Ступино",
+            "x": 1330,
+            "y": 2320,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_326", 3],
+              ["SUBURBAN_328", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_328",
+            "name": "Акри",
+            "x": 1330,
+            "y": 2360,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_327", 3],
+              ["SUBURBAN_329", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_329",
+            "name": "Белопесоцкий",
+            "x": 1330,
+            "y": 2400,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_328", 3],
+              ["SUBURBAN_330", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_330",
+            "name": "Кашира",
+            "x": 1330,
+            "y": 2440,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_329", 3],
+              ["SUBURBAN_331", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_331",
+            "name": "Тесна",
+            "x": 1330,
+            "y": 2480,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_330", 3],
+              ["SUBURBAN_332", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_332",
+            "name": "Ожерелье",
+            "x": 1330,
+            "y": 2520,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_331", 3],
+              ["SUBURBAN_333", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_333",
+            "name": "121 км",
+            "x": 1330,
+            "y": 2560,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_332", 3],
+              ["SUBURBAN_334", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_334",
+            "name": "Пурлово",
+            "x": 1330,
+            "y": 2600,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_333", 3],
+              ["SUBURBAN_335", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_335",
+            "name": "131 км",
+            "x": 1330,
+            "y": 2640,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_334", 3],
+              ["SUBURBAN_336", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_336",
+            "name": "Топканово",
+            "x": 1330,
+            "y": 2680,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_335", 3],
+              ["SUBURBAN_337", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_337",
+            "name": "137 км",
+            "x": 1330,
+            "y": 2720,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_336", 3],
+              ["SUBURBAN_338", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_338",
+            "name": "Богатищево",
+            "x": 1330,
+            "y": 2760,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_337", 3],
+              ["SUBURBAN_339", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_339",
+            "name": "146 км",
+            "x": 1330,
+            "y": 2800,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_338", 3],
+              ["SUBURBAN_340", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_340",
+            "name": "Коровино",
+            "x": 1330,
+            "y": 2840,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_339", 3],
+              ["SUBURBAN_341", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_341",
+            "name": "Узуново",
+            "x": 1330,
+            "y": 2880,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_340", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "displayNumber": "4",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Ленинградская линия",
+        "color": "#854694",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "SUBURBAN_400",
+            "name": "Ленинградский вокзал",
+            "x": 1387,
+            "y": 774,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_401", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_401",
+            "name": "Рижская",
+            "x": 1347,
+            "y": 734,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_400", 3],
+              ["SUBURBAN_402", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_402",
+            "name": "Останкино",
+            "x": 1307,
+            "y": 694,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_401", 3],
+              ["SUBURBAN_403", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_403",
+            "name": "Петровско-Разумовская",
+            "x": 1267,
+            "y": 654,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_402", 3],
+              ["SUBURBAN_404", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_404",
+            "name": "Лихоборы",
+            "x": 1227,
+            "y": 614,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_403", 3],
+              ["SUBURBAN_405", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_405",
+            "name": "Моссельмаш",
+            "x": 1187,
+            "y": 574,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_404", 3],
+              ["SUBURBAN_406", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_406",
+            "name": "Грачёвская",
+            "x": 1147,
+            "y": 534,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_405", 3],
+              ["SUBURBAN_407", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_407",
+            "name": "Левобережье",
+            "x": 1107,
+            "y": 494,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_406", 3],
+              ["SUBURBAN_408", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_408",
+            "name": "Химки",
+            "x": 1067,
+            "y": 454,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_407", 3],
+              ["SUBURBAN_409", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_409",
+            "name": "Молжаниново",
+            "x": 1027,
+            "y": 414,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_408", 3],
+              ["SUBURBAN_410", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_410",
+            "name": "Новоподрезково",
+            "x": 987,
+            "y": 374,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_409", 3],
+              ["SUBURBAN_411", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_411",
+            "name": "Подрезково",
+            "x": 947,
+            "y": 334,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_410", 3],
+              ["SUBURBAN_412", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_412",
+            "name": "Сходня",
+            "x": 907,
+            "y": 294,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_411", 3],
+              ["SUBURBAN_413", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_413",
+            "name": "Фирсановская",
+            "x": 867,
+            "y": 254,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_412", 3],
+              ["SUBURBAN_414", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_414",
+            "name": "Малино",
+            "x": 827,
+            "y": 214,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_413", 3],
+              ["SUBURBAN_415", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_415",
+            "name": "Крюково",
+            "x": 787,
+            "y": 174,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_414", 3],
+              ["SUBURBAN_416", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_416",
+            "name": "Алабушево",
+            "x": 747,
+            "y": 134,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_415", 3],
+              ["SUBURBAN_417", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_417",
+            "name": "Радищево",
+            "x": 707,
+            "y": 94,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_416", 3],
+              ["SUBURBAN_418", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_418",
+            "name": "Поваровка",
+            "x": 667,
+            "y": 54,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_417", 3],
+              ["SUBURBAN_419", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_419",
+            "name": "Поварово-1",
+            "x": 627,
+            "y": 14,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_418", 3],
+              ["SUBURBAN_420", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_420",
+            "name": "Березки-Дачные",
+            "x": 587,
+            "y": -26,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_419", 3],
+              ["SUBURBAN_421", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_421",
+            "name": "Подсолнечная",
+            "x": 547,
+            "y": -66,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_420", 3],
+              ["SUBURBAN_422", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_422",
+            "name": "Сенеж",
+            "x": 507,
+            "y": -106,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_421", 3],
+              ["SUBURBAN_423", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_423",
+            "name": "Головково",
+            "x": 467,
+            "y": -146,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_422", 3],
+              ["SUBURBAN_424", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_424",
+            "name": "Покровка",
+            "x": 427,
+            "y": -186,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_423", 3],
+              ["SUBURBAN_425", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_425",
+            "name": "Фроловское",
+            "x": 387,
+            "y": -226,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_424", 3],
+              ["SUBURBAN_426", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_426",
+            "name": "Стреглово",
+            "x": 347,
+            "y": -266,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_425", 3],
+              ["SUBURBAN_427", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_427",
+            "name": "Клин",
+            "x": 307,
+            "y": -306,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_426", 3],
+              ["SUBURBAN_428", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_428",
+            "name": "Ямуга",
+            "x": 267,
+            "y": -346,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_427", 3],
+              ["SUBURBAN_429", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_429",
+            "name": "Решетниково",
+            "x": 227,
+            "y": -386,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_428", 3],
+              ["SUBURBAN_430", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_430",
+            "name": "Черничная",
+            "x": 187,
+            "y": -426,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_429", 3],
+              ["SUBURBAN_431", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_431",
+            "name": "Завидово",
+            "x": 147,
+            "y": -466,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_430", 3],
+              ["SUBURBAN_432", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_432",
+            "name": "Московское",
+            "x": 107,
+            "y": -506,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_431", 3],
+              ["SUBURBAN_433", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_433",
+            "name": "Море",
+            "x": 67,
+            "y": -546,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_432", 3],
+              ["SUBURBAN_434", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_434",
+            "name": "Редкино",
+            "x": 27,
+            "y": -586,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_433", 3],
+              ["SUBURBAN_435", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_435",
+            "name": "Межево",
+            "x": -13,
+            "y": -626,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_434", 3],
+              ["SUBURBAN_436", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_436",
+            "name": "Кузьминка",
+            "x": -53,
+            "y": -666,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_435", 3],
+              ["SUBURBAN_437", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_437",
+            "name": "Чуприяновка",
+            "x": -93,
+            "y": -706,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_436", 3],
+              ["SUBURBAN_438", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_438",
+            "name": "Лазурная",
+            "x": -133,
+            "y": -746,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_437", 3],
+              ["SUBURBAN_439", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "SUBURBAN_439",
+            "name": "Тверь",
+            "x": -173,
+            "y": -786,
+            "textPosition": 3,
+            "neighbors": [
+              ["SUBURBAN_438", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          }
+        ]
       }
     ],
     "transfers": [],
