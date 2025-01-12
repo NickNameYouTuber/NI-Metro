@@ -4,6 +4,10 @@ import static com.nicorp.nimetro.presentation.activities.MainActivity.isMetroMap
 import static com.nicorp.nimetro.presentation.activities.MainActivity.isRiverTramMap;
 import static com.nicorp.nimetro.presentation.activities.MainActivity.isSuburbanMap;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -28,8 +32,10 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.PathInterpolator;
 
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.models.MapObject;
@@ -47,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MetroMapView extends View {
+    public Station selectedStation = null;
     private RectF visibleViewport = new RectF();
     private List<Line> lines;
     private List<Station> stations;
@@ -244,10 +251,26 @@ public class MetroMapView extends View {
                         y / COORDINATE_SCALE_FACTOR);
 
                 if (clickedStation != null && listener != null) {
+                    // Если станция уже выбрана, сбрасываем выбор
+                    if (selectedStation != null && selectedStation.equals(clickedStation)) {
+                        selectedStation = null;
+                    } else {
+                        selectedStation = clickedStation;
+                    }
                     listener.onStationClick(clickedStation);
+                    centerOnStation(clickedStation); // Плавное перемещение к станции
                     velocityTracker.recycle();
                     velocityTracker = null;
+                    needsRedraw = true;
+                    invalidate();
                     return true;
+                } else {
+                    // Если нажали в другое место, сбрасываем выбор станции
+                    if (selectedStation != null) {
+                        selectedStation = null;
+                        needsRedraw = true;
+                        invalidate();
+                    }
                 }
 
                 velocityTracker.recycle();
@@ -466,6 +489,8 @@ public class MetroMapView extends View {
 
         // Отрисовываем карту
         drawMapContents(canvas);
+
+
     }
 
     private void createBufferBitmap() {
@@ -590,6 +615,53 @@ public class MetroMapView extends View {
     }
     private MapPathCache pathCache = new MapPathCache();
 
+    private static final int PULSE_ANIMATION_DURATION = 1000; // ms
+    private static final float MAX_PULSE_SCALE = 1.3f;
+    private ObjectAnimator pulseAnimator;
+    private float currentPulseScale = 1.0f;
+
+    private void initPulseAnimation() {
+        if (pulseAnimator != null) {
+            pulseAnimator.cancel();
+        }
+
+        pulseAnimator = ObjectAnimator.ofFloat(this, "currentPulseScale", 1.0f, MAX_PULSE_SCALE);
+        pulseAnimator.setDuration(PULSE_ANIMATION_DURATION);
+        pulseAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        pulseAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+    }
+
+    // Add this setter for the animator to work
+    public void setCurrentPulseScale(float scale) {
+        this.currentPulseScale = scale;
+        invalidate();
+    }
+
+    private void drawSelectedStation(Canvas canvas, float stationX, float stationY) {
+        if (selectedStation == null) return;
+
+        // Outer glow effect
+        Paint glowPaint = new Paint();
+        glowPaint.setStyle(Paint.Style.FILL);
+        glowPaint.setColor(Color.parseColor("#3384c29d")); // Semi-transparent highlight color
+        canvas.drawCircle(stationX, stationY, 35 * currentPulseScale, glowPaint);
+
+        // Main highlight circle
+        Paint highlightPaint = new Paint();
+        highlightPaint.setColor(Color.parseColor("#84c29d"));
+        highlightPaint.setStyle(Paint.Style.STROKE);
+        highlightPaint.setStrokeWidth(8);
+        highlightPaint.setAntiAlias(true);
+        canvas.drawCircle(stationX, stationY, 20, highlightPaint);
+
+        // Inner highlight
+        Paint innerHighlightPaint = new Paint();
+        innerHighlightPaint.setColor(Color.parseColor("#4084c29d"));
+        innerHighlightPaint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(stationX, stationY, 20, innerHighlightPaint);
+    }
+
     private void drawMapContents(Canvas canvas) {
         updateVisibleViewport();
 
@@ -628,6 +700,19 @@ public class MetroMapView extends View {
             if (linePath.innerPath != null) {
                 canvas.drawPath(linePath.innerPath, linePath.whitePaint);
             }
+        }
+
+        if (selectedStation != null) {
+            float stationX = selectedStation.getX() * COORDINATE_SCALE_FACTOR;
+            float stationY = selectedStation.getY() * COORDINATE_SCALE_FACTOR;
+
+            // Start animation when station is selected
+            if (pulseAnimator == null || !pulseAnimator.isRunning()) {
+                initPulseAnimation();
+                pulseAnimator.start();
+            }
+
+            drawSelectedStation(canvas, stationX, stationY);
         }
 
 //        // Отрисовка линий речного трамвая
@@ -1567,12 +1652,9 @@ public class MetroMapView extends View {
     private void drawGrayedLines(Canvas canvas, Line line,
                                  Set<String> drawnConnections, Paint grayedLinePaint, List<Station> grayedStations) {
         for (Station station : line.getStations()) {
-            Log.d("drawGrayedLines", "station: " + station);
             for (Station.Neighbor neighbor : station.getNeighbors()) {
-                Log.d("drawGrayedLines", "neighbor: " + neighbor.getStation().getName());
                 Station neighborStation = findStationById(
                         neighbor.getStation().getId(), line.getStations());
-                Log.d("drawGrayedLines", "neighborStation: " + neighborStation);
                 if (neighborStation != null &&
                         line.getLineIdForStation(neighborStation) != null) {
                     String connectionKey = station.getId().compareTo(
@@ -1603,6 +1685,116 @@ public class MetroMapView extends View {
                 drawnConnections.add(connectionKey);
             }
         }
+    }
+
+    // Аниматоры для translateX, translateY и scale
+    private ValueAnimator translateXAnimator;
+    private ValueAnimator translateYAnimator;
+    private ValueAnimator scaleAnimator;
+    private static final float TARGET_SCALE = 1.5f;
+    private static final long MOVEMENT_DURATION = 1000; // Длительность перемещения
+    private static final long SCALE_DURATION = 400; // Длительность масштабирования
+
+    public void centerOnStation(Station station) {
+        if (station == null) return;
+
+        // Останавливаем текущие анимации
+        cancelRunningAnimations();
+
+        // Получаем координаты станции в масштабированных координатах
+        float stationX = station.getX() * COORDINATE_SCALE_FACTOR;
+        float stationY = station.getY() * COORDINATE_SCALE_FACTOR;
+
+        // Вычисляем текущие координаты станции на экране
+        float[] stationScreenCoords = {stationX, stationY};
+        transformMatrix.mapPoints(stationScreenCoords);
+
+        // Сохраняем начальные значения
+        final float startTranslateX = translateX;
+        final float startTranslateY = translateY;
+        final float startScale = scaleFactor;
+
+        // Вычисляем целевые значения translateX и translateY
+        float targetTranslateX = translateX + (getWidth() / 2f - stationScreenCoords[0]) / scaleFactor;
+        float targetTranslateY = translateY + (getHeight() / 2f - stationScreenCoords[1] - 200) / scaleFactor;
+
+        // Создаем AnimatorSet для последовательной анимации
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        // Создаем набор анимаций для перемещения
+        translateXAnimator = createAnimator(startTranslateX, targetTranslateX, value -> {
+            translateX = value;
+            updateTransformMatrix();
+        }, MOVEMENT_DURATION);
+
+        translateYAnimator = createAnimator(startTranslateY, targetTranslateY, value -> {
+            translateY = value;
+            updateTransformMatrix();
+        }, MOVEMENT_DURATION);
+
+        // Создаем анимацию масштабирования
+        scaleAnimator = createAnimator(startScale, TARGET_SCALE, value -> {
+            scaleFactor = value;
+            updateTransformMatrix();
+        }, SCALE_DURATION);
+
+        // Создаем набор параллельных анимаций для перемещения
+        AnimatorSet movementAnimations = new AnimatorSet();
+        movementAnimations.playTogether(translateXAnimator, translateYAnimator);
+
+        // Настраиваем последовательное выполнение: сначала перемещение, затем масштабирование
+        animatorSet.playSequentially(
+                movementAnimations
+        );
+
+        // Добавляем слушатель для обновления отрисовки
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                invalidate();
+            }
+        });
+
+        // Запускаем анимацию
+        animatorSet.start();
+    }
+
+    private ValueAnimator createAnimator(float startValue, float endValue, AnimatorUpdateListener updateListener, long duration) {
+        ValueAnimator animator = ValueAnimator.ofFloat(startValue, endValue);
+        animator.setDuration(duration);
+
+        // Используем разные интерполяторы для перемещения и масштабирования
+        if (duration == MOVEMENT_DURATION) {
+            // Для перемещения используем более плавную кривую
+            animator.setInterpolator(new PathInterpolator(0.4f, 0.0f, 0.2f, 1.0f));
+        } else {
+            // Для масштабирования используем другую кривую
+            animator.setInterpolator(new PathInterpolator(0.2f, 0.0f, 0.0f, 1.0f));
+        }
+
+        animator.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            updateListener.onAnimationUpdate(value);
+            invalidate();
+        });
+
+        return animator;
+    }
+
+    private void cancelRunningAnimations() {
+        if (translateXAnimator != null && translateXAnimator.isRunning()) {
+            translateXAnimator.cancel();
+        }
+        if (translateYAnimator != null && translateYAnimator.isRunning()) {
+            translateYAnimator.cancel();
+        }
+        if (scaleAnimator != null && scaleAnimator.isRunning()) {
+            scaleAnimator.cancel();
+        }
+    }
+
+    private interface AnimatorUpdateListener {
+        void onAnimationUpdate(float value);
     }
 
     private void drawIntermediatePoints(Canvas canvas) {
@@ -1824,8 +2016,6 @@ public class MetroMapView extends View {
             float stationX = station.getX();
             float stationY = station.getY();
             float radius = 20; // Радиус области вокруг станции
-
-            Log.d("findStationAt", "stationX: " + stationX + ", stationY: " + stationY + ", x: " + x + ", y: " + y);
 
             if (Math.abs(stationX - x) < radius && Math.abs(stationY - y) < radius) {
                 return station;

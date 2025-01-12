@@ -89,7 +89,6 @@ public class StationPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         int transferCount = getTransferCount(mainStation);
-        Log.d("StationPagerAdapter", "Total fragments: " + (1 + transferCount));
         return 1 + transferCount;
     }
 
@@ -104,7 +103,6 @@ public class StationPagerAdapter extends FragmentStateAdapter {
                 count += transferStations.size() - 1;
             }
         }
-        Log.d("StationPagerAdapter", "Total transfers for station: " + count);
         return count;
     }
 

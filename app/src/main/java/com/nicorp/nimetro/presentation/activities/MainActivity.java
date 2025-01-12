@@ -279,7 +279,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private void updateMapData() {
-        Log.d("MetroMapView_MainActivity", "isMetroMap " + isMetroMap);
         if (isMetroMap) {
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
@@ -363,17 +362,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             List<Station> transferStations = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
                 String stationId = stationsArray.getString(j);
-                Log.d("MetroMapView_MainActivity", "Transfer Station ID: " + stationId);
                 Station station = findStationById(stationId, stations);
                 if (station != null) {
-                    Log.d("MetroMapView_MainActivity", "Transfer Station: " + station.getName());
                     transferStations.add(station);
                 }
             }
             int time = transferObject.optInt("time", 3);
             String type = transferObject.optString("type", "regular");
-            Log.d("MetroMapView_MainActivity", "Transfer Type: " + type);
-            Log.d("MetroMapView_MainActivity", "Transfer Time: " + time);
             transfers.add(new Transfer(transferStations, time, type));
         }
 
@@ -686,6 +681,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 minDistance = distance;
                 nearestStation = station;
             }
+        }
+
+        if (nearestStation != null) {
+            metroMapView.selectedStation = nearestStation;
+            metroMapView.centerOnStation(nearestStation);
         }
 
         return nearestStation;
