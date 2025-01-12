@@ -25,6 +25,45 @@ public class Station implements Parcelable {
     private int textPosition;
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints;
+    private double latitude; // Широта станции
+    private double longitude; // Долгота станции
+
+    /**
+     * Метод для расчета расстояния между текущей станцией и заданными координатами.
+     *
+     * @param userLatitude  Широта пользователя
+     * @param userLongitude Долгота пользователя
+     * @return Расстояние в метрах
+     */
+    public double distanceTo(double userLatitude, double userLongitude) {
+        final int R = 6371; // Радиус Земли в километрах
+
+        double latDistance = Math.toRadians(userLatitude - this.latitude);
+        double lonDistance = Math.toRadians(userLongitude - this.longitude);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(this.latitude)) * Math.cos(Math.toRadians(userLatitude))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // Переводим в метры
+
+        return distance;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     public boolean isVisible(Rect visibleRect) {
         return visibleRect.contains((int) x, (int) y);

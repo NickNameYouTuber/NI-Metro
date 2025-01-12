@@ -26,16 +26,12 @@
             "name": "Бульвар Рокоссовского",
             "x": 1486,
             "y": 466,
+            "latitude": 55.8147,
+            "longitude": 37.7337,
             "textPosition": 2,
             "neighbors": [
-              [
-                "METRO_101",
-                3
-              ],
-              [
-                "METRO_1505",
-                3
-              ]
+              ["METRO_101", 3],
+              ["METRO_1505", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -49,20 +45,13 @@
             "name": "Черкизовская",
             "x": 1485,
             "y": 512,
+            "latitude": 55.8039,
+            "longitude": 37.7447,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_100",
-                3
-              ],
-              [
-                "METRO_102",
-                3
-              ],
-              [
-                "METRO_1506",
-                3
-              ]
+              ["METRO_100", 3],
+              ["METRO_102", 3],
+              ["METRO_1506", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -76,16 +65,12 @@
             "name": "Преображенская площадь",
             "x": 1485,
             "y": 590,
+            "latitude": 55.7961,
+            "longitude": 37.7156,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_101",
-                3
-              ],
-              [
-                "METRO_103",
-                3
-              ]
+              ["METRO_101", 3],
+              ["METRO_103", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -99,24 +84,14 @@
             "name": "Сокольники",
             "x": 1455,
             "y": 734,
+            "latitude": 55.7892,
+            "longitude": 37.6797,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_102",
-                3
-              ],
-              [
-                "METRO_104",
-                3
-              ],
-              [
-                "METRO_1226",
-                3
-              ],
-              [
-                "METRO_2014",
-                3
-              ]
+              ["METRO_102", 3],
+              ["METRO_104", 3],
+              ["METRO_1226", 3],
+              ["METRO_2014", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -130,16 +105,12 @@
             "name": "Красносельская",
             "x": 1419,
             "y": 772,
+            "latitude": 55.7797,
+            "longitude": 37.6664,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_103",
-                3
-              ],
-              [
-                "METRO_105",
-                3
-              ]
+              ["METRO_103", 3],
+              ["METRO_105", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -153,28 +124,15 @@
             "name": "Комсомольская",
             "x": 1396,
             "y": 793,
+            "latitude": 55.7736,
+            "longitude": 37.6553,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_104",
-                3
-              ],
-              [
-                "METRO_106",
-                3
-              ],
-              [
-                "METRO_1916",
-                3
-              ],
-              [
-                "METRO_80",
-                3
-              ],
-              [
-                "METRO_2123",
-                3
-              ]
+              ["METRO_104", 3],
+              ["METRO_106", 3],
+              ["METRO_1916", 3],
+              ["METRO_80", 3],
+              ["METRO_2123", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -188,16 +146,12 @@
             "name": "Красные ворота",
             "x": 1352,
             "y": 839,
+            "latitude": 55.7686,
+            "longitude": 37.6492,
             "textPosition": 4,
             "neighbors": [
-              [
-                "METRO_105",
-                3
-              ],
-              [
-                "METRO_107",
-                3
-              ]
+              ["METRO_105", 3],
+              ["METRO_107", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -211,24 +165,14 @@
             "name": "Чистые пруды",
             "x": 1313,
             "y": 878,
+            "latitude": 55.7647,
+            "longitude": 37.6386,
             "textPosition": 4,
             "neighbors": [
-              [
-                "METRO_106",
-                3
-              ],
-              [
-                "METRO_108",
-                3
-              ],
-              [
-                "METRO_609",
-                3
-              ],
-              [
-                "METRO_1113",
-                3
-              ]
+              ["METRO_106", 3],
+              ["METRO_108", 3],
+              ["METRO_609", 3],
+              ["METRO_1113", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -242,16 +186,12 @@
             "name": "Лубянка",
             "x": 1241,
             "y": 949,
+            "latitude": 55.7597,
+            "longitude": 37.6264,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_107",
-                3
-              ],
-              [
-                "METRO_109",
-                3
-              ]
+              ["METRO_107", 3],
+              ["METRO_109", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -265,24 +205,14 @@
             "name": "Охотный ряд",
             "x": 1186,
             "y": 1003,
+            "latitude": 55.7575,
+            "longitude": 37.6169,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_108",
-                3
-              ],
-              [
-                "METRO_110",
-                3
-              ],
-              [
-                "METRO_313",
-                3
-              ],
-              [
-                "METRO_211",
-                3
-              ]
+              ["METRO_108", 3],
+              ["METRO_110", 3],
+              ["METRO_313", 3],
+              ["METRO_211", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -296,28 +226,15 @@
             "name": "Библиотека имени Ленина",
             "x": 1082,
             "y": 1089,
+            "latitude": 55.7522,
+            "longitude": 37.6106,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_109",
-                3
-              ],
-              [
-                "METRO_111",
-                3
-              ],
-              [
-                "METRO_1013",
-                3
-              ],
-              [
-                "METRO_410",
-                3
-              ],
-              [
-                "METRO_312",
-                3
-              ]
+              ["METRO_109", 3],
+              ["METRO_111", 3],
+              ["METRO_1013", 3],
+              ["METRO_410", 3],
+              ["METRO_312", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -331,16 +248,12 @@
             "name": "Кропоткинская",
             "x": 991,
             "y": 1143,
+            "latitude": 55.7450,
+            "longitude": 37.6042,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_110",
-                3
-              ],
-              [
-                "METRO_112",
-                3
-              ]
+              ["METRO_110", 3],
+              ["METRO_112", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -354,20 +267,13 @@
             "name": "Парк Культуры",
             "x": 952,
             "y": 1182,
+            "latitude": 55.7353,
+            "longitude": 37.5931,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_111",
-                3
-              ],
-              [
-                "METRO_113",
-                3
-              ],
-              [
-                "METRO_82",
-                3
-              ]
+              ["METRO_111", 3],
+              ["METRO_113", 3],
+              ["METRO_82", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -381,16 +287,12 @@
             "name": "Фрунзенская",
             "x": 925,
             "y": 1208,
+            "latitude": 55.7258,
+            "longitude": 37.5806,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_112",
-                3
-              ],
-              [
-                "METRO_114",
-                3
-              ]
+              ["METRO_112", 3],
+              ["METRO_114", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -404,20 +306,13 @@
             "name": "Спортивная",
             "x": 896,
             "y": 1238,
+            "latitude": 55.7233,
+            "longitude": 37.5636,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_113",
-                3
-              ],
-              [
-                "METRO_115",
-                3
-              ],
-              [
-                "METRO_1520",
-                3
-              ]
+              ["METRO_113", 3],
+              ["METRO_115", 3],
+              ["METRO_1520", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -431,16 +326,12 @@
             "name": "Воробьёвы горы",
             "x": 821,
             "y": 1313,
+            "latitude": 55.7092,
+            "longitude": 37.5592,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_114",
-                3
-              ],
-              [
-                "METRO_116",
-                3
-              ]
+              ["METRO_114", 3],
+              ["METRO_116", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -454,16 +345,12 @@
             "name": "Университет",
             "x": 795,
             "y": 1387,
+            "latitude": 55.6931,
+            "longitude": 37.5347,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_115",
-                3
-              ],
-              [
-                "METRO_117",
-                3
-              ]
+              ["METRO_115", 3],
+              ["METRO_117", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -477,20 +364,13 @@
             "name": "Проспект Вернадского",
             "x": 795,
             "y": 1446,
+            "latitude": 55.6775,
+            "longitude": 37.5061,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_116",
-                3
-              ],
-              [
-                "METRO_118",
-                3
-              ],
-              [
-                "METRO_1211",
-                3
-              ]
+              ["METRO_116", 3],
+              ["METRO_118", 3],
+              ["METRO_1211", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -504,16 +384,12 @@
             "name": "Юго-Западная",
             "x": 795,
             "y": 1503,
+            "latitude": 55.6636,
+            "longitude": 37.4831,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_117",
-                3
-              ],
-              [
-                "METRO_119",
-                3
-              ]
+              ["METRO_117", 3],
+              ["METRO_119", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -527,16 +403,12 @@
             "name": "Тропарёво",
             "x": 795,
             "y": 1553,
+            "latitude": 55.6458,
+            "longitude": 37.4725,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_118",
-                3
-              ],
-              [
-                "METRO_120",
-                3
-              ]
+              ["METRO_118", 3],
+              ["METRO_120", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -550,16 +422,12 @@
             "name": "Румянцево",
             "x": 795,
             "y": 1588,
+            "latitude": 55.6331,
+            "longitude": 37.4419,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_119",
-                3
-              ],
-              [
-                "METRO_121",
-                3
-              ]
+              ["METRO_119", 3],
+              ["METRO_121", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -573,16 +441,12 @@
             "name": "Саларьево",
             "x": 795,
             "y": 1624,
+            "latitude": 55.6219,
+            "longitude": 37.4247,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_120",
-                3
-              ],
-              [
-                "METRO_122",
-                3
-              ]
+              ["METRO_120", 3],
+              ["METRO_122", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -596,16 +460,12 @@
             "name": "Филатов Луг",
             "x": 793,
             "y": 1673,
+            "latitude": 55.6019,
+            "longitude": 37.4075,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_121",
-                3
-              ],
-              [
-                "METRO_123",
-                3
-              ]
+              ["METRO_121", 3],
+              ["METRO_123", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -619,16 +479,12 @@
             "name": "Прокшино",
             "x": 793,
             "y": 1719,
+            "latitude": 55.5833,
+            "longitude": 37.3900,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_122",
-                3
-              ],
-              [
-                "METRO_124",
-                3
-              ]
+              ["METRO_122", 3],
+              ["METRO_124", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -642,16 +498,12 @@
             "name": "Ольховая",
             "x": 821,
             "y": 1773,
+            "latitude": 55.5694,
+            "longitude": 37.3764,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_123",
-                3
-              ],
-              [
-                "METRO_125",
-                3
-              ]
+              ["METRO_123", 3],
+              ["METRO_125", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -665,20 +517,13 @@
             "name": "Новомосковская",
             "x": 868,
             "y": 1821,
+            "latitude": 55.5581,
+            "longitude": 37.3681,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_124",
-                3
-              ],
-              [
-                "METRO_126",
-                3
-              ],
-              [
-                "METRO_1706",
-                3
-              ]
+              ["METRO_124", 3],
+              ["METRO_126", 3],
+              ["METRO_1706", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -692,12 +537,11 @@
             "name": "Потапово",
             "x": 940,
             "y": 1839,
+            "latitude": 55.5500,
+            "longitude": 37.3600,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_125",
-                3
-              ]
+              ["METRO_125", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -724,18 +568,14 @@
           {
             "id": "METRO_200",
             "name": "Ховрино",
+            "latitude": 55.878889,
+            "longitude": 37.481389,
             "x": 865,
             "y": 340,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_201",
-                2
-              ],
-              [
-                "METRO_2008",
-                3
-              ]
+              ["METRO_201", 2],
+              ["METRO_2008", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -747,18 +587,14 @@
           {
             "id": "METRO_201",
             "name": "Беломорская",
+            "latitude": 55.865833,
+            "longitude": 37.476388,
             "x": 866,
             "y": 371,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_200",
-                2
-              ],
-              [
-                "METRO_202",
-                4
-              ]
+              ["METRO_200", 2],
+              ["METRO_202", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -770,18 +606,14 @@
           {
             "id": "METRO_202",
             "name": "Речной вокзал",
+            "latitude": 55.855,
+            "longitude": 37.476111,
             "x": 866,
             "y": 414,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_201",
-                4
-              ],
-              [
-                "METRO_203",
-                3
-              ]
+              ["METRO_201", 4],
+              ["METRO_203", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -793,18 +625,14 @@
           {
             "id": "METRO_203",
             "name": "Водный стадион",
+            "latitude": 55.839722,
+            "longitude": 37.486667,
             "x": 866,
             "y": 460,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_202",
-                3
-              ],
-              [
-                "METRO_204",
-                4
-              ]
+              ["METRO_202", 3],
+              ["METRO_204", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -816,26 +644,16 @@
           {
             "id": "METRO_204",
             "name": "Войковская",
+            "latitude": 55.818889,
+            "longitude": 37.498056,
             "x": 866,
             "y": 514,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_203",
-                4
-              ],
-              [
-                "METRO_205",
-                3
-              ],
-              [
-                "METRO_1528",
-                3
-              ],
-              [
-                "METRO_1527",
-                3
-              ]
+              ["METRO_203", 4],
+              ["METRO_205", 3],
+              ["METRO_1528", 3],
+              ["METRO_1527", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -847,18 +665,14 @@
           {
             "id": "METRO_205",
             "name": "Сокол",
+            "latitude": 55.805,
+            "longitude": 37.515278,
             "x": 866,
             "y": 608,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_204",
-                3
-              ],
-              [
-                "METRO_206",
-                4
-              ]
+              ["METRO_204", 3],
+              ["METRO_206", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -870,18 +684,14 @@
           {
             "id": "METRO_206",
             "name": "Аэропорт",
+            "latitude": 55.800278,
+            "longitude": 37.532778,
             "x": 867,
             "y": 652,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_205",
-                4
-              ],
-              [
-                "METRO_207",
-                3
-              ]
+              ["METRO_205", 4],
+              ["METRO_207", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -893,22 +703,15 @@
           {
             "id": "METRO_207",
             "name": "Динамо",
+            "latitude": 55.789722,
+            "longitude": 37.558056,
             "x": 905,
             "y": 744,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_206",
-                3
-              ],
-              [
-                "METRO_208",
-                4
-              ],
-              [
-                "METRO_1201",
-                3
-              ]
+              ["METRO_206", 3],
+              ["METRO_208", 4],
+              ["METRO_1201", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -920,22 +723,15 @@
           {
             "id": "METRO_208",
             "name": "Белорусская",
+            "latitude": 55.776667,
+            "longitude": 37.583611,
             "x": 959,
             "y": 798,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_207",
-                4
-              ],
-              [
-                "METRO_209",
-                3
-              ],
-              [
-                "METRO_89",
-                3
-              ]
+              ["METRO_207", 4],
+              ["METRO_209", 3],
+              ["METRO_89", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -947,18 +743,14 @@
           {
             "id": "METRO_209",
             "name": "Маяковская",
+            "latitude": 55.77,
+            "longitude": 37.595833,
             "x": 1052,
             "y": 887,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_208",
-                3
-              ],
-              [
-                "METRO_210",
-                4
-              ]
+              ["METRO_208", 3],
+              ["METRO_210", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -970,26 +762,16 @@
           {
             "id": "METRO_210",
             "name": "Тверская",
+            "latitude": 55.764722,
+            "longitude": 37.606389,
             "x": 1111,
             "y": 950,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_209",
-                4
-              ],
-              [
-                "METRO_211",
-                3
-              ],
-              [
-                "METRO_710",
-                3
-              ],
-              [
-                "METRO_1014",
-                3
-              ]
+              ["METRO_209", 4],
+              ["METRO_211", 3],
+              ["METRO_710", 3],
+              ["METRO_1014", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1001,26 +783,16 @@
           {
             "id": "METRO_211",
             "name": "Театральная",
+            "latitude": 55.757778,
+            "longitude": 37.618889,
             "x": 1188,
             "y": 1026,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_210",
-                3
-              ],
-              [
-                "METRO_212",
-                4
-              ],
-              [
-                "METRO_313",
-                3
-              ],
-              [
-                "METRO_109",
-                3
-              ]
+              ["METRO_210", 3],
+              ["METRO_212", 4],
+              ["METRO_313", 3],
+              ["METRO_109", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1032,26 +804,16 @@
           {
             "id": "METRO_212",
             "name": "Новокузнецкая",
+            "latitude": 55.741389,
+            "longitude": 37.629444,
             "x": 1298,
             "y": 1139,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_211",
-                4
-              ],
-              [
-                "METRO_213",
-                3
-              ],
-              [
-                "METRO_807",
-                3
-              ],
-              [
-                "METRO_611",
-                3
-              ]
+              ["METRO_211", 4],
+              ["METRO_213", 3],
+              ["METRO_807", 3],
+              ["METRO_611", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1063,22 +825,15 @@
           {
             "id": "METRO_213",
             "name": "Павелецкая",
+            "latitude": 55.730556,
+            "longitude": 37.637778,
             "x": 1330,
             "y": 1234,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_212",
-                3
-              ],
-              [
-                "METRO_214",
-                4
-              ],
-              [
-                "METRO_85",
-                3
-              ]
+              ["METRO_212", 3],
+              ["METRO_214", 4],
+              ["METRO_85", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1090,22 +845,15 @@
           {
             "id": "METRO_214",
             "name": "Автозаводская",
+            "latitude": 55.7075,
+            "longitude": 37.6575,
             "x": 1330,
             "y": 1339,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_213",
-                4
-              ],
-              [
-                "METRO_215",
-                3
-              ],
-              [
-                "METRO_1515",
-                3
-              ]
+              ["METRO_213", 4],
+              ["METRO_215", 3],
+              ["METRO_1515", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1117,18 +865,14 @@
           {
             "id": "METRO_215",
             "name": "Технопарк",
+            "latitude": 55.693889,
+            "longitude": 37.664444,
             "x": 1330,
             "y": 1417,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_214",
-                3
-              ],
-              [
-                "METRO_216",
-                4
-              ]
+              ["METRO_214", 3],
+              ["METRO_216", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1140,18 +884,14 @@
           {
             "id": "METRO_216",
             "name": "Коломенская",
+            "latitude": 55.678611,
+            "longitude": 37.663889,
             "x": 1330,
             "y": 1467,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_215",
-                4
-              ],
-              [
-                "METRO_217",
-                3
-              ]
+              ["METRO_215", 4],
+              ["METRO_217", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1163,22 +903,15 @@
           {
             "id": "METRO_217",
             "name": "Каширская",
+            "latitude": 55.655,
+            "longitude": 37.648611,
             "x": 1330,
             "y": 1563,
             "textPosition": 1,
             "neighbors": [
-              [
-                "METRO_216",
-                3
-              ],
-              [
-                "METRO_218",
-                4
-              ],
-              [
-                "METRO_1217",
-                3
-              ]
+              ["METRO_216", 3],
+              ["METRO_218", 4],
+              ["METRO_1217", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1190,18 +923,14 @@
           {
             "id": "METRO_218",
             "name": "Кантемировская",
+            "latitude": 55.635833,
+            "longitude": 37.656389,
             "x": 1356,
             "y": 1612,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_217",
-                4
-              ],
-              [
-                "METRO_219",
-                3
-              ]
+              ["METRO_217", 4],
+              ["METRO_219", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1213,22 +942,15 @@
           {
             "id": "METRO_219",
             "name": "Царицыно",
+            "latitude": 55.621389,
+            "longitude": 37.669444,
             "x": 1383,
             "y": 1637,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_218",
-                3
-              ],
-              [
-                "METRO_220",
-                4
-              ],
-              [
-                "METRO_1928",
-                3
-              ]
+              ["METRO_218", 3],
+              ["METRO_220", 4],
+              ["METRO_1928", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1240,18 +962,14 @@
           {
             "id": "METRO_220",
             "name": "Орехово",
+            "latitude": 55.613333,
+            "longitude": 37.695,
             "x": 1455,
             "y": 1708,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_219",
-                4
-              ],
-              [
-                "METRO_221",
-                3
-              ]
+              ["METRO_219", 4],
+              ["METRO_221", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1263,18 +981,14 @@
           {
             "id": "METRO_221",
             "name": "Домодедовская",
+            "latitude": 55.610833,
+            "longitude": 37.718611,
             "x": 1500,
             "y": 1752,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_220",
-                3
-              ],
-              [
-                "METRO_222",
-                4
-              ]
+              ["METRO_220", 3],
+              ["METRO_222", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1286,22 +1000,15 @@
           {
             "id": "METRO_222",
             "name": "Красногвардейская",
+            "latitude": 55.613611,
+            "longitude": 37.744444,
             "x": 1539,
             "y": 1796,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_221",
-                4
-              ],
-              [
-                "METRO_223",
-                3
-              ],
-              [
-                "METRO_1100",
-                3
-              ]
+              ["METRO_221", 4],
+              ["METRO_223", 3],
+              ["METRO_1100", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1312,15 +1019,14 @@
           },
           {
             "id": "METRO_223",
-            "name": "Алма-атинская",
+            "name": "Алма-Атинская",
+            "latitude": 55.6325,
+            "longitude": 37.766111,
             "x": 1557,
             "y": 1862,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_222",
-                3
-              ]
+              ["METRO_222", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1349,12 +1055,11 @@
             "name": "Пятницкое шоссе",
             "x": 558,
             "y": 392,
+            "latitude": 55.8558,
+            "longitude": 37.3542,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_301",
-                2
-              ]
+              ["METRO_301", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1368,16 +1073,12 @@
             "name": "Митино",
             "x": 558,
             "y": 439,
+            "latitude": 55.8461,
+            "longitude": 37.3617,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_300",
-                2
-              ],
-              [
-                "METRO_302",
-                4
-              ]
+              ["METRO_300", 2],
+              ["METRO_302", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1391,20 +1092,13 @@
             "name": "Волоколамская",
             "x": 558,
             "y": 498,
+            "latitude": 55.8358,
+            "longitude": 37.3822,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_301",
-                4
-              ],
-              [
-                "METRO_303",
-                3
-              ],
-              [
-                "METRO_1906",
-                3
-              ]
+              ["METRO_301", 4],
+              ["METRO_303", 3],
+              ["METRO_1906", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1418,16 +1112,12 @@
             "name": "Мякинино",
             "x": 558,
             "y": 535,
+            "latitude": 55.8258,
+            "longitude": 37.3858,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_302",
-                3
-              ],
-              [
-                "METRO_304",
-                4
-              ]
+              ["METRO_302", 3],
+              ["METRO_304", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1441,16 +1131,12 @@
             "name": "Строгино",
             "x": 558,
             "y": 603,
+            "latitude": 55.8036,
+            "longitude": 37.4022,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_303",
-                4
-              ],
-              [
-                "METRO_305",
-                3
-              ]
+              ["METRO_303", 4],
+              ["METRO_305", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1464,16 +1150,12 @@
             "name": "Крылатское",
             "x": 558,
             "y": 669,
+            "latitude": 55.7567,
+            "longitude": 37.4083,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_304",
-                3
-              ],
-              [
-                "METRO_306",
-                4
-              ]
+              ["METRO_304", 3],
+              ["METRO_306", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1487,16 +1169,12 @@
             "name": "Молодёжная",
             "x": 558,
             "y": 829,
+            "latitude": 55.7411,
+            "longitude": 37.4167,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_305",
-                4
-              ],
-              [
-                "METRO_307",
-                3
-              ]
+              ["METRO_305", 4],
+              ["METRO_307", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1510,24 +1188,14 @@
             "name": "Кунцевская",
             "x": 592,
             "y": 1140,
+            "latitude": 55.7272,
+            "longitude": 37.4464,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_306",
-                3
-              ],
-              [
-                "METRO_308",
-                4
-              ],
-              [
-                "METRO_400",
-                3
-              ],
-              [
-                "METRO_1207",
-                3
-              ]
+              ["METRO_306", 3],
+              ["METRO_308", 4],
+              ["METRO_400", 3],
+              ["METRO_1207", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1541,20 +1209,13 @@
             "name": "Славянский бульвар",
             "x": 643,
             "y": 1140,
+            "latitude": 55.7297,
+            "longitude": 37.4719,
             "textPosition": 4,
             "neighbors": [
-              [
-                "METRO_307",
-                4
-              ],
-              [
-                "METRO_309",
-                3
-              ],
-              [
-                "METRO_1807",
-                3
-              ]
+              ["METRO_307", 4],
+              ["METRO_309", 3],
+              ["METRO_1807", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1568,20 +1229,13 @@
             "name": "Парк Победы",
             "x": 770,
             "y": 1141,
+            "latitude": 55.7356,
+            "longitude": 37.5183,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_308",
-                3
-              ],
-              [
-                "METRO_310",
-                4
-              ],
-              [
-                "METRO_901",
-                3
-              ]
+              ["METRO_308", 3],
+              ["METRO_310", 4],
+              ["METRO_901", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1595,24 +1249,14 @@
             "name": "Киевская",
             "x": 898,
             "y": 1051,
+            "latitude": 55.7436,
+            "longitude": 37.5672,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_309",
-                4
-              ],
-              [
-                "METRO_311",
-                3
-              ],
-              [
-                "METRO_407",
-                3
-              ],
-              [
-                "METRO_81",
-                3
-              ]
+              ["METRO_309", 4],
+              ["METRO_311", 3],
+              ["METRO_407", 3],
+              ["METRO_81", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1626,16 +1270,12 @@
             "name": "Смоленская",
             "x": 976,
             "y": 1046,
+            "latitude": 55.7478,
+            "longitude": 37.5839,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_310",
-                3
-              ],
-              [
-                "METRO_312",
-                4
-              ]
+              ["METRO_310", 3],
+              ["METRO_312", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1649,28 +1289,15 @@
             "name": "Арбатская",
             "x": 1083,
             "y": 1047,
+            "latitude": 55.7522,
+            "longitude": 37.6033,
             "textPosition": 1,
             "neighbors": [
-              [
-                "METRO_311",
-                4
-              ],
-              [
-                "METRO_313",
-                3
-              ],
-              [
-                "METRO_1013",
-                3
-              ],
-              [
-                "METRO_410",
-                3
-              ],
-              [
-                "METRO_110",
-                3
-              ]
+              ["METRO_311", 4],
+              ["METRO_313", 3],
+              ["METRO_1013", 3],
+              ["METRO_410", 3],
+              ["METRO_110", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1684,24 +1311,14 @@
             "name": "Площадь Революции",
             "x": 1188,
             "y": 1049,
+            "latitude": 55.7564,
+            "longitude": 37.6236,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_312",
-                3
-              ],
-              [
-                "METRO_314",
-                4
-              ],
-              [
-                "METRO_211",
-                3
-              ],
-              [
-                "METRO_109",
-                3
-              ]
+              ["METRO_312", 3],
+              ["METRO_314", 4],
+              ["METRO_211", 3],
+              ["METRO_109", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1715,32 +1332,16 @@
             "name": "Курская",
             "x": 1422,
             "y": 931,
+            "latitude": 55.7586,
+            "longitude": 37.6597,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_313",
-                4
-              ],
-              [
-                "METRO_315",
-                3
-              ],
-              [
-                "METRO_87",
-                3
-              ],
-              [
-                "METRO_1917",
-                3
-              ],
-              [
-                "METRO_2124",
-                3
-              ],
-              [
-                "METRO_1112",
-                3
-              ]
+              ["METRO_313", 4],
+              ["METRO_315", 3],
+              ["METRO_87", 3],
+              ["METRO_1917", 3],
+              ["METRO_2124", 3],
+              ["METRO_1112", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1754,16 +1355,12 @@
             "name": "Бауманская",
             "x": 1492,
             "y": 865,
+            "latitude": 55.7725,
+            "longitude": 37.6792,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_314",
-                3
-              ],
-              [
-                "METRO_316",
-                4
-              ]
+              ["METRO_314", 3],
+              ["METRO_316", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1777,24 +1374,14 @@
             "name": "Электрозаводская",
             "x": 1553,
             "y": 814,
+            "latitude": 55.7822,
+            "longitude": 37.7022,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_315",
-                4
-              ],
-              [
-                "METRO_317",
-                3
-              ],
-              [
-                "METRO_1225",
-                3
-              ],
-              [
-                "METRO_2015",
-                3
-              ]
+              ["METRO_315", 4],
+              ["METRO_317", 3],
+              ["METRO_1225", 3],
+              ["METRO_2015", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1808,16 +1395,12 @@
             "name": "Семёновская",
             "x": 1593,
             "y": 777,
+            "latitude": 55.7831,
+            "longitude": 37.7194,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_316",
-                3
-              ],
-              [
-                "METRO_318",
-                4
-              ]
+              ["METRO_316", 3],
+              ["METRO_318", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1831,20 +1414,13 @@
             "name": "Партизанская",
             "x": 1639,
             "y": 691,
+            "latitude": 55.7889,
+            "longitude": 37.7483,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_317",
-                4
-              ],
-              [
-                "METRO_319",
-                3
-              ],
-              [
-                "METRO_1507",
-                3
-              ]
+              ["METRO_317", 4],
+              ["METRO_319", 3],
+              ["METRO_1507", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1858,16 +1434,12 @@
             "name": "Измайловская",
             "x": 1639,
             "y": 589,
+            "latitude": 55.7878,
+            "longitude": 37.7817,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_318",
-                3
-              ],
-              [
-                "METRO_320",
-                4
-              ]
+              ["METRO_318", 3],
+              ["METRO_320", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1881,16 +1453,12 @@
             "name": "Первомайская",
             "x": 1639,
             "y": 536,
+            "latitude": 55.7944,
+            "longitude": 37.7994,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_319",
-                4
-              ],
-              [
-                "METRO_321",
-                3
-              ]
+              ["METRO_319", 4],
+              ["METRO_321", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1904,12 +1472,11 @@
             "name": "Щёлковская",
             "x": 1639,
             "y": 466,
+            "latitude": 55.8094,
+            "longitude": 37.7981,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_320",
-                3
-              ]
+              ["METRO_320", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1936,26 +1503,16 @@
           {
             "id": "METRO_410",
             "name": "Александровский сад",
+            "latitude": 55.7525,
+            "longitude": 37.6089,
             "x": 1083,
             "y": 1065,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_409",
-                4
-              ],
-              [
-                "METRO_1013",
-                3
-              ],
-              [
-                "METRO_110",
-                3
-              ],
-              [
-                "METRO_312",
-                3
-              ]
+              ["METRO_409", 4],
+              ["METRO_1013", 3],
+              ["METRO_110", 3],
+              ["METRO_312", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1967,18 +1524,14 @@
           {
             "id": "METRO_409",
             "name": "Арбатская",
+            "latitude": 55.7517,
+            "longitude": 37.6006,
             "x": 1020,
             "y": 1018,
             "textPosition": 2,
             "neighbors": [
-              [
-                "METRO_408",
-                3
-              ],
-              [
-                "METRO_410",
-                4
-              ]
+              ["METRO_408", 3],
+              ["METRO_410", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -1990,18 +1543,14 @@
           {
             "id": "METRO_408",
             "name": "Смоленская",
+            "latitude": 55.7489,
+            "longitude": 37.5825,
             "x": 978,
             "y": 1012,
             "textPosition": 1,
             "neighbors": [
-              [
-                "METRO_407",
-                4
-              ],
-              [
-                "METRO_409",
-                3
-              ]
+              ["METRO_407", 4],
+              ["METRO_409", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2013,26 +1562,16 @@
           {
             "id": "METRO_407",
             "name": "Киевская",
+            "latitude": 55.7433,
+            "longitude": 37.5650,
             "x": 899,
             "y": 1034,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_406",
-                3
-              ],
-              [
-                "METRO_408",
-                4
-              ],
-              [
-                "METRO_81",
-                3
-              ],
-              [
-                "METRO_310",
-                3
-              ]
+              ["METRO_406", 3],
+              ["METRO_408", 4],
+              ["METRO_81", 3],
+              ["METRO_310", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2044,18 +1583,14 @@
           {
             "id": "METRO_406",
             "name": "Студенческая",
+            "latitude": 55.7389,
+            "longitude": 37.5483,
             "x": 809,
             "y": 1045,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_405",
-                4
-              ],
-              [
-                "METRO_407",
-                3
-              ]
+              ["METRO_405", 4],
+              ["METRO_407", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2067,26 +1602,16 @@
           {
             "id": "METRO_405",
             "name": "Кутузовская",
+            "latitude": 55.7400,
+            "longitude": 37.5344,
             "x": 732,
             "y": 1045,
             "textPosition": 1,
             "neighbors": [
-              [
-                "METRO_404",
-                3
-              ],
-              [
-                "METRO_406",
-                4
-              ],
-              [
-                "METRO_1521",
-                3
-              ],
-              [
-                "METRO_2118",
-                3
-              ]
+              ["METRO_404", 3],
+              ["METRO_406", 4],
+              ["METRO_1521", 3],
+              ["METRO_2118", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2098,22 +1623,15 @@
           {
             "id": "METRO_404",
             "name": "Фили",
+            "latitude": 55.7461,
+            "longitude": 37.5150,
             "x": 697,
             "y": 1047,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_403",
-                4
-              ],
-              [
-                "METRO_405",
-                3
-              ],
-              [
-                "METRO_1808",
-                3
-              ]
+              ["METRO_403", 4],
+              ["METRO_405", 3],
+              ["METRO_1808", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2125,18 +1643,14 @@
           {
             "id": "METRO_403",
             "name": "Багратионовская",
+            "latitude": 55.7439,
+            "longitude": 37.4975,
             "x": 673,
             "y": 1073,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_402",
-                3
-              ],
-              [
-                "METRO_404",
-                4
-              ]
+              ["METRO_402", 3],
+              ["METRO_404", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2148,18 +1662,14 @@
           {
             "id": "METRO_402",
             "name": "Филёвский парк",
+            "latitude": 55.7397,
+            "longitude": 37.4833,
             "x": 646,
             "y": 1099,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_401",
-                4
-              ],
-              [
-                "METRO_403",
-                3
-              ]
+              ["METRO_401", 4],
+              ["METRO_403", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2171,18 +1681,14 @@
           {
             "id": "METRO_401",
             "name": "Пионерская",
+            "latitude": 55.7361,
+            "longitude": 37.4672,
             "x": 624,
             "y": 1123,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_400",
-                2
-              ],
-              [
-                "METRO_402",
-                4
-              ]
+              ["METRO_400", 2],
+              ["METRO_402", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2194,22 +1700,15 @@
           {
             "id": "METRO_400",
             "name": "Кунцевская",
+            "latitude": 55.7308,
+            "longitude": 37.4458,
             "x": 608,
             "y": 1140,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_401",
-                2
-              ],
-              [
-                "METRO_307",
-                3
-              ],
-              [
-                "METRO_1207",
-                3
-              ]
+              ["METRO_401", 2],
+              ["METRO_307", 3],
+              ["METRO_1207", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2238,32 +1737,16 @@
             "name": "Курская",
             "x": 1438,
             "y": 931,
+            "latitude": 55.7586,
+            "longitude": 37.6597,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_86",
-                2
-              ],
-              [
-                "METRO_80",
-                4
-              ],
-              [
-                "METRO_314",
-                3
-              ],
-              [
-                "METRO_1917",
-                3
-              ],
-              [
-                "METRO_2124",
-                3
-              ],
-              [
-                "METRO_1112",
-                3
-              ]
+              ["METRO_86", 2],
+              ["METRO_80", 4],
+              ["METRO_314", 3],
+              ["METRO_1917", 3],
+              ["METRO_2124", 3],
+              ["METRO_1112", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2277,28 +1760,15 @@
             "name": "Комсомольская",
             "x": 1377,
             "y": 813,
+            "latitude": 55.7766,
+            "longitude": 37.6554,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_87",
-                4
-              ],
-              [
-                "METRO_91",
-                3
-              ],
-              [
-                "METRO_1916",
-                3
-              ],
-              [
-                "METRO_105",
-                3
-              ],
-              [
-                "METRO_2123",
-                3
-              ]
+              ["METRO_87", 4],
+              ["METRO_91", 3],
+              ["METRO_1916", 3],
+              ["METRO_105", 3],
+              ["METRO_2123", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2312,20 +1782,13 @@
             "name": "Проспект Мира",
             "x": 1287,
             "y": 745,
+            "latitude": 55.7806,
+            "longitude": 37.6336,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_80",
-                3
-              ],
-              [
-                "METRO_88",
-                4
-              ],
-              [
-                "METRO_607",
-                3
-              ]
+              ["METRO_80", 3],
+              ["METRO_88", 4],
+              ["METRO_607", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2339,20 +1802,13 @@
             "name": "Новослободская",
             "x": 1067,
             "y": 745,
+            "latitude": 55.7797,
+            "longitude": 37.6014,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_91",
-                4
-              ],
-              [
-                "METRO_89",
-                3
-              ],
-              [
-                "METRO_1016",
-                3
-              ]
+              ["METRO_91", 4],
+              ["METRO_89", 3],
+              ["METRO_1016", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2366,20 +1822,13 @@
             "name": "Белорусская",
             "x": 973,
             "y": 812,
+            "latitude": 55.7767,
+            "longitude": 37.5842,
             "textPosition": 2,
             "neighbors": [
-              [
-                "METRO_88",
-                3
-              ],
-              [
-                "METRO_90",
-                4
-              ],
-              [
-                "METRO_208",
-                3
-              ]
+              ["METRO_88", 3],
+              ["METRO_90", 4],
+              ["METRO_208", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2393,20 +1842,13 @@
             "name": "Краснопресненская",
             "x": 910,
             "y": 945,
+            "latitude": 55.7603,
+            "longitude": 37.5767,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_89",
-                4
-              ],
-              [
-                "METRO_81",
-                3
-              ],
-              [
-                "METRO_709",
-                3
-              ]
+              ["METRO_89", 4],
+              ["METRO_81", 3],
+              ["METRO_709", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2420,24 +1862,14 @@
             "name": "Киевская",
             "x": 910,
             "y": 1043,
+            "latitude": 55.7437,
+            "longitude": 37.5672,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_90",
-                3
-              ],
-              [
-                "METRO_82",
-                4
-              ],
-              [
-                "METRO_407",
-                3
-              ],
-              [
-                "METRO_310",
-                3
-              ]
+              ["METRO_90", 3],
+              ["METRO_82", 4],
+              ["METRO_407", 3],
+              ["METRO_310", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2451,20 +1883,13 @@
             "name": "Парк культуры",
             "x": 969,
             "y": 1164,
+            "latitude": 55.7350,
+            "longitude": 37.5931,
             "textPosition": 4,
             "neighbors": [
-              [
-                "METRO_81",
-                4
-              ],
-              [
-                "METRO_83",
-                3
-              ],
-              [
-                "METRO_112",
-                3
-              ]
+              ["METRO_81", 4],
+              ["METRO_83", 3],
+              ["METRO_112", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2478,20 +1903,13 @@
             "name": "Октябрьская",
             "x": 1059,
             "y": 1234,
+            "latitude": 55.7292,
+            "longitude": 37.6113,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_82",
-                3
-              ],
-              [
-                "METRO_84",
-                4
-              ],
-              [
-                "METRO_612",
-                3
-              ]
+              ["METRO_82", 3],
+              ["METRO_84", 4],
+              ["METRO_612", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2505,20 +1923,13 @@
             "name": "Добрынинская",
             "x": 1189,
             "y": 1261,
+            "latitude": 55.7289,
+            "longitude": 37.6225,
             "textPosition": 5,
             "neighbors": [
-              [
-                "METRO_83",
-                4
-              ],
-              [
-                "METRO_85",
-                3
-              ],
-              [
-                "METRO_1011",
-                3
-              ]
+              ["METRO_83", 4],
+              ["METRO_85", 3],
+              ["METRO_1011", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2532,20 +1943,13 @@
             "name": "Павелецкая",
             "x": 1331,
             "y": 1213,
+            "latitude": 55.7314,
+            "longitude": 37.6361,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_84",
-                3
-              ],
-              [
-                "METRO_86",
-                4
-              ],
-              [
-                "METRO_213",
-                3
-              ]
+              ["METRO_84", 3],
+              ["METRO_86", 4],
+              ["METRO_213", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2559,24 +1963,14 @@
             "name": "Таганская",
             "x": 1429,
             "y": 1087,
+            "latitude": 55.7419,
+            "longitude": 37.6531,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_85",
-                4
-              ],
-              [
-                "METRO_87",
-                3
-              ],
-              [
-                "METRO_713",
-                3
-              ],
-              [
-                "METRO_806",
-                3
-              ]
+              ["METRO_85", 4],
+              ["METRO_87", 3],
+              ["METRO_713", 3],
+              ["METRO_806", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2605,12 +1999,11 @@
             "name": "Медведково",
             "x": 1330,
             "y": 277,
+            "latitude": 55.8871,
+            "longitude": 37.6617,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_601",
-                2
-              ]
+              ["METRO_601", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2624,16 +2017,12 @@
             "name": "Бабушкинская",
             "x": 1330,
             "y": 315,
+            "latitude": 55.8694,
+            "longitude": 37.6642,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_600",
-                2
-              ],
-              [
-                "METRO_602",
-                4
-              ]
+              ["METRO_600", 2],
+              ["METRO_602", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2647,16 +2036,12 @@
             "name": "Свиблово",
             "x": 1330,
             "y": 351,
+            "latitude": 55.8556,
+            "longitude": 37.6542,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_601",
-                4
-              ],
-              [
-                "METRO_603",
-                3
-              ]
+              ["METRO_601", 4],
+              ["METRO_603", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2670,20 +2055,13 @@
             "name": "Ботанический сад",
             "x": 1330,
             "y": 402,
+            "latitude": 55.8453,
+            "longitude": 37.6389,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_602",
-                3
-              ],
-              [
-                "METRO_604",
-                4
-              ],
-              [
-                "METRO_1502",
-                3
-              ]
+              ["METRO_602", 3],
+              ["METRO_604", 4],
+              ["METRO_1502", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2697,16 +2075,12 @@
             "name": "ВДНХ",
             "x": 1330,
             "y": 505,
+            "latitude": 55.8200,
+            "longitude": 37.6417,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_603",
-                4
-              ],
-              [
-                "METRO_605",
-                3
-              ]
+              ["METRO_603", 4],
+              ["METRO_605", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2720,16 +2094,12 @@
             "name": "Алексеевская",
             "x": 1330,
             "y": 550,
+            "latitude": 55.8078,
+            "longitude": 37.6386,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_604",
-                3
-              ],
-              [
-                "METRO_606",
-                4
-              ]
+              ["METRO_604", 3],
+              ["METRO_606", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2743,20 +2113,13 @@
             "name": "Рижская",
             "x": 1330,
             "y": 635,
+            "latitude": 55.7925,
+            "longitude": 37.6358,
             "textPosition": 1,
             "neighbors": [
-              [
-                "METRO_605",
-                4
-              ],
-              [
-                "METRO_607",
-                3
-              ],
-              [
-                "METRO_1227",
-                3
-              ]
+              ["METRO_605", 4],
+              ["METRO_607", 3],
+              ["METRO_1227", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2770,20 +2133,13 @@
             "name": "Проспект Мира",
             "x": 1287,
             "y": 727,
+            "latitude": 55.7797,
+            "longitude": 37.6333,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_606",
-                3
-              ],
-              [
-                "METRO_608",
-                4
-              ],
-              [
-                "METRO_91",
-                3
-              ]
+              ["METRO_606", 3],
+              ["METRO_608", 4],
+              ["METRO_91", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2797,16 +2153,12 @@
             "name": "Сухаревская",
             "x": 1285,
             "y": 789,
+            "latitude": 55.7722,
+            "longitude": 37.6325,
             "textPosition": 7,
             "neighbors": [
-              [
-                "METRO_607",
-                4
-              ],
-              [
-                "METRO_609",
-                3
-              ]
+              ["METRO_607", 4],
+              ["METRO_609", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2820,24 +2172,14 @@
             "name": "Тургеневская",
             "x": 1285,
             "y": 878,
+            "latitude": 55.7658,
+            "longitude": 37.6367,
             "textPosition": 6,
             "neighbors": [
-              [
-                "METRO_608",
-                3
-              ],
-              [
-                "METRO_610",
-                4
-              ],
-              [
-                "METRO_107",
-                3
-              ],
-              [
-                "METRO_1113",
-                3
-              ]
+              ["METRO_608", 3],
+              ["METRO_610", 4],
+              ["METRO_107", 3],
+              ["METRO_1113", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2851,20 +2193,13 @@
             "name": "Китай-город",
             "x": 1338,
             "y": 1002,
+            "latitude": 55.7550,
+            "longitude": 37.6331,
             "textPosition": 2,
             "neighbors": [
-              [
-                "METRO_609",
-                4
-              ],
-              [
-                "METRO_611",
-                3
-              ],
-              [
-                "METRO_712",
-                3
-              ]
+              ["METRO_609", 4],
+              ["METRO_611", 3],
+              ["METRO_712", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2878,24 +2213,14 @@
             "name": "Третьяковская",
             "x": 1292,
             "y": 1111,
+            "latitude": 55.7406,
+            "longitude": 37.6272,
             "textPosition": 8,
             "neighbors": [
-              [
-                "METRO_610",
-                3
-              ],
-              [
-                "METRO_612",
-                4
-              ],
-              [
-                "METRO_807",
-                3
-              ],
-              [
-                "METRO_212",
-                3
-              ]
+              ["METRO_610", 3],
+              ["METRO_612", 4],
+              ["METRO_807", 3],
+              ["METRO_212", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2909,20 +2234,13 @@
             "name": "Октябрьская",
             "x": 1081,
             "y": 1212,
+            "latitude": 55.7292,
+            "longitude": 37.6114,
             "textPosition": 9,
             "neighbors": [
-              [
-                "METRO_611",
-                4
-              ],
-              [
-                "METRO_613",
-                3
-              ],
-              [
-                "METRO_83",
-                3
-              ]
+              ["METRO_611", 4],
+              ["METRO_613", 3],
+              ["METRO_83", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2936,16 +2254,12 @@
             "name": "Шаболовская",
             "x": 1042,
             "y": 1284,
+            "latitude": 55.7189,
+            "longitude": 37.6078,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_612",
-                3
-              ],
-              [
-                "METRO_614",
-                4
-              ]
+              ["METRO_612", 3],
+              ["METRO_614", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2959,20 +2273,13 @@
             "name": "Ленинский проспект",
             "x": 1042,
             "y": 1345,
+            "latitude": 55.7075,
+            "longitude": 37.5861,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_613",
-                4
-              ],
-              [
-                "METRO_615",
-                3
-              ],
-              [
-                "METRO_1519",
-                3
-              ]
+              ["METRO_613", 4],
+              ["METRO_615", 3],
+              ["METRO_1519", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2986,16 +2293,12 @@
             "name": "Академическая",
             "x": 1042,
             "y": 1427,
+            "latitude": 55.6883,
+            "longitude": 37.5733,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_614",
-                3
-              ],
-              [
-                "METRO_616",
-                4
-              ]
+              ["METRO_614", 3],
+              ["METRO_616", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3009,16 +2312,12 @@
             "name": "Профсоюзная",
             "x": 1042,
             "y": 1466,
+            "latitude": 55.6781,
+            "longitude": 37.5628,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_615",
-                4
-              ],
-              [
-                "METRO_617",
-                3
-              ]
+              ["METRO_615", 4],
+              ["METRO_617", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3032,16 +2331,12 @@
             "name": "Новые Черёмушки",
             "x": 1043,
             "y": 1500,
+            "latitude": 55.6703,
+            "longitude": 37.5542,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_616",
-                3
-              ],
-              [
-                "METRO_618",
-                4
-              ]
+              ["METRO_616", 3],
+              ["METRO_618", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3055,20 +2350,13 @@
             "name": "Калужская",
             "x": 1043,
             "y": 1553,
+            "latitude": 55.6569,
+            "longitude": 37.5400,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_617",
-                4
-              ],
-              [
-                "METRO_619",
-                3
-              ],
-              [
-                "METRO_1213",
-                3
-              ]
+              ["METRO_617", 4],
+              ["METRO_619", 3],
+              ["METRO_1213", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3082,16 +2370,12 @@
             "name": "Беляево",
             "x": 1043,
             "y": 1618,
+            "latitude": 55.6425,
+            "longitude": 37.5258,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_618",
-                3
-              ],
-              [
-                "METRO_620",
-                4
-              ]
+              ["METRO_618", 3],
+              ["METRO_620", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3105,16 +2389,12 @@
             "name": "Коньково",
             "x": 1043,
             "y": 1650,
+            "latitude": 55.6328,
+            "longitude": 37.5189,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_619",
-                4
-              ],
-              [
-                "METRO_621",
-                3
-              ]
+              ["METRO_619", 4],
+              ["METRO_621", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3128,16 +2408,12 @@
             "name": "Тёплый стан",
             "x": 1043,
             "y": 1679,
+            "latitude": 55.6189,
+            "longitude": 37.5072,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_620",
-                3
-              ],
-              [
-                "METRO_622",
-                4
-              ]
+              ["METRO_620", 3],
+              ["METRO_622", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3151,16 +2427,12 @@
             "name": "Ясенево",
             "x": 1043,
             "y": 1708,
+            "latitude": 55.6064,
+            "longitude": 37.5333,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_621",
-                4
-              ],
-              [
-                "METRO_623",
-                3
-              ]
+              ["METRO_621", 4],
+              ["METRO_623", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3174,16 +2446,12 @@
             "name": "Новоясеневская",
             "x": 1043,
             "y": 1744,
+            "latitude": 55.6011,
+            "longitude": 37.5533,
             "textPosition": 3,
             "neighbors": [
-              [
-                "METRO_622",
-                3
-              ],
-              [
-                "METRO_1300",
-                3
-              ]
+              ["METRO_622", 3],
+              ["METRO_1300", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3213,11 +2481,10 @@
             "x": 713,
             "y": 394,
             "textPosition": 3,
+            "latitude": 55.860833,
+            "longitude": 37.436389,
             "neighbors": [
-              [
-                "METRO_701",
-                2
-              ]
+              ["METRO_701", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3232,15 +2499,11 @@
             "x": 713,
             "y": 425,
             "textPosition": 3,
+            "latitude": 55.850556,
+            "longitude": 37.439722,
             "neighbors": [
-              [
-                "METRO_700",
-                2
-              ],
-              [
-                "METRO_702",
-                4
-              ]
+              ["METRO_700", 2],
+              ["METRO_702", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3255,19 +2518,12 @@
             "x": 713,
             "y": 480,
             "textPosition": 3,
+            "latitude": 55.826667,
+            "longitude": 37.436667,
             "neighbors": [
-              [
-                "METRO_701",
-                4
-              ],
-              [
-                "METRO_703",
-                3
-              ],
-              [
-                "METRO_1908",
-                3
-              ]
+              ["METRO_701", 4],
+              ["METRO_703", 3],
+              ["METRO_1908", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3282,15 +2538,11 @@
             "x": 713,
             "y": 515,
             "textPosition": 3,
+            "latitude": 55.818333,
+            "longitude": 37.435833,
             "neighbors": [
-              [
-                "METRO_702",
-                3
-              ],
-              [
-                "METRO_704",
-                4
-              ]
+              ["METRO_702", 3],
+              ["METRO_704", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3305,19 +2557,12 @@
             "x": 713,
             "y": 556,
             "textPosition": 3,
+            "latitude": 55.808611,
+            "longitude": 37.464167,
             "neighbors": [
-              [
-                "METRO_703",
-                4
-              ],
-              [
-                "METRO_705",
-                3
-              ],
-              [
-                "METRO_1909",
-                3
-              ]
+              ["METRO_703", 4],
+              ["METRO_705", 3],
+              ["METRO_1909", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3332,23 +2577,13 @@
             "x": 713,
             "y": 667,
             "textPosition": 3,
+            "latitude": 55.793611,
+            "longitude": 37.493611,
             "neighbors": [
-              [
-                "METRO_704",
-                3
-              ],
-              [
-                "METRO_706",
-                4
-              ],
-              [
-                "METRO_1525",
-                3
-              ],
-              [
-                "METRO_1526",
-                3
-              ]
+              ["METRO_704", 3],
+              ["METRO_706", 4],
+              ["METRO_1525", 3],
+              ["METRO_1526", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3363,19 +2598,12 @@
             "x": 712,
             "y": 727,
             "textPosition": 5,
+            "latitude": 55.777500,
+            "longitude": 37.519167,
             "neighbors": [
-              [
-                "METRO_705",
-                4
-              ],
-              [
-                "METRO_707",
-                3
-              ],
-              [
-                "METRO_1203",
-                3
-              ]
+              ["METRO_705", 4],
+              ["METRO_707", 3],
+              ["METRO_1203", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3390,19 +2618,12 @@
             "x": 820,
             "y": 841,
             "textPosition": 2,
+            "latitude": 55.773889,
+            "longitude": 37.546667,
             "neighbors": [
-              [
-                "METRO_706",
-                3
-              ],
-              [
-                "METRO_708",
-                4
-              ],
-              [
-                "METRO_1810",
-                3
-              ]
+              ["METRO_706", 3],
+              ["METRO_708", 4],
+              ["METRO_1810", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3417,15 +2638,11 @@
             "x": 861,
             "y": 878,
             "textPosition": 3,
+            "latitude": 55.765000,
+            "longitude": 37.561389,
             "neighbors": [
-              [
-                "METRO_707",
-                4
-              ],
-              [
-                "METRO_709",
-                3
-              ]
+              ["METRO_707", 4],
+              ["METRO_709", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3440,19 +2657,12 @@
             "x": 925,
             "y": 924,
             "textPosition": 2,
+            "latitude": 55.761111,
+            "longitude": 37.579444,
             "neighbors": [
-              [
-                "METRO_708",
-                3
-              ],
-              [
-                "METRO_710",
-                4
-              ],
-              [
-                "METRO_90",
-                3
-              ]
+              ["METRO_708", 3],
+              ["METRO_710", 4],
+              ["METRO_90", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3467,23 +2677,13 @@
             "x": 1124,
             "y": 927,
             "textPosition": 1,
+            "latitude": 55.765000,
+            "longitude": 37.607778,
             "neighbors": [
-              [
-                "METRO_709",
-                4
-              ],
-              [
-                "METRO_711",
-                3
-              ],
-              [
-                "METRO_1014",
-                3
-              ],
-              [
-                "METRO_210",
-                3
-              ]
+              ["METRO_709", 4],
+              ["METRO_711", 3],
+              ["METRO_1014", 3],
+              ["METRO_210", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3498,15 +2698,11 @@
             "x": 1242,
             "y": 926,
             "textPosition": 1,
+            "latitude": 55.760556,
+            "longitude": 37.625833,
             "neighbors": [
-              [
-                "METRO_710",
-                3
-              ],
-              [
-                "METRO_712",
-                4
-              ]
+              ["METRO_710", 3],
+              ["METRO_712", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3521,19 +2717,12 @@
             "x": 1331,
             "y": 987,
             "textPosition": 9,
+            "latitude": 55.755278,
+            "longitude": 37.633333,
             "neighbors": [
-              [
-                "METRO_711",
-                4
-              ],
-              [
-                "METRO_713",
-                3
-              ],
-              [
-                "METRO_610",
-                3
-              ]
+              ["METRO_711", 4],
+              ["METRO_713", 3],
+              ["METRO_610", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3548,23 +2737,13 @@
             "x": 1443,
             "y": 1101,
             "textPosition": 9,
+            "latitude": 55.740278,
+            "longitude": 37.652222,
             "neighbors": [
-              [
-                "METRO_712",
-                3
-              ],
-              [
-                "METRO_714",
-                4
-              ],
-              [
-                "METRO_806",
-                3
-              ],
-              [
-                "METRO_86",
-                3
-              ]
+              ["METRO_712", 3],
+              ["METRO_714", 4],
+              ["METRO_806", 3],
+              ["METRO_86", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3579,19 +2758,12 @@
             "x": 1503,
             "y": 1156,
             "textPosition": 2,
+            "latitude": 55.731944,
+            "longitude": 37.665833,
             "neighbors": [
-              [
-                "METRO_713",
-                4
-              ],
-              [
-                "METRO_715",
-                3
-              ],
-              [
-                "METRO_1110",
-                3
-              ]
+              ["METRO_713", 4],
+              ["METRO_715", 3],
+              ["METRO_1110", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3606,19 +2778,12 @@
             "x": 1555,
             "y": 1212,
             "textPosition": 3,
+            "latitude": 55.725278,
+            "longitude": 37.686944,
             "neighbors": [
-              [
-                "METRO_714",
-                3
-              ],
-              [
-                "METRO_716",
-                4
-              ],
-              [
-                "METRO_1513",
-                3
-              ]
+              ["METRO_714", 3],
+              ["METRO_716", 4],
+              ["METRO_1513", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3633,23 +2798,13 @@
             "x": 1669,
             "y": 1326,
             "textPosition": 7,
+            "latitude": 55.708889,
+            "longitude": 37.731667,
             "neighbors": [
-              [
-                "METRO_715",
-                4
-              ],
-              [
-                "METRO_717",
-                3
-              ],
-              [
-                "METRO_1921",
-                3
-              ],
-              [
-                "METRO_1221",
-                3
-              ]
+              ["METRO_715", 4],
+              ["METRO_717", 3],
+              ["METRO_1921", 3],
+              ["METRO_1221", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3664,15 +2819,11 @@
             "x": 1702,
             "y": 1360,
             "textPosition": 2,
+            "latitude": 55.705556,
+            "longitude": 37.765556,
             "neighbors": [
-              [
-                "METRO_716",
-                3
-              ],
-              [
-                "METRO_718",
-                4
-              ]
+              ["METRO_716", 3],
+              ["METRO_718", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3686,20 +2837,13 @@
             "name": "Рязанский проспект",
             "x": 1722,
             "y": 1379,
+            "latitude": 55.717097,
+            "longitude": 37.793364,
             "textPosition": 2,
             "neighbors": [
-              [
-                "METRO_717",
-                4
-              ],
-              [
-                "METRO_719",
-                3
-              ],
-              [
-                "METRO_2021",
-                3
-              ]
+              ["METRO_717", 4],
+              ["METRO_719", 3],
+              ["METRO_2021", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3714,19 +2858,12 @@
             "x": 1764,
             "y": 1421,
             "textPosition": 9,
+            "latitude": 55.715556,
+            "longitude": 37.818056,
             "neighbors": [
-              [
-                "METRO_718",
-                3
-              ],
-              [
-                "METRO_720",
-                4
-              ],
-              [
-                "METRO_2022",
-                3
-              ]
+              ["METRO_718", 3],
+              ["METRO_720", 4],
+              ["METRO_2022", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3741,19 +2878,12 @@
             "x": 1789,
             "y": 1445,
             "textPosition": 3,
+            "latitude": 55.701389,
+            "longitude": 37.852500,
             "neighbors": [
-              [
-                "METRO_719",
-                4
-              ],
-              [
-                "METRO_721",
-                3
-              ],
-              [
-                "METRO_1603",
-                3
-              ]
+              ["METRO_719", 4],
+              ["METRO_721", 3],
+              ["METRO_1603", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3768,15 +2898,11 @@
             "x": 1818,
             "y": 1476,
             "textPosition": 3,
+            "latitude": 55.685556,
+            "longitude": 37.856389,
             "neighbors": [
-              [
-                "METRO_720",
-                3
-              ],
-              [
-                "METRO_722",
-                4
-              ]
+              ["METRO_720", 3],
+              ["METRO_722", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -3791,11 +2917,10 @@
             "x": 1818,
             "y": 1518,
             "textPosition": 3,
+            "latitude": 55.674167,
+            "longitude": 37.858333,
             "neighbors": [
-              [
-                "METRO_721",
-                4
-              ]
+              ["METRO_721", 4]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -7501,6 +6626,8 @@
             "name": "Ботанический Сад",
             "x": 1317,
             "y": 417,
+            "latitude": 55.844895,
+            "longitude": 37.637946,
             "textPosition": 0,
             "neighbors": [
               [

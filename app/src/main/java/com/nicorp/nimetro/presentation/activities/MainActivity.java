@@ -1,8 +1,12 @@
 package com.nicorp.nimetro.presentation.activities;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,12 +17,16 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nicorp.nimetro.data.models.MapObject;
@@ -85,6 +93,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Запрашиваем местоположение пользователя
+        requestLocation();
 
         // Инициализация всех списков
         rivers = new ArrayList<>();
@@ -316,7 +329,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 String[] exits = toStringArray(stationObject.optJSONArray("exits"));
                 int textPosition = stationObject.optInt("textPosition", 0);
                 String ESP = stationObject.optString("ESP", null); // Добавляем поле ESP
-
+// Загружаем широту и долготу
+                double latitude = stationObject.optDouble("latitude", 0.0);
+                double longitude = stationObject.optDouble("longitude", 0.0);
                 Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                 Station station = new Station(
                         stationObject.getString("id"),
@@ -328,6 +343,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         facilities,
                         textPosition
                 );
+
+                // Устанавливаем широту и долготу
+                if (latitude != 0.0 && longitude != 0.0 && !Double.isNaN(latitude) && !Double.isNaN(longitude)) {
+                    station.setLatitude(latitude);
+                    station.setLongitude(longitude);
+                }
+
                 stations.add(station);
                 line.getStations().add(station);
             }
@@ -619,6 +641,54 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         if (fromStationInfoFragment) {
             hideStationsList();
         }
+    }
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(this,ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            double userLatitude = location.getLatitude();
+                            double userLongitude = location.getLongitude();
+
+                            // Находим ближайшую станцию
+                            Station nearestStation = findNearestStation(userLatitude, userLongitude);
+
+                            if (nearestStation != null) {
+                                // Устанавливаем ближайшую станцию как начальную
+                                onSetStart(nearestStation, false);
+                            }
+                        }
+                    }
+                });
+    }
+    /**
+     * Метод для поиска ближайшей станции к пользователю.
+     *
+     * @param userLatitude  Широта пользователя
+     * @param userLongitude Долгота пользователя
+     * @return Ближайшая станция
+     */
+    private Station findNearestStation(double userLatitude, double userLongitude) {
+        Station nearestStation = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Station station : stations) {
+            double distance = station.distanceTo(userLatitude, userLongitude);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestStation = station;
+            }
+        }
+
+        return nearestStation;
     }
 
     private List<Station> findOptimalRoute(Station start, Station end) {
