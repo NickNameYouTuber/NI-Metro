@@ -14,8 +14,6 @@ public class RouteSegment {
         this.stations = stations;
         this.line = line;
         this.zone = zone;
-
-        Log.d("RouteSegment", "Created with station " + stations.get(0).getName() + " and line with tariff child = " + line.getTariff());
     }
 
     public List<Station> getStations() {

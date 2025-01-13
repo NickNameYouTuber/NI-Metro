@@ -112,6 +112,7 @@ public class RouteInfoFragment extends Fragment {
     private TextView routeCost;
     private Button startRouteButton;
     private boolean isAlmostArrivedNotificationSent = false;
+    private boolean isRouteActive = false;
 
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
@@ -144,7 +145,11 @@ public class RouteInfoFragment extends Fragment {
         // Инициализация кнопки
         startRouteButton = view.findViewById(R.id.startRouteButton);
         startRouteButton.setOnClickListener(v -> {
-            startRouteTracking();
+            if (isRouteActive) {
+                stopRouteTracking();
+            } else {
+                startRouteTracking();
+            }
         });
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
@@ -175,6 +180,7 @@ public class RouteInfoFragment extends Fragment {
 
     private void startRouteTracking() {
         if (route != null && !route.isEmpty()) {
+            isRouteActive = true;
             isAlmostArrivedNotificationSent = false;
             resetTransferTracking(); // Reset transfer tracking when starting a new route
             startLocationTracking();
@@ -188,7 +194,35 @@ public class RouteInfoFragment extends Fragment {
 
             // Обновляем отображение маршрута
             updateRouteDisplay(0); // Начинаем с первой станции
+
+            // Обновляем текст кнопки и заголовка
+            startRouteButton.setText("Остановить");
+            routeTitle.setText("Информация о маршруте");
         }
+    }
+
+    private void stopRouteTracking() {
+        isRouteActive = false;
+        stopLocationTracking();
+        mainActivity.stopStationTrackingService();
+
+        // Обновляем текст кнопки и заголовка
+        startRouteButton.setText("Поехали");
+        routeTitle.setText("Краткая информация");
+
+        // Сбрасываем текущий индекс и предыдущую станцию
+        currentStationIndex = 0;
+        previousStation = null;
+
+        // Очищаем маршрут на карте
+        if (metroMapView != null) {
+            metroMapView.clearRoute();
+            metroMapView.clearSelectedStations();
+        }
+
+        // Сбрасываем уведомления
+        isAlmostArrivedNotificationSent = false;
+        resetTransferTracking();
     }
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -233,6 +267,10 @@ public class RouteInfoFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        if (isRouteActive) {
+            stopRouteTracking();
+        }
+
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -714,6 +752,10 @@ public class RouteInfoFragment extends Fragment {
 
     private void dismiss() {
         if (getActivity() != null) {
+            if (isRouteActive) {
+                stopRouteTracking();
+            }
+
             getActivity().getSupportFragmentManager().beginTransaction()
                     .remove(this)
                     .commit();
