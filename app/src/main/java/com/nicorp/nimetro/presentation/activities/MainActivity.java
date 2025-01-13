@@ -100,18 +100,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         setContentView(R.layout.activity_main);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        requestLocation();
 
-        // Инициализация Handler и Runnable для периодического обновления местоположения
-        locationUpdateHandler = new Handler();
-        locationUpdateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                requestLocation();
-                locationUpdateHandler.postDelayed(this, LOCATION_UPDATE_INTERVAL);
-            }
-        };
-
-        startLocationUpdates();
+//        // Инициализация Handler и Runnable для периодического обновления местоположения
+//        locationUpdateHandler = new Handler();
+//        locationUpdateRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                requestLocation();
+//                locationUpdateHandler.postDelayed(this, LOCATION_UPDATE_INTERVAL);
+//            }
+//        };
+//
+//        startLocationUpdates();
 
         // Инициализация всех списков
         rivers = new ArrayList<>();
