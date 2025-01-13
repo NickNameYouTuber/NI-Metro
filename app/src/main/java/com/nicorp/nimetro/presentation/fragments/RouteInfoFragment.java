@@ -12,6 +12,8 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -63,6 +65,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -85,6 +89,7 @@ public class RouteInfoFragment extends Fragment {
 
     private List<Station> route;
     private boolean isExpanded = false;
+    private TextToSpeech textToSpeech;
 
     private TextView routeTime;
     private TextView routeStationsCount;
@@ -102,6 +107,7 @@ public class RouteInfoFragment extends Fragment {
     private RecyclerView nearestTrainsRecyclerView;
     private TextView routeCost;
     private Button startRouteButton;
+    private boolean isAlmostArrivedNotificationSent = false;
 
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
@@ -116,6 +122,7 @@ public class RouteInfoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTextToSpeech();
         if (getArguments() != null) {
             Route routeParcelable = getArguments().getParcelable(ARG_ROUTE);
             if (routeParcelable != null) {
@@ -164,6 +171,9 @@ public class RouteInfoFragment extends Fragment {
 
     private void startRouteTracking() {
         if (route != null && !route.isEmpty()) {
+            // Сбрасываем флаг уведомления
+            isAlmostArrivedNotificationSent = false;
+
             // Запускаем отслеживание местоположения
             startLocationTracking();
 
@@ -216,6 +226,10 @@ public class RouteInfoFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
         super.onDestroy();
         stopLocationTracking();
     }
@@ -244,7 +258,7 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void checkIfNearFinalStation(Station currentStation) {
-        if (route == null || route.isEmpty()) {
+        if (route == null || route.isEmpty() || isAlmostArrivedNotificationSent) {
             return;
         }
 
@@ -255,7 +269,29 @@ public class RouteInfoFragment extends Fragment {
         int currentStationIndex = route.indexOf(currentStation);
         if (currentStationIndex == route.size() - 2 || currentStationIndex == route.size() - 1) {
             sendAlmostArrivedNotification(finalStation);
+            isAlmostArrivedNotificationSent = true; // Устанавливаем флаг, чтобы уведомление больше не отправлялось
         }
+    }
+
+    // Инициализация TTS в onCreate или при создании фрагмента
+    private void initTextToSpeech() {
+        textToSpeech = new TextToSpeech(requireContext(), status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                // Устанавливаем русский язык
+                int result = textToSpeech.setLanguage(new Locale("ru"));
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Русский язык не поддерживается");
+                }
+                // Установка мужского голоса (если доступен)
+                Set<Voice> voices = textToSpeech.getVoices();
+                for (Voice voice : voices) {
+                    if (voice.getLocale().getLanguage().equals("ru") && voice.getName().toLowerCase().contains("male")) {
+                        textToSpeech.setVoice(voice);
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void sendAlmostArrivedNotification(Station finalStation) {
@@ -274,16 +310,23 @@ public class RouteInfoFragment extends Fragment {
             notificationManager.createNotificationChannel(channel);
         }
 
+        String notificationText = "Вы приближаетесь к конечной станции: " + finalStation.getName();
+
         // Создаем уведомление
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "arrival_channel")
-                .setSmallIcon(R.drawable.ic_m_icon) // Иконка уведомления
+                .setSmallIcon(R.drawable.ic_m_icon)
                 .setContentTitle("Почти на месте!")
-                .setContentText("Вы приближаетесь к конечной станции: " + finalStation.getName())
+                .setContentText(notificationText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
         // Показываем уведомление
-        notificationManager.notify(2, builder.build()); // Используем другой ID, чтобы не перезаписать текущее уведомление
+        notificationManager.notify(2, builder.build());
+
+        // Озвучиваем уведомление
+        if (textToSpeech != null) {
+            textToSpeech.speak(notificationText, TextToSpeech.QUEUE_FLUSH, null, "arrival_notification");
+        }
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
@@ -571,6 +614,9 @@ public class RouteInfoFragment extends Fragment {
 
             // Останавливаем сервис
             mainActivity.stopStationTrackingService();
+
+            // Сбрасываем флаг уведомления
+            isAlmostArrivedNotificationSent = false;
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }
