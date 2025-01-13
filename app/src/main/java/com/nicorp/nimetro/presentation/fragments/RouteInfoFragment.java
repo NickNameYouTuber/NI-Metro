@@ -89,6 +89,7 @@ public class RouteInfoFragment extends Fragment {
     private Station lastAnnouncedStation = null;
     private static final String ARG_ROUTE = "route";
     private static final int COLLAPSED_HEIGHT = 308;
+    private Station previousStation = null;
 
     private List<Station> route;
     private boolean isExpanded = false;
@@ -172,7 +173,6 @@ public class RouteInfoFragment extends Fragment {
         return view;
     }
 
-    // Update startRouteTracking() to reset transfer tracking when starting a new route
     private void startRouteTracking() {
         if (route != null && !route.isEmpty()) {
             isAlmostArrivedNotificationSent = false;
@@ -181,6 +181,13 @@ public class RouteInfoFragment extends Fragment {
 
             Station startStation = route.get(0);
             mainActivity.startStationTrackingService(startStation);
+
+            // Сбрасываем текущий индекс и предыдущую станцию
+            currentStationIndex = 0;
+            previousStation = null;
+
+            // Обновляем отображение маршрута
+            updateRouteDisplay(0); // Начинаем с первой станции
         }
     }
 
@@ -235,6 +242,8 @@ public class RouteInfoFragment extends Fragment {
         stopLocationTracking();
     }
 
+    private int currentStationIndex = 0; // Добавляем переменную для хранения текущего индекса станции
+
     private void updateUserPositionOnRoute(Location userLocation) {
         if (route == null || route.isEmpty()) {
             return;
@@ -242,10 +251,29 @@ public class RouteInfoFragment extends Fragment {
 
         Station nearestStation = findNearestStation(userLocation.getLatitude(), userLocation.getLongitude());
         if (nearestStation != null) {
+            int nearestStationIndex = route.indexOf(nearestStation);
+
+            // Проверка на возврат к пройденным станциям
+            if (nearestStationIndex < currentStationIndex) {
+                Log.d("GPSUpdate", "User tried to go back to a previous station. Ignoring.");
+                return; // Игнорируем это обновление
+            }
+
+            // Проверка на ложное перемещение (не дальше чем на одну станцию)
+            if (Math.abs(nearestStationIndex - currentStationIndex) > 1) {
+                Log.d("GPSUpdate", "False movement detected. Ignoring.");
+                return; // Игнорируем это обновление
+            }
+
+            // Обновляем текущий индекс станции
+            currentStationIndex = nearestStationIndex;
+
+            // Обновляем предыдущую станцию
+            previousStation = nearestStation;
+
             metroMapView.updateUserPosition(nearestStation);
 
             // Обновляем отображение маршрута
-            int currentStationIndex = route.indexOf(nearestStation);
             updateRouteDisplay(currentStationIndex);
 
             // Обновляем уведомление
@@ -686,7 +714,6 @@ public class RouteInfoFragment extends Fragment {
         routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
-    // Update dismiss() to clear transfer tracking
     private void dismiss() {
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
@@ -706,6 +733,10 @@ public class RouteInfoFragment extends Fragment {
 
             isAlmostArrivedNotificationSent = false;
             resetTransferTracking(); // Clear transfer tracking when dismissing
+
+            // Сбрасываем текущий индекс и предыдущую станцию
+            currentStationIndex = 0;
+            previousStation = null;
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }
