@@ -225,7 +225,140 @@ public class RouteInfoFragment extends Fragment {
         if (nearestStation != null) {
             // Обновляем положение пользователя на карте
             metroMapView.updateUserPosition(nearestStation);
+
+            // Определяем индекс текущей станции в маршруте
+            int currentStationIndex = route.indexOf(nearestStation);
+            if (currentStationIndex != -1) {
+                // Обновляем маршрут, чтобы отображать только оставшуюся часть
+                updateRouteDisplay(currentStationIndex);
+            }
         }
+    }
+
+    private void updateRouteDisplay(int currentStationIndex) {
+        if (currentStationIndex < 0 || currentStationIndex >= route.size()) {
+            return;
+        }
+
+        // Создаем новый список станций, начиная с текущей станции
+        List<Station> remainingRoute = new ArrayList<>(route.subList(currentStationIndex, route.size()));
+
+        // Обновляем маршрут на карте
+        metroMapView.setRoute(remainingRoute);
+
+        // Обновляем интерфейс, чтобы отразить изменения
+        updateRouteInfo(remainingRoute);
+    }
+
+    private void updateRouteInfo(List<Station> remainingRoute) {
+        if (remainingRoute == null || remainingRoute.isEmpty()) {
+            return;
+        }
+
+        // Пересчитываем время в пути, количество станций и пересадок
+        int totalTime = calculateTotalTime(remainingRoute);
+        int stationsCount = remainingRoute.size();
+        int transfersCount = calculateTransfersCount(remainingRoute);
+
+        // Обновляем текстовые поля
+        routeTime.setText(String.format("%d мин", totalTime));
+        routeStationsCount.setText(String.format("%d", stationsCount));
+        routeTransfersCount.setText(String.format("%d", transfersCount));
+
+        // Пересчитываем стоимость маршрута
+        calculateTotalCost(remainingRoute, cost -> {
+            routeCost.setText(String.format("%.2f руб.", cost));
+        });
+
+        // Обновляем список станций в интерфейсе
+        populateRouteDetails(routeDetailsContainer, remainingRoute);
+    }
+
+    private int calculateTransfersCount(List<Station> route) {
+        if (route == null || route.isEmpty()) {
+            return 0;
+        }
+
+        int transfers = 0;
+        for (int i = 1; i < route.size(); i++) {
+            if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
+                transfers++; // Считаем пересадку, если цвет линии изменился
+            }
+        }
+        return transfers;
+    }
+
+    private int calculateTotalTime(List<Station> route) {
+        int totalTime = 0;
+        totalTime += (route.size() - 1) * 2; // Время на проезд между станциями
+
+        for (int i = 1; i < route.size(); i++) {
+            if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
+                totalTime += 3; // Время на пересадку
+            }
+        }
+        return totalTime;
+    }
+
+    private void populateRouteDetails(LinearLayout container, List<Station> route) {
+        container.post(() -> {
+            container.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+
+            for (int i = 0; i < route.size(); i++) {
+                Station station = route.get(i);
+                Line line = getLineForStation(station);
+
+                View stationView = inflater.inflate(R.layout.item_route_station, container, false);
+                TextView stationName = stationView.findViewById(R.id.stationName);
+                View stationIndicator = stationView.findViewById(R.id.stationIndicator);
+                View stationIndicatorDouble = stationView.findViewById(R.id.stationIndicatorDouble);
+                RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
+
+                stationName.setText(station.getName());
+                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+
+                if (nearestTrainsRV != null) {
+                    nearestTrainsRV.setVisibility(View.GONE);
+                }
+
+                if (isLineDouble(station)) {
+                    stationIndicatorDouble.setVisibility(View.VISIBLE);
+                    stationIndicatorDouble.setBackgroundColor(Color.parseColor(station.getColor()));
+                }
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0, 0, 0, 0);
+                stationView.setLayoutParams(params);
+
+                if (i == 0 || i == route.size() - 1) {
+                    stationName.setTypeface(null, Typeface.BOLD);
+                }
+
+                String tag = station.getName() + "|" + line.getTariff().getName();
+                stationView.setTag(tag);
+
+                Log.d("RouteInfoFragmentT", "Station: " + tag.split("\\|")[0] + ", Line: " + tag.split("\\|")[1]);
+
+                container.addView(stationView);
+
+                if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
+                    View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
+                    LinearLayout.LayoutParams transferParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    transferParams.setMargins(0, 8, 0, 8);
+                    transferView.setLayoutParams(transferParams);
+                    container.addView(transferView);
+                }
+            }
+
+            container.requestLayout();
+        });
     }
 
     private Station findNearestStation(double userLatitude, double userLongitude) {
