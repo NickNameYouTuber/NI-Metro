@@ -14,7 +14,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -839,5 +838,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             onSetEnd(station, true);
         }
         hideStationsList();
+    }
+
+    public List<Transfer> getAllTransfers() {
+        return transfers;
     }
 }

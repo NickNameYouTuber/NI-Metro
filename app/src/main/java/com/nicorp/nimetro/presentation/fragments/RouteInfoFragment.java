@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -53,6 +54,7 @@ import com.nicorp.nimetro.domain.entities.RouteSegment;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.TariffCallback;
+import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
@@ -94,6 +96,7 @@ public class RouteInfoFragment extends Fragment {
     private List<Station> route;
     private boolean isExpanded = false;
     private TextToSpeech textToSpeech;
+    private TextToSpeech textToSpeechInfo;
 
     private TextView routeTime;
     private TextView routeStationsCount;
@@ -373,6 +376,23 @@ public class RouteInfoFragment extends Fragment {
                 for (Voice voice : voices) {
                     if (voice.getLocale().getLanguage().equals("ru") && voice.getName().toLowerCase().contains("male")) {
                         textToSpeech.setVoice(voice);
+                        break;
+                    }
+                }
+            }
+        });
+        textToSpeechInfo = new TextToSpeech(requireContext(), status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                // Устанавливаем русский язык
+                int result = textToSpeechInfo.setLanguage(new Locale("ru"));
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Русский язык не поддерживается");
+                }
+                // Установка мужского голоса (если доступен)
+                Set<Voice> voices = textToSpeechInfo.getVoices();
+                for (Voice voice : voices) {
+                    if (voice.getLocale().getLanguage().equals("ru") && voice.getName().toLowerCase().contains("male")) {
+                        textToSpeechInfo.setVoice(voice);
                         break;
                     }
                 }
@@ -827,6 +847,36 @@ public class RouteInfoFragment extends Fragment {
                     textToSpeech.speak(transferMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_notification");
                 }
 
+                // Ожидание пока текст перехода говорится
+                if (textToSpeech != null) {
+                    textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                            // Текст перехода начал говориться
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            // Получаем текст перехода
+                            Transfer transfer = findTransferBetweenStations(currentStation, nextTransferStation);
+                            String transferMessage = transfer != null
+                                    ? transfer.getTransitionText(currentStation, nextTransferStation)
+                                    : "Переход недоступен.";
+
+                            // Оповещаем пользователя о переходе
+                            if (textToSpeechInfo != null) {
+                                textToSpeechInfo.speak(transferMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_notification");
+                            }
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                            // Ошибка при говорении текста перехода
+                        }
+                    });
+                }
+
+
                 // Отправляем уведомление о переходе
                 sendTransferNotification(transferMessage);
 
@@ -836,6 +886,15 @@ public class RouteInfoFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private Transfer findTransferBetweenStations(Station from, Station to) {
+        for (Transfer transfer : mainActivity.getAllTransfers()) {
+            if (transfer.getStations().contains(from) && transfer.getStations().contains(to)) {
+                return transfer;
+            }
+        }
+        return null;
     }
 
     private void expand() {
