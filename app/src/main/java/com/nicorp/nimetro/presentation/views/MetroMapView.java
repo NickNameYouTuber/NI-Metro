@@ -715,6 +715,8 @@ public class MetroMapView extends View {
             drawSelectedStation(canvas, stationX, stationY);
         }
 
+
+
 //        // Отрисовка линий речного трамвая
 //        for (LinePath linePath : riverTramLines) {
 //            riverTramPaint.setColor(Color.parseColor(linePath.color));
@@ -818,6 +820,21 @@ public class MetroMapView extends View {
                 if (routeStationPath.textPosition != 9) { // 9 - не отображать текст
                     drawRouteStationText(canvas, routeStationPath);
                 }
+            }
+
+            // Отрисовка положения пользователя
+            if (userPositionStation != null) {
+                if (userPositionPaint == null) {
+                    userPositionPaint = new Paint();
+                    userPositionPaint.setColor(Color.RED);
+                    userPositionPaint.setStyle(Paint.Style.FILL);
+                    userPositionPaint.setAntiAlias(true);
+                }
+
+                float stationX = userPositionStation.getX() * COORDINATE_SCALE_FACTOR;
+                float stationY = userPositionStation.getY() * COORDINATE_SCALE_FACTOR;
+
+                canvas.drawCircle(stationX, stationY, 20, userPositionPaint);
             }
         }
 
@@ -1692,8 +1709,16 @@ public class MetroMapView extends View {
     private ValueAnimator translateYAnimator;
     private ValueAnimator scaleAnimator;
     private static final float TARGET_SCALE = 1.5f;
-    private static final long MOVEMENT_DURATION = 1000; // Длительность перемещения
-    private static final long SCALE_DURATION = 400; // Длительность масштабирования
+    private static final long MOVEMENT_DURATION = 1000;
+    private static final long SCALE_DURATION = 400;
+
+    private Station userPositionStation = null;
+    private Paint userPositionPaint;
+
+    public void updateUserPosition(Station station) {
+        this.userPositionStation = station;
+        invalidate(); // Перерисовываем карту
+    }
 
     public void centerOnStation(Station station) {
         if (station == null) return;

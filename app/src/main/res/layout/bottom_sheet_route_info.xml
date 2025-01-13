@@ -170,6 +170,16 @@
                     android:textSize="16sp"
                     android:paddingStart="8dp" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/startRouteButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Поехали"
+                android:backgroundTint="@color/black"
+                android:textColor="@color/white"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
         </LinearLayout>
 
         <LinearLayout

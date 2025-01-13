@@ -1,8 +1,13 @@
 package com.nicorp.nimetro.presentation.fragments;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,10 +24,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
@@ -46,6 +58,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,6 +69,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import android.location.Location;
+import com. google. android. gms. location. LocationRequest;
 
 public class RouteInfoFragment extends Fragment {
 
@@ -79,6 +95,7 @@ public class RouteInfoFragment extends Fragment {
     private MainActivity mainActivity;
     private RecyclerView nearestTrainsRecyclerView;
     private TextView routeCost;
+    private Button startRouteButton;
 
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
@@ -99,12 +116,19 @@ public class RouteInfoFragment extends Fragment {
                 route = routeParcelable.getStations();
             }
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_route_info, container, false);
+
+        // Инициализация кнопки
+        startRouteButton = view.findViewById(R.id.startRouteButton);
+        startRouteButton.setOnClickListener(v -> {
+            startRouteTracking();
+        });
 
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
@@ -130,6 +154,93 @@ public class RouteInfoFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void startRouteTracking() {
+        if (route != null && !route.isEmpty()) {
+            // Запускаем отслеживание местоположения
+            startLocationTracking();
+        }
+    }
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    private boolean isTracking = false;
+
+    private void startLocationTracking() {
+        if (ActivityCompat.checkSelfPermission(requireContext(),ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        isTracking = true;
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null || !isTracking) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateUserPositionOnRoute(location);
+                }
+            }
+        };
+
+        // Создаем LocationRequest с помощью Builder
+        LocationRequest locationRequest = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY) // 5000 мс (5 секунд)
+                    .setMinUpdateIntervalMillis(2000) // Минимальный интервал обновления
+                    .build();
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+
+        // Запрашиваем обновления местоположения
+
+        // Альтернативный вариант с Executor
+//         Executor executor = Executors.newSingleThreadExecutor();
+//         fusedLocationClient.requestLocationUpdates(locationRequest, executor, locationCallback);
+    }
+
+    private void stopLocationTracking() {
+        if (isTracking) {
+            isTracking = false;
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopLocationTracking();
+    }
+
+    private void updateUserPositionOnRoute(Location userLocation) {
+        if (route == null || route.isEmpty()) {
+            return;
+        }
+
+        Station nearestStation = findNearestStation(userLocation.getLatitude(), userLocation.getLongitude());
+        if (nearestStation != null) {
+            // Обновляем положение пользователя на карте
+            metroMapView.updateUserPosition(nearestStation);
+        }
+    }
+
+    private Station findNearestStation(double userLatitude, double userLongitude) {
+        Station nearestStation = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Station station : route) {
+            double distance = station.distanceTo(userLatitude, userLongitude);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestStation = station;
+            }
+        }
+
+        return nearestStation;
     }
 
     private void initializeViews(View view, int colorOnSurface) {

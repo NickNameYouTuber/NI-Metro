@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -77,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
 
+    private Handler locationUpdateHandler;
+    private Runnable locationUpdateRunnable;
+    private static final long LOCATION_UPDATE_INTERVAL = 30000; // 30 секунд
+
     public static boolean isMetroMap = true; // Флаг для определения текущей карты
     public static boolean isSuburbanMap = false;
     public static boolean isRiverTramMap = false;
@@ -96,8 +101,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Запрашиваем местоположение пользователя
-        requestLocation();
+        // Инициализация Handler и Runnable для периодического обновления местоположения
+        locationUpdateHandler = new Handler();
+        locationUpdateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                requestLocation();
+                locationUpdateHandler.postDelayed(this, LOCATION_UPDATE_INTERVAL);
+            }
+        };
+
+        startLocationUpdates();
 
         // Инициализация всех списков
         rivers = new ArrayList<>();
@@ -210,6 +224,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             @Override
             public void afterTextChanged(Editable s) {}
         });
+    }
+
+
+    private void startLocationUpdates() {
+        locationUpdateHandler.post(locationUpdateRunnable);
+    }
+
+    private void stopLocationUpdates() {
+        locationUpdateHandler.removeCallbacks(locationUpdateRunnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Остановка обновления местоположения при уничтожении активности
+        stopLocationUpdates();
     }
 
     private List<Transfer> transfers = new ArrayList<>();
@@ -640,7 +670,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private FusedLocationProviderClient fusedLocationClient;
 
     private void requestLocation() {
-        if (ActivityCompat.checkSelfPermission(this,ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        Log.d("MainActivity", "Requesting location permission");
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
             return;
         }
@@ -664,6 +695,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     }
                 });
     }
+
     /**
      * Метод для поиска ближайшей станции к пользователю.
      *
