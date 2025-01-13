@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -46,6 +47,7 @@ import com.nicorp.nimetro.presentation.fragments.RouteInfoFragment;
 import com.nicorp.nimetro.presentation.fragments.StationInfoFragment;
 import com.nicorp.nimetro.presentation.adapters.StationsAdapter;
 import com.nicorp.nimetro.domain.entities.Facilities;
+import com.nicorp.nimetro.services.StationTrackingService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,6 +87,23 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     public static boolean isMetroMap = true; // Флаг для определения текущей карты
     public static boolean isSuburbanMap = false;
     public static boolean isRiverTramMap = false;
+
+
+    public void startStationTrackingService(Station station) {
+        Intent serviceIntent = new Intent(this, StationTrackingService.class);
+        serviceIntent.putExtra("currentStation", station);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+    }
+
+    public void stopStationTrackingService() {
+        Intent serviceIntent = new Intent(this, StationTrackingService.class);
+        stopService(serviceIntent);
+    }
 
     /**
      * Called when the activity is first created.

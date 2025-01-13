@@ -2,6 +2,10 @@ package com.nicorp.nimetro.presentation.fragments;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -25,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,6 +76,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import android.location.Location;
 import com. google. android. gms. location. LocationRequest;
+import com.nicorp.nimetro.services.StationTrackingService;
 
 public class RouteInfoFragment extends Fragment {
 
@@ -160,6 +166,10 @@ public class RouteInfoFragment extends Fragment {
         if (route != null && !route.isEmpty()) {
             // Запускаем отслеживание местоположения
             startLocationTracking();
+
+            // Запускаем сервис для отображения уведомления
+            Station startStation = route.get(0); // Первая станция маршрута
+            mainActivity.startStationTrackingService(startStation);
         }
     }
 
@@ -168,7 +178,7 @@ public class RouteInfoFragment extends Fragment {
     private boolean isTracking = false;
 
     private void startLocationTracking() {
-        if (ActivityCompat.checkSelfPermission(requireContext(),ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{ACCESS_FINE_LOCATION}, 1);
             return;
         }
@@ -182,25 +192,19 @@ public class RouteInfoFragment extends Fragment {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
+                    Log.d("LocationUpdate", "New location: " + location.getLatitude() + ", " + location.getLongitude());
                     updateUserPositionOnRoute(location);
                 }
             }
         };
 
-        // Создаем LocationRequest с помощью Builder
         LocationRequest locationRequest = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY) // 5000 мс (5 секунд)
-                    .setMinUpdateIntervalMillis(2000) // Минимальный интервал обновления
+            locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY)
+                    .setMinUpdateIntervalMillis(2000)
                     .build();
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         }
-
-        // Запрашиваем обновления местоположения
-
-        // Альтернативный вариант с Executor
-//         Executor executor = Executors.newSingleThreadExecutor();
-//         fusedLocationClient.requestLocationUpdates(locationRequest, executor, locationCallback);
     }
 
     private void stopLocationTracking() {
@@ -223,16 +227,63 @@ public class RouteInfoFragment extends Fragment {
 
         Station nearestStation = findNearestStation(userLocation.getLatitude(), userLocation.getLongitude());
         if (nearestStation != null) {
-            // Обновляем положение пользователя на карте
             metroMapView.updateUserPosition(nearestStation);
 
-            // Определяем индекс текущей станции в маршруте
-            int currentStationIndex = route.indexOf(nearestStation);
-            if (currentStationIndex != -1) {
-                // Обновляем маршрут, чтобы отображать только оставшуюся часть
-                updateRouteDisplay(currentStationIndex);
+            // Обновляем уведомление
+            Intent serviceIntent = new Intent(getContext(), StationTrackingService.class);
+            serviceIntent.putExtra("currentStation", nearestStation);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                requireActivity().startForegroundService(serviceIntent);
+            } else {
+                requireActivity().startService(serviceIntent);
             }
+
+            // Проверяем, близко ли пользователь к конечной станции
+            checkIfNearFinalStation(nearestStation);
         }
+    }
+
+    private void checkIfNearFinalStation(Station currentStation) {
+        if (route == null || route.isEmpty()) {
+            return;
+        }
+
+        // Получаем конечную станцию маршрута
+        Station finalStation = route.get(route.size() - 1);
+
+        // Если текущая станция - предпоследняя или конечная
+        int currentStationIndex = route.indexOf(currentStation);
+        if (currentStationIndex == route.size() - 2 || currentStationIndex == route.size() - 1) {
+            sendAlmostArrivedNotification(finalStation);
+        }
+    }
+
+    private void sendAlmostArrivedNotification(Station finalStation) {
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            return;
+        }
+
+        // Создаем канал уведомлений (если не создан)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "arrival_channel",
+                    "Arrival Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        // Создаем уведомление
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "arrival_channel")
+                .setSmallIcon(R.drawable.ic_m_icon) // Иконка уведомления
+                .setContentTitle("Почти на месте!")
+                .setContentText("Вы приближаетесь к конечной станции: " + finalStation.getName())
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        // Показываем уведомление
+        notificationManager.notify(2, builder.build()); // Используем другой ID, чтобы не перезаписать текущее уведомление
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
@@ -240,13 +291,10 @@ public class RouteInfoFragment extends Fragment {
             return;
         }
 
-        // Создаем новый список станций, начиная с текущей станции
         List<Station> remainingRoute = new ArrayList<>(route.subList(currentStationIndex, route.size()));
+        Log.d("RouteUpdate", "Updating route with " + remainingRoute.size() + " stations");
 
-        // Обновляем маршрут на карте
         metroMapView.setRoute(remainingRoute);
-
-        // Обновляем интерфейс, чтобы отразить изменения
         updateRouteInfo(remainingRoute);
     }
 
@@ -340,8 +388,6 @@ public class RouteInfoFragment extends Fragment {
 
                 String tag = station.getName() + "|" + line.getTariff().getName();
                 stationView.setTag(tag);
-
-                Log.d("RouteInfoFragmentT", "Station: " + tag.split("\\|")[0] + ", Line: " + tag.split("\\|")[1]);
 
                 container.addView(stationView);
 
@@ -522,6 +568,9 @@ public class RouteInfoFragment extends Fragment {
             if (mainActivity != null) {
                 mainActivity.clearRouteInputs();
             }
+
+            // Останавливаем сервис
+            mainActivity.stopStationTrackingService();
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }
