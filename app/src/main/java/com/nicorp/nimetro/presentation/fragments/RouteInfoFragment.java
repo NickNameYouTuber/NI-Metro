@@ -64,8 +64,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -83,7 +85,8 @@ import com. google. android. gms. location. LocationRequest;
 import com.nicorp.nimetro.services.StationTrackingService;
 
 public class RouteInfoFragment extends Fragment {
-
+    private Set<String> announcedTransfers = new HashSet<>();
+    private Station lastAnnouncedStation = null;
     private static final String ARG_ROUTE = "route";
     private static final int COLLAPSED_HEIGHT = 308;
 
@@ -169,16 +172,14 @@ public class RouteInfoFragment extends Fragment {
         return view;
     }
 
+    // Update startRouteTracking() to reset transfer tracking when starting a new route
     private void startRouteTracking() {
         if (route != null && !route.isEmpty()) {
-            // Сбрасываем флаг уведомления
             isAlmostArrivedNotificationSent = false;
-
-            // Запускаем отслеживание местоположения
+            resetTransferTracking(); // Reset transfer tracking when starting a new route
             startLocationTracking();
 
-            // Запускаем сервис для отображения уведомления
-            Station startStation = route.get(0); // Первая станция маршрута
+            Station startStation = route.get(0);
             mainActivity.startStationTrackingService(startStation);
         }
     }
@@ -243,6 +244,10 @@ public class RouteInfoFragment extends Fragment {
         if (nearestStation != null) {
             metroMapView.updateUserPosition(nearestStation);
 
+            // Обновляем отображение маршрута
+            int currentStationIndex = route.indexOf(nearestStation);
+            updateRouteDisplay(currentStationIndex);
+
             // Обновляем уведомление
             Intent serviceIntent = new Intent(getContext(), StationTrackingService.class);
             serviceIntent.putExtra("currentStation", nearestStation);
@@ -254,6 +259,20 @@ public class RouteInfoFragment extends Fragment {
 
             // Проверяем, близко ли пользователь к конечной станции
             checkIfNearFinalStation(nearestStation);
+
+            // Проверяем, нужно ли предупредить о переходе
+            Station nextTransferStation = findNextTransferStation(route, nearestStation);
+            if (nextTransferStation != null) {
+                int currentIndex = route.indexOf(nearestStation);
+                int transferIndex = route.indexOf(nextTransferStation);
+
+                // Если до перехода осталась одна станция
+                Log.d("RouteUpdate", "Current index: " + currentIndex + ", transfer index: " + transferIndex);
+                if (transferIndex - currentIndex == 2) {
+                    Log.d("RouteUpdate", "Warning about transfer");
+                    warnAboutTransfer(nearestStation, nextTransferStation);
+                }
+            }
         }
     }
 
@@ -310,7 +329,7 @@ public class RouteInfoFragment extends Fragment {
             notificationManager.createNotificationChannel(channel);
         }
 
-        String notificationText = "Вы приближаетесь к конечной станции: " + finalStation.getName();
+        String notificationText = "Следущая станция: " + finalStation.getName() + " является концом маршрута";
 
         // Создаем уведомление
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "arrival_channel")
@@ -327,6 +346,79 @@ public class RouteInfoFragment extends Fragment {
         if (textToSpeech != null) {
             textToSpeech.speak(notificationText, TextToSpeech.QUEUE_FLUSH, null, "arrival_notification");
         }
+    }
+
+    private void warnAboutTransfer(Station currentStation, Station transferStation) {
+        if (transferStation == null || currentStation == null) {
+            return;
+        }
+
+        // Create a unique key for this transfer
+        String transferKey = currentStation.getName() + "_to_" + transferStation.getName();
+
+        // Check if we've already announced this transfer
+        if (announcedTransfers.contains(transferKey)) {
+            return;
+        }
+
+        // Check if we're announcing for the same station again
+        if (lastAnnouncedStation != null && lastAnnouncedStation.equals(currentStation)) {
+            return;
+        }
+
+
+        String warningMessage = "На следующей станции переход на " + transferStation.getName() +
+                " " + Objects.requireNonNull(getLineForStation(transferStation)).getName().replace("линия", "линии");
+
+        // Send notification and speak the warning
+        sendTransferNotification(warningMessage);
+        if (textToSpeech != null) {
+            textToSpeech.speak(warningMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_warning");
+        }
+
+        // Mark this transfer as announced
+        announcedTransfers.add(transferKey);
+        lastAnnouncedStation = currentStation;
+    }
+
+    // Add this to onDestroy() or when stopping tracking
+    private void resetTransferTracking() {
+        announcedTransfers.clear();
+        lastAnnouncedStation = null;
+    }
+
+    private void sendTransferNotification(String message) {
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            return;
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "transfer_channel")
+                .setSmallIcon(R.drawable.ic_m_icon)
+                .setContentTitle("Переход на другую линию")
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        notificationManager.notify(3, builder.build());
+    }
+
+    private Station findNextTransferStation(List<Station> route, Station currentStation) {
+        int currentIndex = route.indexOf(currentStation);
+        if (currentIndex == -1 || currentIndex >= route.size() - 1) {
+            return null; // Текущая станция не найдена или это последняя станция
+        }
+
+        Line currentLine = getLineForStation(currentStation);
+        Line nextLine = getLineForStation(route.get(currentIndex + 2));
+        Log.d("RouteUpdate", "Current line: " + currentLine + ", next line: " + nextLine);
+
+        if (currentLine != null && nextLine != null && currentLine != nextLine) {
+            Log.d("RouteUpdate", "Found transfer station: " + route.get(currentIndex + 2));
+            return route.get(currentIndex + 2);
+        }
+
+        return null;
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
@@ -594,29 +686,26 @@ public class RouteInfoFragment extends Fragment {
         routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
+    // Update dismiss() to clear transfer tracking
     private void dismiss() {
         if (getActivity() != null) {
-            // Удаляем фрагмент
             getActivity().getSupportFragmentManager().beginTransaction()
                     .remove(this)
                     .commit();
 
-            // Очищаем маршрут на карте
             if (metroMapView != null) {
                 metroMapView.clearRoute();
                 metroMapView.clearSelectedStations();
             }
 
-            // Очищаем ввод маршрута в активности
             if (mainActivity != null) {
                 mainActivity.clearRouteInputs();
             }
 
-            // Останавливаем сервис
             mainActivity.stopStationTrackingService();
 
-            // Сбрасываем флаг уведомления
             isAlmostArrivedNotificationSent = false;
+            resetTransferTracking(); // Clear transfer tracking when dismissing
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }

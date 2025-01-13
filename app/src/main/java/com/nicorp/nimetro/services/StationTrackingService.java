@@ -21,39 +21,33 @@ import com.nicorp.nimetro.presentation.activities.MainActivity;
 public class StationTrackingService extends Service {
 
     private static final String CHANNEL_ID = "StationTrackingChannel";
-    private static final String ARRIVAL_CHANNEL_ID = "arrival_channel"; // Новый канал для уведомлений о прибытии
+    private static final String ARRIVAL_CHANNEL_ID = "arrival_channel";
     private static final int NOTIFICATION_ID = 1;
 
     private Station currentStation;
+    private Station previousStation; // Храним предыдущую станцию для сравнения
 
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        createArrivalNotificationChannel(); // Создаем канал для уведомлений о прибытии
-    }
-
-    private void createArrivalNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel arrivalChannel = new NotificationChannel(
-                    ARRIVAL_CHANNEL_ID,
-                    "Arrival Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(arrivalChannel);
-            }
-        }
+        createArrivalNotificationChannel();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.hasExtra("currentStation")) {
             currentStation = (Station) intent.getParcelableExtra("currentStation");
-            updateNotification(currentStation);
+
+            // Проверяем, изменилась ли станция
+            if (previousStation == null || !currentStation.equals(previousStation)) {
+                // Обновляем уведомление только если станция изменилась
+                updateNotification(currentStation);
+                previousStation = currentStation; // Обновляем предыдущую станцию
+            }
         }
 
+        // Запускаем сервис в foreground mode
         startForeground(NOTIFICATION_ID, createNotification(currentStation));
         return START_STICKY;
     }
@@ -69,7 +63,7 @@ public class StationTrackingService extends Service {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Station Tracking Service",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_LOW // Устанавливаем низкий приоритет
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
@@ -89,6 +83,8 @@ public class StationTrackingService extends Service {
                 .setContentText(stationName)
                 .setSmallIcon(R.drawable.ic_m_icon)
                 .setContentIntent(pendingIntent)
+                .setOnlyAlertOnce(true) // Уведомление не будет "звучать" при обновлении
+                .setPriority(NotificationCompat.PRIORITY_LOW) // Низкий приоритет
                 .build();
     }
 
@@ -96,6 +92,20 @@ public class StationTrackingService extends Service {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (notificationManager != null) {
             notificationManager.notify(NOTIFICATION_ID, createNotification(station));
+        }
+    }
+
+    private void createArrivalNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel arrivalChannel = new NotificationChannel(
+                    ARRIVAL_CHANNEL_ID,
+                    "Arrival Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(arrivalChannel);
+            }
         }
     }
 }
