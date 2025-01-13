@@ -210,7 +210,6 @@ public class RouteInfoFragment extends Fragment {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    Log.d("LocationUpdate", "New location: " + location.getLatitude() + ", " + location.getLongitude());
                     updateUserPositionOnRoute(location);
                 }
             }
@@ -255,13 +254,11 @@ public class RouteInfoFragment extends Fragment {
 
             // Проверка на возврат к пройденным станциям
             if (nearestStationIndex < currentStationIndex) {
-                Log.d("GPSUpdate", "User tried to go back to a previous station. Ignoring.");
                 return; // Игнорируем это обновление
             }
 
             // Проверка на ложное перемещение (не дальше чем на одну станцию)
             if (Math.abs(nearestStationIndex - currentStationIndex) > 1) {
-                Log.d("GPSUpdate", "False movement detected. Ignoring.");
                 return; // Игнорируем это обновление
             }
 
@@ -275,6 +272,9 @@ public class RouteInfoFragment extends Fragment {
 
             // Обновляем отображение маршрута
             updateRouteDisplay(currentStationIndex);
+
+            // Обрабатываем переход на следующую линию, если это необходимо
+            handleTransfer(nearestStation);
 
             // Обновляем уведомление
             Intent serviceIntent = new Intent(getContext(), StationTrackingService.class);
@@ -290,7 +290,8 @@ public class RouteInfoFragment extends Fragment {
 
             // Проверяем, нужно ли предупредить о переходе
             Station nextTransferStation = findNextTransferStation(route, nearestStation);
-            if (nextTransferStation != null) {
+            Station TransferStation = findTransferStation(route, nearestStation);
+            if (nextTransferStation != null && TransferStation == null) {
                 int currentIndex = route.indexOf(nearestStation);
                 int transferIndex = route.indexOf(nextTransferStation);
 
@@ -395,7 +396,7 @@ public class RouteInfoFragment extends Fragment {
         }
 
 
-        String warningMessage = "На следующей станции переход на " + transferStation.getName() +
+        String warningMessage = "На следующей, перейдите на станцию " + transferStation.getName() +
                 " " + Objects.requireNonNull(getLineForStation(transferStation)).getName().replace("линия", "линии");
 
         // Send notification and speak the warning
@@ -439,10 +440,8 @@ public class RouteInfoFragment extends Fragment {
 
         Line currentLine = getLineForStation(currentStation);
         Line nextLine = getLineForStation(route.get(currentIndex + 2));
-        Log.d("RouteUpdate", "Current line: " + currentLine + ", next line: " + nextLine);
 
         if (currentLine != null && nextLine != null && currentLine != nextLine) {
-            Log.d("RouteUpdate", "Found transfer station: " + route.get(currentIndex + 2));
             return route.get(currentIndex + 2);
         }
 
@@ -455,7 +454,6 @@ public class RouteInfoFragment extends Fragment {
         }
 
         List<Station> remainingRoute = new ArrayList<>(route.subList(currentStationIndex, route.size()));
-        Log.d("RouteUpdate", "Updating route with " + remainingRoute.size() + " stations");
 
         metroMapView.setRoute(remainingRoute);
         updateRouteInfo(remainingRoute);
@@ -739,6 +737,62 @@ public class RouteInfoFragment extends Fragment {
             previousStation = null;
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
+        }
+    }
+
+    private Station findTransferStation(List<Station> route, Station currentStation) {
+        int currentIndex = route.indexOf(currentStation);
+        if (currentIndex == -1 || currentIndex >= route.size() - 1) {
+            return null; // Текущая станция не найдена или это последняя станция
+        }
+
+        Line currentLine = getLineForStation(currentStation);
+        Line nextLine = getLineForStation(route.get(currentIndex + 1));
+        Log.d("RouteUpdate", "Current line: " + currentLine + ", next line: " + nextLine);
+
+        if (currentLine != null && nextLine != null && currentLine != nextLine) {
+            Log.d("RouteUpdate", "Found transfer station: " + route.get(currentIndex + 1));
+            return route.get(currentIndex + 1);
+        }
+
+        return null;
+    }
+
+    private void handleTransfer(Station currentStation) {
+        if (currentStation == null || route == null || route.isEmpty()) {
+            return;
+        }
+
+        // Находим следующую станцию пересадки
+        Station nextTransferStation = findTransferStation(route, currentStation);
+        if (nextTransferStation != null) {
+            // Находим индекс текущей станции
+            int currentIndex = route.indexOf(currentStation);
+            int transferIndex = route.indexOf(nextTransferStation);
+
+            // Если текущая станция - это станция пересадки
+            if (currentIndex == transferIndex - 1) {
+                // Обновляем текущую станцию на следующую (первую станцию новой линии)
+                currentStationIndex = transferIndex;
+                previousStation = nextTransferStation;
+
+                // Обновляем отображение маршрута
+                updateRouteDisplay(currentStationIndex);
+
+                // Оповещаем пользователя о переходе
+                String transferMessage = "Перейдите на станцию " + nextTransferStation.getName() + " " + Objects.requireNonNull(getLineForStation(nextTransferStation)).getName().replace("линия", "линии");
+                if (textToSpeech != null) {
+                    textToSpeech.speak(transferMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_notification");
+                }
+
+                // Отправляем уведомление о переходе
+                sendTransferNotification(transferMessage);
+
+                // Обновляем позицию пользователя на карте
+                if (metroMapView != null) {
+                    metroMapView.updateUserPosition(nextTransferStation);
+                }
+            }
         }
     }
 
