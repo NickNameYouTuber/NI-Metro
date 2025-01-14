@@ -362,25 +362,35 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
-    // Инициализация TTS в onCreate или при создании фрагмента
     private void initTextToSpeech() {
+        Log.d("TTS", "Инициализация TextToSpeech");
         textToSpeech = new TextToSpeech(requireContext(), status -> {
             if (status == TextToSpeech.SUCCESS) {
                 // Устанавливаем русский язык
                 int result = textToSpeech.setLanguage(new Locale("ru"));
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "Русский язык не поддерживается");
+                } else {
+                    Log.d("TTS", "Русский язык успешно установлен");
                 }
-                // Установка мужского голоса (если доступен)
+
+                // Получаем список доступных голосов
                 Set<Voice> voices = textToSpeech.getVoices();
                 for (Voice voice : voices) {
-                    if (voice.getLocale().getLanguage().equals("ru") && voice.getName().toLowerCase().contains("male")) {
+                    Log.d("TTS", "Голос: " + voice.getName());
+                    // Ищем голос с именем "ru-RU-Standard-B"
+                    if (voice.getName().equals("ru-ru-x-ruf-network")) {
+                        // Устанавливаем найденный голос
                         textToSpeech.setVoice(voice);
+                        Log.d("TTS", "Голос ru-RU-Standard-B успешно установлен");
                         break;
                     }
                 }
+            } else {
+                Log.e("TTS", "Ошибка инициализации TextToSpeech");
             }
         });
+
         textToSpeechInfo = new TextToSpeech(requireContext(), status -> {
             if (status == TextToSpeech.SUCCESS) {
                 // Устанавливаем русский язык
@@ -388,14 +398,20 @@ public class RouteInfoFragment extends Fragment {
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "Русский язык не поддерживается");
                 }
-                // Установка мужского голоса (если доступен)
+
+                // Получаем список доступных голосов
                 Set<Voice> voices = textToSpeechInfo.getVoices();
                 for (Voice voice : voices) {
-                    if (voice.getLocale().getLanguage().equals("ru") && voice.getName().toLowerCase().contains("male")) {
+                    // Ищем голос с именем "ru-RU-Standard-B"
+                    if (voice.getName().equals("ru-ru-x-ruf-network")) {
+                        // Устанавливаем найденный голос
                         textToSpeechInfo.setVoice(voice);
+                        Log.d("TTS", "Голос ru-RU-Standard-B успешно установлен");
                         break;
                     }
                 }
+            } else {
+                Log.e("TTS", "Ошибка инициализации TextToSpeech");
             }
         });
     }
@@ -504,6 +520,28 @@ public class RouteInfoFragment extends Fragment {
         }
 
         return null;
+    }
+
+    private void displayTransferMap(String transferMap) {
+        if (getActivity() == null) return;
+
+        Log.d("RouteInfoFragment", "Displaying transfer map: " + transferMap);
+
+        getActivity().runOnUiThread(() -> {
+            // Находим ImageView для отображения карты перехода
+            ImageView transferMapImageView = getView().findViewById(R.id.transferMapImageView);
+            if (transferMapImageView != null) {
+                // Получаем идентификатор ресурса drawable по имени
+                int resId = getResources().getIdentifier(transferMap, "drawable", requireContext().getPackageName());
+                if (resId != 0) {
+                    // Устанавливаем карту перехода в ImageView
+                    transferMapImageView.setImageResource(resId);
+                    transferMapImageView.setVisibility(View.VISIBLE);
+                } else {
+                    Log.e("RouteInfoFragment", "Transfer map not found: " + transferMap);
+                }
+            }
+        });
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
@@ -837,6 +875,13 @@ public class RouteInfoFragment extends Fragment {
                 // Обновляем текущую станцию на следующую (первую станцию новой линии)
                 currentStationIndex = transferIndex;
                 previousStation = nextTransferStation;
+
+                Transfer transfer = findTransferBetweenStations(currentStation, nextTransferStation);
+                if (transfer != null && transfer.getTransferMap() != null) {
+                    Log.d("RouteInfoFragment", "Transfer found between " + transfer.getStations().get(0));
+                    // Отображаем карту перехода
+                    displayTransferMap(transfer.getTransferMap());
+                }
 
                 // Обновляем отображение маршрута
                 updateRouteDisplay(currentStationIndex);

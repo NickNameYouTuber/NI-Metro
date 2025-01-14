@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
-                 />
+                android:contentDescription="@string/transfer_map_description" />
             <TextView
                 android:id="@+id/nearestTrainsTitle"
                 android:textColor="@color/textPrimary"

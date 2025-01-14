@@ -40,7 +40,6 @@ public class Transfer implements Parcelable {
         stations = in.createTypedArrayList(Station.CREATOR);
         time = in.readInt();
         type = in.readString();
-        transferMap = in.readString();
         transitionTexts = new HashMap<>();
         in.readMap(transitionTexts, String.class.getClassLoader());
     }
@@ -67,7 +66,6 @@ public class Transfer implements Parcelable {
         dest.writeTypedList(stations);
         dest.writeInt(time);
         dest.writeString(type);
-        dest.writeString(transferMap);
         dest.writeMap(transitionTexts);
     }
 

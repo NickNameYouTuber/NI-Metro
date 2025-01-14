@@ -10811,6 +10811,7 @@
           "METRO_712",
           "METRO_610"
         ],
+        "transfer_map": "cross_2_2",
         "time": 3,
         "type": "crossplatform"
       },
@@ -10924,6 +10925,7 @@
           "METRO_715",
           "METRO_1513"
         ],
+        "transfer_map": "cross_1_1",
         "time": 3,
         "type": "default"
       },

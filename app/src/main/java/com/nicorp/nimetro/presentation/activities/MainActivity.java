@@ -418,7 +418,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
             int time = transferObject.optInt("time", 3);
             String type = transferObject.optString("type", "regular");
-            transfers.add(new Transfer(transferStations, time, type));
+            String transferMap = transferObject.optString("transfer_map", null);
+            transfers.add(new Transfer(transferStations, time, type, transferMap));
         }
 
 
