@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +58,7 @@ import com.nicorp.nimetro.domain.entities.TariffCallback;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
+import com.nicorp.nimetro.presentation.views.AnimatedPathMapView;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 
 import org.json.JSONException;
@@ -66,6 +68,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -97,6 +100,7 @@ public class RouteInfoFragment extends Fragment {
     private boolean isExpanded = false;
     private TextToSpeech textToSpeech;
     private TextToSpeech textToSpeechInfo;
+    private AnimatedPathMapView transferMapView;
 
     private TextView routeTime;
     private TextView routeStationsCount;
@@ -144,6 +148,7 @@ public class RouteInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_route_info, container, false);
+        transferMapView = view.findViewById(R.id.transferMapView);
 
         // Инициализация кнопки
         startRouteButton = view.findViewById(R.id.startRouteButton);
@@ -525,23 +530,60 @@ public class RouteInfoFragment extends Fragment {
     private void displayTransferMap(String transferMap) {
         if (getActivity() == null) return;
 
-        Log.d("RouteInfoFragment", "Displaying transfer map: " + transferMap);
-
         getActivity().runOnUiThread(() -> {
-            // Находим ImageView для отображения карты перехода
-            ImageView transferMapImageView = getView().findViewById(R.id.transferMapImageView);
-            if (transferMapImageView != null) {
-                // Получаем идентификатор ресурса drawable по имени
-                int resId = getResources().getIdentifier(transferMap, "drawable", requireContext().getPackageName());
-                if (resId != 0) {
-                    // Устанавливаем карту перехода в ImageView
-                    transferMapImageView.setImageResource(resId);
-                    transferMapImageView.setVisibility(View.VISIBLE);
-                } else {
-                    Log.e("RouteInfoFragment", "Transfer map not found: " + transferMap);
+            if (transferMapView != null) {
+                // Показываем карту перехода
+                transferMapView.setSvgDrawable(R.drawable.cross_1_1); // Замените на ваш SVG
+
+                // Устанавливаем точки для анимации пути
+                List<PointF> points = getTransferPathPoints(transferMap); // Метод для получения точек пути
+                transferMapView.setPath(points);
+
+                // Настраиваем внешний вид анимации
+                transferMapView.setPathColor(Color.BLUE);
+                transferMapView.setStrokeWidth(10f);
+                transferMapView.setDashIntervals(50f, 30f);
+                transferMapView.setAnimationDuration(1000); // 1 секунда на цикл
+
+                transferMapView.setVisibility(View.VISIBLE);
+
+                // Скрываем группу элементов "Время", "Станций" и т.д.
+                LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
+                if (routeInfoGroup != null) {
+                    routeInfoGroup.setVisibility(View.GONE);
                 }
             }
         });
+    }
+
+    private void hideTransferMap() {
+        if (getActivity() == null) return;
+
+        getActivity().runOnUiThread(() -> {
+            if (transferMapView != null) {
+                transferMapView.setVisibility(View.GONE);
+
+                // Показываем группу элементов "Время", "Станций" и т.д.
+                LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
+                if (routeInfoGroup != null) {
+                    routeInfoGroup.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private List<PointF> getTransferPathPoints(String transferMap) {
+        // Здесь реализуйте логику для получения точек пути на основе transferMap
+        // Например, можно использовать предопределенные точки или загружать их из ресурсов
+        return Arrays.asList(
+                new PointF(790f, 1050f),
+                new PointF(720f, 910f),
+                new PointF(1030f, 750f),
+                new PointF(960f, 610f),
+                new PointF(920f, 600f),
+                new PointF(930f, 570f),
+                new PointF(270f, 180f)
+        );
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
