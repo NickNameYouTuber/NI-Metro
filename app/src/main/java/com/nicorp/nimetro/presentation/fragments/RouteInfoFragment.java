@@ -56,6 +56,7 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.TariffCallback;
 import com.nicorp.nimetro.domain.entities.Transfer;
+import com.nicorp.nimetro.domain.entities.TransferRoute;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.AnimatedPathMapView;
@@ -513,7 +514,7 @@ public class RouteInfoFragment extends Fragment {
 
     private Station findNextTransferStation(List<Station> route, Station currentStation) {
         int currentIndex = route.indexOf(currentStation);
-        if (currentIndex == -1 || currentIndex >= route.size() - 1) {
+        if (currentIndex == -1 || currentIndex >= route.size() - 2) {
             return null; // Текущая станция не найдена или это последняя станция
         }
 
@@ -914,15 +915,24 @@ public class RouteInfoFragment extends Fragment {
 
             // Если текущая станция - это станция пересадки
             if (currentIndex == transferIndex - 1) {
+                // Получаем предыдущую станцию из маршрута
+                Log.d("RouteInfoFragment", "Current station: " + currentStation.getName());
+                Station prevStation = (currentIndex > 0) ? route.get(currentIndex - 1) : null;
+                Log.d("RouteInfoFragment", "Previous station: " + Objects.requireNonNull(prevStation).getName());
+
                 // Обновляем текущую станцию на следующую (первую станцию новой линии)
                 currentStationIndex = transferIndex;
                 previousStation = nextTransferStation;
 
                 Transfer transfer = findTransferBetweenStations(currentStation, nextTransferStation);
-                if (transfer != null && transfer.getTransferMap() != null) {
-                    Log.d("RouteInfoFragment", "Transfer found between " + transfer.getStations().get(0));
-                    // Отображаем карту перехода
-                    displayTransferMap(transfer.getTransferMap());
+                if (transfer != null) {
+                    // Передаем предыдущую станцию в getTransferRoute
+                    TransferRoute transferRoute = transfer.getTransferRoute(prevStation, currentStation, nextTransferStation);
+                    if (transferRoute != null && transferRoute.getTransferMap() != null) {
+                        Log.d("RouteInfoFragment", "Transfer found between " + transfer.getStations().get(0));
+                        // Отображаем карту перехода
+                        displayTransferMap(transferRoute);
+                    }
                 }
 
                 // Обновляем отображение маршрута
@@ -963,7 +973,6 @@ public class RouteInfoFragment extends Fragment {
                     });
                 }
 
-
                 // Отправляем уведомление о переходе
                 sendTransferNotification(transferMessage);
 
@@ -973,6 +982,57 @@ public class RouteInfoFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void displayTransferMap(TransferRoute transferRoute) {
+        if (getActivity() == null) return;
+
+        getActivity().runOnUiThread(() -> {
+            if (transferMapView != null) {
+                // Показываем карту перехода
+                transferMapView.setSvgDrawable(getDrawableResource(transferRoute.getTransferMap())); // Замените на ваш метод получения ресурса
+
+                // Устанавливаем точки для анимации пути
+                List<PointF> points = getTransferPathPoints(transferRoute.getWay()); // Метод для получения точек пути
+                transferMapView.setPath(points);
+
+                // Настраиваем внешний вид анимации
+                transferMapView.setPathColor(Color.BLUE);
+                transferMapView.setStrokeWidth(10f);
+                transferMapView.setDashIntervals(50f, 30f);
+                transferMapView.setAnimationDuration(1000); // 1 секунда на цикл
+
+                transferMapView.setVisibility(View.VISIBLE);
+
+                // Скрываем группу элементов "Время", "Станций" и т.д.
+                LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
+                if (routeInfoGroup != null) {
+                    routeInfoGroup.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private int getDrawableResource(String transferMap) {
+        // Здесь реализуйте логику для получения ресурса drawable по имени
+        switch (transferMap) {
+            case "cross_2_2":
+                return R.drawable.cross_2_2;
+            // Добавьте другие случаи по мере необходимости
+            default:
+                return R.drawable.cross_1_1;
+        }
+    }
+
+    private List<PointF> getTransferPathPoints(List<String> way) {
+        List<PointF> points = new ArrayList<>();
+        for (String point : way) {
+            String[] coordinates = point.split(":");
+            float x = Float.parseFloat(coordinates[0]);
+            float y = Float.parseFloat(coordinates[1]);
+            points.add(new PointF(x, y));
+        }
+        return points;
     }
 
     private Transfer findTransferBetweenStations(Station from, Station to) {

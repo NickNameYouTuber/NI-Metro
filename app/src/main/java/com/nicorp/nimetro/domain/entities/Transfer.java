@@ -2,6 +2,7 @@ package com.nicorp.nimetro.domain.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Transfer implements Parcelable {
     private String type;
     private String transferMap;
     private Map<String, String> transitionTexts; // Тексты переходов между станциями
+    private List<TransferRoute> transferRoutes; // Маршруты перехода
 
     public String getTransferMap() {
         return transferMap;
@@ -29,11 +31,12 @@ public class Transfer implements Parcelable {
         this.transitionTexts = generateTransitionTexts();
     }
 
-    public Transfer(List<Station> stations, int time, String type, String transferMap) {
+    public Transfer(List<Station> stations, int time, String type, String transferMap, List<TransferRoute> transferRoutes) {
         this.stations = stations;
         this.time = time;
         this.type = type;
         this.transferMap = transferMap;
+        this.transferRoutes = transferRoutes;
     }
 
     protected Transfer(Parcel in) {
@@ -43,6 +46,7 @@ public class Transfer implements Parcelable {
         transferMap = in.readString();
         transitionTexts = new HashMap<>();
         in.readMap(transitionTexts, String.class.getClassLoader());
+        transferRoutes = in.createTypedArrayList(TransferRoute.CREATOR);
     }
 
     public static final Creator<Transfer> CREATOR = new Creator<Transfer>() {
@@ -69,6 +73,7 @@ public class Transfer implements Parcelable {
         dest.writeString(type);
         dest.writeString(transferMap);
         dest.writeMap(transitionTexts);
+        dest.writeTypedList(transferRoutes);
     }
 
     public List<Station> getStations() {
@@ -81,6 +86,10 @@ public class Transfer implements Parcelable {
 
     public String getType() {
         return type;
+    }
+
+    public List<TransferRoute> getTransferRoutes() {
+        return transferRoutes;
     }
 
     /**
@@ -123,6 +132,31 @@ public class Transfer implements Parcelable {
     public String getTransitionText(Station from, Station to) {
         String key = from.getId() + "_to_" + to.getId();
         return transitionTexts.getOrDefault(key, "Переход недоступен.");
+    }
+
+    /**
+     * Возвращает маршрут перехода между двумя станциями.
+     */
+    public TransferRoute getTransferRoute(Station prev, Station from, Station to) {
+        for (TransferRoute route : transferRoutes) {
+            Log.d("Transfer", "Route: " + route.getFrom() + " -> " + route.getTo() + " -> " + route.getPrev());
+            Log.d("Transfer", "From: " + from.getName() + " To: " + to.getName() + " Prev: " + prev.getName());
+            // Проверяем, подходит ли маршрут для текущего перехода
+            if (route.getFrom().equals(from.getId()) && route.getTo().equals(to.getId())) {
+                Log.d("Transfer", "Found route: " + route.getFrom());
+                Log.d("Transfer", "Found route: " + route.getTo());
+                Log.d("Transfer", "Found route: " + route.getPrev());
+                // Если предыдущая станция указана, используем её для выбора варианта
+                if (prev != null && route.getPrev() != null && route.getPrev().equals(prev.getId())) {
+                    return route;
+                }
+                // Если предыдущая станция не указана, используем вариант по умолчанию
+                else if (route.getPrev() == null) {
+                    return route;
+                }
+            }
+        }
+        return null; // Если подходящий маршрут не найден
     }
 
     @Override

@@ -38,6 +38,7 @@ import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.Transfer;
+import com.nicorp.nimetro.domain.entities.TransferRoute;
 import com.nicorp.nimetro.domain.entities.ZoneBasedTariff;
 import com.nicorp.nimetro.presentation.adapters.StationPagerAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
@@ -419,7 +420,30 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             int time = transferObject.optInt("time", 3);
             String type = transferObject.optString("type", "regular");
             String transferMap = transferObject.optString("transfer_map", null);
-            transfers.add(new Transfer(transferStations, time, type, transferMap));
+
+            // Парсинг transfer_routes
+            List<TransferRoute> transferRoutes = new ArrayList<>();
+            if (transferObject.has("transfers_routes")) {
+                JSONArray transferRoutesArray = transferObject.getJSONArray("transfers_routes");
+                for (int k = 0; k < transferRoutesArray.length(); k++) {
+                    JSONObject routeObject = transferRoutesArray.getJSONObject(k);
+                    String routeTransferMap = routeObject.optString("transfer_map", null);
+                    String prev = routeObject.optString("prev", null);
+                    String from = routeObject.optString("from", null);
+                    String to = routeObject.optString("to", null);
+                    JSONArray wayArray = routeObject.optJSONArray("way");
+                    List<String> way = new ArrayList<>();
+                    if (wayArray != null) {
+                        for (int l = 0; l < wayArray.length(); l++) {
+                            way.add(wayArray.getString(l));
+                        }
+                    }
+                    transferRoutes.add(new TransferRoute(routeTransferMap, from, to, way, prev));
+                }
+            }
+
+            // Создание объекта Transfer с учетом transferRoutes
+            transfers.add(new Transfer(transferStations, time, type, transferMap, transferRoutes));
         }
 
 

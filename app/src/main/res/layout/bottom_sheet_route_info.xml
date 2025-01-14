@@ -60,6 +60,7 @@
                 android:minWidth="300dp"
                 android:adjustViewBounds="true"
                 android:visibility="gone"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"/>
 

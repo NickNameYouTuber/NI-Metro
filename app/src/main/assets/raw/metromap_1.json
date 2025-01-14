@@ -6341,6 +6341,8 @@
             "name": "Угрешская",
             "x": 1556,
             "y": 1176,
+            "latitude": 55.717944,
+            "longitude": 37.695555,
             "textPosition": 0,
             "neighbors": [
               [
@@ -10811,7 +10813,47 @@
           "METRO_712",
           "METRO_610"
         ],
-        "transfer_map": "cross_2_2",
+        "transfers_routes": [
+          {
+            "transfer_map": "cross_2_2",
+            "prev": "METRO_711",
+            "from": "METRO_712",
+            "to": "METRO_610",
+            "way": [
+              "700:750",
+              "700:800",
+              "600:800",
+              "600:400",
+              "700:400",
+              "700:450"
+            ]
+          },
+          {
+            "transfer_map": "cross_2_2",
+            "prev": "METRO_713",
+            "from": "METRO_712",
+            "to": "METRO_610",
+            "next": "METRO_611",
+            "way": [
+              "600:400",
+              "600:800"
+            ]
+          },
+          {
+            "transfer_map": "cross_2_2",
+            "prev": "METRO_611",
+            "from": "METRO_610",
+            "to": "METRO_712",
+            "way": [
+              "700:450",
+              "700:400",
+              "600:400",
+              "600:800",
+              "700:800",
+              "700:750"
+            ]
+          }
+        ],
         "time": 3,
         "type": "crossplatform"
       },
@@ -10925,7 +10967,36 @@
           "METRO_715",
           "METRO_1513"
         ],
-        "transfer_map": "cross_1_1",
+        "transfers_routes": [
+          {
+            "transfer_map": "cross_1_1",
+            "from": "METRO_715",
+            "to": "METRO_1513",
+            "way": [
+              "790:1050",
+              "720:910",
+              "1030:750",
+              "960:610",
+              "920:600",
+              "930:570",
+              "270:180"
+            ]
+          },
+          {
+            "transfer_map": "cross_1_1",
+            "from": "METRO_1513",
+            "to": "METRO_715",
+            "way": [
+              "270:180",
+              "930:570",
+              "920:600",
+              "960:610",
+              "1030:750",
+              "720:910",
+              "790:1050"
+            ]
+          }
+        ],
         "time": 3,
         "type": "default"
       },
