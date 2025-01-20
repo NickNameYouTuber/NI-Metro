@@ -158,6 +158,7 @@ public class StationTrackingService extends Service {
         if (elapsedTime >= travelTime * 60 * 1000) { // переводим время в миллисекунды
             currentStation = nextStation;
             currentStationIndex = findStationIndex(currentStation);
+            lastStationChangeTime = System.currentTimeMillis(); // Обновляем время последнего изменения станции
             updateNotification(currentStation);
 
             // Обновляем время начала для следующего интервала
@@ -234,18 +235,37 @@ public class StationTrackingService extends Service {
         }
     }
 
+    private static final long MIN_STATION_ARRIVAL_TIME = 30000; // 30 секунд
+    private long lastStationChangeTime = 0; // Время последнего изменения станции
+
     private void updateUserPosition(Location location) {
         if (route == null || route.isEmpty()) {
             return;
         }
 
         Station nearestStation = findNearestStation(location.getLatitude(), location.getLongitude());
-        if (nearestStation != null && !nearestStation.equals(currentStation)) {
-            currentStation = nearestStation;
-            currentStationIndex = findStationIndex(currentStation);
-            updateNotification(currentStation);
-            sendStationUpdateBroadcast();
+        if (nearestStation != null) {
+            // Проверяем, что nearestStation является следующей станцией в маршруте
+            if (isNextStationInRoute(nearestStation)) {
+                long currentTime = System.currentTimeMillis();
+                // Проверяем, что прошло достаточно времени с момента последнего изменения станции
+                if (currentTime - lastStationChangeTime >= MIN_STATION_ARRIVAL_TIME) {
+                    currentStation = nearestStation;
+                    currentStationIndex = findStationIndex(currentStation);
+                    lastStationChangeTime = currentTime; // Обновляем время последнего изменения станции
+                    updateNotification(currentStation);
+                    sendStationUpdateBroadcast();
+                }
+            }
         }
+    }
+
+    private boolean isNextStationInRoute(Station station) {
+        if (currentStationIndex < route.size() - 1) {
+            Station nextStation = route.get(currentStationIndex + 1);
+            return nextStation.getId().equals(station.getId());
+        }
+        return false;
     }
 
     private void sendStationUpdateBroadcast() {
