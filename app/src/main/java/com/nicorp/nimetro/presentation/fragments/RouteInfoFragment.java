@@ -1,11 +1,14 @@
 package com.nicorp.nimetro.presentation.fragments;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.Context.RECEIVER_EXPORTED;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -34,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -193,14 +197,12 @@ public class RouteInfoFragment extends Fragment {
             isRouteActive = true;
             isAlmostArrivedNotificationSent = false;
             resetTransferTracking(); // Reset transfer tracking when starting a new route
-            startLocationTracking();
 
-            Station startStation = route.get(0);
-            mainActivity.startStationTrackingService(startStation);
-
-            // Сбрасываем текущий индекс и предыдущую станцию
-            currentStationIndex = 0;
-            previousStation = null;
+            // Запуск сервиса
+            Intent serviceIntent = new Intent(requireContext(), StationTrackingService.class);
+            serviceIntent.putParcelableArrayListExtra("route", new ArrayList<>(route));
+            serviceIntent.putExtra("currentStation", route.get(0)); // Передаем начальную станцию
+            requireContext().startService(serviceIntent);
 
             // Обновляем отображение маршрута
             updateRouteDisplay(0); // Начинаем с первой станции
@@ -214,16 +216,14 @@ public class RouteInfoFragment extends Fragment {
     private void stopRouteTracking() {
         if (!isRouteActive) return; // Уже остановлено
         isRouteActive = false;
-        stopLocationTracking();
-        mainActivity.stopStationTrackingService();
+
+        // Остановка сервиса
+        Intent serviceIntent = new Intent(requireContext(), StationTrackingService.class);
+        requireContext().stopService(serviceIntent);
 
         // Обновляем текст кнопки и заголовка
         startRouteButton.setText("Поехали");
         routeTitle.setText("Краткая информация");
-
-        // Сбрасываем текущий индекс и предыдущую станцию
-        currentStationIndex = 0;
-        previousStation = null;
 
         // Очищаем маршрут на карте
         if (metroMapView != null) {
@@ -234,6 +234,43 @@ public class RouteInfoFragment extends Fragment {
         // Сбрасываем уведомления
         isAlmostArrivedNotificationSent = false;
         resetTransferTracking();
+    }
+
+    private final BroadcastReceiver stationUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.hasExtra("currentStation")) {
+                Station currentStation = intent.getParcelableExtra("currentStation");
+                Log.d("RouteInfoFragment", "Current station from broadcast: " + currentStation.getName());
+                Log.d("RouteInfoFragment", "Current station index from broadcast: " + route.indexOf(currentStation));
+                for (int i = 0; i < route.size(); i++) {
+                    if (route.get(i).getId().equals(currentStation.getId())) {
+                        updateRouteDisplay(i);
+                        break;
+                    }
+                }
+                if (currentStation != null) {
+                    updateRouteDisplay(route.indexOf(currentStation));
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (getContext() != null) {
+            IntentFilter filter = new IntentFilter("com.nicorp.nimetro.UPDATE_STATION");
+            getContext().registerReceiver(stationUpdateReceiver, filter, RECEIVER_EXPORTED);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (getContext() != null) {
+            getContext().unregisterReceiver(stationUpdateReceiver);
+        }
     }
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -317,7 +354,10 @@ public class RouteInfoFragment extends Fragment {
             // Обновляем предыдущую станцию
             previousStation = nearestStation;
 
-            metroMapView.updateUserPosition(nearestStation);
+            // Обновляем позицию пользователя на карте
+            requireActivity().runOnUiThread(() -> {
+                metroMapView.updateUserPosition(nearestStation);
+            });
 
             // Обновляем отображение маршрута
             updateRouteDisplay(currentStationIndex);

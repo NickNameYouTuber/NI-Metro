@@ -719,6 +719,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             hideStationsList();
         }
     }
+
     private FusedLocationProviderClient fusedLocationClient;
 
     private void requestLocation() {
@@ -748,22 +749,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 });
     }
 
-    /**
-     * Метод для поиска ближайшей станции к пользователю.
-     *
-     * @param userLatitude  Широта пользователя
-     * @param userLongitude Долгота пользователя
-     * @return Ближайшая станция
-     */
     private Station findNearestStation(double userLatitude, double userLongitude) {
         Station nearestStation = null;
         double minDistance = Double.MAX_VALUE;
 
-        for (Station station : stations) {
-            double distance = station.distanceTo(userLatitude, userLongitude);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestStation = station;
+        // Объединяем все станции (метро, электрички, речной трамвай)
+        List<Station> allStations = new ArrayList<>(stations);
+        allStations.addAll(suburbanStations);
+        allStations.addAll(riverTramStations);
+
+        for (Station station : allStations) {
+            if (station.getLatitude() != 0.0 && station.getLongitude() != 0.0) {
+                double distance = station.distanceTo(userLatitude, userLongitude);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestStation = station;
+                }
             }
         }
 

@@ -1,22 +1,36 @@
 package com.nicorp.nimetro.services;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
+
+import java.util.List;
 
 public class StationTrackingService extends Service {
 
@@ -26,7 +40,12 @@ public class StationTrackingService extends Service {
     private static boolean isRunning = false;
 
     private Station currentStation;
-    private Station previousStation; // Храним предыдущую станцию для сравнения
+    private Station previousStation;
+    private List<Station> route;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    private Handler handler = new Handler();
+    private Runnable locationUpdateRunnable;
 
     @Override
     public void onCreate() {
@@ -38,30 +57,106 @@ public class StationTrackingService extends Service {
         isRunning = true;
         createNotificationChannel();
         createArrivalNotificationChannel();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationUpdateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                requestLocationUpdates();
+                handler.postDelayed(this, 10000); // Обновляем каждые 10 секунд
+            }
+        };
+
+        handler.post(locationUpdateRunnable);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         isRunning = false;
+        handler.removeCallbacks(locationUpdateRunnable);
+        stopLocationUpdates();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.hasExtra("currentStation")) {
-            currentStation = (Station) intent.getParcelableExtra("currentStation");
+        if (intent != null && intent.hasExtra("route")) {
+            route = intent.getParcelableArrayListExtra("route");
+            currentStation = intent.getParcelableExtra("currentStation");
 
-            // Проверяем, изменилась ли станция
             if (previousStation == null || !currentStation.equals(previousStation)) {
-                // Обновляем уведомление только если станция изменилась
                 updateNotification(currentStation);
-                previousStation = currentStation; // Обновляем предыдущую станцию
+                previousStation = currentStation;
             }
         }
 
-        // Запускаем сервис в foreground mode
         startForeground(NOTIFICATION_ID, createNotification(currentStation));
         return START_STICKY;
+    }
+
+    private void requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY)
+                .setIntervalMillis(10000)
+                .setMinUpdateIntervalMillis(5000)
+                .build();
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateUserPosition(location);
+                }
+            }
+        };
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    private void stopLocationUpdates() {
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+    private void updateUserPosition(Location location) {
+        if (route == null || route.isEmpty()) {
+            return;
+        }
+
+        Station nearestStation = findNearestStation(location.getLatitude(), location.getLongitude());
+        if (nearestStation != null && !nearestStation.equals(currentStation)) {
+            currentStation = nearestStation;
+            updateNotification(currentStation);
+
+            // Передача текущей станции в RouteInfoFragment
+            Intent intent = new Intent("com.nicorp.nimetro.UPDATE_STATION");
+            intent.putExtra("currentStation", currentStation);
+            sendBroadcast(intent);
+            Log.d("StationTrackingService", "Broadcast sent for station: " + currentStation.getName());
+        }
+    }
+
+    private Station findNearestStation(double latitude, double longitude) {
+        Station nearestStation = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Station station : route) {
+            double distance = station.distanceTo(latitude, longitude);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestStation = station;
+            }
+        }
+
+        return nearestStation;
     }
 
     @Nullable
@@ -75,7 +170,7 @@ public class StationTrackingService extends Service {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Station Tracking Service",
-                    NotificationManager.IMPORTANCE_LOW // Устанавливаем низкий приоритет
+                    NotificationManager.IMPORTANCE_LOW
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
@@ -95,8 +190,8 @@ public class StationTrackingService extends Service {
                 .setContentText(stationName)
                 .setSmallIcon(R.drawable.ic_m_icon)
                 .setContentIntent(pendingIntent)
-                .setOnlyAlertOnce(true) // Уведомление не будет "звучать" при обновлении
-                .setPriority(NotificationCompat.PRIORITY_LOW) // Низкий приоритет
+                .setOnlyAlertOnce(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
     }
 
