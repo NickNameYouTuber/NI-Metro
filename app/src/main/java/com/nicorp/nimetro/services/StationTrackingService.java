@@ -112,6 +112,9 @@ public class StationTrackingService extends Service {
                 updateNotification(currentStation);
                 previousStation = currentStation;
             }
+
+            // Сбрасываем флаг первого обновления при новом маршруте
+            isFirstUpdate = true;
         }
 
         startForeground(NOTIFICATION_ID, createNotification(currentStation));
@@ -156,16 +159,16 @@ public class StationTrackingService extends Service {
 
         // Если прошло достаточно времени, переходим к следующей станции
         if (elapsedTime >= travelTime * 60 * 1000) { // переводим время в миллисекунды
-            currentStation = nextStation;
-            currentStationIndex = findStationIndex(currentStation);
-            lastStationChangeTime = System.currentTimeMillis(); // Обновляем время последнего изменения станции
-            updateNotification(currentStation);
-
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastStationUpdateTime >= MIN_STATION_TIME) {
+                currentStation = nextStation;
+                currentStationIndex = findStationIndex(currentStation);
+                lastStationUpdateTime = currentTime;
+                updateNotification(currentStation);
+                sendStationUpdateBroadcast();
+            }
             // Обновляем время начала для следующего интервала
             timerStartTime = System.currentTimeMillis();
-
-            // Отправляем broadcast с обновлением
-            sendStationUpdateBroadcast();
         }
 
         // Планируем следующую проверку
@@ -235,9 +238,9 @@ public class StationTrackingService extends Service {
         }
     }
 
-    private static final long MIN_STATION_ARRIVAL_TIME = 30000; // 30 секунд
-    private long lastStationChangeTime = 0; // Время последнего изменения станции
-
+    private static final long MIN_STATION_TIME = 90000; // 30 seconds minimum time between stations
+    private long lastStationUpdateTime = 0;
+    private boolean isFirstUpdate = true;
     private void updateUserPosition(Location location) {
         if (route == null || route.isEmpty()) {
             return;
@@ -245,16 +248,33 @@ public class StationTrackingService extends Service {
 
         Station nearestStation = findNearestStation(location.getLatitude(), location.getLongitude());
         if (nearestStation != null) {
-            // Проверяем, что nearestStation является следующей станцией в маршруте
-            if (isNextStationInRoute(nearestStation)) {
-                long currentTime = System.currentTimeMillis();
-                // Проверяем, что прошло достаточно времени с момента последнего изменения станции
-                if (currentTime - lastStationChangeTime >= MIN_STATION_ARRIVAL_TIME) {
-                    currentStation = nearestStation;
-                    currentStationIndex = findStationIndex(currentStation);
-                    lastStationChangeTime = currentTime; // Обновляем время последнего изменения станции
-                    updateNotification(currentStation);
-                    sendStationUpdateBroadcast();
+            int nearestStationIndex = findStationIndex(nearestStation);
+            long currentTime = System.currentTimeMillis();
+
+            Log.d("StationTrackingService", "currentTime: " + currentTime);
+            Log.d("StationTrackingService", "lastStationUpdateTime: " + lastStationUpdateTime);
+
+            // Check if enough time has passed since last station update
+            boolean enoughTimePassed = (currentTime - lastStationUpdateTime) >= MIN_STATION_TIME;
+
+            // Check if the nearest station is the next station in sequence
+            boolean isNextStation = nearestStationIndex == currentStationIndex + 1;
+
+            // Update only if:
+            // 1. It's the next station in sequence
+            // 2. Enough time has passed since last update
+            // 3. The station is different from current
+            // 4. Or it's the first update
+            if ((isNextStation && enoughTimePassed && !nearestStation.equals(currentStation)) || isFirstUpdate) {
+                currentStation = nearestStation;
+                currentStationIndex = nearestStationIndex;
+                lastStationUpdateTime = currentTime;
+                updateNotification(currentStation);
+                sendStationUpdateBroadcast();
+
+                // После первого обновления сбрасываем флаг
+                if (isFirstUpdate) {
+                    isFirstUpdate = false;
                 }
             }
         }
