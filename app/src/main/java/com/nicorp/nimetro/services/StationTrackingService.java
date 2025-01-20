@@ -37,6 +37,7 @@ public class StationTrackingService extends Service {
     private static final String CHANNEL_ID = "StationTrackingChannel";
     private static final String ARRIVAL_CHANNEL_ID = "arrival_channel";
     private static final int NOTIFICATION_ID = 1;
+    private static final long GPS_TIMEOUT = 30000; // 30 секунд
     private static boolean isRunning = false;
 
     private Station currentStation;
@@ -47,11 +48,19 @@ public class StationTrackingService extends Service {
     private Handler handler = new Handler();
     private Runnable locationUpdateRunnable;
 
+    // Новые поля для отслеживания времени
+    private long lastLocationTime = 0;
+    private boolean isTimerMode = false;
+    private long timerStartTime = 0;
+    private int currentStationIndex = 0;
+    private Handler timerHandler = new Handler();
+    private Runnable timerRunnable;
+
     @Override
     public void onCreate() {
         super.onCreate();
         if (isRunning) {
-            stopSelf(); // Останавливаем если уже запущен
+            stopSelf();
             return;
         }
         isRunning = true;
@@ -64,7 +73,17 @@ public class StationTrackingService extends Service {
             @Override
             public void run() {
                 requestLocationUpdates();
-                handler.postDelayed(this, 10000); // Обновляем каждые 10 секунд
+                checkLocationTimeout();
+                handler.postDelayed(this, 10000);
+            }
+        };
+
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isTimerMode) {
+                    updateStationByTime();
+                }
             }
         };
 
@@ -76,6 +95,7 @@ public class StationTrackingService extends Service {
         super.onDestroy();
         isRunning = false;
         handler.removeCallbacks(locationUpdateRunnable);
+        timerHandler.removeCallbacks(timerRunnable);
         stopLocationUpdates();
     }
 
@@ -85,6 +105,9 @@ public class StationTrackingService extends Service {
             route = intent.getParcelableArrayListExtra("route");
             currentStation = intent.getParcelableExtra("currentStation");
 
+            // Найти индекс текущей станции в маршруте
+            currentStationIndex = findStationIndex(currentStation);
+
             if (previousStation == null || !currentStation.equals(previousStation)) {
                 updateNotification(currentStation);
                 previousStation = currentStation;
@@ -93,6 +116,87 @@ public class StationTrackingService extends Service {
 
         startForeground(NOTIFICATION_ID, createNotification(currentStation));
         return START_STICKY;
+    }
+
+    private void checkLocationTimeout() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastLocationTime > GPS_TIMEOUT && !isTimerMode) {
+            // Переключаемся на режим таймера
+            switchToTimerMode();
+        }
+    }
+
+    private void switchToTimerMode() {
+        isTimerMode = true;
+        timerStartTime = System.currentTimeMillis();
+        timerHandler.post(timerRunnable);
+//        Log.d("StationTrackingService", "Switched to timer mode");
+    }
+
+    private void switchToGpsMode() {
+        isTimerMode = false;
+        timerHandler.removeCallbacks(timerRunnable);
+//        Log.d("StationTrackingService", "Switched back to GPS mode");
+    }
+
+    private void updateStationByTime() {
+        if (currentStation == null || route == null || route.isEmpty()) {
+            return;
+        }
+
+        // Находим следующую станцию в маршруте
+        Station nextStation = findNextStation();
+        if (nextStation == null) {
+            return;
+        }
+
+        // Получаем время в пути до следующей станции
+        float travelTime = getTravelTime(currentStation, nextStation) - 0.5f;
+        long elapsedTime = System.currentTimeMillis() - timerStartTime;
+
+        // Если прошло достаточно времени, переходим к следующей станции
+        if (elapsedTime >= travelTime * 60 * 1000) { // переводим время в миллисекунды
+            currentStation = nextStation;
+            currentStationIndex = findStationIndex(currentStation);
+            updateNotification(currentStation);
+
+            // Обновляем время начала для следующего интервала
+            timerStartTime = System.currentTimeMillis();
+
+            // Отправляем broadcast с обновлением
+            sendStationUpdateBroadcast();
+        }
+
+        // Планируем следующую проверку
+        timerHandler.postDelayed(timerRunnable, 1000); // проверяем каждую секунду
+    }
+
+    private Station findNextStation() {
+        if (currentStationIndex < route.size() - 1) {
+            return route.get(currentStationIndex + 1);
+        }
+        return null;
+    }
+
+    private int getTravelTime(Station current, Station next) {
+        for (Station.Neighbor neighbor : current.getNeighbors()) {
+//            Log.d("StationTrackingService", "Neighbor: " + neighbor.getStation().getId());
+            if (neighbor.getStation().getId().equals(next.getId())) {
+//                Log.d("StationTrackingService", "Found neighbor: " + neighbor.getStation().getId());
+                return neighbor.getTime();
+            }
+        }
+        return 180; // возвращаем значение по умолчанию, если время не найдено
+    }
+
+    private int findStationIndex(Station station) {
+        for (int i = 0; i < route.size(); i++) {
+//            Log.d("StationTrackingService", "Station ne: " + route.get(i).getNeighbors().get(0).getStation().getName());
+            if (route.get(i).getId().equals(station.getId())) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private void requestLocationUpdates() {
@@ -112,6 +216,10 @@ public class StationTrackingService extends Service {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
+                    lastLocationTime = System.currentTimeMillis();
+                    if (isTimerMode) {
+                        switchToGpsMode();
+                    }
                     updateUserPosition(location);
                 }
             }
@@ -134,14 +242,17 @@ public class StationTrackingService extends Service {
         Station nearestStation = findNearestStation(location.getLatitude(), location.getLongitude());
         if (nearestStation != null && !nearestStation.equals(currentStation)) {
             currentStation = nearestStation;
+            currentStationIndex = findStationIndex(currentStation);
             updateNotification(currentStation);
-
-            // Передача текущей станции в RouteInfoFragment
-            Intent intent = new Intent("com.nicorp.nimetro.UPDATE_STATION");
-            intent.putExtra("currentStation", currentStation);
-            sendBroadcast(intent);
-            Log.d("StationTrackingService", "Broadcast sent for station: " + currentStation.getName());
+            sendStationUpdateBroadcast();
         }
+    }
+
+    private void sendStationUpdateBroadcast() {
+        Intent intent = new Intent("com.nicorp.nimetro.UPDATE_STATION");
+        intent.putExtra("currentStation", currentStation);
+        sendBroadcast(intent);
+//        Log.d("StationTrackingService", "Broadcast sent for station: " + currentStation.getName());
     }
 
     private Station findNearestStation(double latitude, double longitude) {
@@ -184,10 +295,11 @@ public class StationTrackingService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         String stationName = station != null ? station.getName() : "Неизвестная станция";
+        String trackingMode = isTimerMode ? " (по времени)" : " (по GPS)";
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Текущая станция")
-                .setContentText(stationName)
+                .setContentText(stationName + trackingMode)
                 .setSmallIcon(R.drawable.ic_m_icon)
                 .setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -195,7 +307,7 @@ public class StationTrackingService extends Service {
                 .build();
     }
 
-    public void updateNotification(Station station) {
+    private void updateNotification(Station station) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (notificationManager != null) {
             notificationManager.notify(NOTIFICATION_ID, createNotification(station));
