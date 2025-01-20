@@ -89,7 +89,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     public static boolean isRiverTramMap = false;
 
 
+    private boolean isTrackingServiceRunning = false;
+
     public void startStationTrackingService(Station station) {
+        if (isTrackingServiceRunning) return; // Уже запущен
+
         Intent serviceIntent = new Intent(this, StationTrackingService.class);
         serviceIntent.putExtra("currentStation", station);
 
@@ -98,11 +102,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         } else {
             startService(serviceIntent);
         }
+        isTrackingServiceRunning = true;
     }
 
     public void stopStationTrackingService() {
+        if (!isTrackingServiceRunning) return; // Уже остановлен
+
         Intent serviceIntent = new Intent(this, StationTrackingService.class);
         stopService(serviceIntent);
+        isTrackingServiceRunning = false;
     }
 
     /**
@@ -438,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                             way.add(wayArray.getString(l));
                         }
                     }
-                    transferRoutes.add(new TransferRoute(routeTransferMap, from, to, way, prev));
+                    transferRoutes.add(new TransferRoute(routeTransferMap, from, to, way, prev, null));
                 }
             }
 

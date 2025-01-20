@@ -188,6 +188,7 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void startRouteTracking() {
+        if (isRouteActive) return; // Уже активно
         if (route != null && !route.isEmpty()) {
             isRouteActive = true;
             isAlmostArrivedNotificationSent = false;
@@ -211,6 +212,7 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void stopRouteTracking() {
+        if (!isRouteActive) return; // Уже остановлено
         isRouteActive = false;
         stopLocationTracking();
         mainActivity.stopStationTrackingService();
@@ -322,15 +324,6 @@ public class RouteInfoFragment extends Fragment {
 
             // Обрабатываем переход на следующую линию, если это необходимо
             handleTransfer(nearestStation);
-
-            // Обновляем уведомление
-            Intent serviceIntent = new Intent(getContext(), StationTrackingService.class);
-            serviceIntent.putExtra("currentStation", nearestStation);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                requireActivity().startForegroundService(serviceIntent);
-            } else {
-                requireActivity().startService(serviceIntent);
-            }
 
             // Проверяем, близко ли пользователь к конечной станции
             checkIfNearFinalStation(nearestStation);
@@ -918,7 +911,7 @@ public class RouteInfoFragment extends Fragment {
                 // Получаем предыдущую станцию из маршрута
                 Log.d("RouteInfoFragment", "Current station: " + currentStation.getName());
                 Station prevStation = (currentIndex > 0) ? route.get(currentIndex - 1) : null;
-                Log.d("RouteInfoFragment", "Previous station: " + Objects.requireNonNull(prevStation).getName());
+//                Log.d("RouteInfoFragment", "Previous station: " + Objects.requireNonNull(prevStation).getName());
 
                 // Обновляем текущую станцию на следующую (первую станцию новой линии)
                 currentStationIndex = transferIndex;

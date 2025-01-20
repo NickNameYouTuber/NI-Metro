@@ -23,6 +23,7 @@ public class StationTrackingService extends Service {
     private static final String CHANNEL_ID = "StationTrackingChannel";
     private static final String ARRIVAL_CHANNEL_ID = "arrival_channel";
     private static final int NOTIFICATION_ID = 1;
+    private static boolean isRunning = false;
 
     private Station currentStation;
     private Station previousStation; // Храним предыдущую станцию для сравнения
@@ -30,8 +31,19 @@ public class StationTrackingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (isRunning) {
+            stopSelf(); // Останавливаем если уже запущен
+            return;
+        }
+        isRunning = true;
         createNotificationChannel();
         createArrivalNotificationChannel();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isRunning = false;
     }
 
     @Override
