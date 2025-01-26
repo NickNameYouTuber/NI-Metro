@@ -2,19 +2,34 @@ package com.nicorp.nimetro.presentation.activities;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -254,6 +269,149 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         });
     }
 
+    private void setStationInfo(TextInputEditText editText, Station station) {
+        if (station == null) {
+            editText.setText("");
+            return;
+        }
+
+        Line line = findLineByStation(station);
+
+        SpannableString spannableString;
+        if (line != null) {
+            spannableString = new SpannableString(line.getdisplayNumber() + " " + station.getName());
+            ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor(line.getColor()));
+            spannableString.setSpan(colorSpan, 0, line.getdisplayNumber().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else {
+            spannableString = new SpannableString(station.getName());
+        }
+
+        editText.setText(spannableString);
+    }
+
+    private Line findLineByStation(Station station) {
+        for (Line line : allLines) {
+            if (line.getStations().contains(station)) {
+                return line;
+            }
+        }
+        return null;
+    }
+    private ObjectAnimator startStationAnimator;
+    private ObjectAnimator endStationAnimator;
+    private void showStationInfoLayout(Station station, boolean isStartStation) {
+        // Находим соответствующий FrameLayout
+        FrameLayout container = isStartStation ? findViewById(R.id.startStationContainer) : findViewById(R.id.endStationContainer);
+
+        // Очищаем контейнер перед добавлением нового элемента
+        container.removeAllViews();
+
+        // Создаем View из station_info_layout
+        View stationInfoView = getLayoutInflater().inflate(R.layout.station_info_layout, container, false);
+
+        // Находим TextView для номера линии и названия станции
+        TextView lineNumberTextView = stationInfoView.findViewById(R.id.lineNumberTextView);
+        TextView stationNameTextView = stationInfoView.findViewById(R.id.stationNameTextView);
+        lineNumberTextView.setTextColor(Color.parseColor("#FFFFFF"));
+        stationNameTextView.setTextColor(Color.parseColor("#FFFFFF"));
+        ConstraintLayout containerLayout = stationInfoView.findViewById(R.id.containerLayout);
+
+        ImageView closeButton = stationInfoView.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(v -> {
+            container.removeAllViews();
+            if (isStartStation) {
+                startStationEditText.setVisibility(View.VISIBLE);
+                startStationEditText.setSelected(true);
+                selectedStartStation = null;
+            } else {
+                endStationEditText.setVisibility(View.VISIBLE);
+                endStationEditText.setSelected(true);
+                selectedEndStation = null;
+            }
+        });
+
+        // Устанавливаем данные станции
+        Line line = findLineByStation(station);
+        if (line != null) {
+            lineNumberTextView.setText(line.getdisplayNumber());
+            containerLayout.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(line.getColor())));
+        }
+        stationNameTextView.setText(station.getName());
+        stationNameTextView.setSelected(true);  // Добавлено
+        stationNameTextView.requestFocus();     // Добавлено
+        // В методе showStationInfoLayout после установки текста
+        stationNameTextView.post(() -> {
+            HorizontalScrollView scrollView = stationInfoView.findViewById(R.id.scrollView);
+            int textWidth = stationNameTextView.getWidth();
+            int containerWidth = scrollView.getWidth();
+
+            if (textWidth > containerWidth) {
+                int distance = textWidth - containerWidth;
+
+                // Отменяем предыдущие анимации
+                if (isStartStation && startStationAnimator != null) {
+                    startStationAnimator.cancel();
+                } else if (endStationAnimator != null) {
+                    endStationAnimator.cancel();
+                }
+
+                // 1. Начальная пауза (1 секунда)
+                ValueAnimator startPause = ValueAnimator.ofInt(0, 0).setDuration(1000);
+
+                // 2. Плавная прокрутка вперед за ФИКСИРОВАННЫЕ 4 секунды
+                ObjectAnimator scrollForward = ObjectAnimator.ofInt(scrollView, "scrollX", 0, distance);
+                scrollForward.setDuration(2000); // Фиксированная длительность
+                scrollForward.setInterpolator(new LinearInterpolator());
+
+                // 3. Конечная пауза (1 секунда)
+                ValueAnimator endPause = ValueAnimator.ofInt(0, 0).setDuration(1000);
+
+                // 4. Быстрый возврат за 0.8 секунды
+                ObjectAnimator scrollBack = ObjectAnimator.ofInt(scrollView, "scrollX", distance, 0);
+                scrollBack.setDuration(800);
+                scrollBack.setInterpolator(new AccelerateInterpolator(1.5f));
+
+                AnimatorSet fullSequence = new AnimatorSet();
+                fullSequence.playSequentially(
+                        startPause,    // 1 сек
+                        scrollForward, // 4 сек
+                        endPause,      // 1 сек
+                        scrollBack     // 0.8 сек
+                );
+
+                fullSequence.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        fullSequence.start(); // Общая длительность цикла: 6.8 сек
+                    }
+                });
+
+
+                fullSequence.start();
+            }
+        });
+// В методе закрытия
+        closeButton.setOnClickListener(v -> {
+            if (isStartStation && startStationAnimator != null) {
+                startStationAnimator.cancel();
+                startStationAnimator = null;
+            } else if (endStationAnimator != null) {
+                endStationAnimator.cancel();
+                endStationAnimator = null;
+            }
+            // остальной код закрытия...
+        });
+
+        // Добавляем station_info_layout в контейнер
+        container.addView(stationInfoView);
+
+        // Скрываем TextInputEditText
+        if (isStartStation) {
+            startStationEditText.setVisibility(View.GONE);
+        } else {
+            endStationEditText.setVisibility(View.GONE);
+        }
+    }
 
     private void startLocationUpdates() {
         locationUpdateHandler.post(locationUpdateRunnable);
@@ -692,7 +850,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStartStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
-        startStationEditText.setText(station.getName());
+        setStationInfo(startStationEditText, station);
+
+        // Показываем station_info_layout для начальной станции
+        showStationInfoLayout(station, true);
 
         if (fromStationInfoFragment) {
             hideStationsList();
@@ -707,7 +868,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedEndStation = station;
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
-        endStationEditText.setText(station.getName());
+        setStationInfo(endStationEditText, station);
+
+        // Показываем station_info_layout для конечной станции
+        showStationInfoLayout(station, false);
 
         if (selectedStartStation != null) {
             List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
@@ -865,10 +1029,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     @Override
     public void onStationSelected(Station station) {
         if (startStationEditText.hasFocus()) {
-            startStationEditText.setText(station.getName());
+            setStationInfo(startStationEditText, station);
             onSetStart(station, true);
         } else if (endStationEditText.hasFocus()) {
-            endStationEditText.setText(station.getName());
+            setStationInfo(endStationEditText, station);
             onSetEnd(station, true);
         }
         hideStationsList();
