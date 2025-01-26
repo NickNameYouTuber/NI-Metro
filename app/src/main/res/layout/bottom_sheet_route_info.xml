@@ -224,20 +224,65 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/startRouteButton"
-                    android:layout_marginTop="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_button_background"
-                    android:padding="8dp"
-                    android:text="Поехали"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
             </LinearLayout>
+
+            <!-- Группа "tripinfo" (новая группа) -->
+            <LinearLayout
+                android:id="@+id/tripInfoGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="16dp">
+
+                <!-- Карта перехода для "tripinfo" -->
+                <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
+                    android:id="@+id/tripTransferMapView"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:minHeight="300dp"
+                    android:minWidth="300dp"
+                    android:adjustViewBounds="true"
+                    android:visibility="gone"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Информация о времени до перехода/конца -->
+                <TextView
+                    android:id="@+id/tripTimeRemaining"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="До перехода: 5 мин"
+                    android:textSize="16sp"
+                    android:textColor="@color/textPrimary"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"/>
+
+                <!-- Подсказка о переходе -->
+                <TextView
+                    android:id="@+id/tripTransferHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Перейдите на станцию 'Станция X'"
+                    android:textSize="16sp"
+                    android:textColor="@color/textPrimary"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/startRouteButton"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_button_background"
+                android:padding="8dp"
+                android:text="Поехали"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout

@@ -123,7 +123,10 @@ public class RouteInfoFragment extends Fragment {
     private MainActivity mainActivity;
     private RecyclerView nearestTrainsRecyclerView;
     private TextView routeCost;
+    private LinearLayout tripInfoGroup;
+    private LinearLayout routeInfoGroup;
     private TextView startRouteButton;
+    private boolean isTripStarted = false; // Флаг, указывающий, началась ли поездка
     private boolean isAlmostArrivedNotificationSent = false;
     private boolean isRouteActive = false;
 
@@ -155,7 +158,8 @@ public class RouteInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_route_info, container, false);
         transferMapView = view.findViewById(R.id.transferMapView);
-
+        tripInfoGroup = view.findViewById(R.id.tripInfoGroup);
+        routeInfoGroup = view.findViewById(R.id.routeInfoGroup);
         // Инициализация кнопки
         startRouteButton = view.findViewById(R.id.startRouteButton);
         startRouteButton.setOnClickListener(v -> {
@@ -197,6 +201,8 @@ public class RouteInfoFragment extends Fragment {
         if (route != null && !route.isEmpty()) {
             isRouteActive = true;
             isAlmostArrivedNotificationSent = false;
+            tripInfoGroup.setVisibility(View.VISIBLE);
+            routeInfoGroup.setVisibility(View.GONE);
             resetTransferTracking(); // Reset transfer tracking when starting a new route
 
             // Запуск сервиса
@@ -218,6 +224,8 @@ public class RouteInfoFragment extends Fragment {
     private void stopRouteTracking() {
         if (!isRouteActive) return; // Уже остановлено
         isRouteActive = false;
+        tripInfoGroup.setVisibility(View.GONE);
+        routeInfoGroup.setVisibility(View.VISIBLE);
 
         // Остановка сервиса
         Intent serviceIntent = new Intent(requireContext(), StationTrackingService.class);
