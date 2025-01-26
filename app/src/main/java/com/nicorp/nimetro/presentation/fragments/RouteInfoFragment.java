@@ -240,6 +240,27 @@ public class RouteInfoFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.hasExtra("currentStation")) {
+                Station receivedStation = intent.getParcelableExtra("currentStation");
+                if (receivedStation == null || route == null) return;
+
+                // Ищем станцию в актуальном маршруте
+                int newIndex = -1;
+                for (int i = 0; i < route.size(); i++) {
+                    if (route.get(i).getId().equals(receivedStation.getId())) {
+                        newIndex = i;
+                        break;
+                    }
+                }
+
+                if (newIndex != -1) {
+                    Log.d("RouteUpdate", "Valid station update: " + receivedStation.getName()
+                            + " at index: " + newIndex);
+                    updateRouteDisplay(newIndex);
+                } else {
+                    Log.w("RouteUpdate", "Received unknown station: " + receivedStation.getName());
+                }
+            }
+            if (intent != null && intent.hasExtra("currentStation")) {
                 Station currentStation = intent.getParcelableExtra("currentStation");
                 Log.d("RouteInfoFragment", "Current station from broadcast: " + currentStation.getName());
                 Log.d("RouteInfoFragment", "Current station index from broadcast: " + route.indexOf(currentStation));
@@ -262,6 +283,9 @@ public class RouteInfoFragment extends Fragment {
         if (getContext() != null) {
             IntentFilter filter = new IntentFilter("com.nicorp.nimetro.UPDATE_STATION");
             getContext().registerReceiver(stationUpdateReceiver, filter, RECEIVER_EXPORTED);
+            getContext().registerReceiver(routeCompletionReceiver,
+                    new IntentFilter("com.nicorp.nimetro.ROUTE_COMPLETED"),
+                    RECEIVER_EXPORTED);
         }
     }
 
@@ -338,14 +362,16 @@ public class RouteInfoFragment extends Fragment {
         if (nearestStation != null) {
             int nearestStationIndex = route.indexOf(nearestStation);
 
-            // Проверка на возврат к пройденным станциям
-            if (nearestStationIndex < currentStationIndex) {
-                return; // Игнорируем это обновление
-            }
+            // Игнорировать станции не из маршрута
+            if (nearestStationIndex == -1) return;
 
-            // Проверка на ложное перемещение (не дальше чем на одну станцию)
-            if (Math.abs(nearestStationIndex - currentStationIndex) > 1) {
-                return; // Игнорируем это обновление
+            // Пропускать обновления, если мы уже прошли эту станцию
+            if (nearestStationIndex < currentStationIndex) return;
+
+            // Проверка на финиш
+            if (nearestStationIndex == route.size() - 1) {
+                handleFinalStationArrival();
+                return;
             }
 
             // Обновляем текущий индекс станции
@@ -383,6 +409,13 @@ public class RouteInfoFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void handleFinalStationArrival() {
+        isAlmostArrivedNotificationSent = true;
+        stopRouteTracking();
+        dismiss();
+        showArrivalNotification();
     }
 
     private void checkIfNearFinalStation(Station currentStation) {
@@ -1017,6 +1050,30 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
+    private final BroadcastReceiver routeCompletionReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isRouteActive) {
+                stopRouteTracking();
+                dismiss();
+                showArrivalNotification();
+            }
+        }
+    };
+
+    private void showArrivalNotification() {
+        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "arrival_channel")
+                .setSmallIcon(R.drawable.ic_m_icon)
+                .setContentTitle("Маршрут завершен")
+                .setContentText("Вы прибыли в конечную точку маршрута")
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        if (manager != null) {
+            manager.notify(4, builder.build());
+        }
+    }
+
     private void displayTransferMap(TransferRoute transferRoute) {
         if (getActivity() == null) return;
 
@@ -1118,7 +1175,13 @@ public class RouteInfoFragment extends Fragment {
 
     private int calculateTotalTime() {
         int totalTime = 0;
-        totalTime += (route.size() - 1) * 2;
+        for (int i = 0; i < route.size() - 1; i++) {
+            for (Station station : route) {
+                if (station.getId().equals(route.get(i).getId())) {
+                    totalTime += station.getNeighbors().get(0).getStation().getId().equals(route.get(i + 1).getId()) ? station.getNeighbors().get(0).getTime() : 3;
+                }
+            }
+        }
 
         for (int i = 1; i < route.size(); i++) {
             if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {

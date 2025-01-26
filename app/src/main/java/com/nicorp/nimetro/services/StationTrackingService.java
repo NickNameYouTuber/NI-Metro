@@ -10,10 +10,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -30,6 +32,7 @@ import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StationTrackingService extends Service {
@@ -37,7 +40,11 @@ public class StationTrackingService extends Service {
     private static final String CHANNEL_ID = "StationTrackingChannel";
     private static final String ARRIVAL_CHANNEL_ID = "arrival_channel";
     private static final int NOTIFICATION_ID = 1;
-    private static final long GPS_TIMEOUT = 30000; // 30 секунд
+    private static final long GPS_TIMEOUT = 25000; // 45 секунд
+    private static final float MAX_ACCEPTABLE_ACCURACY = 10000.0f; // Максимальная допустимая погрешность (метры)
+    private static final long POOR_SIGNAL_DURATION_THRESHOLD = 60000; // 1 минута плохого сигнала
+    private static final float MIN_MOVEMENT_DISTANCE = 150.0f; // Минимальное движение для определения стагнации
+    private static final long MIN_STATION_TIME = 90000; // 90 секунд минимальное время между станциями
     private static boolean isRunning = false;
 
     private Station currentStation;
@@ -48,13 +55,19 @@ public class StationTrackingService extends Service {
     private Handler handler = new Handler();
     private Runnable locationUpdateRunnable;
 
-    // Новые поля для отслеживания времени
     private long lastLocationTime = 0;
     private boolean isTimerMode = false;
     private long timerStartTime = 0;
     private int currentStationIndex = 0;
     private Handler timerHandler = new Handler();
     private Runnable timerRunnable;
+
+    private long poorSignalStartTime = 0;
+    private List<Location> lastLocations = new ArrayList<>();
+    private boolean gpsEnabled = false;
+    private long lastStationUpdateTime = 0;
+    private boolean isFirstUpdate = true;
+    private LocationManager locationManager;
 
     @Override
     public void onCreate() {
@@ -66,6 +79,10 @@ public class StationTrackingService extends Service {
         isRunning = true;
         createNotificationChannel();
         createArrivalNotificationChannel();
+        lastLocationTime = System.currentTimeMillis();
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        checkGpsStatus();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -99,21 +116,44 @@ public class StationTrackingService extends Service {
         stopLocationUpdates();
     }
 
+    private void stopLocationUpdates() {
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            // Используем проверку на тип данных
+            if (intent.hasExtra("route") && intent.getParcelableArrayListExtra("route") != null) {
+                route = intent.getParcelableArrayListExtra("route");
+                Log.d("StationTracking", "Route received with size: " + route.size());
+            }
+
+            // Проверяем наличие станции
+            if (intent.hasExtra("currentStation")) {
+                currentStation = intent.getParcelableExtra("currentStation");
+                if (currentStation != null) {
+                    currentStationIndex = findStationIndex(currentStation);
+                    Log.d("StationTracking", "Initial station: " + currentStation.getName()
+                            + " at index: " + currentStationIndex);
+                }
+            }
+        }
         if (intent != null && intent.hasExtra("route")) {
             route = intent.getParcelableArrayListExtra("route");
             currentStation = intent.getParcelableExtra("currentStation");
 
-            // Найти индекс текущей станции в маршруте
             currentStationIndex = findStationIndex(currentStation);
+            Log.d("StationTrackingService", "Current station index: " + currentStationIndex);
+            Log.d("StationTrackingService", "Current station: " + currentStation.getName());
 
             if (previousStation == null || !currentStation.equals(previousStation)) {
                 updateNotification(currentStation);
                 previousStation = currentStation;
             }
 
-            // Сбрасываем флаг первого обновления при новом маршруте
             isFirstUpdate = true;
         }
 
@@ -123,8 +163,9 @@ public class StationTrackingService extends Service {
 
     private void checkLocationTimeout() {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastLocationTime > GPS_TIMEOUT && !isTimerMode) {
-            // Переключаемся на режим таймера
+        if ((currentTime - lastLocationTime) > GPS_TIMEOUT
+                && !isTimerMode
+                && currentStationIndex < route.size() - 1) { // Не активировать для конечной станции
             switchToTimerMode();
         }
     }
@@ -133,46 +174,51 @@ public class StationTrackingService extends Service {
         isTimerMode = true;
         timerStartTime = System.currentTimeMillis();
         timerHandler.post(timerRunnable);
-//        Log.d("StationTrackingService", "Switched to timer mode");
+        Log.d("StationTrackingService", "Switched to timer mode");
     }
 
     private void switchToGpsMode() {
-        isTimerMode = false;
-        timerHandler.removeCallbacks(timerRunnable);
-//        Log.d("StationTrackingService", "Switched back to GPS mode");
+        if (isTimerMode) {
+            isTimerMode = false;
+            timerHandler.removeCallbacks(timerRunnable);
+            Log.d("StationTrackingService", "Switched back to GPS mode");
+
+            lastStationUpdateTime = 0;
+
+            if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                    if (location != null) {
+                        updateUserPosition(location);
+                        updateNotification(currentStation);
+                    }
+                });
+            }
+        }
     }
 
     private void updateStationByTime() {
-        if (currentStation == null || route == null || route.isEmpty()) {
-            return;
-        }
+        if (currentStation == null || route == null || route.isEmpty()) return;
 
-        // Находим следующую станцию в маршруте
         Station nextStation = findNextStation();
-        if (nextStation == null) {
-            return;
-        }
+        if (nextStation == null) return;
 
-        // Получаем время в пути до следующей станции
-        float travelTime = getTravelTime(currentStation, nextStation) - 0.5f;
+        float travelTime = getTravelTime(currentStation, nextStation) - ((float) GPS_TIMEOUT /1000.0f/60.0f);
         long elapsedTime = System.currentTimeMillis() - timerStartTime;
 
-        // Если прошло достаточно времени, переходим к следующей станции
-        if (elapsedTime >= travelTime * 60 * 1000) { // переводим время в миллисекунды
+        if (elapsedTime >= travelTime * 60 * 1000) {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastStationUpdateTime >= MIN_STATION_TIME) {
                 currentStation = nextStation;
                 currentStationIndex = findStationIndex(currentStation);
                 lastStationUpdateTime = currentTime;
                 updateNotification(currentStation);
+                Log.d("StationTrackingService", "Updated to next station by time: " + currentStation.getName());
                 sendStationUpdateBroadcast();
             }
-            // Обновляем время начала для следующего интервала
             timerStartTime = System.currentTimeMillis();
         }
 
-        // Планируем следующую проверку
-        timerHandler.postDelayed(timerRunnable, 1000); // проверяем каждую секунду
+        timerHandler.postDelayed(timerRunnable, 1000);
     }
 
     private Station findNextStation() {
@@ -184,18 +230,15 @@ public class StationTrackingService extends Service {
 
     private int getTravelTime(Station current, Station next) {
         for (Station.Neighbor neighbor : current.getNeighbors()) {
-//            Log.d("StationTrackingService", "Neighbor: " + neighbor.getStation().getId());
             if (neighbor.getStation().getId().equals(next.getId())) {
-//                Log.d("StationTrackingService", "Found neighbor: " + neighbor.getStation().getId());
                 return neighbor.getTime();
             }
         }
-        return 180; // возвращаем значение по умолчанию, если время не найдено
+        return 180;
     }
 
     private int findStationIndex(Station station) {
         for (int i = 0; i < route.size(); i++) {
-//            Log.d("StationTrackingService", "Station ne: " + route.get(i).getNeighbors().get(0).getStation().getName());
             if (route.get(i).getId().equals(station.getId())) {
                 return i;
             }
@@ -208,23 +251,42 @@ public class StationTrackingService extends Service {
             return;
         }
 
+        checkGpsStatus();
+
         LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY)
-                .setIntervalMillis(10000)
+                .setIntervalMillis(5000)
                 .setMinUpdateIntervalMillis(5000)
                 .build();
 
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
+                if (locationResult == null) return;
+
+                checkGpsStatus();
+
                 for (Location location : locationResult.getLocations()) {
                     lastLocationTime = System.currentTimeMillis();
-                    if (isTimerMode) {
-                        switchToGpsMode();
+                    boolean isGpsLocation = LocationManager.GPS_PROVIDER.equals(location.getProvider());
+                    updateLocationHistory(location);
+
+                    boolean isAccuracyPoor = location.getAccuracy() > MAX_ACCEPTABLE_ACCURACY;
+                    boolean isLocationStagnant = checkLocationStagnation();
+
+                    boolean hasGpsIssue = !gpsEnabled || (isGpsLocation && (isAccuracyPoor || isLocationStagnant));
+
+                    if (hasGpsIssue) {
+                        handlePotentialSignalIssue();
+                    } else {
+                        resetSignalChecks();
+                        if (isTimerMode) {
+                            switchToGpsMode();
+                        }
                     }
-                    updateUserPosition(location);
+
+                    if (!isTimerMode) {
+                        updateUserPosition(location);
+                    }
                 }
             }
         };
@@ -232,47 +294,90 @@ public class StationTrackingService extends Service {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-    private void stopLocationUpdates() {
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
+    private void checkGpsStatus() {
+        gpsEnabled = locationManager != null &&
+                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    private void updateLocationHistory(Location location) {
+        lastLocations.add(location);
+        if (lastLocations.size() > 5) {
+            lastLocations.remove(0);
         }
     }
 
-    private static final long MIN_STATION_TIME = 90000; // 30 seconds minimum time between stations
-    private long lastStationUpdateTime = 0;
-    private boolean isFirstUpdate = true;
-    private void updateUserPosition(Location location) {
-        if (route == null || route.isEmpty()) {
+    private boolean checkLocationStagnation() {
+//        if (lastLocations.size() < 2) return false;
+//        Location first = lastLocations.get(0);
+//        Location last = lastLocations.get(lastLocations.size() - 1);
+//        return first.distanceTo(last) < MIN_MOVEMENT_DISTANCE;
+        return false;
+    }
+
+    private void handlePotentialSignalIssue() {
+        if (poorSignalStartTime == 0) {
+            poorSignalStartTime = System.currentTimeMillis();
             return;
         }
 
+        long poorDuration = System.currentTimeMillis() - poorSignalStartTime;
+
+        // Добавляем проверку, что мы еще не на конечной станции
+        if (poorDuration >= POOR_SIGNAL_DURATION_THRESHOLD
+                && !isTimerMode
+                && currentStationIndex < route.size() - 1) {
+            switchToTimerMode();
+            resetSignalChecks();
+        }
+    }
+
+    private void resetSignalChecks() {
+        poorSignalStartTime = 0;
+        lastLocations.clear();
+    }
+
+    private void updateUserPosition(Location location) {
+        if (route == null || route.isEmpty()) return;
+
         Station nearestStation = findNearestStation(location.getLatitude(), location.getLongitude());
+        if (nearestStation == null) return;
+
+        int newIndex = findStationIndex(nearestStation);
+        if (newIndex == -1) {
+            Log.w("StationTracking", "Received station not in route: " + nearestStation.getName());
+            return;
+        }
+
+        // Запрещаем возврат к предыдущим станциям
+        if (newIndex < currentStationIndex) {
+            Log.d("StationTracking", "Ignoring previous station: " + nearestStation.getName());
+            return;
+        }
         if (nearestStation != null) {
             int nearestStationIndex = findStationIndex(nearestStation);
+
+            // Добавляем проверку на корректность индекса
+            if (nearestStationIndex == -1) return;
+
             long currentTime = System.currentTimeMillis();
-
-            Log.d("StationTrackingService", "currentTime: " + currentTime);
-            Log.d("StationTrackingService", "lastStationUpdateTime: " + lastStationUpdateTime);
-
-            // Check if enough time has passed since last station update
             boolean enoughTimePassed = (currentTime - lastStationUpdateTime) >= MIN_STATION_TIME;
 
-            // Check if the nearest station is the next station in sequence
-            boolean isNextStation = nearestStationIndex == currentStationIndex + 1;
-
-            // Update only if:
-            // 1. It's the next station in sequence
-            // 2. Enough time has passed since last update
-            // 3. The station is different from current
-            // 4. Or it's the first update
-            if ((isNextStation && enoughTimePassed && !nearestStation.equals(currentStation)) || isFirstUpdate) {
+            // Проверяем, что новая станция действительно следующая в маршруте
+            if ((enoughTimePassed && nearestStationIndex - 1 == currentStationIndex) || isFirstUpdate) {
                 currentStation = nearestStation;
                 currentStationIndex = nearestStationIndex;
                 lastStationUpdateTime = currentTime;
-                updateNotification(currentStation);
-                sendStationUpdateBroadcast();
 
-                // После первого обновления сбрасываем флаг
+                // Проверка достижения конечной станции
+                if (currentStationIndex == route.size() - 1) {
+                    sendRouteCompletionBroadcast();
+                    stopSelf();
+                } else {
+                    updateNotification(currentStation);
+                    Log.d("StationTrackingService", "Updated to nearest station by location: " + currentStation.getName());
+                    sendStationUpdateBroadcast();
+                }
+
                 if (isFirstUpdate) {
                     isFirstUpdate = false;
                 }
@@ -280,19 +385,16 @@ public class StationTrackingService extends Service {
         }
     }
 
-    private boolean isNextStationInRoute(Station station) {
-        if (currentStationIndex < route.size() - 1) {
-            Station nextStation = route.get(currentStationIndex + 1);
-            return nextStation.getId().equals(station.getId());
-        }
-        return false;
+    private void sendRouteCompletionBroadcast() {
+        Intent intent = new Intent("com.nicorp.nimetro.ROUTE_COMPLETED");
+        intent.putExtra("finalStation", currentStation);
+        sendBroadcast(intent);
     }
 
     private void sendStationUpdateBroadcast() {
         Intent intent = new Intent("com.nicorp.nimetro.UPDATE_STATION");
         intent.putExtra("currentStation", currentStation);
         sendBroadcast(intent);
-//        Log.d("StationTrackingService", "Broadcast sent for station: " + currentStation.getName());
     }
 
     private Station findNearestStation(double latitude, double longitude) {

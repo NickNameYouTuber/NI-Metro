@@ -910,7 +910,7 @@
             "textPosition": 1,
             "neighbors": [
               ["METRO_216", 3],
-              ["METRO_218", 4],
+              ["METRO_218", 3],
               ["METRO_1217", 3]
             ],
             "facilities": {
@@ -929,8 +929,8 @@
             "y": 1612,
             "textPosition": 7,
             "neighbors": [
-              ["METRO_217", 4],
-              ["METRO_219", 3]
+              ["METRO_217", 3],
+              ["METRO_219", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -948,7 +948,7 @@
             "y": 1637,
             "textPosition": 7,
             "neighbors": [
-              ["METRO_218", 3],
+              ["METRO_218", 2],
               ["METRO_220", 4],
               ["METRO_1928", 3]
             ],
@@ -2060,7 +2060,7 @@
             "textPosition": 3,
             "neighbors": [
               ["METRO_602", 3],
-              ["METRO_604", 4],
+              ["METRO_604", 3],
               ["METRO_1502", 3]
             ],
             "facilities": {
@@ -2079,8 +2079,8 @@
             "longitude": 37.6417,
             "textPosition": 3,
             "neighbors": [
-              ["METRO_603", 4],
-              ["METRO_605", 3]
+              ["METRO_603", 3],
+              ["METRO_605", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2098,8 +2098,8 @@
             "longitude": 37.6386,
             "textPosition": 3,
             "neighbors": [
-              ["METRO_604", 3],
-              ["METRO_606", 4]
+              ["METRO_604", 2],
+              ["METRO_606", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2117,8 +2117,8 @@
             "longitude": 37.6358,
             "textPosition": 1,
             "neighbors": [
-              ["METRO_605", 4],
-              ["METRO_607", 3],
+              ["METRO_605", 2],
+              ["METRO_607", 2],
               ["METRO_1227", 3]
             ],
             "facilities": {
@@ -2137,8 +2137,8 @@
             "longitude": 37.6333,
             "textPosition": 9,
             "neighbors": [
-              ["METRO_606", 3],
-              ["METRO_608", 4],
+              ["METRO_606", 2],
+              ["METRO_608", 1],
               ["METRO_91", 3]
             ],
             "facilities": {
@@ -2157,8 +2157,8 @@
             "longitude": 37.6325,
             "textPosition": 7,
             "neighbors": [
-              ["METRO_607", 4],
-              ["METRO_609", 3]
+              ["METRO_607", 1],
+              ["METRO_609", 1]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2176,8 +2176,8 @@
             "longitude": 37.6367,
             "textPosition": 6,
             "neighbors": [
-              ["METRO_608", 3],
-              ["METRO_610", 4],
+              ["METRO_608", 1],
+              ["METRO_610", 2],
               ["METRO_107", 3],
               ["METRO_1113", 3]
             ],
@@ -2197,7 +2197,7 @@
             "longitude": 37.6331,
             "textPosition": 2,
             "neighbors": [
-              ["METRO_609", 4],
+              ["METRO_609", 2],
               ["METRO_611", 3],
               ["METRO_712", 3]
             ],
@@ -2484,7 +2484,7 @@
             "latitude": 55.860833,
             "longitude": 37.436389,
             "neighbors": [
-              ["METRO_701", 2]
+              ["METRO_701", 1]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2502,8 +2502,8 @@
             "latitude": 55.850556,
             "longitude": 37.439722,
             "neighbors": [
-              ["METRO_700", 2],
-              ["METRO_702", 4]
+              ["METRO_700", 1],
+              ["METRO_702", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2521,8 +2521,8 @@
             "latitude": 55.826667,
             "longitude": 37.436667,
             "neighbors": [
-              ["METRO_701", 4],
-              ["METRO_703", 3],
+              ["METRO_701", 3],
+              ["METRO_703", 1],
               ["METRO_1908", 3]
             ],
             "facilities": {
@@ -2541,8 +2541,8 @@
             "latitude": 55.818333,
             "longitude": 37.435833,
             "neighbors": [
-              ["METRO_702", 3],
-              ["METRO_704", 4]
+              ["METRO_702", 1],
+              ["METRO_704", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2560,7 +2560,7 @@
             "latitude": 55.808611,
             "longitude": 37.464167,
             "neighbors": [
-              ["METRO_703", 4],
+              ["METRO_703", 3],
               ["METRO_705", 3],
               ["METRO_1909", 3]
             ],
@@ -2581,7 +2581,7 @@
             "longitude": 37.493611,
             "neighbors": [
               ["METRO_704", 3],
-              ["METRO_706", 4],
+              ["METRO_706", 3],
               ["METRO_1525", 3],
               ["METRO_1526", 3]
             ],
@@ -2601,8 +2601,8 @@
             "latitude": 55.777500,
             "longitude": 37.519167,
             "neighbors": [
-              ["METRO_705", 4],
-              ["METRO_707", 3],
+              ["METRO_705", 3],
+              ["METRO_707", 2],
               ["METRO_1203", 3]
             ],
             "facilities": {
@@ -2621,8 +2621,8 @@
             "latitude": 55.773889,
             "longitude": 37.546667,
             "neighbors": [
-              ["METRO_706", 3],
-              ["METRO_708", 4],
+              ["METRO_706", 2],
+              ["METRO_708", 2],
               ["METRO_1810", 3]
             ],
             "facilities": {
@@ -2641,8 +2641,8 @@
             "latitude": 55.765000,
             "longitude": 37.561389,
             "neighbors": [
-              ["METRO_707", 4],
-              ["METRO_709", 3]
+              ["METRO_707", 2],
+              ["METRO_709", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2660,8 +2660,8 @@
             "latitude": 55.761111,
             "longitude": 37.579444,
             "neighbors": [
-              ["METRO_708", 3],
-              ["METRO_710", 4],
+              ["METRO_708", 2],
+              ["METRO_710", 2],
               ["METRO_90", 3]
             ],
             "facilities": {
@@ -2680,8 +2680,8 @@
             "latitude": 55.765000,
             "longitude": 37.607778,
             "neighbors": [
-              ["METRO_709", 4],
-              ["METRO_711", 3],
+              ["METRO_709", 2],
+              ["METRO_711", 1],
               ["METRO_1014", 3],
               ["METRO_210", 3]
             ],
@@ -2701,8 +2701,8 @@
             "latitude": 55.760556,
             "longitude": 37.625833,
             "neighbors": [
-              ["METRO_710", 3],
-              ["METRO_712", 4]
+              ["METRO_710", 1],
+              ["METRO_712", 1]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2720,8 +2720,8 @@
             "latitude": 55.755278,
             "longitude": 37.633333,
             "neighbors": [
-              ["METRO_711", 4],
-              ["METRO_713", 3],
+              ["METRO_711", 1],
+              ["METRO_713", 2],
               ["METRO_610", 3]
             ],
             "facilities": {
@@ -2740,7 +2740,7 @@
             "latitude": 55.740278,
             "longitude": 37.652222,
             "neighbors": [
-              ["METRO_712", 3],
+              ["METRO_712", 2],
               ["METRO_714", 4],
               ["METRO_806", 3],
               ["METRO_86", 3]
@@ -2762,7 +2762,7 @@
             "longitude": 37.665833,
             "neighbors": [
               ["METRO_713", 4],
-              ["METRO_715", 3],
+              ["METRO_715", 2],
               ["METRO_1110", 3]
             ],
             "facilities": {
@@ -2781,7 +2781,7 @@
             "latitude": 55.725278,
             "longitude": 37.686944,
             "neighbors": [
-              ["METRO_714", 3],
+              ["METRO_714", 2],
               ["METRO_716", 4],
               ["METRO_1513", 3]
             ],
@@ -2802,9 +2802,9 @@
             "longitude": 37.731667,
             "neighbors": [
               ["METRO_715", 4],
-              ["METRO_717", 3],
+              ["METRO_717", 2],
               ["METRO_1921", 3],
-              ["METRO_1221", 3]
+              ["METRO_1221", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2822,8 +2822,8 @@
             "latitude": 55.705556,
             "longitude": 37.765556,
             "neighbors": [
-              ["METRO_716", 3],
-              ["METRO_718", 4]
+              ["METRO_716", 2],
+              ["METRO_718", 3]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2841,8 +2841,8 @@
             "longitude": 37.793364,
             "textPosition": 2,
             "neighbors": [
-              ["METRO_717", 4],
-              ["METRO_719", 3],
+              ["METRO_717", 3],
+              ["METRO_719", 2],
               ["METRO_2021", 3]
             ],
             "facilities": {
@@ -2861,7 +2861,7 @@
             "latitude": 55.715556,
             "longitude": 37.818056,
             "neighbors": [
-              ["METRO_718", 3],
+              ["METRO_718", 2],
               ["METRO_720", 4],
               ["METRO_2022", 3]
             ],
@@ -2882,7 +2882,7 @@
             "longitude": 37.852500,
             "neighbors": [
               ["METRO_719", 4],
-              ["METRO_721", 3],
+              ["METRO_721", 2],
               ["METRO_1603", 3]
             ],
             "facilities": {
@@ -2901,8 +2901,8 @@
             "latitude": 55.685556,
             "longitude": 37.856389,
             "neighbors": [
-              ["METRO_720", 3],
-              ["METRO_722", 4]
+              ["METRO_720", 2],
+              ["METRO_722", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -2920,7 +2920,7 @@
             "latitude": 55.674167,
             "longitude": 37.858333,
             "neighbors": [
-              ["METRO_721", 4]
+              ["METRO_721", 2]
             ],
             "facilities": {
               "schedule": "5:30 - 0:00",
@@ -5387,7 +5387,7 @@
               ],
               [
                 "METRO_1218",
-                3
+                4
               ],
               [
                 "METRO_217",
@@ -5410,11 +5410,11 @@
             "neighbors": [
               [
                 "METRO_1217",
-                3
+                4
               ],
               [
                 "METRO_1219",
-                3
+                2
               ]
             ],
             "facilities": {
@@ -5433,11 +5433,11 @@
             "neighbors": [
               [
                 "METRO_1218",
-                3
+                2
               ],
               [
                 "METRO_1220",
-                3
+                2
               ]
             ],
             "facilities": {
@@ -5456,11 +5456,11 @@
             "neighbors": [
               [
                 "METRO_1219",
-                3
+                2
               ],
               [
                 "METRO_1221",
-                3
+                2
               ],
               [
                 "METRO_1107",
@@ -5483,15 +5483,15 @@
             "neighbors": [
               [
                 "METRO_1220",
-                3
+                2
               ],
               [
                 "METRO_1222",
-                3
+                4
               ],
               [
                 "METRO_716",
-                3
+                2
               ],
               [
                 "METRO_1921",
@@ -5514,11 +5514,11 @@
             "neighbors": [
               [
                 "METRO_1221",
-                3
+                4
               ],
               [
                 "METRO_1223",
-                3
+                4
               ],
               [
                 "METRO_1607",
@@ -5549,11 +5549,11 @@
             "neighbors": [
               [
                 "METRO_1222",
-                3
+                4
               ],
               [
                 "METRO_1224",
-                3
+                2
               ],
               [
                 "METRO_804",
@@ -5580,7 +5580,7 @@
             "neighbors": [
               [
                 "METRO_1223",
-                3
+                2
               ],
               [
                 "METRO_1225",
@@ -5638,7 +5638,7 @@
               ],
               [
                 "METRO_1227",
-                3
+                4
               ],
               [
                 "METRO_103",
@@ -5665,7 +5665,7 @@
             "neighbors": [
               [
                 "METRO_1226",
-                3
+                4
               ],
               [
                 "METRO_1228",
