@@ -21,6 +21,7 @@ import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1056,11 +1057,38 @@ public class RouteInfoFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (isRouteActive) {
                 stopRouteTracking();
-                dismiss();
-                showArrivalNotification();
+                showRouteCompletion(); // Показываем уведомление о завершении маршрута
+                dismiss(); // Закрываем фрагмент
+                showArrivalNotification(); // Показываем уведомление в статус-баре
             }
         }
     };
+
+    private void showRouteCompletion() {
+        if (getActivity() == null) return;
+
+        getActivity().runOnUiThread(() -> {
+            // Обновляем текст кнопки
+            startRouteButton.setText("Маршрут завершен");
+            startRouteButton.setEnabled(false); // Делаем кнопку неактивной
+
+            // Показываем сообщение о завершении маршрута
+            TextView completionMessage = new TextView(getContext());
+            completionMessage.setText("Вы прибыли в конечную точку маршрута");
+            completionMessage.setTextSize(18);
+            completionMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.textPrimary));
+            completionMessage.setGravity(Gravity.CENTER);
+
+            // Добавляем сообщение в layout
+            routeDetailsContainer.addView(completionMessage, 0); // Добавляем в начало контейнера
+
+            // Очищаем маршрут на карте
+            if (metroMapView != null) {
+                metroMapView.clearRoute();
+                metroMapView.clearSelectedStations();
+            }
+        });
+    }
 
     private void showArrivalNotification() {
         NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
