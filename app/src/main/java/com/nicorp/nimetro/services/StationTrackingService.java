@@ -15,7 +15,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -29,11 +29,13 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.nicorp.nimetro.R;
+import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class StationTrackingService extends Service {
 
@@ -68,6 +70,9 @@ public class StationTrackingService extends Service {
     private long lastStationUpdateTime = 0;
     private boolean isFirstUpdate = true;
     private LocationManager locationManager;
+    private List<Line> lines;
+
+    private TextToSpeech textToSpeech;
 
     @Override
     public void onCreate() {
@@ -105,6 +110,28 @@ public class StationTrackingService extends Service {
         };
 
         handler.post(locationUpdateRunnable);
+
+        // Инициализация TextToSpeech
+        initTextToSpeech();
+    }
+
+    private void initTextToSpeech() {
+        textToSpeech = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = textToSpeech.setLanguage(new Locale("ru"));
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Русский язык не поддерживается");
+                }
+            } else {
+                Log.e("TTS", "Ошибка инициализации TextToSpeech");
+            }
+        });
+    }
+
+    private void speak(String text) {
+        if (textToSpeech != null && !text.isEmpty()) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
     }
 
     @Override
@@ -114,6 +141,11 @@ public class StationTrackingService extends Service {
         handler.removeCallbacks(locationUpdateRunnable);
         timerHandler.removeCallbacks(timerRunnable);
         stopLocationUpdates();
+
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
     }
 
     private void stopLocationUpdates() {
@@ -125,13 +157,11 @@ public class StationTrackingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            // Используем проверку на тип данных
             if (intent.hasExtra("route") && intent.getParcelableArrayListExtra("route") != null) {
                 route = intent.getParcelableArrayListExtra("route");
                 Log.d("StationTracking", "Route received with size: " + route.size());
             }
 
-            // Проверяем наличие станции
             if (intent.hasExtra("currentStation")) {
                 currentStation = intent.getParcelableExtra("currentStation");
                 if (currentStation != null) {
@@ -141,8 +171,10 @@ public class StationTrackingService extends Service {
                 }
             }
         }
+
         if (intent != null && intent.hasExtra("route")) {
             route = intent.getParcelableArrayListExtra("route");
+            lines = intent.getParcelableArrayListExtra("lines");
             currentStation = intent.getParcelableExtra("currentStation");
 
             currentStationIndex = findStationIndex(currentStation);
@@ -165,7 +197,7 @@ public class StationTrackingService extends Service {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastLocationTime) > GPS_TIMEOUT
                 && !isTimerMode
-                && currentStationIndex < route.size() - 1) { // Не активировать для конечной станции
+                && currentStationIndex < route.size() - 1) {
             switchToTimerMode();
         }
     }
@@ -202,23 +234,96 @@ public class StationTrackingService extends Service {
         Station nextStation = findNextStation();
         if (nextStation == null) return;
 
-        float travelTime = getTravelTime(currentStation, nextStation) - ((float) GPS_TIMEOUT /1000.0f/60.0f);
+        float travelTime = getTravelTime(currentStation, nextStation) - ((float) GPS_TIMEOUT / 1000.0f / 60.0f);
         long elapsedTime = System.currentTimeMillis() - timerStartTime;
 
         if (elapsedTime >= travelTime * 60 * 1000) {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastStationUpdateTime >= MIN_STATION_TIME) {
+                Station previousStation = currentStation;
                 currentStation = nextStation;
                 currentStationIndex = findStationIndex(currentStation);
                 lastStationUpdateTime = currentTime;
+
+                // Проверяем, нужно ли перейти на следующую станцию
+                checkAndSwitchToNextStation();
+
                 updateNotification(currentStation);
                 Log.d("StationTrackingService", "Updated to next station by time: " + currentStation.getName());
                 sendStationUpdateBroadcast();
+
+                checkAndAnnounceArrival();
             }
             timerStartTime = System.currentTimeMillis();
         }
 
         timerHandler.postDelayed(timerRunnable, 1000);
+    }
+
+    private void checkAndAnnounceTransfers(Station previousStation) {
+        if (currentStationIndex + 1 < route.size()) {
+            Station nextStation = route.get(currentStationIndex + 1);
+            String previousLine = getLineForStation(previousStation);
+            String nextLine = getLineForStation(nextStation);
+
+            if (!previousLine.equals(nextLine)) {
+                announceTransfer(nextStation.getName(), nextLine);
+            } else if (currentStationIndex + 2 < route.size()) {
+                nextStation = route.get(currentStationIndex + 2);
+                String currentLine = getLineForStation(currentStation);
+                nextLine = getLineForStation(nextStation);
+
+                if (!currentLine.equals(nextLine)) {
+                    announceUpcomingTransfer(nextStation, nextStation, nextLine);
+                }
+            }
+        }
+
+    }
+
+    private String getLineForStation(Station station) {
+        for (Line line : lines) {
+            if (line.getStations().stream().anyMatch(s -> s.getId().equals(station.getId()))) {
+                return line.getName();
+            }
+        }
+        return "";
+    }
+
+    private void announceTransfer(String stationName, String newLineName) {
+        String message = "Перейдите на станцию " + stationName + " " + formatLineName(newLineName);
+        speak(message);
+    }
+
+    private void announceUpcomingTransfer(Station transferStation, Station nextStation, String newLineName) {
+        String message = String.format("Следующая станция: %s. Приготовьтесь к переходу на станцию %s %s",
+                transferStation.getName(),
+                nextStation.getName(),
+                formatLineName(newLineName));
+        speak(message);
+    }
+
+    private String formatLineName(String lineName) {
+        return lineName.replace("ая линия", "ой линии")
+                .replace("линия", "линии");
+    }
+
+    private void checkAndAnnounceArrival() {
+        if (currentStationIndex == route.size() - 2) {
+            announceUpcomingArrival();
+        }
+
+        if (currentStationIndex == route.size() - 1) {
+            announceFinalArrival();
+        }
+    }
+
+    private void announceUpcomingArrival() {
+        speak("На следующей станции конец маршрута");
+    }
+
+    private void announceFinalArrival() {
+        speak("Вы прибыли в пункт назначения");
     }
 
     private Station findNextStation() {
@@ -307,10 +412,6 @@ public class StationTrackingService extends Service {
     }
 
     private boolean checkLocationStagnation() {
-//        if (lastLocations.size() < 2) return false;
-//        Location first = lastLocations.get(0);
-//        Location last = lastLocations.get(lastLocations.size() - 1);
-//        return first.distanceTo(last) < MIN_MOVEMENT_DISTANCE;
         return false;
     }
 
@@ -322,7 +423,6 @@ public class StationTrackingService extends Service {
 
         long poorDuration = System.currentTimeMillis() - poorSignalStartTime;
 
-        // Добавляем проверку, что мы еще не на конечной станции
         if (poorDuration >= POOR_SIGNAL_DURATION_THRESHOLD
                 && !isTimerMode
                 && currentStationIndex < route.size() - 1) {
@@ -343,32 +443,24 @@ public class StationTrackingService extends Service {
         if (nearestStation == null) return;
 
         int newIndex = findStationIndex(nearestStation);
-        if (newIndex == -1) {
-            Log.w("StationTracking", "Received station not in route: " + nearestStation.getName());
-            return;
-        }
+        if (newIndex == -1) return;
 
-        // Запрещаем возврат к предыдущим станциям
-        if (newIndex < currentStationIndex) {
-            Log.d("StationTracking", "Ignoring previous station: " + nearestStation.getName());
-            return;
-        }
+        if (newIndex < currentStationIndex) return;
+
         if (nearestStation != null) {
             int nearestStationIndex = findStationIndex(nearestStation);
-
-            // Добавляем проверку на корректность индекса
-            if (nearestStationIndex == -1) return;
-
             long currentTime = System.currentTimeMillis();
             boolean enoughTimePassed = (currentTime - lastStationUpdateTime) >= MIN_STATION_TIME;
 
-            // Проверяем, что новая станция действительно следующая в маршруте
             if ((enoughTimePassed && nearestStationIndex - 1 == currentStationIndex) || isFirstUpdate) {
+                Station previousStation = currentStation;
                 currentStation = nearestStation;
                 currentStationIndex = nearestStationIndex;
                 lastStationUpdateTime = currentTime;
 
-                // Проверка достижения конечной станции
+                // Проверяем, нужно ли перейти на следующую станцию
+                checkAndSwitchToNextStation();
+
                 if (currentStationIndex == route.size() - 1) {
                     sendRouteCompletionBroadcast();
                     stopSelf();
@@ -385,7 +477,43 @@ public class StationTrackingService extends Service {
         }
     }
 
+    private boolean isDifferentLine(Station currentStation, Station nextStation) {
+        String currentLine = getLineForStation(currentStation);
+        String nextLine = getLineForStation(nextStation);
+        return !currentLine.equals(nextLine);
+    }
+
+    private void checkAndSwitchToNextStation() {
+        if (currentStation == null || route == null || route.isEmpty()) return;
+
+        Station nextStation = findNextStation();
+        if (nextStation == null) return;
+
+        // Проверяем, находится ли следующая станция на другой линии
+        if (isDifferentLine(currentStation, nextStation)) {
+            // Переход на следующую станцию
+            Station previousStation = currentStation;
+            currentStation = nextStation;
+            currentStationIndex = findStationIndex(currentStation);
+            lastStationUpdateTime = System.currentTimeMillis();
+
+            // Уведомляем пользователя о переходе
+            announceTransfer(nextStation.getName(), getLineForStation(nextStation));
+
+            // Обновляем уведомление и отправляем broadcast
+            updateNotification(currentStation);
+            sendStationUpdateBroadcast();
+
+            // Проверяем, не достигли ли мы конечной станции
+            if (currentStationIndex == route.size() - 1) {
+                sendRouteCompletionBroadcast();
+                stopSelf();
+            }
+        }
+    }
+
     private void sendRouteCompletionBroadcast() {
+        announceFinalArrival();
         Intent intent = new Intent("com.nicorp.nimetro.ROUTE_COMPLETED");
         intent.putExtra("finalStation", currentStation);
         sendBroadcast(intent);

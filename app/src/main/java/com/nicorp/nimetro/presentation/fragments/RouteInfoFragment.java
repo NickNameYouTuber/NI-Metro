@@ -201,6 +201,7 @@ public class RouteInfoFragment extends Fragment {
             // Запуск сервиса
             Intent serviceIntent = new Intent(requireContext(), StationTrackingService.class);
             serviceIntent.putParcelableArrayListExtra("route", new ArrayList<>(route));
+            serviceIntent.putParcelableArrayListExtra("lines", new ArrayList<>(mainActivity.getAllLines())); // Передаем линии
             serviceIntent.putExtra("currentStation", route.get(0)); // Передаем начальную станцию
             requireContext().startService(serviceIntent);
 
@@ -878,7 +879,7 @@ public class RouteInfoFragment extends Fragment {
         return segments;
     }
 
-    private Line getLineForStation(Station station) {
+    public Line getLineForStation(Station station) {
         for (Line line : mainActivity.getAllLines()) {
             if (line.getStations().contains(station)) {
                 return line;
