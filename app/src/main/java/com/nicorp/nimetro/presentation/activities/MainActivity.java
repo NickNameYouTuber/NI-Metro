@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 }
 
                 // 1. Начальная пауза (1 секунда)
-                ValueAnimator startPause = ValueAnimator.ofInt(0, 0).setDuration(1000);
+                ValueAnimator startPause = ValueAnimator.ofInt(0, 0).setDuration(3000);
 
                 // 2. Плавная прокрутка вперед за ФИКСИРОВАННЫЕ 4 секунды
                 ObjectAnimator scrollForward = ObjectAnimator.ofInt(scrollView, "scrollX", 0, distance);

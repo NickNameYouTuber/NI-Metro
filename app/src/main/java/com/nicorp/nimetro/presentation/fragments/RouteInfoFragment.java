@@ -123,7 +123,7 @@ public class RouteInfoFragment extends Fragment {
     private MainActivity mainActivity;
     private RecyclerView nearestTrainsRecyclerView;
     private TextView routeCost;
-    private Button startRouteButton;
+    private TextView startRouteButton;
     private boolean isAlmostArrivedNotificationSent = false;
     private boolean isRouteActive = false;
 

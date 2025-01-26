@@ -13,6 +13,9 @@
         <item name="colorOnSurface">@color/my_light_on_surface</item>
         <item name="colorError">@color/my_light_error</item>
         <item name="colorOnError">@color/my_light_on_error</item>
+        <item name="statusBarBackground">#21212d</item>
+        <item name="android:statusBarColor">#21212d</item>
+        <item name="android:navigationBarColor">#21212d</item>
     </style>
 
     <style name="AppCompat.Theme.NIMetro" parent="Theme.AppCompat.Light.NoActionBar">

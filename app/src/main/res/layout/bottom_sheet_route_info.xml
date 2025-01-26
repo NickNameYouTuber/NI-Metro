@@ -78,7 +78,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ближайшие поезда:"
-                    android:textSize="16sp" />
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_train"
+                    android:drawablePadding="8dp"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/nearestTrainsRecyclerView"
@@ -89,115 +93,150 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_train_info" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor"
+                    android:layout_marginVertical="8dp"/>
+
                 <LinearLayout
-                    android:paddingTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_clock"
+                        android:layout_marginEnd="8dp"/>
                     <TextView
                         android:textColor="@color/textPrimary"
                         android:id="@+id/routeTimeTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Время:"
                         android:textSize="16sp" />
-
                     <TextView
-                        android:textColor="@color/textPrimary"
+                        android:textColor="@color/textSecondary"
                         android:id="@+id/routeTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0 мин"
                         android:textSize="16sp"
-                        android:paddingStart="8dp" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
+                <!-- Аналогичные улучшения для других строк: Станций, Пересадок, Цена -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingTop="8dp">
-
+                    android:paddingVertical="4dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_station"
+                        android:layout_marginEnd="8dp"/>
                     <TextView
                         android:textColor="@color/textPrimary"
                         android:id="@+id/routeStationsTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Станций:"
                         android:textSize="16sp" />
-
                     <TextView
-                        android:textColor="@color/textPrimary"
+                        android:textColor="@color/textSecondary"
                         android:id="@+id/routeStationsCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textSize="16sp"
-                        android:paddingStart="8dp" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
+
+                <!-- Пересадки -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingTop="8dp">
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_transfer"
+                        android:layout_marginEnd="8dp"/>
 
                     <TextView
                         android:textColor="@color/textPrimary"
                         android:id="@+id/routeTransfersTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Пересадок:"
                         android:textSize="16sp" />
 
                     <TextView
-                        android:textColor="@color/textPrimary"
+                        android:textColor="@color/textSecondary"
                         android:id="@+id/routeTransfersCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textSize="16sp"
-                        android:paddingStart="8dp" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
+                <!-- Цена -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingTop="8dp">
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_price"
+                        android:layout_marginEnd="8dp"/>
 
                     <TextView
                         android:textColor="@color/textPrimary"
                         android:id="@+id/routeFareTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Цена:"
                         android:textSize="16sp" />
 
                     <TextView
-                        android:textColor="@color/textPrimary"
+                        android:textColor="@color/textSecondary"
                         android:id="@+id/routeCost"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0 ₽"
                         android:textSize="16sp"
-                        android:paddingStart="8dp" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <Button
+                <TextView
                     android:id="@+id/startRouteButton"
+                    android:layout_marginTop="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_button_background"
+                    android:padding="8dp"
                     android:text="Поехали"
-                    android:backgroundTint="@color/black"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"/>
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>
 
