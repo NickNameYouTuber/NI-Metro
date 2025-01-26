@@ -233,7 +233,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone"
-                android:layout_marginTop="16dp">
+                android:padding="16dp">
 
                 <!-- Карта перехода для "tripinfo" -->
                 <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
@@ -245,30 +245,165 @@
                     android:adjustViewBounds="true"
                     android:visibility="gone"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Информация о времени до перехода/конца -->
-                <TextView
-                    android:id="@+id/tripTimeRemaining"
-                    android:layout_width="wrap_content"
+                <!-- Текущая станция -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="До перехода: 5 мин"
-                    android:textSize="16sp"
-                    android:textColor="@color/textPrimary"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tripCurrentStationTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Текущая станция:"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/tripCurrentStationValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Третьяковская"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor"
+                    android:layout_marginVertical="4dp"/>
+
+                <!-- Следующая станция -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_next_station"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tripNextStationTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Следующая станция:"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/tripNextStationValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Китай-город"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor"
+                    android:layout_marginVertical="4dp"/>
+
+                <!-- Время до перехода -->
+                <LinearLayout
+                    android:id="@+id/tripTransferTimeContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_transfer_time"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tripTransferTimeTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="До перехода:"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/tripTransferTimeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5 мин"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Время до конца маршрута -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_clock"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tripRemainingTimeTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="До конца маршрута:"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/tripRemainingTimeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="33 мин"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
 
                 <!-- Подсказка о переходе -->
                 <TextView
                     android:id="@+id/tripTransferHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Перейдите на станцию 'Станция X'"
-                    android:textSize="16sp"
-                    android:textColor="@color/textPrimary"
+                    android:layout_marginTop="12dp"
+                    android:text="На следующей перейдите на станцию 'Китай-город'"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="14sp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"/>
+                    android:drawableStart="@drawable/ic_info"
+                    android:drawablePadding="8dp"/>
             </LinearLayout>
 
             <TextView

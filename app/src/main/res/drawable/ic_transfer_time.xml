@@ -1,0 +1,50 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="800dp"
+    android:height="800dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Main circle with gradient stroke -->
+    <path
+        android:pathData="M400 233.333V400H500M700 400C700 565.687 565.687 700 400 700C234.315 700 100 565.687 100 400C100 234.315 234.315 100 400 100C565.687 100 700 234.315 700 400Z"
+        android:strokeWidth="66.6667"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="sweep"
+                android:centerX="400"
+                android:centerY="400"
+                >
+                <item android:offset="0" android:color="#00000000"/>
+                <item android:offset="0.25" android:color="#00000000"/>
+                <item android:offset="0.25" android:color="#000000"/>
+                <item android:offset="1" android:color="#000000"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Black progress indicator -->
+    <path
+        android:pathData="M400 233.336V400.003H500"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="66.6667"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Arrow decorations -->
+    <path
+        android:pathData="M735.331 573.664H476.664L565.581 476.664"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <path
+        android:pathData="M476.664 638.336H735.331L646.414 735.336"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+</vector>
