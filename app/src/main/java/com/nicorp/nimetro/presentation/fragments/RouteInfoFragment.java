@@ -668,6 +668,9 @@ public class RouteInfoFragment extends Fragment {
             return;
         }
 
+        Station currentStation = route.get(currentStationIndex);
+        metroMapView.updateUserPosition(currentStation);
+
         List<Station> remainingRoute = new ArrayList<>(route.subList(currentStationIndex, route.size()));
 
         metroMapView.setRoute(remainingRoute);

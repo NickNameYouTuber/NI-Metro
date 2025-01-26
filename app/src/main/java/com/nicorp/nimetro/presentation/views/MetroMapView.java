@@ -490,7 +490,6 @@ public class MetroMapView extends View {
         // Отрисовываем карту
         drawMapContents(canvas);
 
-
     }
 
     private void createBufferBitmap() {
@@ -715,8 +714,6 @@ public class MetroMapView extends View {
             drawSelectedStation(canvas, stationX, stationY);
         }
 
-
-
 //        // Отрисовка линий речного трамвая
 //        for (LinePath linePath : riverTramLines) {
 //            riverTramPaint.setColor(Color.parseColor(linePath.color));
@@ -822,19 +819,34 @@ public class MetroMapView extends View {
                 }
             }
 
-            // Отрисовка положения пользователя
+
             if (userPositionStation != null) {
-                if (userPositionPaint == null) {
-                    userPositionPaint = new Paint();
-                    userPositionPaint.setColor(Color.RED);
-                    userPositionPaint.setStyle(Paint.Style.FILL);
-                    userPositionPaint.setAntiAlias(true);
-                }
+                if (userPositionStation == null) return;
 
                 float stationX = userPositionStation.getX() * COORDINATE_SCALE_FACTOR;
                 float stationY = userPositionStation.getY() * COORDINATE_SCALE_FACTOR;
 
-                canvas.drawCircle(stationX, stationY, 20, userPositionPaint);
+                // Внешний круг (пульсация)
+                Paint pulsePaint = new Paint();
+                pulsePaint.setColor(Color.parseColor("#3384c29d")); // Полупрозрачный цвет
+                pulsePaint.setStyle(Paint.Style.FILL);
+                pulsePaint.setAntiAlias(true);
+                canvas.drawCircle(stationX, stationY, 35 * currentPulseScale, pulsePaint);
+
+                // Основной круг (обводка)
+                Paint highlightPaint = new Paint();
+                highlightPaint.setColor(Color.parseColor("#84c29d")); // Цвет обводки
+                highlightPaint.setStyle(Paint.Style.STROKE);
+                highlightPaint.setStrokeWidth(8);
+                highlightPaint.setAntiAlias(true);
+                canvas.drawCircle(stationX, stationY, 20, highlightPaint);
+
+                // Внутренний круг (заливка)
+                Paint innerPaint = new Paint();
+                innerPaint.setColor(Color.parseColor("#4084c29d")); // Полупрозрачный цвет
+                innerPaint.setStyle(Paint.Style.FILL);
+                innerPaint.setAntiAlias(true);
+                canvas.drawCircle(stationX, stationY, 20, innerPaint);
             }
         }
 
@@ -1717,6 +1729,14 @@ public class MetroMapView extends View {
 
     public void updateUserPosition(Station station) {
         this.userPositionStation = station;
+        Log.d("UserPosition", "updateUserPosition: " + station.getName());
+
+        // Запускаем анимацию пульсации, если она еще не запущена
+        if (pulseAnimator == null || !pulseAnimator.isRunning()) {
+            initPulseAnimation();
+            pulseAnimator.start();
+        }
+
         invalidate(); // Перерисовываем карту
     }
 
