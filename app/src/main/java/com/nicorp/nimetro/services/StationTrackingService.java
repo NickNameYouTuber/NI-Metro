@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -37,8 +38,11 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
+import java.util.Set;
 
 public class StationTrackingService extends Service {
 
@@ -76,6 +80,8 @@ public class StationTrackingService extends Service {
     private List<Line> lines;
 
     private TextToSpeech textToSpeech;
+    private boolean isTtsInitialized = false;
+    private Queue<String> ttsQueue = new LinkedList<>();
 
     @Override
     public void onCreate() {
@@ -124,6 +130,22 @@ public class StationTrackingService extends Service {
                 int result = textToSpeech.setLanguage(new Locale("ru"));
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "Русский язык не поддерживается");
+                } else {
+                    Set<Voice> voices = textToSpeech.getVoices();
+                    if (voices != null) {
+                        for (Voice voice : voices) {
+                            Log.d("TTS", "Голос: " + voice.getName());
+                            if (voice.getName().equals("ru-ru-x-ruf-network")) {
+                                textToSpeech.setVoice(voice);
+                                Log.d("TTS", "Голос ru-ru-x-ruf-network успешно установлен");
+                                isTtsInitialized = true;
+                                processTtsQueue(); // Обрабатываем очередь, если есть сообщения
+                                break;
+                            }
+                        }
+                    } else {
+                        Log.e("TTS", "Голоса не найдены или TextToSpeech не инициализирован");
+                    }
                 }
             } else {
                 Log.e("TTS", "Ошибка инициализации TextToSpeech");
@@ -131,9 +153,20 @@ public class StationTrackingService extends Service {
         });
     }
 
+    private void processTtsQueue() {
+        while (!ttsQueue.isEmpty() && isTtsInitialized) {
+            String text = ttsQueue.poll();
+            if (text != null) {
+                speak(text);
+            }
+        }
+    }
+
     private void speak(String text) {
-        if (textToSpeech != null && !text.isEmpty()) {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        if (isTtsInitialized && textToSpeech != null && !text.isEmpty()) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, null);
+        } else {
+            ttsQueue.offer(text); // Добавляем в очередь, если TTS не готов
         }
     }
 
@@ -251,6 +284,9 @@ public class StationTrackingService extends Service {
                 // Проверяем, нужно ли перейти на следующую станцию
                 checkAndSwitchToNextStation();
 
+                // Проверяем и объявляем переходы
+                checkAndAnnounceTransfers(previousStation);
+
                 updateNotification(currentStation);
                 Log.d("StationTrackingService", "Updated to next station by time: " + currentStation.getName());
                 sendStationUpdateBroadcast();
@@ -270,7 +306,7 @@ public class StationTrackingService extends Service {
             String nextLine = getLineForStation(nextStation);
 
             if (!previousLine.equals(nextLine)) {
-                announceTransfer(nextStation.getName(), nextLine);
+//                announceTransfer(nextStation.getName(), nextLine);
             } else if (currentStationIndex + 2 < route.size()) {
                 nextStation = route.get(currentStationIndex + 2);
                 String currentLine = getLineForStation(currentStation);
@@ -281,7 +317,6 @@ public class StationTrackingService extends Service {
                 }
             }
         }
-
     }
 
     private String getLineForStation(Station station) {
@@ -307,7 +342,7 @@ public class StationTrackingService extends Service {
     }
 
     private String formatLineName(String lineName) {
-        return lineName.replace("ая линия", "ой линии")
+        return lineName.replace("ая ","ой ").replace("ая линия", "ой линии")
                 .replace("линия", "линии");
     }
 
@@ -463,6 +498,9 @@ public class StationTrackingService extends Service {
 
                 // Проверяем, нужно ли перейти на следующую станцию
                 checkAndSwitchToNextStation();
+
+                // Проверяем и объявляем переходы
+                checkAndAnnounceTransfers(previousStation);
 
                 if (currentStationIndex == route.size() - 1) {
                     sendRouteCompletionBroadcast();

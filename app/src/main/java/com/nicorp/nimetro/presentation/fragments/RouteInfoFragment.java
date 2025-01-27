@@ -675,6 +675,43 @@ public class RouteInfoFragment extends Fragment {
 
         metroMapView.setRoute(remainingRoute);
         updateRouteInfo(remainingRoute);
+
+        // Обновляем информацию в tripInfoGroup
+        updateTripInfoGroup(currentStationIndex);
+    }
+
+    private void updateTripInfoGroup(int currentStationIndex) {
+        if (getActivity() == null) return;
+
+        getActivity().runOnUiThread(() -> {
+            // Текущая станция
+            Station currentStation = route.get(currentStationIndex);
+            TextView tripCurrentStationValue = getView().findViewById(R.id.tripCurrentStationValue);
+            if (tripCurrentStationValue != null) {
+                tripCurrentStationValue.setText(currentStation.getName());
+            }
+
+            // Следующая станция
+            if (currentStationIndex < route.size() - 1) {
+                Station nextStation = route.get(currentStationIndex + 1);
+                TextView tripNextStationValue = getView().findViewById(R.id.tripNextStationValue);
+                if (tripNextStationValue != null) {
+                    tripNextStationValue.setText(nextStation.getName());
+                }
+            } else {
+                TextView tripNextStationValue = getView().findViewById(R.id.tripNextStationValue);
+                if (tripNextStationValue != null) {
+                    tripNextStationValue.setText("Конечная станция");
+                }
+            }
+
+            // Время до конца маршрута
+            int remainingTime = calculateTotalTime(route.subList(currentStationIndex, route.size()));
+            TextView tripRemainingTimeValue = getView().findViewById(R.id.tripRemainingTimeValue);
+            if (tripRemainingTimeValue != null) {
+                tripRemainingTimeValue.setText(String.format("%d мин", remainingTime));
+            }
+        });
     }
 
     private void updateRouteInfo(List<Station> remainingRoute) {
