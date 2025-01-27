@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,9 +41,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class FullScheduleDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     private List<YandexRaspResponse.Segment> segments;
-    private Button refreshButton;
+    private TextView refreshButton;
     private ImageView closeButton;
-    private Button openCalendarButton;
+    private TextView openCalendarButton;
     private CheckBox filterNearest;
     private CheckBox filterNoExpress;
     private RecyclerView fullScheduleRecyclerView;
