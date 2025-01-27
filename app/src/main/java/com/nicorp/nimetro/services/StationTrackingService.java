@@ -9,6 +9,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -17,6 +19,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -567,13 +570,26 @@ public class StationTrackingService extends Service {
         String stationName = station != null ? station.getName() : "Неизвестная станция";
         String trackingMode = isTimerMode ? " (по времени)" : " (по GPS)";
 
+        // Создаем RemoteViews для кастомного макета уведомления
+        RemoteViews customContentView = new RemoteViews(getPackageName(), R.layout.custom_notification);
+        RemoteViews customBigContentView = new RemoteViews(getPackageName(), R.layout.custom_notification_expanded);
+
+        // Устанавливаем текст для TextView с идентификатором title
+        customContentView.setTextViewText(R.id.title2, "Станция: " + stationName + trackingMode);
+        customBigContentView.setTextViewText(R.id.title2, "Станция: " + stationName + trackingMode);
+
+        Bitmap icon = BitmapFactory.decodeResource(getBaseContext().getResources(),
+                R.drawable.ic_m_icon);
+
+        // Создаем и возвращаем уведомление
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Текущая станция")
-                .setContentText(stationName + trackingMode)
                 .setSmallIcon(R.drawable.ic_m_icon)
-                .setContentIntent(pendingIntent)
+                .setLargeIcon(icon)
+                .setCustomContentView(customContentView)
+                .setCustomBigContentView(customBigContentView) // Устанавливаем развернутое состояние
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(pendingIntent) // Устанавливаем PendingIntent для уведомления
                 .build();
     }
 
