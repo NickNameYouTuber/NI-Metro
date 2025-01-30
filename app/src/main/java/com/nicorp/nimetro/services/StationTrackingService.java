@@ -2,6 +2,7 @@ package com.nicorp.nimetro.services;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,9 +15,13 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
@@ -56,6 +61,11 @@ public class StationTrackingService extends Service {
     private static final long MIN_STATION_TIME = 90000; // 90 секунд минимальное время между станциями
     private static boolean isRunning = false;
 
+    // В класс StationTrackingService добавить поля:
+    private SpeechRecognizer speechRecognizer;
+    private Intent speechRecognizerIntent;
+    private boolean isListening = false;
+
     private Station currentStation;
     private Station previousStation;
     private List<Station> route;
@@ -88,6 +98,7 @@ public class StationTrackingService extends Service {
             stopSelf();
             return;
         }
+        initSpeechRecognizer(); // Добавить эту строку
         isRunning = true;
         createNotificationChannel();
         createArrivalNotificationChannel();
@@ -122,6 +133,142 @@ public class StationTrackingService extends Service {
         // Инициализация TextToSpeech
         initTextToSpeech();
     }
+
+    private void initSpeechRecognizer() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.e("Speech", "No RECORD_AUDIO permission");
+            return;
+        }
+
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU");
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                getPackageName());
+
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+                Log.d("Speech", "Ready for speech");
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Log.d("Speech", "Speech started");
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {}
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {}
+
+            @Override
+            public void onEndOfSpeech() {
+                Log.d("Speech", "Speech ended");
+            }
+
+            @Override
+            public void onError(int error) {
+                String errorMessage;
+                switch (error) {
+                    case SpeechRecognizer.ERROR_AUDIO:
+                        errorMessage = "Audio recording error";
+                        break;
+                    case SpeechRecognizer.ERROR_CLIENT:
+                        errorMessage = "Client side error";
+                        return;
+                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                        errorMessage = "Insufficient permissions";
+                        return;
+                    case SpeechRecognizer.ERROR_NETWORK:
+                        errorMessage = "Network error";
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                        errorMessage = "Network timeout";
+                        break;
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        errorMessage = "No recognition match";
+                        break;
+                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                        errorMessage = "RecognitionService busy";
+                        return;
+                    case SpeechRecognizer.ERROR_SERVER:
+                        errorMessage = "Server error";
+                        break;
+                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                        errorMessage = "No speech input";
+                        break;
+                    default:
+                        errorMessage = "Unknown error";
+                }
+                Log.e("Speech", "Error: " + error + " - " + errorMessage);
+                restartListening();
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(
+                        SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null) {
+                    for (String match : matches) {
+                        processSpeechResult(match);
+                    }
+                }
+                restartListening();
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+                ArrayList<String> partial = partialResults.getStringArrayList(
+                        SpeechRecognizer.RESULTS_RECOGNITION);
+                if (partial != null) {
+                    for (String part : partial) {
+                        processSpeechResult(part);
+                    }
+                }
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {}
+        });
+
+        startListening();
+    }
+
+    private void processSpeechResult(String text) {
+        if (text.toLowerCase().contains("станция")) {
+            String[] parts = text.split("станция");
+            if (parts.length > 1) {
+                String afterKeyword = parts[1].trim();
+                Log.d("Speech", "После 'Станция': " + afterKeyword);
+            }
+        }
+    }
+
+    private void startListening() {
+        if (!isListening && speechRecognizer != null) {
+            speechRecognizer.startListening(speechRecognizerIntent);
+            isListening = true;
+        }
+    }
+
+    private void stopListening() {
+        if (isListening && speechRecognizer != null) {
+            speechRecognizer.stopListening();
+            isListening = false;
+        }
+    }
+
+    private void restartListening() {
+        stopListening();
+        new Handler().postDelayed(this::startListening, 500);
+    }
+
 
     private void initTextToSpeech() {
         textToSpeech = new TextToSpeech(this, status -> {
