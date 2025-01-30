@@ -7,16 +7,22 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
@@ -44,7 +50,7 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 
-public class StationTrackingService extends Service {
+public class StationTrackingService extends Service implements RecognitionListener {
 
     private static final String CHANNEL_ID = "StationTrackingChannel";
     private static final String ARRIVAL_CHANNEL_ID = "arrival_channel";
@@ -55,6 +61,7 @@ public class StationTrackingService extends Service {
     private static final float MIN_MOVEMENT_DISTANCE = 150.0f; // Минимальное движение для определения стагнации
     private static final long MIN_STATION_TIME = 90000; // 90 секунд минимальное время между станциями
     private static boolean isRunning = false;
+    private Station voiceCommandStation = null;
 
     private Station currentStation;
     private Station previousStation;
@@ -80,6 +87,10 @@ public class StationTrackingService extends Service {
     private TextToSpeech textToSpeech;
     private boolean isTtsInitialized = false;
     private Queue<String> ttsQueue = new LinkedList<>();
+
+    private SpeechRecognizer speechRecognizer;
+    private boolean isListening = false;
+    private AudioManager audioManager;
 
     @Override
     public void onCreate() {
@@ -121,6 +132,16 @@ public class StationTrackingService extends Service {
 
         // Инициализация TextToSpeech
         initTextToSpeech();
+
+        // Инициализация SpeechRecognizer
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(this);
+
+        // Инициализация AudioManager
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        // Запуск распознавания речи
+        startListening();
     }
 
     private void initTextToSpeech() {
@@ -181,6 +202,12 @@ public class StationTrackingService extends Service {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+
+        // Остановка распознавания речи
+        stopListening();
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
     }
 
     private void stopLocationUpdates() {
@@ -195,6 +222,7 @@ public class StationTrackingService extends Service {
             if (intent.hasExtra("route") && intent.getParcelableArrayListExtra("route") != null) {
                 route = intent.getParcelableArrayListExtra("route");
                 Log.d("StationTracking", "Route received with size: " + route.size());
+                voiceCommandStation = null; // Сбрасываем озвученную станцию при обновлении маршрута
             }
 
             if (intent.hasExtra("currentStation")) {
@@ -244,16 +272,23 @@ public class StationTrackingService extends Service {
         float travelTime = getTravelTime(currentStation, nextStation);
         long elapsedTime = System.currentTimeMillis() - lastStationUpdateTime;
 
-        if (elapsedTime >= travelTime * 0.85 * 60 * 1000) {
+        // Если прошло 90% времени в пути, начинаем проверять местоположение
+        if (elapsedTime >= travelTime * 0.9 * 60 * 1000) {
+            Log.d("StationTrackingService", "elapsedTime >= travelTime * 0.9 * 60 * 1000");
             isAtStation(nextStation, new OnStationCheckListener() {
                 @Override
                 public void onStationCheck(boolean isAtStation) {
                     if (isAtStation) {
-                        Log.d("StationTrackingService", "Arrived at next station ввввв: " + nextStation.getName());
+                        Log.d("StationTrackingService", "Arrived at next station: " + nextStation.getName());
                         updateToNextStation(nextStation);
                     } else if (elapsedTime >= travelTime * 1.1 * 60 * 1000) {
                         Log.d("StationTrackingService", "GPS signal lost, switching to time-based tracking");
                         updateToNextStation(nextStation);
+                    } else if (voiceCommandStation != null && voiceCommandStation.equals(nextStation)) {
+                        // Если пользователь озвучил станцию, и она совпадает с ожидаемой
+                        Log.d("StationTrackingService", "Voice command confirmed arrival at: " + nextStation.getName());
+                        updateToNextStation(nextStation);
+                        voiceCommandStation = null; // Сбрасываем озвученную станцию
                     }
                 }
             });
@@ -490,34 +525,29 @@ public class StationTrackingService extends Service {
 
         // Если прошло 90% времени в пути, начинаем проверять местоположение
         if (elapsedTime >= travelTime * 0.9 * 60 * 1000) {
+            Log.d("StationTrackingService", "elapsedTime >= travelTime * 0.9 * 60 * 1000");
             double distanceToNextStation = nextStation.distanceTo(location.getLatitude(), location.getLongitude());
 
             // Если пользователь находится в пределах допустимой погрешности от следующей станции
             if (distanceToNextStation <= MAX_ACCEPTABLE_ACCURACY) {
-                Station previousStation = currentStation;
-                currentStation = nextStation;
-                currentStationIndex = nearestStationIndex;
-                lastStationUpdateTime = System.currentTimeMillis();
-
-                checkAndAnnounceTransfers(previousStation);
-
-                if (currentStationIndex == route.size() - 1) {
-                    sendRouteCompletionBroadcast();
-                    stopSelf();
-                } else {
-                    updateNotification(currentStation);
-                    Log.d("StationTrackingService", "Updated to nearest station by location: " + currentStation.getName());
-                    sendStationUpdateBroadcast();
-                }
+                updateToNextStation(nextStation);
+            } else if (voiceCommandStation != null && voiceCommandStation.equals(nextStation)) {
+                // Если пользователь озвучил станцию, и она совпадает с ожидаемой
+                Log.d("StationTrackingService", "Voice command confirmed arrival at: " + nextStation.getName());
+                updateToNextStation(nextStation);
+                voiceCommandStation = null; // Сбрасываем озвученную станцию
             }
         }
     }
 
     private void sendRouteCompletionBroadcast() {
-//        announceFinalArrival();
-        Intent intent = new Intent("com.nicorp.nimetro.ROUTE_COMPLETED");
-        intent.putExtra("finalStation", currentStation);
-        sendBroadcast(intent);
+        // Только если это последняя станция
+        if (currentStationIndex == route.size() - 1) {
+            Intent intent = new Intent("com.nicorp.nimetro.ROUTE_COMPLETED");
+            intent.putExtra("finalStation", currentStation);
+            sendBroadcast(intent);
+            stopSelf(); // Явное завершение только здесь
+        }
     }
 
     private void sendStationUpdateBroadcast() {
@@ -606,6 +636,188 @@ public class StationTrackingService extends Service {
             if (manager != null) {
                 manager.createNotificationChannel(arrivalChannel);
             }
+        }
+    }
+
+    // Реализация методов RecognitionListener
+    @Override
+    public void onReadyForSpeech(Bundle params) {
+        Log.d("StationTrackingService", "Готов к распознаванию");
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.d("StationTrackingService", "Начало речи");
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        // Уровень громкости (можно использовать для визуализации)
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        Log.d("StationTrackingService", "Получен буфер");
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Log.d("StationTrackingService", "Конец речи");
+    }
+
+    @Override
+    public void onError(int error) {
+        String errorMessage = getErrorMessage(error);
+        Log.e("StationTrackingService", "Ошибка: " + errorMessage);
+
+        // Всегда сбрасываем флаг прослушивания
+        isListening = false;
+
+        // Перезапускаем с задержкой в зависимости от типа ошибки
+        long delay = getRestartDelay(error);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isListening) {
+                startListening();
+            }
+        }, delay);
+    }
+
+    private String getErrorMessage(int error) {
+        switch (error) {
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                return "Речь не распознана";
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                return "Движок распознавания занят";
+            // ... остальные коды ошибок
+            default:
+                return "Неизвестная ошибка: " + error;
+        }
+    }
+
+    private long getRestartDelay(int error) {
+        switch (error) {
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                return 1000; // 1 секунда для "пустых" ошибок
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                return 2000; // 2 секунды, если движок занят
+            default:
+                return 500; // Стандартная задержка
+        }
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        try {
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches != null && !matches.isEmpty()) {
+                String recognizedText = matches.get(0);
+                Log.d("StationTrackingService", "Полностью распознано: " + recognizedText);
+
+                if (recognizedText.toLowerCase().contains("станция")) {
+                    String stationName = recognizedText.toLowerCase().replace("станция", "").trim();
+                    processVoiceCommand(stationName);
+                }
+            }
+        } finally {
+            // Всегда перезапускаем прослушивание
+            startListening();
+        }
+    }
+
+    private void processVoiceCommand(String stationName) {
+        Station newStation = findStationByName(stationName);
+        if (newStation != null) {
+            voiceCommandStation = newStation;
+            Log.d("StationTrackingService", "Озвучена станция: " + newStation.getName());
+        }
+    }
+
+    private Station findStationByName(String stationName) {
+        for (Station station : route) {
+            if (station.getName().toLowerCase().contains(stationName.toLowerCase())) {
+                return station;
+            }
+        }
+        return null;
+    }
+
+    private void updateToStation(Station newStation) {
+        if (newStation != null && !newStation.equals(currentStation)) {
+            currentStation = newStation;
+            currentStationIndex = findStationIndex(currentStation);
+            lastStationUpdateTime = System.currentTimeMillis();
+
+            updateNotification(currentStation);
+            sendStationUpdateBroadcast();
+            Log.d("StationTrackingService", "Обновлено на станцию: " + currentStation.getName());
+        }
+    }
+
+    @Override
+    public void onPartialResults(Bundle partialResults) {
+        try {
+            ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches != null && !matches.isEmpty()) {
+                String recognizedText = matches.get(0);
+                Log.d("StationTrackingService", "Частично распознано: " + recognizedText);
+
+                if (recognizedText.toLowerCase().contains("станция")) {
+                    String stationName = recognizedText.toLowerCase().replace("станция", "").trim();
+                    processVoiceCommand(stationName);
+                }
+            }
+        } finally {
+            // Не останавливаем прослушивание для частичных результатов
+        }
+    }
+
+    @Override
+    public void onEvent(int eventType, Bundle params) {
+        // Не используется
+    }
+
+    private void startListening() {
+        Log.d("StationTrackingService", "Попытка перезапуска распознавания...");
+        if (!isListening || isListening) {
+            isListening = true;
+            try {
+                // Приглушаем звук
+                audioManager.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_MUTE,
+                        0
+                );
+
+                Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU");
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 3000);
+
+                speechRecognizer.startListening(recognizerIntent);
+            } catch (Exception e) {
+                Log.e("StationTrackingService", "Ошибка старта распознавания: " + e.getMessage());
+                isListening = false;
+                startListening(); // Перезапуск при исключении
+            }
+        }
+    }
+
+    private void stopListening() {
+        if (!isListening) return;
+        isListening = false;
+
+        // Восстановление звука
+        audioManager.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_UNMUTE,
+                0
+        );
+
+        try {
+            speechRecognizer.stopListening();
+        } catch (Exception e) {
+            Log.e("StationTrackingService", "Error stopping speech recognition: " + e.getMessage());
         }
     }
 }
