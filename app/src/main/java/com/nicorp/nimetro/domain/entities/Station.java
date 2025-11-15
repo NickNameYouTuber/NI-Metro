@@ -23,10 +23,13 @@ public class Station implements Parcelable {
     private String color;
     private Facilities facilities;
     private int textPosition;
+    private Integer labelX;
+    private Integer labelY;
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints;
     private double latitude; // Широта станции
     private double longitude; // Долгота станции
+    private String displayNumber;
 
     // Метод для расчета расстояния между текущей станцией и местоположением пользователя
     public double distanceTo(double userLatitude, double userLongitude) {
@@ -128,12 +131,32 @@ public class Station implements Parcelable {
         this.textPosition = textPosition;
     }
 
+    public boolean hasLabelCoordinates() {
+        return labelX != null && labelY != null;
+    }
+
+    public Integer getLabelX() {
+        return labelX;
+    }
+
+    public Integer getLabelY() {
+        return labelY;
+    }
+
+    public void setLabelCoordinates(Integer labelX, Integer labelY) {
+        this.labelX = labelX;
+        this.labelY = labelY;
+    }
+
     public List<Neighbor> getNeighbors() {
+        if (neighbors == null) {
+            neighbors = new ArrayList<>();
+        }
         return neighbors;
     }
 
     public void setNeighbors(List<Neighbor> neighbors) {
-        this.neighbors = neighbors;
+        this.neighbors = (neighbors != null) ? neighbors : new ArrayList<>();
     }
 
     public Map<Station, List<Point>> getIntermediatePoints() {
@@ -159,7 +182,14 @@ public class Station implements Parcelable {
         this.intermediatePoints = intermediatePoints;
     }
 
-    // Constructor remains the same
+    public String getdisplayNumber() {
+        return displayNumber;
+    }
+
+    public void setDisplayNumber(String displayNumber) {
+        this.displayNumber = displayNumber;
+    }
+
     public Station(String id, String name, int x, int y, String ESP, String color, Facilities facilities, int textPosition) {
         this.id = id;
         this.name = name;
@@ -171,6 +201,9 @@ public class Station implements Parcelable {
         this.textPosition = textPosition;
         this.neighbors = new ArrayList<>();
         this.intermediatePoints = new HashMap<>();
+        this.labelX = null;
+        this.labelY = null;
+        this.displayNumber = "";
     }
 
     protected Station(Parcel in) {
@@ -184,6 +217,17 @@ public class Station implements Parcelable {
         color = in.readString();
         facilities = in.readParcelable(Facilities.class.getClassLoader());
         textPosition = in.readInt();
+        displayNumber = in.readString();
+        if (in.readByte() != 0) {
+            labelX = in.readInt();
+        } else {
+            labelX = null;
+        }
+        if (in.readByte() != 0) {
+            labelY = in.readInt();
+        } else {
+            labelY = null;
+        }
 
         // Read only the essential neighbor data to avoid circular references
         int size = in.readInt();
@@ -212,6 +256,19 @@ public class Station implements Parcelable {
         dest.writeString(color);
         dest.writeParcelable(facilities, flags);
         dest.writeInt(textPosition);
+        dest.writeString(displayNumber != null ? displayNumber : "");
+        if (labelX != null) {
+            dest.writeByte((byte) 1);
+            dest.writeInt(labelX);
+        } else {
+            dest.writeByte((byte) 0);
+        }
+        if (labelY != null) {
+            dest.writeByte((byte) 1);
+            dest.writeInt(labelY);
+        } else {
+            dest.writeByte((byte) 0);
+        }
 
         // Write only essential neighbor data
         dest.writeInt(neighbors.size());

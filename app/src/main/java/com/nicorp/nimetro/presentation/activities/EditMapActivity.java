@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -76,6 +77,11 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
     private List<Transfer> riverTramTransfers;
     private List<River> riverTramRivers;
     private List<MapObject> riverTramMapObjects;
+    private List<Station> tramStations;
+    private List<Line> tramLines;
+    private List<Transfer> tramTransfers;
+    private List<River> tramRivers;
+    private List<MapObject> tramMapObjects;
 
     private Station selectedStation;
     private Point selectedIntermediatePoint;
@@ -87,149 +93,87 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
     private boolean isMetroMap = true;
     private boolean isSuburbanMap = false;
     private boolean isRiverTramMap = false;
+    private boolean isTramMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_map);
 
-        // Инициализация всех списков
-        stations = new ArrayList<>();
-        lines = new ArrayList<>();
-        transfers = new ArrayList<>();
-        rivers = new ArrayList<>();
-        mapObjects = new ArrayList<>();
-
-        suburbanStations = new ArrayList<>();
-        suburbanLines = new ArrayList<>();
-        suburbanTransfers = new ArrayList<>();
-        suburbanRivers = new ArrayList<>();
-        suburbanMapObjects = new ArrayList<>();
-
-        riverTramStations = new ArrayList<>();
-        riverTramLines = new ArrayList<>();
-        riverTramTransfers = new ArrayList<>();
-        riverTramRivers = new ArrayList<>();
-        riverTramMapObjects = new ArrayList<>();
-
-        initializeUIComponents();
-        loadMetroData("metromap_1.json"); // Загрузка карты метро по умолчанию
-        setupEventListeners();
-    }
-
-    private void initializeUIComponents() {
         metroMapView = findViewById(R.id.editMetroMapView);
         metroMapView.setEditMode(true);
-        Button addStationButton = findViewById(R.id.addStationButton);
-        Button removeStationButton = findViewById(R.id.removeStationButton);
-        Button saveChangesButton = findViewById(R.id.saveChangesButton);
-        Button addTransferButton = findViewById(R.id.addTransferButton);
-        Button addIntermediatePointsButton = findViewById(R.id.addIntermediatePointsButton);
+        metroMapView.setOnStationClickListener(new MetroMapView.OnStationClickListener() {
+            @Override
+            public void onStationClick(Station station) {
+                selectedStation = station;
+                selectedIntermediatePoint = null;
+                showStationEditDialog(station);
+            }
+        });
 
+        loadMapData();
+        setupMapTypeButtons();
+        setupSaveButton();
+        setupTouchHandlers();
+    }
+
+    private void setupMapTypeButtons() {
         Button switchMapButton = findViewById(R.id.switchMapButton);
         switchMapButton.setOnClickListener(v -> {
             if (isMetroMap) {
                 isMetroMap = false;
+                isSuburbanMap = true;
+                isRiverTramMap = false;
+                isTramMap = false;
+            } else if (isSuburbanMap) {
+                isMetroMap = false;
                 isSuburbanMap = false;
                 isRiverTramMap = true;
-//                switchMapButton.setImageResource(R.drawable.river_tram_icon);
-            } else if (isSuburbanMap) {
+                isTramMap = false;
+            } else if (isRiverTramMap) {
+                isMetroMap = false;
+                isSuburbanMap = false;
+                isRiverTramMap = false;
+                isTramMap = true;
+            } else {
                 isMetroMap = true;
                 isSuburbanMap = false;
                 isRiverTramMap = false;
-//                switchMapButton.setImageResource(R.drawable.metro_map_icon);
-            } else {
-                isMetroMap = false;
-                isSuburbanMap = true;
-                isRiverTramMap = false;
-//                switchMapButton.setImageResource(R.drawable.suburban_map_icon);
+                isTramMap = false;
             }
-            updateMapData(); // Обновляем данные в MetroMapView
+            updateMapData();
         });
-
-        addStationButton.setOnClickListener(v -> showAddStationDialog());
-        removeStationButton.setOnClickListener(v -> removeSelectedStation());
-        saveChangesButton.setOnClickListener(v -> saveMetroData());
-        addTransferButton.setOnClickListener(v -> showAddTransferDialog());
-        addIntermediatePointsButton.setOnClickListener(v -> showAddIntermediatePointsDialog());
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupEventListeners() {
-        metroMapView.setOnTouchListener((v, event) -> {
-            float[] point = new float[]{event.getX(), event.getY()};
-            Matrix inverseMatrix = new Matrix();
-            metroMapView.getTransformMatrix().invert(inverseMatrix);
-            inverseMatrix.mapPoints(point);
-            float x = point[0] / MetroMapView.COORDINATE_SCALE_FACTOR;
-            float y = point[1] / MetroMapView.COORDINATE_SCALE_FACTOR;
+    private void setupSaveButton() {
+        Button saveButton = findViewById(R.id.saveChangesButton);
+        saveButton.setOnClickListener(v -> saveMapData());
+    }
 
+    private void setupTouchHandlers() {
+        metroMapView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    selectedStation = metroMapView.findStationAt(x, y);
-                    if (selectedStation == null) {
-                        selectedIntermediatePoint = findIntermediatePointAt(x, y);
-                    }
-                    isMovingMap = (selectedStation == null && selectedIntermediatePoint == null);
-                    initialTouchX = event.getRawX();
-                    initialTouchY = event.getRawY();
+                    initialTouchX = event.getX();
+                    initialTouchY = event.getY();
+                    isMovingMap = true;
                     break;
-
                 case MotionEvent.ACTION_MOVE:
-                    if (selectedStation != null) {
-                        // Вычисляем смещение
-                        float dx = (event.getRawX() - initialTouchX) / metroMapView.getScaleFactor();
-                        float dy = (event.getRawY() - initialTouchY) / metroMapView.getScaleFactor();
-
-                        // Обновляем координаты станции
-                        selectedStation.setX((int) (selectedStation.getX() + dx));
-                        selectedStation.setY((int) (selectedStation.getY() + dy));
-
-                        // Обновляем начальные координаты для следующего перемещения
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-
-                        // Обновляем данные в MetroMapView и перерисовываем карту
-                        updateMapData();
-                    } else if (selectedIntermediatePoint != null) {
-                        // Аналогично для промежуточных точек
-                        float dx = (event.getRawX() - initialTouchX) / metroMapView.getScaleFactor();
-                        float dy = (event.getRawY() - initialTouchY) / metroMapView.getScaleFactor();
-
-                        selectedIntermediatePoint.x = (int) (selectedIntermediatePoint.x + dx);
-                        selectedIntermediatePoint.y = (int) (selectedIntermediatePoint.y + dy);
-
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-
-                        // Обновляем данные в MetroMapView и перерисовываем карту
-                        updateMapData();
-                    } else if (isMovingMap) {
-                        // Перемещение всей карты
-                        float dx = (event.getRawX() - initialTouchX) / metroMapView.getScaleFactor();
-                        float dy = (event.getRawY() - initialTouchY) / metroMapView.getScaleFactor();
-
-                        metroMapView.setTranslateX(metroMapView.getTranslateX() + dx);
-                        metroMapView.setTranslateY(metroMapView.getTranslateY() + dy);
-
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-
-                        // Перерисовываем карту
+                    if (isMovingMap) {
+                        float deltaX = event.getX() - initialTouchX;
+                        float deltaY = event.getY() - initialTouchY;
+                        metroMapView.setTranslateX(metroMapView.getTranslateX() + deltaX);
+                        metroMapView.setTranslateY(metroMapView.getTranslateY() + deltaY);
                         metroMapView.invalidate();
+                        initialTouchX = event.getX();
+                        initialTouchY = event.getY();
                     }
                     break;
-
                 case MotionEvent.ACTION_UP:
-                    selectedStation = null;
-                    selectedIntermediatePoint = null;
+                case MotionEvent.ACTION_CANCEL:
                     isMovingMap = false;
-                    metroMapView.invalidate();
                     break;
             }
-
-            // Обработка масштабирования
-            metroMapView.scaleGestureDetector.onTouchEvent(event);
             return true;
         });
     }
@@ -240,21 +184,32 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    true, false, false
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    true, false, false, false
             );
         } else if (isSuburbanMap) {
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    false, true, false
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, true, false, false
             );
         } else if (isRiverTramMap) {
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    false, false, true
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, false, true, false
+            );
+        } else if (isTramMap) {
+            metroMapView.setData(
+                    lines, stations, transfers, rivers, mapObjects,
+                    suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
+                    riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, false, false, true
             );
         }
     }
@@ -264,42 +219,62 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
             JSONObject metroMapData = jsonObject.optJSONObject("metro_map");
             JSONObject suburbanMapData = jsonObject.optJSONObject("suburban_map");
+            JSONObject tramMapData = jsonObject.optJSONObject("tram_map");
             JSONObject riverTramMapData = jsonObject.optJSONObject("rivertram_map");
 
             if (metroMapData != null) {
                 loadMapData(metroMapData, lines, stations, transfers, rivers, mapObjects);
             }
-
             if (suburbanMapData != null) {
                 loadMapData(suburbanMapData, suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects);
             }
-
             if (riverTramMapData != null) {
                 loadMapData(riverTramMapData, riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects);
             }
+            if (tramMapData != null) {
+                loadMapData(tramMapData, tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects);
+            }
 
-            List<Station> allStations = new ArrayList<>(stations);
-            if (suburbanMapData != null) {
+            List<Station> allStations = new ArrayList<>();
+            allStations.addAll(stations);
                 allStations.addAll(suburbanStations);
-            }
-            if (riverTramMapData != null) {
                 allStations.addAll(riverTramStations);
-            }
+                allStations.addAll(tramStations);
 
-            if (metroMapData != null) {
                 addNeighbors(metroMapData, allStations);
-            }
-            if (suburbanMapData != null) {
                 addNeighbors(suburbanMapData, allStations);
-            }
-            if (riverTramMapData != null) {
                 addNeighbors(riverTramMapData, allStations);
-            }
+            addNeighbors(tramMapData, allStations);
 
             updateMapData();
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("EditMapActivity", "Error loading map data", e);
         }
+    }
+
+    private void loadMapData() {
+        stations = new ArrayList<>();
+        lines = new ArrayList<>();
+        transfers = new ArrayList<>();
+        rivers = new ArrayList<>();
+        mapObjects = new ArrayList<>();
+        suburbanStations = new ArrayList<>();
+        suburbanLines = new ArrayList<>();
+        suburbanTransfers = new ArrayList<>();
+        suburbanRivers = new ArrayList<>();
+        suburbanMapObjects = new ArrayList<>();
+        riverTramStations = new ArrayList<>();
+        riverTramLines = new ArrayList<>();
+        riverTramTransfers = new ArrayList<>();
+        riverTramRivers = new ArrayList<>();
+        riverTramMapObjects = new ArrayList<>();
+        tramStations = new ArrayList<>();
+        tramLines = new ArrayList<>();
+        tramTransfers = new ArrayList<>();
+        tramRivers = new ArrayList<>();
+        tramMapObjects = new ArrayList<>();
+
+        loadMetroData("metro_data.json");
     }
 
     private void loadMapData(JSONObject mapData, List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) throws JSONException {
@@ -312,162 +287,88 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
         JSONArray linesArray = mapData.getJSONArray("lines");
         for (int i = 0; i < linesArray.length(); i++) {
             JSONObject lineObject = linesArray.getJSONObject(i);
-            boolean isCircle = lineObject.optBoolean("isCircle", false);
-            String lineType = lineObject.optString("lineType", "single");
-            String displayNumber = lineObject.optString("displayNumber", null);
-            String displayShape = lineObject.optString("displayShape", null);
-            Tariff tariff = createTariff(lineObject.optJSONObject("tariff"));
-            Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType, tariff, displayNumber, displayShape);
+            String lineId = lineObject.getString("id");
+            String lineName = lineObject.getString("name");
+            String lineColor = lineObject.getString("color");
+            String lineType = lineObject.optString("type", "single");
+
             JSONArray stationsArray = lineObject.getJSONArray("stations");
+            List<Station> lineStations = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
                 JSONObject stationObject = stationsArray.getJSONObject(j);
-                String schedule = stationObject.optString("schedule", "5:30 - 0:00");
-                int escalators = stationObject.optInt("escalators", 0);
-                int elevators = stationObject.optInt("elevators", 0);
-                String[] exits = toStringArray(stationObject.optJSONArray("exits"));
-                int textPosition = stationObject.optInt("textPosition", 0);
-                String ESP = stationObject.optString("ESP", null);
-
-                Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
-                Station station = new Station(
+                Station station = findStationById(stationObject.getString("id"), stations);
+                if (station != null) {
+                    lineStations.add(station);
+                        } else {
+                    Station newStation = new Station(
                         stationObject.getString("id"),
                         stationObject.getString("name"),
                         stationObject.getInt("x"),
                         stationObject.getInt("y"),
-                        ESP,
-                        line.getColor(),
-                        facilities,
-                        textPosition
-                );
-                stations.add(station);
-                line.getStations().add(station);
+                        stationObject.optString("ESP", ""),
+                        stationObject.optString("color", ""),
+                        null,
+                        stationObject.optInt("textPosition", 0)
+                    );
+                    newStation.setDisplayNumber(stationObject.optString("displayNumber", ""));
+                    stations.add(newStation);
+                    lineStations.add(newStation);
             }
+            }
+
+            boolean isCircle = "circle".equals(lineType);
+            Line line = new Line(lineId, lineName, lineColor, isCircle, lineType, null, "", "");
+            line.getStations().addAll(lineStations);
             lines.add(line);
         }
 
-        JSONArray transfersArray = mapData.getJSONArray("transfers");
+        JSONArray transfersArray = mapData.optJSONArray("transfers");
+        if (transfersArray != null) {
         for (int i = 0; i < transfersArray.length(); i++) {
             JSONObject transferObject = transfersArray.getJSONObject(i);
             JSONArray stationsArray = transferObject.getJSONArray("stations");
             List<Station> transferStations = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
-                String stationId = stationsArray.getString(j);
-                Station station = findStationById(stationId, stations);
+                    Station station = findStationById(stationsArray.getString(j), stations);
                 if (station != null) {
                     transferStations.add(station);
                 }
             }
-            int time = transferObject.optInt("time", 3);
-            String type = transferObject.optString("type", "regular");
-            transfers.add(new Transfer(transferStations, time, type));
+                if (!transferStations.isEmpty()) {
+                    transfers.add(new Transfer(transferStations, transferObject.optInt("time", 3), transferObject.optString("type", "default")));
+        }
+            }
         }
 
-        if (mapData.has("rivers")) {
-            JSONArray riversArray = mapData.getJSONArray("rivers");
+        JSONArray riversArray = mapData.optJSONArray("rivers");
+        if (riversArray != null) {
             for (int i = 0; i < riversArray.length(); i++) {
                 JSONObject riverObject = riversArray.getJSONObject(i);
-                if (riverObject.has("points")) {
                     JSONArray pointsArray = riverObject.getJSONArray("points");
-                    List<Point> riverPoints = new ArrayList<>();
+                List<Point> points = new ArrayList<>();
                     for (int j = 0; j < pointsArray.length(); j++) {
                         JSONObject pointObject = pointsArray.getJSONObject(j);
-                        if (pointObject.has("x") && pointObject.has("y")) {
-                            int x = pointObject.getInt("x");
-                            int y = pointObject.getInt("y");
-                            Point point = new Point(x, y);
-                            riverPoints.add(point);
+                    points.add(new Point(pointObject.getInt("x"), pointObject.getInt("y")));
                         }
-                    }
-                    int width = riverObject.optInt("width", 10);
-                    rivers.add(new River(riverPoints, width));
-                }
+                int width = riverObject.optInt("width", 10);
+                rivers.add(new River(points, width));
             }
         }
 
-        JSONArray intermediatePointsArray = mapData.getJSONArray("intermediatePoints");
-        for (int i = 0; i < intermediatePointsArray.length(); i++) {
-            JSONObject intermediatePointObject = intermediatePointsArray.getJSONObject(i);
-            JSONArray neighborsIdArray = intermediatePointObject.getJSONArray("neighborsId");
-            String station1Id = neighborsIdArray.getString(0);
-            String station2Id = neighborsIdArray.getString(1);
-
-            Station station1 = findStationById(station1Id, stations);
-            Station station2 = findStationById(station2Id, stations);
-
-            if (station1 != null && station2 != null) {
-                JSONArray pointsArray = intermediatePointObject.getJSONArray("points");
-                List<Point> intermediatePoints = new ArrayList<>();
-                for (int j = 0; j < pointsArray.length(); j++) {
-                    JSONObject pointObject = pointsArray.getJSONObject(j);
-                    Point point = new Point(pointObject.getInt("x"), pointObject.getInt("y"));
-                    intermediatePoints.add(point);
-                }
-                station1.addIntermediatePoints(station2, intermediatePoints);
+        JSONArray mapObjectsArray = mapData.optJSONArray("mapObjects");
+        if (mapObjectsArray != null) {
+            for (int i = 0; i < mapObjectsArray.length(); i++) {
+                JSONObject mapObjectObject = mapObjectsArray.getJSONObject(i);
+                Point position = new Point(mapObjectObject.getInt("x"), mapObjectObject.getInt("y"));
+                MapObject mapObject = new MapObject(
+                        mapObjectObject.getString("id"),
+                        mapObjectObject.getString("type"),
+                        position,
+                        mapObjectObject.optString("displayNumber", "")
+                );
+                mapObjects.add(mapObject);
             }
         }
-
-        JSONArray objectsArray = mapData.getJSONArray("objects");
-        for (int i = 0; i < objectsArray.length(); i++) {
-            JSONObject objectObject = objectsArray.getJSONObject(i);
-            String name = objectObject.getString("name");
-            String displayNumber = objectObject.getString("displayNumber");
-            String type = objectObject.getString("type");
-            JSONObject positionObject = objectObject.getJSONObject("position");
-            Point position = new Point(positionObject.getInt("x"), positionObject.getInt("y"));
-            mapObjects.add(new MapObject(name, type, position, displayNumber));
-        }
-    }
-    private Tariff createTariff(JSONObject tariffObject) throws JSONException {
-        if (tariffObject == null) return null;
-
-        String type = tariffObject.getString("type");
-        switch (type) {
-            case "FlatRateTariff":
-                double price = tariffObject.getDouble("price");
-                return new FlatRateTariff(price);
-            case "ZoneBasedTariff":
-                Map<Integer, Double> zonePrices = new HashMap<>();
-                JSONObject zonePricesObject = tariffObject.getJSONObject("zonePrices");
-                Iterator<String> keys = zonePricesObject.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    zonePrices.put(Integer.parseInt(key), zonePricesObject.getDouble(key));
-                }
-                return new ZoneBasedTariff(zonePrices);
-            case "APITariff":
-                return new APITariff();
-            default:
-                return null;
-        }
-    }
-
-    private String[] toStringArray(JSONArray array) {
-        if (array == null) return new String[0];
-        String[] result = new String[array.length()];
-        for (int i = 0; i < array.length(); i++) {
-            try {
-                result[i] = array.getString(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-    private String loadJSONFromAsset(String mapFileName) {
-        String json = null;
-        try {
-            InputStream is = getAssets().open("raw/" + mapFileName);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
     }
 
     private Station findStationById(String id, List<Station> stations) {
@@ -479,192 +380,139 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
         return null;
     }
 
-    private void showAddStationDialog() {
+    private void showStationEditDialog(Station station) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_station, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_station, null);
         builder.setView(dialogView);
 
-        EditText stationNameEditText = dialogView.findViewById(R.id.stationNameEditText);
-        Spinner lineSpinner = dialogView.findViewById(R.id.lineSpinner);
-        Spinner stationSpinner = dialogView.findViewById(R.id.stationSpinner);
-        Button createButton = dialogView.findViewById(R.id.createButton);
+        EditText nameEditText = dialogView.findViewById(R.id.nameEditText);
+        EditText xEditText = dialogView.findViewById(R.id.xEditText);
+        EditText yEditText = dialogView.findViewById(R.id.yEditText);
+        EditText textPositionEditText = dialogView.findViewById(R.id.textPositionEditText);
+        EditText displayNumberEditText = dialogView.findViewById(R.id.displayNumberEditText);
 
-        AlertDialog alertDialog = builder.create();
+        nameEditText.setText(station.getName());
+        xEditText.setText(String.valueOf(station.getX()));
+        yEditText.setText(String.valueOf(station.getY()));
+        textPositionEditText.setText(String.valueOf(station.getTextPosition()));
+        displayNumberEditText.setText(station.getdisplayNumber());
 
-        List<String> lineNames = new ArrayList<>();
-        for (Line line : lines) {
-            lineNames.add(line.getName());
-        }
-        ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lineNames);
-        lineAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        lineSpinner.setAdapter(lineAdapter);
-
-        lineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Line selectedLine = lines.get(position);
-                List<String> stationNames = new ArrayList<>();
-                for (Station station : selectedLine.getStations()) {
-                    stationNames.add(station.getName());
-                }
-                ArrayAdapter<String> stationAdapter = new ArrayAdapter<>(EditMapActivity.this, android.R.layout.simple_spinner_item, stationNames);
-                stationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                stationSpinner.setAdapter(stationAdapter);
+        builder.setPositiveButton("Сохранить", (dialog, which) -> {
+            try {
+                station.setName(nameEditText.getText().toString());
+                station.setX(Integer.parseInt(xEditText.getText().toString()));
+                station.setY(Integer.parseInt(yEditText.getText().toString()));
+                station.setTextPosition(Integer.parseInt(textPositionEditText.getText().toString()));
+                station.setDisplayNumber(displayNumberEditText.getText().toString());
+                updateMapData();
+                metroMapView.invalidate();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Ошибка ввода данных", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        createButton.setOnClickListener(v -> {
-            String stationName = stationNameEditText.getText().toString();
-            int selectedLineIndex = lineSpinner.getSelectedItemPosition();
-            int selectedStationIndex = stationSpinner.getSelectedItemPosition();
-
-            if (stationName.isEmpty()) {
-                Toast.makeText(this, "Enter station name", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Line selectedLine = lines.get(selectedLineIndex);
-            Station selectedStation = selectedLine.getStations().get(selectedStationIndex);
-
-            Station newStation = createNewStation(stationName, selectedLine, selectedStation);
-
-            stations.add(newStation);
-            selectedLine.getStations().add(newStation);
-
-            newStation.addNeighbor(new Station.Neighbor(selectedStation, 2));
-            selectedStation.addNeighbor(new Station.Neighbor(newStation, 2));
-
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, suburbanLines, suburbanStations);
-            metroMapView.invalidate();
-
-            alertDialog.dismiss();
-        });
-
-        alertDialog.show();
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
     }
 
-    private Station createNewStation(String stationName, Line selectedLine, Station selectedStation) {
-        return new Station(
-                selectedLine.getId() + "_" + (selectedLine.getStations().size() + 1),
-                stationName,
-                selectedStation.getX() + 20,
-                selectedStation.getY() + 20,
-                "",
-                selectedLine.getColor(),
-                new Facilities("5:30 - 0:00", 0, 0, new String[]{}),
-                0
-        );
-    }
-
-    private void removeSelectedStation() {
-        if (selectedStation != null) {
-            stations.remove(selectedStation);
-            selectedStation = null;
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, suburbanLines, suburbanStations);
-            metroMapView.invalidate();
-        } else {
-            Toast.makeText(this, "Select a station to remove", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void saveMetroData() {
+    private void saveMapData() {
         try {
             JSONObject jsonObject = new JSONObject();
+            JSONObject metroMapData = createMapDataJson(lines, stations, transfers, rivers, mapObjects);
+            JSONObject suburbanMapData = createMapDataJson(suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects);
+            JSONObject riverTramMapData = createMapDataJson(riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects);
+            JSONObject tramMapData = createMapDataJson(tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects);
 
-            JSONObject infoObject = new JSONObject();
-            infoObject.put("version", "1.0");
-            infoObject.put("author", "Nicorp");
-            infoObject.put("country", "Россия");
-            infoObject.put("name", "Москва");
-            infoObject.put("icon", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg/330px-%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg.png");
-            jsonObject.put("info", infoObject);
+            jsonObject.put("metro_map", metroMapData);
+            jsonObject.put("suburban_map", suburbanMapData);
+            jsonObject.put("rivertram_map", riverTramMapData);
+            jsonObject.put("tram_map", tramMapData);
 
-            JSONObject metroMapObject = new JSONObject();
+            File file = new File(getFilesDir(), EDITED_DATA_FILENAME);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(jsonObject.toString().getBytes());
+            fos.close();
+
+            Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
+        } catch (JSONException | IOException e) {
+            Log.e("EditMapActivity", "Error saving map data", e);
+            Toast.makeText(this, "Ошибка сохранения данных", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private JSONObject createMapDataJson(List<Line> lines, List<Station> stations, List<Transfer> transfers, List<River> rivers, List<MapObject> mapObjects) throws JSONException {
+            JSONObject jsonObject = new JSONObject();
+
             JSONArray linesArray = new JSONArray();
             for (Line line : lines) {
                 JSONObject lineObject = new JSONObject();
                 lineObject.put("id", line.getId());
-                lineObject.put("displayNumber", line.getId());
-                lineObject.put("displayShape", "CIRCLE");
-                lineObject.put("tariff", new JSONObject(line.getTariff().getJson().toString()));
                 lineObject.put("name", line.getName());
                 lineObject.put("color", line.getColor());
-                lineObject.put("isCircle", line.isCircle());
-                lineObject.put("lineType", line.getLineType());
+            lineObject.put("type", line.getType());
 
                 JSONArray stationsArray = new JSONArray();
                 for (Station station : line.getStations()) {
+                stationsArray.put(station.getId());
+            }
+            lineObject.put("stations", stationsArray);
+            linesArray.put(lineObject);
+        }
+        jsonObject.put("lines", linesArray);
+
+        JSONArray stationsArray = new JSONArray();
+        for (Station station : stations) {
                     JSONObject stationObject = new JSONObject();
                     stationObject.put("id", station.getId());
                     stationObject.put("name", station.getName());
                     stationObject.put("x", station.getX());
                     stationObject.put("y", station.getY());
-                    stationObject.put("textPosition", station.getTextPosition());
+                        stationObject.put("textPosition", station.getTextPosition());
+            stationObject.put("displayNumber", station.getdisplayNumber());
 
                     JSONArray neighborsArray = new JSONArray();
+            if (station.getNeighbors() != null) {
                     for (Station.Neighbor neighbor : station.getNeighbors()) {
                         JSONArray neighborArray = new JSONArray();
                         neighborArray.put(neighbor.getStation().getId());
                         neighborArray.put(neighbor.getTime());
                         neighborsArray.put(neighborArray);
+                }
                     }
                     stationObject.put("neighbors", neighborsArray);
 
-                    JSONObject facilitiesObject = new JSONObject();
-                    facilitiesObject.put("schedule", station.getFacilities().getSchedule());
-                    facilitiesObject.put("escalators", station.getFacilities().getEscalators());
-                    facilitiesObject.put("elevators", station.getFacilities().getElevators());
-                    facilitiesObject.put("exits", new JSONArray(station.getFacilities().getExits()));
-                    stationObject.put("facilities", facilitiesObject);
+            if (station.getIntermediatePoints() != null && !station.getIntermediatePoints().isEmpty()) {
+                JSONObject intermediatePointsObject = new JSONObject();
+                for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
+                    JSONArray pointsArray = new JSONArray();
+                    for (Point point : entry.getValue()) {
+                        JSONObject pointObject = new JSONObject();
+                        pointObject.put("x", point.x);
+                        pointObject.put("y", point.y);
+                        pointsArray.put(pointObject);
+                    }
+                    intermediatePointsObject.put(entry.getKey().getId(), pointsArray);
+                }
+                stationObject.put("intermediatePoints", intermediatePointsObject);
+            }
 
                     stationsArray.put(stationObject);
                 }
-                lineObject.put("stations", stationsArray);
-                linesArray.put(lineObject);
-            }
-            metroMapObject.put("lines", linesArray);
+        jsonObject.put("stations", stationsArray);
 
             JSONArray transfersArray = new JSONArray();
             for (Transfer transfer : transfers) {
                 JSONObject transferObject = new JSONObject();
-                JSONArray stationsArray = new JSONArray();
+            JSONArray stationsArrayForTransfer = new JSONArray();
                 for (Station station : transfer.getStations()) {
-                    stationsArray.put(station.getId());
+                stationsArrayForTransfer.put(station.getId());
                 }
-                transferObject.put("stations", stationsArray);
+            transferObject.put("stations", stationsArrayForTransfer);
                 transferObject.put("time", transfer.getTime());
                 transferObject.put("type", transfer.getType());
                 transfersArray.put(transferObject);
             }
-            metroMapObject.put("transfers", transfersArray);
-
-            JSONArray intermediatePointsArray = new JSONArray();
-            for (Station station : stations) {
-                if (station.getIntermediatePoints() != null) {
-                    for (Map.Entry<Station, List<Point>> entry : station.getIntermediatePoints().entrySet()) {
-                        JSONObject intermediatePointObject = new JSONObject();
-                        JSONArray neighborsIds = new JSONArray();
-                        neighborsIds.put(station.getId());
-                        neighborsIds.put(entry.getKey().getId());
-                        intermediatePointObject.put("neighborsId", neighborsIds);
-
-                        JSONArray pointsArray = new JSONArray();
-                        for (Point point : entry.getValue()) {
-                            JSONObject pointObject = new JSONObject();
-                            pointObject.put("x", point.x);
-                            pointObject.put("y", point.y);
-                            pointsArray.put(pointObject);
-                        }
-                        intermediatePointObject.put("points", pointsArray);
-                        intermediatePointsArray.put(intermediatePointObject);
-                    }
-                }
-            }
-            metroMapObject.put("intermediatePoints", intermediatePointsArray);
+        jsonObject.put("transfers", transfersArray);
 
             JSONArray riversArray = new JSONArray();
             for (River river : rivers) {
@@ -677,84 +525,94 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
                     pointsArray.put(pointObject);
                 }
                 riverObject.put("points", pointsArray);
-                riverObject.put("width", river.getWidth());
                 riversArray.put(riverObject);
             }
-            metroMapObject.put("rivers", riversArray);
+        jsonObject.put("rivers", riversArray);
 
-            JSONArray objectsArray = new JSONArray();
+        JSONArray mapObjectsArray = new JSONArray();
             for (MapObject mapObject : mapObjects) {
-                JSONObject objectObject = new JSONObject();
-                objectObject.put("name", mapObject.getName());
-                objectObject.put("displayNumber", mapObject.getdisplayNumber());
-                objectObject.put("type", mapObject.getType());
-                JSONObject positionObject = new JSONObject();
-                positionObject.put("x", mapObject.getPosition().x);
-                positionObject.put("y", mapObject.getPosition().y);
-                objectObject.put("position", positionObject);
-                objectsArray.put(objectObject);
+            JSONObject mapObjectObject = new JSONObject();
+            mapObjectObject.put("id", mapObject.getId());
+            mapObjectObject.put("type", mapObject.getType());
+            mapObjectObject.put("x", mapObject.getPosition().x);
+            mapObjectObject.put("y", mapObject.getPosition().y);
+            mapObjectObject.put("displayNumber", mapObject.getdisplayNumber());
+            mapObjectsArray.put(mapObjectObject);
             }
-            metroMapObject.put("objects", objectsArray);
+        jsonObject.put("mapObjects", mapObjectsArray);
 
-            jsonObject.put("metro_map", metroMapObject);
+        return jsonObject;
+    }
 
-            OutputStream os = new FileOutputStream(new File(getFilesDir(), EDITED_DATA_FILENAME));
-            os.write(jsonObject.toString().getBytes());
-            os.close();
-
-            Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Save error", Toast.LENGTH_SHORT).show();
+    private String loadJSONFromAsset(String fileName) {
+        String json = null;
+        try {
+            InputStream is = getAssets().open(fileName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            Log.e("EditMapActivity", "Error loading JSON from asset", ex);
         }
+        return json;
     }
 
-    private void showAddIntermediatePointsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_intermediate_points, null);
-        builder.setView(dialogView);
+    private void addStationToLine(Line line, Station station) {
+        line.getStations().add(station);
+        updateMapData();
+        metroMapView.invalidate();
+    }
 
-        Spinner station1Spinner = dialogView.findViewById(R.id.station1Spinner);
-        Spinner station2Spinner = dialogView.findViewById(R.id.station2Spinner);
-        Button addIntermediatePointsButton = dialogView.findViewById(R.id.addIntermediatePointsButton);
+    private void removeStationFromLine(Line line, Station station) {
+        line.getStations().remove(station);
+        updateMapData();
+            metroMapView.invalidate();
+    }
 
-        AlertDialog alertDialog = builder.create();
+    private void addLine(Line line) {
+        lines.add(line);
+        updateMapData();
+        metroMapView.invalidate();
+        }
 
-        StationSpinnerAdapter stationAdapter = new StationSpinnerAdapter(this, stations);
-        station1Spinner.setAdapter(stationAdapter);
-        station2Spinner.setAdapter(stationAdapter);
+    private void removeLine(Line line) {
+        lines.remove(line);
+        updateMapData();
+        metroMapView.invalidate();
+    }
 
-        addIntermediatePointsButton.setOnClickListener(v -> {
-            int selectedStation1Index = station1Spinner.getSelectedItemPosition();
-            int selectedStation2Index = station2Spinner.getSelectedItemPosition();
+    public void onStationSelected(Station station) {
+        selectedStation = station;
+        showStationEditDialog(station);
+    }
 
-            if (selectedStation1Index == selectedStation2Index) {
-                Toast.makeText(this, "Select different stations", Toast.LENGTH_SHORT).show();
-                return;
+    public void onStationAdded(Station station) {
+        stations.add(station);
+        updateMapData();
+        metroMapView.invalidate();
+    }
+
+    public void onStationRemoved(Station station) {
+        stations.remove(station);
+        for (Line line : lines) {
+            line.getStations().remove(station);
+            }
+        updateMapData();
+        metroMapView.invalidate();
+    }
+
+    public void onLineAdded(Line line) {
+        lines.add(line);
+        updateMapData();
+        metroMapView.invalidate();
             }
 
-            Station station1 = stations.get(selectedStation1Index);
-            Station station2 = stations.get(selectedStation2Index);
-
-            List<Point> intermediatePoints = new ArrayList<>();
-            intermediatePoints.add(new Point(station1.getX() + 10, station1.getY() + 10));
-            intermediatePoints.add(new Point(station2.getX() - 10, station2.getY() - 10));
-
-            station1.addIntermediatePoints(station2, intermediatePoints);
-
-            metroMapView.setData(lines, stations, transfers, rivers, mapObjects, suburbanLines, suburbanStations);
-            metroMapView.invalidate();
-
-            alertDialog.dismiss();
-        });
-
-        alertDialog.show();
-    }
-
-    public void showAddTransferDialog() {
-        AddTransferDialogFragment dialog = new AddTransferDialogFragment(stations, this);
-        dialog.show(getSupportFragmentManager(), "AddTransferDialogFragment");
+    public void onLineRemoved(Line line) {
+        lines.remove(line);
+        updateMapData();
+        metroMapView.invalidate();
     }
 
     @Override
@@ -775,11 +633,12 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
 
         transfers.add(new Transfer(selectedStations, 3, "default"));
 
-        metroMapView.setData(lines, stations, transfers, rivers, mapObjects, suburbanLines, suburbanStations);
+        updateMapData();
         metroMapView.invalidate();
     }
 
     private void addNeighbors(JSONObject mapData, List<Station> allStations) throws JSONException {
+        if (mapData == null) return;
         JSONArray linesArray = mapData.getJSONArray("lines");
 
         for (int i = 0; i < linesArray.length(); i++) {
@@ -797,6 +656,24 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
                         Station neighborStation = findStationById(neighborId, allStations);
                         if (neighborStation != null) {
                             station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                        }
+                    }
+
+                    if (stationObject.has("intermediatePoints")) {
+                        JSONObject intermediatePointsObject = stationObject.getJSONObject("intermediatePoints");
+                        Iterator<String> keys = intermediatePointsObject.keys();
+                        while (keys.hasNext()) {
+                            String neighborId = keys.next();
+                            JSONArray pointsArray = intermediatePointsObject.getJSONArray(neighborId);
+                            List<Point> intermediatePoints = new ArrayList<>();
+                            for (int k = 0; k < pointsArray.length(); k++) {
+                                JSONObject pointObject = pointsArray.getJSONObject(k);
+                                intermediatePoints.add(new Point(pointObject.getInt("x"), pointObject.getInt("y")));
+                            }
+                        Station neighborStation = findStationById(neighborId, allStations);
+                        if (neighborStation != null) {
+                                station.addIntermediatePoints(neighborStation, intermediatePoints);
+                            }
                         }
                     }
                 }

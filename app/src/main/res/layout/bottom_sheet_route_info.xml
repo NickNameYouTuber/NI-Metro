@@ -1,444 +1,576 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/routeInfoContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:maxHeight="500dp"
-    android:elevation="4dp"
-    app:layout_constraintHeight_max="500dp"
     android:background="@drawable/rounded_background"
     android:clickable="true"
-    android:id="@+id/routeInfoContainer">
+    android:elevation="4dp"
+    android:maxHeight="500dp"
+    android:minHeight="200dp"
+    app:layout_constraintHeight_max="1000dp">
 
     <LinearLayout
+        android:id="@+id/routeInfoContentWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="500dp"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:id="@+id/routeInfoContent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/routeTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Краткая информация"
-                android:textColor="@color/textPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/closeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        android:maxHeight="1000dp"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/layoutCollapsed"
-            android:layout_width="match_parent"
+            android:id="@+id/routeInfoContent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical">
-
-            <!-- Карта перехода -->
-            <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
-                android:id="@+id/transferMapView"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:minHeight="300dp"
-                android:minWidth="300dp"
-                android:adjustViewBounds="true"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- Группа элементов "Время", "Станций" и т.д. -->
-            <LinearLayout
-                android:id="@+id/routeInfoGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/nearestTrainsTitle"
-                    android:textColor="@color/textPrimary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ближайшие поезда:"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:drawableStart="@drawable/ic_train"
-                    android:drawablePadding="8dp"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/nearestTrainsRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_train_info" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/dividerColor"
-                    android:layout_marginVertical="8dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="4dp">
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_clock"
-                        android:layout_marginEnd="8dp"/>
-                    <TextView
-                        android:textColor="@color/textPrimary"
-                        android:id="@+id/routeTimeTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Время:"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:textColor="@color/textSecondary"
-                        android:id="@+id/routeTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 мин"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Аналогичные улучшения для других строк: Станций, Пересадок, Цена -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="4dp">
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_station"
-                        android:layout_marginEnd="8dp"/>
-                    <TextView
-                        android:textColor="@color/textPrimary"
-                        android:id="@+id/routeStationsTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Станций:"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:textColor="@color/textSecondary"
-                        android:id="@+id/routeStationsCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-
-                <!-- Пересадки -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="4dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_transfer"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:textColor="@color/textPrimary"
-                        android:id="@+id/routeTransfersTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Пересадок:"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:textColor="@color/textSecondary"
-                        android:id="@+id/routeTransfersCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Цена -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="4dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_price"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:textColor="@color/textPrimary"
-                        android:id="@+id/routeFareTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Цена:"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:textColor="@color/textSecondary"
-                        android:id="@+id/routeCost"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 ₽"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Группа "tripinfo" (новая группа) -->
-            <LinearLayout
-                android:id="@+id/tripInfoGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:padding="16dp">
-
-                <!-- Карта перехода для "tripinfo" -->
-                <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
-                    android:id="@+id/tripTransferMapView"
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
-                    android:minHeight="300dp"
-                    android:minWidth="300dp"
-                    android:adjustViewBounds="true"
-                    android:visibility="gone"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- Текущая станция -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tripCurrentStationTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Текущая станция:"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/tripCurrentStationValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Третьяковская"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/dividerColor"
-                    android:layout_marginVertical="4dp"/>
-
-                <!-- Следующая станция -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_next_station"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tripNextStationTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Следующая станция:"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/tripNextStationValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Китай-город"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/dividerColor"
-                    android:layout_marginVertical="4dp"/>
-
-                <!-- Время до перехода -->
-                <LinearLayout
-                    android:id="@+id/tripTransferTimeContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_transfer_time"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tripTransferTimeTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="До перехода:"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/tripTransferTimeValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5 мин"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-                <!-- Время до конца маршрута -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_clock"
-                        android:layout_marginEnd="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tripRemainingTimeTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="До конца маршрута:"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/tripRemainingTimeValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="33 мин"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-                <!-- Подсказка о переходе -->
-                <TextView
-                    android:id="@+id/tripTransferHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="На следующей перейдите на станцию 'Китай-город'"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="14sp"
-                    android:layout_gravity="center_horizontal"
-                    android:drawableStart="@drawable/ic_info"
-                    android:drawablePadding="8dp"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/startRouteButton"
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_button_background"
-                android:padding="8dp"
-                android:text="Поехали"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutExpanded"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:padding="16dp"
+            android:paddingEnd="10dp">
 
-            <ScrollView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/routeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Краткая информация"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/closeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_close"
+                    app:tint="?attr/colorCloseIcon" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/summaryNearestTrainsRV"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:overScrollMode="never"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/routeTitle"
+                    app:layout_constraintEnd_toStartOf="@id/closeButton"
+                    app:layout_constraintStart_toEndOf="@id/routeTitle"
+                    app:layout_constraintTop_toTopOf="@id/routeTitle" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
                 <LinearLayout
-                    android:id="@+id/routeDetailsContainer"
+                    android:id="@+id/layoutSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="30dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/summaryRouteTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 мин"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/summaryRouteStations"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="0 ст."
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="16sp" />
+
+                    <!-- Мини-карточки электричек вынесены в заголовок (ConstraintLayout) справа от routeTitle -->
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="16dp" />
-            </ScrollView>
+                    android:visibility="visible">
+
+                    <!-- Группа элементов "Время", "Станций" и т.д. -->
+                    <LinearLayout
+                        android:id="@+id/routeInfoGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/nearestTrainsTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_train"
+                            android:drawableTint="?attr/colorPrimary"
+                            android:drawablePadding="8dp"
+                            android:paddingTop="8dp"
+                            android:text="Ближайшие поезда:"
+                            android:textAlignment="center"
+                            android:textColor="?attr/colorOnBackground"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/nearestTrainsRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/item_train_info" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="?attr/colorOutline" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_clock"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/routeTimeTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Время:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/routeTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 мин"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Аналогичные улучшения для других строк: Станций, Пересадок, Цена -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_station"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/routeStationsTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Станций:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/routeStationsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+
+                        <!-- Пересадки -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_transfer"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/routeTransfersTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Пересадок:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/routeTransfersCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Цена -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_price"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/routeFareTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Цена:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/routeCost"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 ₽"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Группа "tripinfo" (новая группа) -->
+                    <LinearLayout
+                        android:id="@+id/tripInfoGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone">
+
+                        <!-- Карта перехода для "tripinfo" -->
+                        <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
+                            android:id="@+id/tripTransferMapView"
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginBottom="16dp"
+                            android:adjustViewBounds="true"
+                            android:minWidth="300dp"
+                            android:minHeight="300dp"
+                            android:visibility="gone" />
+
+                        <!-- Текущая станция -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_station"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/tripCurrentStationTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Текущая станция:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tripCurrentStationValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Третьяковская"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="4dp"
+                            android:background="?attr/colorOutline" />
+
+                        <!-- Следующая станция -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_next_station"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/tripNextStationTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Следующая станция:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tripNextStationValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Китай-город"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="4dp"
+                            android:background="?attr/colorOutline" />
+
+                        <!-- Время до перехода -->
+                        <LinearLayout
+                            android:id="@+id/tripTransferTimeContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="8dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_transfer_time"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/tripTransferTimeTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="До перехода:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tripTransferTimeValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="5 мин"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Время до конца маршрута -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_clock"
+                                app:tint="?attr/colorPrimary" />
+
+                            <TextView
+                                android:id="@+id/tripRemainingTimeTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="До конца маршрута:"
+                                android:textColor="?attr/colorOnBackground"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tripRemainingTimeValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="33 мин"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Подсказка о переходе -->
+                        <TextView
+                            android:id="@+id/tripTransferHint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="12dp"
+                            android:drawableStart="@drawable/ic_info"
+                            android:drawableTint="?attr/colorPrimary"
+                            android:drawablePadding="8dp"
+                            android:text=""
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="14sp"
+                            android:ellipsize="marquee"
+                            android:singleLine="true"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:scrollHorizontally="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/startRouteButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/rounded_button_background"
+                        android:padding="8dp"
+                        android:text="Поехали"
+                        android:textAlignment="center"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Отдельный экран для анимированного перехода -->
+                <LinearLayout
+                    android:id="@+id/layoutTransfer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
+                        android:id="@+id/transferMapView"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_gravity="center_horizontal"
+                        android:adjustViewBounds="true"
+                        android:minHeight="300dp"
+                        android:visibility="visible" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutRoute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <ScrollView
+                        android:id="@+id/routeScrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="200dp">
+
+                        <LinearLayout
+                            android:id="@+id/routeDetailsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp" />
+                    </ScrollView>
+                </LinearLayout>
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dotsIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center_vertical"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingEnd="10dp">
+
+            <View
+                android:id="@+id/dotTop"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/dot_unselected" />
+
+            <View
+                android:id="@+id/dotMiddle"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/dot_selected" />
+
+            <View
+                android:id="@+id/dotBottom"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/dot_unselected" />
+
+            <!-- Индикатор состояния Переход -->
+            <View
+                android:id="@+id/dotTransfer"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/dot_unselected"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
+
 </FrameLayout>

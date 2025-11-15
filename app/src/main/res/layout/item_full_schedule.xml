@@ -19,7 +19,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_train"
-            android:tint="@color/colorPrimary"
+            android:tint="?attr/colorPrimary"
             android:layout_marginEnd="8dp"/>
 
         <TextView
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="7276"
             android:textSize="16sp"
-            android:textColor="@color/textPrimary"
+            android:textColor="?attr/colorOnBackground"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"/>
     </LinearLayout>
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:text="00:03"
             android:textSize="14sp"
-            android:textColor="@color/textPrimary"
+            android:textColor="?attr/colorOnBackground"
             android:fontFamily="sans-serif"/>
     </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_timer"
-            android:tint="@color/colorPrimary"
+            android:tint="?attr/colorPrimary"
             android:layout_marginEnd="8dp"/>
 
         <TextView
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:text="3 мин"
             android:textSize="12sp"
-            android:textColor="@color/textSecondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:fontFamily="sans-serif-medium"/>
     </LinearLayout>
 
@@ -101,7 +101,7 @@
         android:layout_height="wrap_content"
         android:text="Одинцово — Москва (Белорусский вокзал)"
         android:textSize="14sp"
-        android:textColor="@color/textPrimary"
+        android:textColor="?attr/colorOnBackground"
         android:layout_marginTop="8dp"/>
 
     <!-- Название перевозчика -->
@@ -111,6 +111,6 @@
         android:layout_height="wrap_content"
         android:text="Центральная пригородная пассажирская компания"
         android:textSize="12sp"
-        android:textColor="@color/textSecondary"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:layout_marginTop="4dp"/>
 </LinearLayout>

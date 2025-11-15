@@ -9,12 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 public class Transfer implements Parcelable {
+    private String id;
     private List<Station> stations;
     private int time;
     private String type;
     private String transferMap;
     private Map<String, String> transitionTexts; // Тексты переходов между станциями
     private List<TransferRoute> transferRoutes; // Маршруты перехода
+    private boolean isLinkTransfer; // Переход между другими переходами (TR_* ссылки)
+    private List<String> linkedTransferIds; // ID переходов, которые соединяет этот переход
+    private List<String> linkedStationIds; // Явно указанные станции-анкеры, к которым тянем от центров переходов
 
     public String getTransferMap() {
         return transferMap;
@@ -39,7 +43,43 @@ public class Transfer implements Parcelable {
         this.transferRoutes = transferRoutes;
     }
 
+    public Transfer(String id, List<Station> stations, int time, String type, String transferMap, List<TransferRoute> transferRoutes) {
+        this.id = id;
+        this.stations = stations;
+        this.time = time;
+        this.type = type;
+        this.transferMap = transferMap;
+        this.transferRoutes = transferRoutes;
+        this.transitionTexts = generateTransitionTexts();
+    }
+
+    public Transfer(String id, List<Station> stations, int time, String type, String transferMap, List<TransferRoute> transferRoutes, boolean isLinkTransfer, List<String> linkedTransferIds) {
+        this.id = id;
+        this.stations = stations;
+        this.time = time;
+        this.type = type;
+        this.transferMap = transferMap;
+        this.transferRoutes = transferRoutes;
+        this.isLinkTransfer = isLinkTransfer;
+        this.linkedTransferIds = linkedTransferIds;
+        this.transitionTexts = generateTransitionTexts();
+    }
+
+    public Transfer(String id, List<Station> stations, int time, String type, String transferMap, List<TransferRoute> transferRoutes, boolean isLinkTransfer, List<String> linkedTransferIds, List<String> linkedStationIds) {
+        this.id = id;
+        this.stations = stations;
+        this.time = time;
+        this.type = type;
+        this.transferMap = transferMap;
+        this.transferRoutes = transferRoutes;
+        this.isLinkTransfer = isLinkTransfer;
+        this.linkedTransferIds = linkedTransferIds;
+        this.linkedStationIds = linkedStationIds;
+        this.transitionTexts = generateTransitionTexts();
+    }
+
     protected Transfer(Parcel in) {
+        id = in.readString();
         stations = in.createTypedArrayList(Station.CREATOR);
         time = in.readInt();
         type = in.readString();
@@ -47,6 +87,9 @@ public class Transfer implements Parcelable {
         transitionTexts = new HashMap<>();
         in.readMap(transitionTexts, String.class.getClassLoader());
         transferRoutes = in.createTypedArrayList(TransferRoute.CREATOR);
+        isLinkTransfer = in.readByte() != 0;
+        linkedTransferIds = in.createStringArrayList();
+        linkedStationIds = in.createStringArrayList();
     }
 
     public static final Creator<Transfer> CREATOR = new Creator<Transfer>() {
@@ -68,16 +111,36 @@ public class Transfer implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeTypedList(stations);
         dest.writeInt(time);
         dest.writeString(type);
         dest.writeString(transferMap);
         dest.writeMap(transitionTexts);
         dest.writeTypedList(transferRoutes);
+        dest.writeByte((byte) (isLinkTransfer ? 1 : 0));
+        dest.writeStringList(linkedTransferIds);
+        dest.writeStringList(linkedStationIds);
     }
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public boolean isLinkTransfer() {
+        return isLinkTransfer;
+    }
+
+    public List<String> getLinkedTransferIds() {
+        return linkedTransferIds;
+    }
+
+    public List<String> getLinkedStationIds() {
+        return linkedStationIds;
     }
 
     public int getTime() {
@@ -138,25 +201,51 @@ public class Transfer implements Parcelable {
      * Возвращает маршрут перехода между двумя станциями.
      */
     public TransferRoute getTransferRoute(Station prev, Station from, Station to) {
-        for (TransferRoute route : transferRoutes) {
-            Log.d("Transfer", "Route: " + route.getFrom() + " -> " + route.getTo() + " -> " + route.getPrev());
-            Log.d("Transfer", "From: " + from.getName() + " To: " + to.getName() + " Prev: " + prev.getName());
-            // Проверяем, подходит ли маршрут для текущего перехода
-            if (route.getFrom().equals(from.getId()) && route.getTo().equals(to.getId())) {
-                Log.d("Transfer", "Found route: " + route.getFrom());
-                Log.d("Transfer", "Found route: " + route.getTo());
-                Log.d("Transfer", "Found route: " + route.getPrev());
-                // Если предыдущая станция указана, используем её для выбора варианта
+        Log.d("Transfer", "getTransferRoute called with prev=" + (prev != null ? prev.getId() : "null") + 
+              ", from=" + from.getId() + ", to=" + to.getId());
+        Log.d("Transfer", "Transfer has " + (transferRoutes != null ? transferRoutes.size() : 0) + " routes");
+        
+        if (transferRoutes == null || transferRoutes.isEmpty()) {
+            Log.d("Transfer", "No transfer routes available");
+            return null;
+        }
+        
+        TransferRoute fallbackAnyFromTo = null;
+        for (int i = 0; i < transferRoutes.size(); i++) {
+            TransferRoute route = transferRoutes.get(i);
+            Log.d("Transfer", "Route " + i + ": from=" + route.getFrom() + ", to=" + route.getTo() + ", prev=" + route.getPrev());
+            
+            // Проверяем, подходит ли маршрут для текущего перехода по from/to
+            if (route.getFrom() != null && route.getTo() != null
+                    && route.getFrom().equals(from.getId()) && route.getTo().equals(to.getId())) {
+                Log.d("Transfer", "Route " + i + " matches from/to");
+                
+                // Сначала пробуем точное совпадение по prev
                 if (prev != null && route.getPrev() != null && route.getPrev().equals(prev.getId())) {
+                    Log.d("Transfer", "Route " + i + " matches prev - EXACT MATCH!");
                     return route;
                 }
-                // Если предыдущая станция не указана, используем вариант по умолчанию
-                else if (route.getPrev() == null) {
+                // Если у маршрута prev не задан — используем его как предпочтительный
+                if (route.getPrev() == null) {
+                    Log.d("Transfer", "Route " + i + " has no prev - PREFERRED MATCH!");
                     return route;
                 }
+                // Запоминаем любой подходящий по from/to маршрут как запасной
+                if (fallbackAnyFromTo == null) {
+                    Log.d("Transfer", "Route " + i + " saved as fallback");
+                    fallbackAnyFromTo = route;
+                }
+            } else {
+                Log.d("Transfer", "Route " + i + " does NOT match from/to");
             }
         }
-        return null; // Если подходящий маршрут не найден
+        // Фоллбек: если точного совпадения по prev нет — вернём любой подходящий по from/to
+        if (fallbackAnyFromTo != null) {
+            Log.d("Transfer", "Returning fallback route");
+        } else {
+            Log.d("Transfer", "No matching route found");
+        }
+        return fallbackAnyFromTo;
     }
 
     @Override

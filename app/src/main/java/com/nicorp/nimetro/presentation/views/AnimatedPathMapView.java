@@ -31,9 +31,16 @@ public class AnimatedPathMapView extends View {
     private Path animatedPath;
     private Paint pathPaint;
     private ValueAnimator animator;
-    private float strokeWidth = 8f;
+    // Нормализованные значения в координатах 1000x1000
+    private static final float LOGICAL_SIZE = 1000f;
+    private float normalizedStrokeWidth = 8f;
     private int pathColor = Color.RED;
-    private float[] intervals = new float[]{40f, 20f}; // dash and gap lengths
+    private float[] normalizedIntervals = new float[]{40f, 20f};
+    // Текущая матрица привязки логической сетки к View
+    private float contentScale = 1f;
+    private float contentOffsetX = 0f;
+    private float contentOffsetY = 0f;
+    private float[] scaledIntervals = new float[]{40f, 20f};
     private boolean isReversed = false;
     private int viewWidth, viewHeight;
     private int svgIntrinsicWidth, svgIntrinsicHeight;
@@ -55,7 +62,7 @@ public class AnimatedPathMapView extends View {
         // Initialize Paint for the path
         pathPaint = new Paint();
         pathPaint.setStyle(Paint.Style.STROKE);
-        pathPaint.setStrokeWidth(strokeWidth);
+        pathPaint.setStrokeWidth(1f);
         pathPaint.setColor(pathColor);
         pathPaint.setStrokeCap(Paint.Cap.ROUND);
         pathPaint.setAntiAlias(true);
@@ -71,9 +78,7 @@ public class AnimatedPathMapView extends View {
             if (svgDrawable != null) {
                 svgIntrinsicWidth = svgDrawable.getIntrinsicWidth();
                 svgIntrinsicHeight = svgDrawable.getIntrinsicHeight();
-                if (viewWidth > 0 && viewHeight > 0) {
-                    svgDrawable.setBounds(0, 0, viewWidth, viewHeight);
-                }
+                updateDrawableBounds();
             }
             invalidate();
         } catch (Exception e) {
@@ -86,9 +91,8 @@ public class AnimatedPathMapView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         viewWidth = w;
         viewHeight = h;
-        if (svgDrawable != null) {
-            svgDrawable.setBounds(0, 0, w, h);
-        }
+        updateTransform();
+        updateDrawableBounds();
         if (hasPathPoints) {
             if (pathPointsArray != null) {
                 setPathInternal(pathPointsArray);
@@ -105,7 +109,7 @@ public class AnimatedPathMapView extends View {
         this.pathPointsArray = points.clone();
         this.pathPointsList = null;
         this.hasPathPoints = true;
-        if (viewWidth > 0 && viewHeight > 0 && svgDrawable != null) {
+        if (viewWidth > 0 && viewHeight > 0) {
             setPathInternal(points);
         } else {
             postInvalidate();
@@ -119,7 +123,7 @@ public class AnimatedPathMapView extends View {
         this.pathPointsList = new ArrayList<>(points);
         this.pathPointsArray = null;
         this.hasPathPoints = true;
-        if (viewWidth > 0 && viewHeight > 0 && svgDrawable != null) {
+        if (viewWidth > 0 && viewHeight > 0) {
             setPathInternal(points);
         } else {
             postInvalidate();
@@ -127,27 +131,21 @@ public class AnimatedPathMapView extends View {
     }
 
     private void setPathInternal(float[] points) {
-        float scaleX = (float) viewWidth / svgIntrinsicWidth;
-        float scaleY = (float) viewHeight / svgIntrinsicHeight;
-
         animatedPath.reset();
-        animatedPath.moveTo(points[0] * scaleX, points[1] * scaleY);
+        animatedPath.moveTo(points[0] * contentScale + contentOffsetX, points[1] * contentScale + contentOffsetY);
         for (int i = 2; i < points.length; i += 2) {
-            animatedPath.lineTo(points[i] * scaleX, points[i + 1] * scaleY);
+            animatedPath.lineTo(points[i] * contentScale + contentOffsetX, points[i + 1] * contentScale + contentOffsetY);
         }
         startAnimation();
     }
 
     private void setPathInternal(List<PointF> points) {
-        float scaleX = (float) viewWidth / svgIntrinsicWidth;
-        float scaleY = (float) viewHeight / svgIntrinsicHeight;
-
         animatedPath.reset();
         PointF firstPoint = points.get(0);
-        animatedPath.moveTo(firstPoint.x * scaleX, firstPoint.y * scaleY);
+        animatedPath.moveTo(firstPoint.x * contentScale + contentOffsetX, firstPoint.y * contentScale + contentOffsetY);
         for (int i = 1; i < points.size(); i++) {
             PointF point = points.get(i);
-            animatedPath.lineTo(point.x * scaleX, point.y * scaleY);
+            animatedPath.lineTo(point.x * contentScale + contentOffsetX, point.y * contentScale + contentOffsetY);
         }
         startAnimation();
     }
@@ -157,7 +155,7 @@ public class AnimatedPathMapView extends View {
             animator.cancel();
         }
 
-        animator = ValueAnimator.ofFloat(0f, intervals[0] + intervals[1]);
+        animator = ValueAnimator.ofFloat(0f, scaledIntervals[0] + scaledIntervals[1]);
         animator.setDuration(1000);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
@@ -167,7 +165,7 @@ public class AnimatedPathMapView extends View {
             if (isReversed) {
                 phase = -phase;
             }
-            pathPaint.setPathEffect(new DashPathEffect(intervals, phase));
+            pathPaint.setPathEffect(new DashPathEffect(scaledIntervals, phase));
             invalidate();
         });
 
@@ -192,13 +190,14 @@ public class AnimatedPathMapView extends View {
     }
 
     public void setStrokeWidth(float width) {
-        this.strokeWidth = width;
-        pathPaint.setStrokeWidth(width);
+        this.normalizedStrokeWidth = width;
+        updatePaintScale();
         invalidate();
     }
 
     public void setDashIntervals(float dash, float gap) {
-        this.intervals = new float[]{dash, gap};
+        this.normalizedIntervals = new float[]{dash, gap};
+        updatePaintScale();
         startAnimation();
     }
 
@@ -220,5 +219,33 @@ public class AnimatedPathMapView extends View {
             animator.cancel();
             animator = null;
         }
+    }
+
+    private void updateTransform() {
+        if (viewWidth <= 0 || viewHeight <= 0) return;
+        contentScale = Math.min(viewWidth, viewHeight) / LOGICAL_SIZE;
+        float targetW = LOGICAL_SIZE * contentScale;
+        float targetH = LOGICAL_SIZE * contentScale;
+        contentOffsetX = (viewWidth - targetW) / 2f;
+        contentOffsetY = (viewHeight - targetH) / 2f;
+        updatePaintScale();
+    }
+
+    private void updatePaintScale() {
+        float effectiveStroke = Math.max(1f, normalizedStrokeWidth * contentScale);
+        pathPaint.setStrokeWidth(effectiveStroke);
+        scaledIntervals = new float[]{Math.max(1f, normalizedIntervals[0] * contentScale), Math.max(1f, normalizedIntervals[1] * contentScale)};
+    }
+
+    private void updateDrawableBounds() {
+        if (svgDrawable == null) return;
+        // Рисуем фон внутри той же логической области 1000x1000 по центру без искажений сетки
+        if (viewWidth <= 0 || viewHeight <= 0) return;
+        // Используем ту же область, что и контент 1000x1000
+        int left = (int) Math.floor(contentOffsetX);
+        int top = (int) Math.floor(contentOffsetY);
+        int right = (int) Math.ceil(contentOffsetX + LOGICAL_SIZE * contentScale);
+        int bottom = (int) Math.ceil(contentOffsetY + LOGICAL_SIZE * contentScale);
+        svgDrawable.setBounds(left, top, right, bottom);
     }
 }

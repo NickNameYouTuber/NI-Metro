@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Название станции"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/xEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="X координата"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/yEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Y координата"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/textPositionEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Позиция текста"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/displayNumberEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Номер отображения"
+        android:inputType="text" />
+
+</LinearLayout>
+

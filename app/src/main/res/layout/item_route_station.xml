@@ -7,6 +7,16 @@
     android:orientation="horizontal"
     android:background="?attr/colorBackground">
 
+    <TextView
+        android:id="@+id/segmentTime"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="1"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp" />
+
     <View
         android:id="@+id/stationIndicator"
         android:layout_width="4dp"
@@ -39,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Ближайшие поезда:"
-            android:textColor="@color/textPrimary"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="16sp"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"

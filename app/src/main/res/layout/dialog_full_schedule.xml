@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Расписание"
-                android:textColor="@color/textPrimary"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close" />
+                app:srcCompat="@drawable/ic_close"
+                app:tint="?attr/colorCloseIcon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Date selection and refresh section -->
@@ -52,8 +53,8 @@
                 android:text="Выбрать дату"
                 android:padding="10dp"
                 android:textSize="16sp"
-                android:textColor="@android:color/white"
-                app:iconTint="@android:color/white"
+                android:textColor="?attr/colorOnPrimary"
+                app:iconTint="?attr/colorOnPrimary"
                 android:background="@drawable/rounded_button_background"
                 app:cornerRadius="8dp"/>
 
@@ -65,8 +66,8 @@
                 android:padding="10dp"
                 android:text="Обновить"
                 android:textSize="16sp"
-                android:textColor="@android:color/white"
-                app:iconTint="@android:color/white"
+                android:textColor="?attr/colorOnPrimary"
+                app:iconTint="?attr/colorOnPrimary"
                 android:background="@drawable/rounded_button_background"
                 app:cornerRadius="8dp"/>
         </LinearLayout>
@@ -90,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Фильтры"
-                    android:textColor="@color/textPrimary"
+                    android:textColor="?attr/colorOnBackground"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 
@@ -105,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ближайшие"
-                        android:textColor="@color/textSecondary"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:checked="false"/>
 
                     <com.google.android.material.checkbox.MaterialCheckBox
@@ -113,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Без экспрессов"
-                        android:textColor="@color/textSecondary"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:checked="false"
                         android:layout_marginStart="16dp"/>
                 </LinearLayout>

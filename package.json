@@ -1,6 +1,6 @@
 {
   "name": "ni-metro",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "NI Metro - глобальное приложение для навигации по метро с картами более 200 городов мира, умной навигацией и дополненной реальностью",
   "main": "index.js",
   "private": true,
@@ -29,5 +29,10 @@
     "ios": "react-native run-ios",
     "test": "jest",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "@pixi/react": "^8.0.3",
+    "canvaskit-wasm": "^0.40.0",
+    "pixi.js": "^8.13.1"
   }
 }

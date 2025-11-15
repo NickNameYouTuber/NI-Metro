@@ -19,7 +19,7 @@
         android:fontFamily="sans-serif-medium"
         android:gravity="center_vertical"
         android:text="Еще"
-        android:textColor="@color/textPrimary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="16sp"
         android:textStyle="bold" />
 </LinearLayout>

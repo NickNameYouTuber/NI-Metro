@@ -1,0 +1,243 @@
+<svg width="100%" height="100%" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="max-width: 100%; height: auto; min-height: 100vh;">
+  <defs>
+    <radialGradient id="backgroundGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="50%" style="stop-color:#0f0f0f"/>
+      <stop offset="100%" style="stop-color:#0a0a0a"/>
+    </radialGradient>
+
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="50%" style="stop-color:#ffed4e"/>
+      <stop offset="100%" style="stop-color:#ffd700"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="-50,0;50,0;-50,0" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <radialGradient id="avatarGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffed4e"/>
+      <stop offset="100%" style="stop-color:#ffd700"/>
+    </radialGradient>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="particleGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#backgroundGradient)"/>
+
+  <g class="particles">
+    <circle cx="160" cy="120" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 20,-20; -15,15; 25,10; 0,0" dur="6s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; 360" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="640" cy="360" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -20,20; 15,-15; -25,-10; 0,0" dur="8s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; -360" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="320" cy="480" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 30,0; 0,25; -20,-15; 0,0" dur="7s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; 360" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="560" cy="180" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -15,25; 20,-10; 0,15; 0,0" dur="9s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; 360" dur="9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="140" cy="420" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 25,-15; -10,20; 15,0; 0,0" dur="5s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; -360" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="720" cy="240" r="2" fill="#ffd700" filter="url(#particleGlow)" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -20,-20; 15,15; -25,10; 0,0" dur="6.5s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" additive="sum" values="0; 360" dur="6.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <g transform="translate(400,120)">
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.3">
+      <animateTransform attributeName="transform" type="rotate" values="0; 360" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="40" cy="0" r="3" fill="#ffd700" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="rotate" values="0; 360" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="0" r="35" fill="url(#avatarGradient)" filter="url(#glow)">
+      <animate attributeName="r" values="35; 37; 35" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="8" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0a0a0a">NT</text>
+  </g>
+
+  <text x="400" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#cccccc" opacity="0">
+    Привет, я
+    <animate attributeName="opacity" values="0; 1" dur="1s" begin="0.5s" fill="freeze"/>
+    <animateTransform attributeName="transform" type="translate" values="-50,0; 0,0" dur="1s" begin="0.5s" fill="freeze"/>
+  </text>
+
+  <text x="400" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="url(#goldGradient)" filter="url(#glow)" opacity="0">
+    NickNameYouTuber
+    <animate attributeName="opacity" values="0; 1" dur="1s" begin="0.7s" fill="freeze"/>
+    <animateTransform attributeName="transform" type="translate" values="50,0; 0,0" dur="1s" begin="0.7s" fill="freeze"/>
+  </text>
+
+  <g transform="translate(400,280)">
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#ffd700" opacity="0">
+      <animate attributeName="opacity" values="0; 1" dur="1s" begin="1.2s" fill="freeze"/>
+      <animate attributeName="opacity" values="1; 1; 0; 0; 0; 0" dur="12s" begin="2s" repeatCount="indefinite"/>
+      Java Developer
+    </text>
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#ffd700" opacity="0">
+      <animate attributeName="opacity" values="0; 0; 0; 1; 1; 0" dur="12s" begin="2s" repeatCount="indefinite"/>
+      Full Stack Developer
+    </text>
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#ffd700" opacity="0">
+      <animate attributeName="opacity" values="0; 0; 0; 0; 0; 1" dur="12s" begin="2s" repeatCount="indefinite"/>
+      Tech Enthusiast
+    </text>
+    <text x="120" y="0" font-family="monospace" font-size="20" fill="#ffd700">|
+      <animate attributeName="opacity" values="1; 0; 1" dur="1s" begin="1.2s" repeatCount="indefinite"/>
+    </text>
+  </g>
+
+  <text x="400" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#ffd700">
+    Технологии
+  </text>
+
+  <line x1="375" y1="350" x2="425" y2="350" stroke="url(#goldGradient)" stroke-width="2"/>
+
+  <g class="skills" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">
+    <!-- Ряд 1: центрированные тайлы -->
+    <g class="tile" transform="translate(260,388)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">Java</text>
+    </g>
+    <g class="tile" transform="translate(350,388)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">Python</text>
+    </g>
+    <g class="tile" transform="translate(450,388)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">Kotlin</text>
+    </g>
+    <g class="tile" transform="translate(540,388)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">JS/TS</text>
+    </g>
+    <!-- Ряд 2 -->
+    <g class="tile" transform="translate(260,433)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">React</text>
+    </g>
+    <g class="tile" transform="translate(350,433)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">Spring</text>
+    </g>
+    <g class="tile" transform="translate(450,433)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">Docker</text>
+    </g>
+    <g class="tile" transform="translate(540,433)">
+      <rect x="-40" y="-17.5" width="80" height="35" rx="8" fill="#ffd700" fill-opacity="0.1" stroke="#ffd700" stroke-opacity="0.3"/>
+      <text x="0" y="0" fill="#ffffff" dominant-baseline="middle">AWS</text>
+    </g>
+  </g>
+
+  <!-- О себе: расширенная карточка -->
+  <g transform="translate(400,540)">
+    <rect x="-280" y="-70" width="560" height="140" rx="20" fill="#ffffff" fill-opacity="0.05" stroke="#ffd700" stroke-opacity="0.2"/>
+
+    <text x="-240" y="-35" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#ffd700">Full Stack Developer</text>
+
+    <g font-family="Arial, sans-serif" font-size="13" fill="#cccccc">
+      <text x="-240" y="-12">Создаю масштабируемые приложения на Java/Kotlin, React и облаках.</text>
+      <text x="-240" y="6">Сферы интересов: высоконагруженные системы, DevOps, Android.</text>
+      <text x="-240" y="24">Локация: 🌍 EU/Remote · Опыт: 5+ лет · Открыт к предложениям</text>
+    </g>
+  </g>
+
+  <!-- Проекты -->
+  <text x="400" y="660" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#ffd700">Проекты</text>
+
+  <g class="projects" font-family="Arial, sans-serif" font-size="13">
+    <!-- Элемент 1: слева картинка, справа описание -->
+    <g class="project-item" transform="translate(400,740)">
+      <rect x="-320" y="-80" width="640" height="160" rx="16" fill="#ffffff" fill-opacity="0.04" stroke="#ffd700" stroke-opacity="0.15"/>
+      <!-- Картинка -->
+      <g transform="translate(-220,0)">
+        <rect x="-90" y="-60" width="180" height="120" rx="10" fill="#0f0f0f" stroke="#ffd700" stroke-opacity="0.25"/>
+        <text x="0" y="4" text-anchor="middle" fill="#8f8f8f">изображение</text>
+      </g>
+      <!-- Текст -->
+      <g transform="translate(-10,-28)" text-anchor="start">
+        <text x="0" y="0" font-size="16" font-weight="600" fill="#ffd700">NI Metro</text>
+        <text x="0" y="20" fill="#cccccc">Android · Kotlin · ML</text>
+        <text x="0" y="40" fill="#cccccc">Навигация метро и офлайн-данные</text>
+        <text x="0" y="60" fill="#8f8f8f">⭐ Открытый код</text>
+      </g>
+    </g>
+
+    <!-- Элемент 2: справа картинка, слева описание -->
+    <g class="project-item" transform="translate(400,900)">
+      <rect x="-320" y="-80" width="640" height="160" rx="16" fill="#ffffff" fill-opacity="0.04" stroke="#ffd700" stroke-opacity="0.15"/>
+      <!-- Текст -->
+      <g transform="translate(-300,-28)" text-anchor="start">
+        <text x="0" y="0" font-size="16" font-weight="600" fill="#ffd700">Open Source Starter</text>
+        <text x="0" y="20" fill="#cccccc">Java · Spring Boot</text>
+        <text x="0" y="40" fill="#cccccc">Шаблон микросервисов и CI/CD</text>
+        <text x="0" y="60" fill="#8f8f8f">⚙️ Helm, Docker, K8s</text>
+      </g>
+      <!-- Картинка -->
+      <g transform="translate(220,0)">
+        <rect x="-90" y="-60" width="180" height="120" rx="10" fill="#0f0f0f" stroke="#ffd700" stroke-opacity="0.25"/>
+        <text x="0" y="4" text-anchor="middle" fill="#8f8f8f">изображение</text>
+      </g>
+    </g>
+
+    <!-- Элемент 3: слева картинка, справа описание -->
+    <g class="project-item" transform="translate(400,1060)">
+      <rect x="-320" y="-80" width="640" height="160" rx="16" fill="#ffffff" fill-opacity="0.04" stroke="#ffd700" stroke-opacity="0.15"/>
+      <!-- Картинка -->
+      <g transform="translate(-220,0)">
+        <rect x="-90" y="-60" width="180" height="120" rx="10" fill="#0f0f0f" stroke="#ffd700" stroke-opacity="0.25"/>
+        <text x="0" y="4" text-anchor="middle" fill="#8f8f8f">изображение</text>
+      </g>
+      <!-- Текст -->
+      <g transform="translate(-10,-28)" text-anchor="start">
+        <text x="0" y="0" font-size="16" font-weight="600" fill="#ffd700">Personal Website</text>
+        <text x="0" y="20" fill="#cccccc">React · Vite · TS</text>
+        <text x="0" y="40" fill="#cccccc">Портфолио с блогом и демо</text>
+        <text x="0" y="60" fill="#8f8f8f">🚀 Vercel, Analytics</text>
+      </g>
+    </g>
+  </g>
+
+  <style><![CDATA[
+    .skills g { cursor: pointer; transition: all 0.3s ease; }
+    .skills g:hover rect { fill-opacity: 0.2 !important; stroke-opacity: 1 !important; }
+    .skills g:hover { transform: translateY(-2px); }
+
+    .projects g { transition: transform 0.3s ease, opacity 0.3s ease; }
+    .projects g:hover { transform: translateY(-4px); }
+
+    @media (max-width: 600px) {
+      text { font-size: 12px !important; }
+      .skills text { font-size: 11px !important; }
+      .skills rect { width: 70px !important; height: 30px !important; }
+    }
+
+    @media (max-width: 400px) {
+      text { font-size: 10px !important; }
+      .skills text { font-size: 9px !important; }
+      .skills rect { width: 60px !important; height: 25px !important; }
+    }
+  ]]></style>
+</svg>

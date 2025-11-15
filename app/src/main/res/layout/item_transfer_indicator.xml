@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
+
+    <TextView
+        android:id="@+id/transferTime"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,6 +20,6 @@
         android:layout_marginStart="16dp"
         android:text="Переход"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        android:textColor="?android:attr/textColorSecondary" />
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

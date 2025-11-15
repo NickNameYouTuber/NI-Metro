@@ -12,7 +12,10 @@ import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.presentation.fragments.StationInfoFragment;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StationPagerAdapter extends FragmentStateAdapter {
     private final Station mainStation;
@@ -23,6 +26,7 @@ public class StationPagerAdapter extends FragmentStateAdapter {
     private final List<Line> lines;
     private final List<Line> grayedLines;
     private final StationInfoFragment.OnStationInfoListener listener;
+    private final List<TransferStationEntry> transferStationEntries;
 
     public StationPagerAdapter(@NonNull FragmentActivity fragmentActivity,
                                Station mainStation,
@@ -42,6 +46,7 @@ public class StationPagerAdapter extends FragmentStateAdapter {
         this.lines = lines;
         this.grayedLines = grayedLines;
         this.listener = listener;
+        this.transferStationEntries = buildTransferStationEntries(mainStation, transfers);
     }
 
     @NonNull
@@ -53,84 +58,96 @@ public class StationPagerAdapter extends FragmentStateAdapter {
                     mainLine, mainStation, prevStation, nextStation, transfers, lines, grayedLines);
             fragment.setOnStationInfoListener(listener);
             return fragment;
-        } else {
-            // Переходы
-            Transfer transfer = getTransferForStation(mainStation, position - 1);
-            if (transfer != null) {
-                List<Station> transferStations = transfer.getStations();
-                // Находим станцию перехода, которая не является основной
-                Station transferStation = null;
-                int stationIndex = 0;
-                for (Station station : transferStations) {
-                    if (!station.equals(mainStation)) {
-                        if (stationIndex == (position - 1)) {
-                            transferStation = station;
-                            break;
-                        }
-                        stationIndex++;
-                    }
-                }
-                if (transferStation != null) {
-                    Line transferLine = findLineForStation(transferStation);
-                    Station transferPrev = findPrevStation(transferLine, transferStation);
-                    Station transferNext = findNextStation(transferLine, transferStation);
-
-                    StationInfoFragment fragment = StationInfoFragment.newInstance(
-                            transferLine, transferStation, transferPrev, transferNext,
-                            transfers, lines, grayedLines);
-                    fragment.setOnStationInfoListener(listener);
-                    return fragment;
-                }
-            }
-            return new Fragment(); // Fallback
         }
+
+        TransferStationEntry entry = getTransferStationEntry(position - 1);
+        if (entry != null) {
+            Station transferStation = entry.station;
+            Line transferLine = findLineForStation(transferStation);
+            Station transferPrev = findPrevStation(transferLine, transferStation);
+            Station transferNext = findNextStation(transferLine, transferStation);
+
+            StationInfoFragment fragment = StationInfoFragment.newInstance(
+                    transferLine, transferStation, transferPrev, transferNext,
+                    transfers, lines, grayedLines);
+            fragment.setOnStationInfoListener(listener);
+            return fragment;
+        }
+        return new Fragment(); // Fallback
     }
 
     @Override
     public int getItemCount() {
-        int transferCount = getTransferCount(mainStation);
-        return 1 + transferCount;
+        return 1 + transferStationEntries.size();
     }
 
-    private int getTransferCount(Station station) {
-        int count = 0;
-        for (Transfer transfer : transfers) {
-            // Получаем список станций в текущем переходе
-            List<Station> transferStations = transfer.getStations();
-            // Если выбранная станция есть в этом переходе
-            if (transferStations.contains(station)) {
-                // Увеличиваем счётчик на количество станций в переходе, минус выбранная станция
-                count += transferStations.size() - 1;
-            }
+    public Station getStationAtPosition(int position) {
+        if (position == 0) {
+            return mainStation;
         }
-        return count;
+        TransferStationEntry entry = getTransferStationEntry(position - 1);
+        return entry != null ? entry.station : null;
     }
 
-    private Transfer getTransferForStation(Station station, int index) {
-        int currentIndex = 0;
+    public Line getLineAtPosition(int position) {
+        if (position == 0) {
+            return mainLine;
+        }
+        TransferStationEntry entry = getTransferStationEntry(position - 1);
+        if (entry != null) {
+            return findLineForStation(entry.station);
+        }
+        return null;
+    }
+
+    private TransferStationEntry getTransferStationEntry(int index) {
+        if (index < 0 || index >= transferStationEntries.size()) {
+            return null;
+        }
+        return transferStationEntries.get(index);
+    }
+
+    private List<TransferStationEntry> buildTransferStationEntries(Station baseStation, List<Transfer> transfers) {
+        List<TransferStationEntry> entries = new ArrayList<>();
+        if (baseStation == null || transfers == null) {
+            return entries;
+        }
+        Set<String> seenKeys = new LinkedHashSet<>();
         for (Transfer transfer : transfers) {
+            if (transfer == null) {
+                continue;
+            }
             List<Station> transferStations = transfer.getStations();
-            if (transferStations.contains(station)) {
-                // Количество переходов в текущем Transfer
-                int transferCount = transferStations.size() - 1;
-                if (currentIndex + transferCount > index) {
-                    // Возвращаем текущий Transfer и индекс станции в нём
-                    return transfer;
+            if (transferStations == null || !transferStations.contains(baseStation)) {
+                continue;
+            }
+            for (Station candidate : transferStations) {
+                if (candidate == null || candidate.equals(baseStation)) {
+                    continue;
                 }
-                currentIndex += transferCount;
+                String name = candidate.getName();
+                if (name == null || name.trim().isEmpty()) {
+                    continue;
+                }
+                String stationId = candidate.getId();
+                String key = (stationId != null && !stationId.trim().isEmpty()) ? stationId.trim() : name.trim();
+                if (!seenKeys.add(key)) {
+                    continue;
+                }
+                entries.add(new TransferStationEntry(transfer, candidate));
             }
         }
-        return null;
+        return entries;
     }
 
-    private Station getOtherStation(Transfer transfer, Station currentStation) {
-        List<Station> transferStations = transfer.getStations();
-        for (Station station : transferStations) {
-            if (!station.equals(currentStation)) {
-                return station;
-            }
+    private static class TransferStationEntry {
+        final Transfer transfer;
+        final Station station;
+
+        TransferStationEntry(Transfer transfer, Station station) {
+            this.transfer = transfer;
+            this.station = station;
         }
-        return null;
     }
 
     private Line findLineForStation(Station station) {

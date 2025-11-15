@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="surfaceColor">@color/my_dark_surface</color>
+    <color name="outlineColor">#3E3E3E</color>
+    <color name="colorOnSurfaceVariant">@color/my_dark_on_surface_variant</color>
+    <color name="close_icon_color">#FFFFFF</color>
+</resources>

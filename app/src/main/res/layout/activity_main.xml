@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/white">
+    android:background="?attr/colorBackground">
 
     <!-- Первое текстовое поле -->
 
@@ -89,39 +89,40 @@
         android:layout_height="56dp"
         android:elevation="4dp"
         android:orientation="horizontal"
-        android:background="@android:color/white"
+        android:background="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Левая кнопка (иконка M) -->
-        <!-- Правая кнопка (иконка Настройки) -->
-
+        <!-- Левая кнопка (иконка M) - активный таб -->
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainTabButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary">
 
             <ImageButton
                 android:id="@+id/icon_m"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="M Icon"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_m_icon"
+                android:src="@drawable/map_icon"
+                app:tint="?attr/colorOnPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Правая кнопка (иконка Настройки) - неактивный таб -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/settingsButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#21212E">
+            android:background="?attr/colorSurface">
 
             <ImageButton
                 android:id="@+id/icon_settings"
@@ -129,7 +130,8 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Settings Icon"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/settings_icon"
+                app:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -173,6 +175,19 @@
         app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
         app:layout_constraintHeight_max="500dp"
         app:layout_constraintStart_toStartOf="@+id/linearLayout2" />
+
+    <LinearLayout
+        android:id="@+id/stationPagerDots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:elevation="5dp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout2"
+        app:layout_constraintTop_toBottomOf="@id/stationPager"
+        app:layout_constraintStart_toStartOf="@id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="@id/linearLayout2"
+        />
 
     <ImageView
         android:id="@+id/switchMapButton"

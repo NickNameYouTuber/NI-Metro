@@ -27,26 +27,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="?attr/colorBackground"
+        android:padding="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:startIconDrawable="@drawable/ic_search"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:background="?attr/colorSurface"
-            android:theme="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox">
+            android:layout_marginBottom="12dp"
+            app:cardUseCompatPadding="true"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="2dp"
+            app:cardBackgroundColor="?attr/colorSurface">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/searchEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Поиск города"
-                android:inputType="text"
-                android:textColor="?attr/colorOnSurface"
-                android:background="?attr/colorBackground" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Поиск города"
+                    android:inputType="text"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:padding="0dp"
+                    android:background="@android:color/transparent" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/metroMapRecyclerView"

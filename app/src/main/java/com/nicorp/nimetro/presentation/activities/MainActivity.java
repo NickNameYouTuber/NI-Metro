@@ -17,6 +17,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -24,14 +25,17 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -45,6 +49,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.color.MaterialColors;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.APITariff;
@@ -87,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private List<Transfer> riverTramTransfers; // Список переходов речного трамвая
     private List<River> riverTramRivers; // Список рек для речного трамвая
     private List<MapObject> riverTramMapObjects; // Список объектов на карте речного трамвая
+    private List<Line> tramLines;
+    private List<Station> tramStations;
+    private List<Transfer> tramTransfers;
+    private List<River> tramRivers;
+    private List<MapObject> tramMapObjects;
 
     private TextInputLayout startStationLayout;
     private TextInputLayout endStationLayout;
@@ -94,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private TextInputEditText endStationEditText;
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
+    private ViewPager2.OnPageChangeCallback stationPagerChangeCallback;
 
     private Handler locationUpdateHandler;
     private Runnable locationUpdateRunnable;
@@ -102,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     public static boolean isMetroMap = true; // Флаг для определения текущей карты
     public static boolean isSuburbanMap = false;
     public static boolean isRiverTramMap = false;
+    public static boolean isTramMap = false;
 
 
     private boolean isTrackingServiceRunning = false;
@@ -111,6 +123,23 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         Intent serviceIntent = new Intent(this, StationTrackingService.class);
         serviceIntent.putExtra("currentStation", station);
+        ArrayList<Station> routePayload = new ArrayList<>();
+        if (selectedStations != null && !selectedStations.isEmpty()) {
+            routePayload.addAll(selectedStations);
+        } else if (station != null) {
+            routePayload.add(station);
+        }
+        serviceIntent.putParcelableArrayListExtra("route", routePayload);
+        List<Line> linesPayload = getAllLines();
+        if (linesPayload == null) {
+            linesPayload = Collections.emptyList();
+        }
+        serviceIntent.putParcelableArrayListExtra("lines", new ArrayList<>(linesPayload));
+        List<Transfer> transfersPayload = getAllTransfers();
+        if (transfersPayload == null) {
+            transfersPayload = Collections.emptyList();
+        }
+        serviceIntent.putParcelableArrayListExtra("transfers", new ArrayList<>(transfersPayload));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent);
@@ -120,12 +149,147 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         isTrackingServiceRunning = true;
     }
 
+    private static class MapTypeRow {
+        String key; String title; int icon;
+        MapTypeRow(String key, String title, int icon){ this.key=key; this.title=title; this.icon=icon; }
+    }
+
+    private void showMapTypePopup(View anchor, ImageView switchMapButton) {
+        List<MapTypeRow> rows = new ArrayList<>();
+        addIfExists(rows, "metro", "Метро", "metro_map_icon");
+        addIfExists(rows, "suburban", "Пригород", "suburban_map_icon");
+        addIfExists(rows, "river", "Речной транспорт", "river_map_icon");
+        addIfExists(rows, "river_tram", "Речной трамвай", "river_tram_icon");
+        addIfExists(rows, "tram", "Трамвай", "tram_map_icon");
+        addIfExists(rows, "monorail", "Монорельс", "monorail_map_icon");
+        addIfExists(rows, "funicular", "Фуникулёр", "funicular_map_icon");
+        addIfExists(rows, "gondola", "Канатная дорога", "gondola_map_icon", "cable_car_map_icon");
+
+        android.view.LayoutInflater inflater = android.view.LayoutInflater.from(this);
+        View content = inflater.inflate(R.layout.popup_map_type, null, false);
+        bindRow(content, R.id.row_metro, R.id.icon_metro, R.id.title_metro, rows, "metro");
+        bindRow(content, R.id.row_suburban, R.id.icon_suburban, R.id.title_suburban, rows, "suburban");
+        bindRow(content, R.id.row_river, R.id.icon_river, R.id.title_river, rows, "river");
+        bindRow(content, R.id.row_river_tram, R.id.icon_river_tram, R.id.title_river_tram, rows, "river_tram");
+        bindRow(content, R.id.row_tram, R.id.icon_tram, R.id.title_tram, rows, "tram");
+        bindRow(content, R.id.row_monorail, R.id.icon_monorail, R.id.title_monorail, rows, "monorail");
+        bindRow(content, R.id.row_funicular, R.id.icon_funicular, R.id.title_funicular, rows, "funicular");
+        bindRow(content, R.id.row_gondola, R.id.icon_gondola, R.id.title_gondola, rows, "gondola");
+
+        android.widget.PopupWindow pw = new android.widget.PopupWindow(content, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        pw.setElevation(12f);
+        pw.setBackgroundDrawable(getDrawable(R.drawable.bg_popup_rounded));
+        View.OnClickListener onClick = v1 -> {
+            String key = (String) v1.getTag();
+            switch (key) {
+                case "metro":
+                    isMetroMap = true;
+                    isSuburbanMap = false;
+                    isRiverTramMap = false;
+                    isTramMap = false;
+                    break;
+                case "suburban":
+                    isMetroMap = false;
+                    isSuburbanMap = true;
+                    isRiverTramMap = false;
+                    isTramMap = false;
+                    break;
+                case "river":
+                    isMetroMap = false;
+                    isSuburbanMap = false;
+                    isRiverTramMap = true;
+                    isTramMap = false;
+                    break;
+                case "river_tram":
+                    isMetroMap = false;
+                    isSuburbanMap = false;
+                    isRiverTramMap = true;
+                    isTramMap = false;
+                    break;
+                case "tram":
+                    isMetroMap = false;
+                    isSuburbanMap = false;
+                    isRiverTramMap = false;
+                    isTramMap = true;
+                    break;
+                case "monorail":
+                case "funicular":
+                case "gondola":
+                    isMetroMap = true;
+                    isSuburbanMap = false;
+                    isRiverTramMap = false;
+                    isTramMap = false;
+                    break;
+            }
+            // установить иконку выбранного
+            for (MapTypeRow r : rows) if (r.key.equals(key)) { switchMapButton.setImageResource(r.icon); break; }
+            updateMapData();
+            pw.dismiss();
+        };
+        attachClick(content, R.id.row_metro, onClick);
+        attachClick(content, R.id.row_suburban, onClick);
+        attachClick(content, R.id.row_river, onClick);
+        attachClick(content, R.id.row_river_tram, onClick);
+        attachClick(content, R.id.row_tram, onClick);
+        attachClick(content, R.id.row_monorail, onClick);
+        attachClick(content, R.id.row_funicular, onClick);
+        attachClick(content, R.id.row_gondola, onClick);
+        // Выравниваем по правому краю кнопки: ждём измерения контента
+        content.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        int popupW = content.getMeasuredWidth();
+        int offsetX = anchor.getWidth() - popupW; // прижимаем к правому краю кнопки
+        int offsetY = dp(8); // отступ ВНИЗ от нижнего края кнопки
+        pw.showAsDropDown(anchor, offsetX, offsetY);
+    }
+
+    private void bindRow(View root, int rowId, int iconId, int titleId, List<MapTypeRow> rows, String key) {
+        View row = root.findViewById(rowId);
+        MapTypeRow r = null;
+        for (MapTypeRow it : rows) if (it.key.equals(key)) { r = it; break; }
+        if (r == null) { row.setVisibility(View.GONE); return; }
+        ImageView iv = row.findViewById(iconId);
+        TextView tv = row.findViewById(titleId);
+        iv.setImageResource(r.icon);
+        tv.setText(r.title);
+        row.setTag(r.key);
+    }
+
+    private void attachClick(View root, int rowId, View.OnClickListener l) {
+        View row = root.findViewById(rowId);
+        if (row.getVisibility() == View.VISIBLE) row.setOnClickListener(l);
+    }
+
+    private void addIfExists(List<MapTypeRow> out, String key, String title, String... iconNames) {
+        for (String name : iconNames) {
+            int id = getResources().getIdentifier(name, "drawable", getPackageName());
+            if (id != 0) { out.add(new MapTypeRow(key, title, id)); return; }
+        }
+    }
+
+    private int dp(int v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
+    }
+
     public void stopStationTrackingService() {
         if (!isTrackingServiceRunning) return; // Уже остановлен
 
         Intent serviceIntent = new Intent(this, StationTrackingService.class);
         stopService(serviceIntent);
         isTrackingServiceRunning = false;
+    }
+
+    /**
+     * Применяет тему из SharedPreferences перед созданием Activity.
+     */
+    private void applyTheme() {
+        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String selectedTheme = sharedPreferences.getString("selected_theme", "light");
+        
+        if (selectedTheme.equals("light")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
 
     /**
@@ -138,23 +302,27 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Применяем тему ДО super.onCreate() чтобы она применилась сразу
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         requestLocation();
 
-//        // Инициализация Handler и Runnable для периодического обновления местоположения
-//        locationUpdateHandler = new Handler();
-//        locationUpdateRunnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                requestLocation();
-//                locationUpdateHandler.postDelayed(this, LOCATION_UPDATE_INTERVAL);
-//            }
-//        };
-//
-//        startLocationUpdates();
+        // Инициализация Handler и Runnable для периодического обновления местоположения
+        locationUpdateHandler = new Handler(Looper.getMainLooper());
+        locationUpdateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                requestLocation();
+                if (locationUpdateHandler != null) {
+                    locationUpdateHandler.postDelayed(this, LOCATION_UPDATE_INTERVAL);
+                }
+            }
+        };
+
+        // startLocationUpdates(); // Закомментировано, так как не используется
 
         // Инициализация всех списков
         rivers = new ArrayList<>();
@@ -168,6 +336,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         riverTramTransfers = new ArrayList<>();
         riverTramRivers = new ArrayList<>();
         riverTramMapObjects = new ArrayList<>();
+        tramLines = new ArrayList<>();
+        tramStations = new ArrayList<>();
+        tramTransfers = new ArrayList<>();
+        tramRivers = new ArrayList<>();
+        tramMapObjects = new ArrayList<>();
         transfers = new ArrayList<>();
         mapObjects = new ArrayList<>();
         suburbanTransfers = new ArrayList<>();
@@ -180,31 +353,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
 
         ImageView switchMapButton = findViewById(R.id.switchMapButton);
-        switchMapButton.setOnClickListener(v -> {
-            if (isMetroMap) {
-                isMetroMap = false;
-                isSuburbanMap = false;
-                isRiverTramMap = true;
-                switchMapButton.setImageResource(R.drawable.river_tram_icon);
-            } else if (isSuburbanMap) {
-                isMetroMap = true;
-                isSuburbanMap = false;
-                isRiverTramMap = false;
-                switchMapButton.setImageResource(R.drawable.metro_map_icon);
-            } else {
-                isMetroMap = false;
-                isSuburbanMap = true;
-                isRiverTramMap = false;
-                switchMapButton.setImageResource(R.drawable.suburban_map_icon);
-            }
-            updateMapData();
-        });
+        switchMapButton.setOnClickListener(v -> showMapTypePopup(v, switchMapButton));
+
+        // Левая кнопка (главный экран) - уже активна, но добавляем для единообразия
+        ConstraintLayout mainTabButton = findViewById(R.id.mainTabButton);
+        // Не добавляем клик, так как мы уже на главном экране
 
         ConstraintLayout settingsButton = findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(v -> {
             Log.d("MainActivity", "Settings button clicked");
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             finish();
         });
 
@@ -219,12 +379,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         suburbanLines = new ArrayList<>();
         selectedStations = new ArrayList<>();
         metroMapView.setOnStationClickListener(this);
+        
+        // Обновляем цвета карты после того, как View создан и прикреплен к окну
+        metroMapView.post(() -> {
+            if (metroMapView != null) {
+                metroMapView.updateThemeColors();
+                // Вызываем invalidate для перерисовки с новыми цветами
+                metroMapView.invalidate();
+            }
+        });
 
         loadMetroData(selectedMapFileName);
 
         stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
         stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stationsRecyclerView.setAdapter(stationsAdapter);
+        
+        // Скрываем список станций по умолчанию
+        hideStationsList();
 
         startStationEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -279,9 +451,20 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         SpannableString spannableString;
         if (line != null) {
-            spannableString = new SpannableString(line.getdisplayNumber() + " " + station.getName());
-            ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor(line.getColor()));
-            spannableString.setSpan(colorSpan, 0, line.getdisplayNumber().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Используем getLineDisplayNumberForStation для правильного получения displayNumber
+            String displayNumber = line.getLineDisplayNumberForStation(station);
+            if (displayNumber == null || displayNumber.isEmpty()) {
+                // Fallback на общий displayNumber если для станции не найден
+                displayNumber = line.getdisplayNumber();
+            }
+            if (displayNumber == null || displayNumber.isEmpty()) {
+                // Если displayNumber все еще пустой, используем только название станции
+                spannableString = new SpannableString(station.getName());
+            } else {
+                spannableString = new SpannableString(displayNumber + " " + station.getName());
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor(line.getColor()));
+                spannableString.setSpan(colorSpan, 0, displayNumber.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         } else {
             spannableString = new SpannableString(station.getName());
         }
@@ -290,9 +473,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private Line findLineByStation(Station station) {
+        if (station == null || allLines == null) return null;
+        // Сравниваем станции по id, так как объекты могут быть разными экземплярами
         for (Line line : allLines) {
-            if (line.getStations().contains(station)) {
-                return line;
+            if (line != null && line.getStations() != null) {
+                for (Station s : line.getStations()) {
+                    if (s != null && s.getId() != null && s.getId().equals(station.getId())) {
+                        return line;
+                    }
+                }
             }
         }
         return null;
@@ -312,29 +501,91 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         // Находим TextView для номера линии и названия станции
         TextView lineNumberTextView = stationInfoView.findViewById(R.id.lineNumberTextView);
         TextView stationNameTextView = stationInfoView.findViewById(R.id.stationNameTextView);
-        lineNumberTextView.setTextColor(Color.parseColor("#FFFFFF"));
-        stationNameTextView.setTextColor(Color.parseColor("#FFFFFF"));
+        lineNumberTextView.setTextColor(Color.WHITE);
+        stationNameTextView.setTextColor(Color.WHITE);
         ConstraintLayout containerLayout = stationInfoView.findViewById(R.id.containerLayout);
 
         ImageView closeButton = stationInfoView.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> {
+            if (isStartStation && startStationAnimator != null) {
+                startStationAnimator.cancel();
+                startStationAnimator = null;
+            } else if (!isStartStation && endStationAnimator != null) {
+                endStationAnimator.cancel();
+                endStationAnimator = null;
+            }
+
             container.removeAllViews();
             if (isStartStation) {
                 startStationEditText.setVisibility(View.VISIBLE);
-                startStationEditText.setSelected(true);
+                startStationEditText.setSelected(false);
+                startStationEditText.setEnabled(true);
+                startStationEditText.setText("");
+                startStationEditText.setHint(getString(R.string.from_hint));
+                if (selectedStartStation != null) {
+                    selectedStations.remove(selectedStartStation);
+                }
                 selectedStartStation = null;
+                if (startStationEditText.getParent() != container) {
+                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                    );
+                    startStationEditText.setLayoutParams(lp);
+                    container.addView(startStationEditText);
+                }
             } else {
                 endStationEditText.setVisibility(View.VISIBLE);
-                endStationEditText.setSelected(true);
+                endStationEditText.setSelected(false);
+                endStationEditText.setEnabled(true);
+                endStationEditText.setText("");
+                endStationEditText.setHint(getString(R.string.to_hint));
+                if (selectedEndStation != null) {
+                    selectedStations.remove(selectedEndStation);
+                }
                 selectedEndStation = null;
+                if (endStationEditText.getParent() != container) {
+                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                    );
+                    endStationEditText.setLayoutParams(lp);
+                    container.addView(endStationEditText);
+                }
             }
+            metroMapView.setSelectedStations(selectedStations);
+            clearRoute();
+            resetStationPagerIfNoSelection();
         });
 
         // Устанавливаем данные станции
         Line line = findLineByStation(station);
         if (line != null) {
-            lineNumberTextView.setText(line.getdisplayNumber());
+            // Используем getLineDisplayNumberForStation для правильного получения displayNumber
+            String displayNumber = line.getLineDisplayNumberForStation(station);
+            Log.d("MainActivity", "Station: " + station.getName() + ", Line displayNumber from method: " + displayNumber + ", Line id: " + line.getId());
+            Log.d("MainActivity", "Line general displayNumber: " + line.getdisplayNumber());
+            
+            // Если displayNumber не найден для станции, используем общий displayNumber линии
+            if (displayNumber == null || displayNumber.isEmpty()) {
+                displayNumber = line.getdisplayNumber();
+                Log.d("MainActivity", "Using general displayNumber: " + displayNumber);
+            }
+            
+            // Если displayNumber все еще null или пустой, используем id
+            if (displayNumber == null || displayNumber.isEmpty()) {
+                displayNumber = line.getId();
+                Log.d("MainActivity", "Using line id as fallback: " + displayNumber);
+            }
+            
+            // Устанавливаем значение в TextView
+            Log.d("MainActivity", "Final displayNumber to set: " + displayNumber);
+            lineNumberTextView.setText(displayNumber != null ? displayNumber : "");
             containerLayout.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(line.getColor())));
+        } else {
+            Log.d("MainActivity", "Line not found for station: " + station.getName());
+            // Устанавливаем пустую строку если линия не найдена
+            lineNumberTextView.setText("");
         }
         stationNameTextView.setText(station.getName());
         stationNameTextView.setSelected(true);  // Добавлено
@@ -391,34 +642,58 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         });
 // В методе закрытия
-        closeButton.setOnClickListener(v -> {
-            if (isStartStation && startStationAnimator != null) {
-                startStationAnimator.cancel();
-                startStationAnimator = null;
-            } else if (endStationAnimator != null) {
-                endStationAnimator.cancel();
-                endStationAnimator = null;
-            }
-            // остальной код закрытия...
-        });
+        // обработчик выше объединяет отмену анимации и сброс выбора станции
 
         // Добавляем station_info_layout в контейнер
         container.addView(stationInfoView);
 
+        // Добавляем горизонтальный индикатор числа страниц под карточкой, если у станции есть переходы
+        List<Transfer> stationTransfers = new ArrayList<>();
+        for (Transfer t : transfers) {
+            if (t.getStations().contains(station)) stationTransfers.add(t);
+        }
         // Скрываем TextInputEditText
         if (isStartStation) {
             startStationEditText.setVisibility(View.GONE);
+            startStationEditText.setEnabled(false);
+            startStationEditText.setHint("");
         } else {
             endStationEditText.setVisibility(View.GONE);
+            endStationEditText.setEnabled(false);
+            endStationEditText.setHint("");
         }
     }
 
     private void startLocationUpdates() {
+        if (locationUpdateHandler != null && locationUpdateRunnable != null) {
         locationUpdateHandler.post(locationUpdateRunnable);
+        }
     }
 
     private void stopLocationUpdates() {
+        if (locationUpdateHandler != null && locationUpdateRunnable != null) {
         locationUpdateHandler.removeCallbacks(locationUpdateRunnable);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Перезагружаем данные при возврате из настроек
+        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
+        
+        // Очищаем старые данные перед загрузкой новых
+        clearAllData();
+        loadMetroData(selectedMapFileName);
+        
+        // Обновляем адаптер станций
+        if (stationsAdapter != null) {
+            stationsAdapter.setStations(stations);
+        }
+        
+        // Скрываем список станций при возврате из настроек
+        hideStationsList();
     }
 
     @Override
@@ -426,6 +701,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         super.onDestroy();
         // Остановка обновления местоположения при уничтожении активности
         stopLocationUpdates();
+        
+        // Очищаем Handler
+        if (locationUpdateHandler != null) {
+            locationUpdateHandler = null;
+        }
+        locationUpdateRunnable = null;
     }
 
     private List<Transfer> transfers = new ArrayList<>();
@@ -440,11 +721,50 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return allLines;
     }
 
+    private void clearAllData() {
+        // Очищаем все списки данных
+        if (lines != null) lines.clear();
+        if (stations != null) stations.clear();
+        if (transfers != null) transfers.clear();
+        if (rivers != null) rivers.clear();
+        if (mapObjects != null) mapObjects.clear();
+        
+        if (suburbanLines != null) suburbanLines.clear();
+        if (suburbanStations != null) suburbanStations.clear();
+        if (suburbanTransfers != null) suburbanTransfers.clear();
+        if (suburbanRivers != null) suburbanRivers.clear();
+        if (suburbanMapObjects != null) suburbanMapObjects.clear();
+        
+        if (riverTramLines != null) riverTramLines.clear();
+        if (riverTramStations != null) riverTramStations.clear();
+        if (riverTramTransfers != null) riverTramTransfers.clear();
+        if (riverTramRivers != null) riverTramRivers.clear();
+        if (riverTramMapObjects != null) riverTramMapObjects.clear();
+        if (tramLines != null) tramLines.clear();
+        if (tramStations != null) tramStations.clear();
+        if (tramTransfers != null) tramTransfers.clear();
+        if (tramRivers != null) tramRivers.clear();
+        if (tramMapObjects != null) tramMapObjects.clear();
+        
+        if (allLines != null) allLines.clear();
+        
+        // Очищаем выбранные станции
+        if (selectedStations != null) selectedStations.clear();
+        selectedStartStation = null;
+        selectedEndStation = null;
+        
+        // Очищаем маршрут на карте
+        if (metroMapView != null) {
+            metroMapView.clearRoute();
+        }
+    }
+
     private void loadMetroData(String mapFileName) {
         try {
             JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
             JSONObject metroMapData = jsonObject.optJSONObject("metro_map");
             JSONObject suburbanMapData = jsonObject.optJSONObject("suburban_map");
+            JSONObject tramMapData = jsonObject.optJSONObject("tram_map");
             JSONObject riverTramMapData = jsonObject.optJSONObject("rivertram_map");
 
             // Загружаем данные для метро
@@ -455,6 +775,11 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             // Загружаем данные для электричек, если они есть
             if (suburbanMapData != null) {
                 loadMapData(suburbanMapData, suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects);
+            }
+
+            // Загружаем данные для трамвая
+            if (tramMapData != null) {
+                loadMapData(tramMapData, tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects);
             }
 
             // Загружаем данные для речного трамвая
@@ -470,11 +795,17 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             if (riverTramMapData != null) {
                 allStations.addAll(riverTramStations);
             }
+            if (tramMapData != null) {
+                allStations.addAll(tramStations);
+            }
             if (metroMapData != null) {
                 addNeighbors(metroMapData, allStations);
             }
             if (suburbanMapData != null) {
                 addNeighbors(suburbanMapData, allStations);
+            }
+            if (tramMapData != null) {
+                addNeighbors(tramMapData, allStations);
             }
             if (riverTramMapData != null) {
                 addNeighbors(riverTramMapData, allStations);
@@ -484,8 +815,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             if (suburbanMapData != null) {
                 allLines.addAll(suburbanLines);
             }
+            if (tramMapData != null) {
+                allLines.addAll(tramLines);
+            }
             if (riverTramMapData != null) {
                 allLines.addAll(riverTramLines);
+            }
+            
+            // Логируем все линии для отладки
+            Log.d("MainActivity", "All lines count: " + allLines.size());
+            for (Line l : allLines) {
+                if (l != null) {
+                    Log.d("MainActivity", "AllLines: id=" + l.getId() + ", displayNumber=" + l.getdisplayNumber() + ", name=" + l.getName());
+                }
             }
 
             updateMapData();
@@ -495,27 +837,51 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     private void updateMapData() {
+        Log.d("MainActivity", "updateMapData called - isMetroMap: " + isMetroMap + ", isSuburbanMap: " + isSuburbanMap + ", isRiverTramMap: " + isRiverTramMap + ", isTramMap: " + isTramMap);
+        Log.d("MainActivity", "Lines count: " + (lines != null ? lines.size() : "null"));
+        Log.d("MainActivity", "Stations count: " + (stations != null ? stations.size() : "null"));
+        
         if (isMetroMap) {
+            Log.d("MainActivity", "Setting metro map data");
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    true, false, false
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    true, false, false, false
             );
         } else if (isSuburbanMap) {
+            Log.d("MainActivity", "Setting suburban map data");
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    false, true, false
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, true, false, false
             );
         } else if (isRiverTramMap) {
+            Log.d("MainActivity", "Setting river tram map data");
             metroMapView.setData(
                     lines, stations, transfers, rivers, mapObjects,
                     suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
                     riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
-                    false, false, true
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, false, true, false
             );
+        } else if (isTramMap) {
+            Log.d("MainActivity", "Setting tram map data");
+            metroMapView.setData(
+                    lines, stations, transfers, rivers, mapObjects,
+                    suburbanLines, suburbanStations, suburbanTransfers, suburbanRivers, suburbanMapObjects,
+                    riverTramLines, riverTramStations, riverTramTransfers, riverTramRivers, riverTramMapObjects,
+                    tramLines, tramStations, tramTransfers, tramRivers, tramMapObjects,
+                    false, false, false, true
+            );
+        }
+        
+        // Принудительно обновляем отрисовку
+        if (metroMapView != null) {
+            metroMapView.invalidate();
         }
     }
 
@@ -526,27 +892,63 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         if (rivers == null) rivers = new ArrayList<>();
         if (mapObjects == null) mapObjects = new ArrayList<>();
         JSONArray linesArray = mapData.getJSONArray("lines");
+        
+        Log.d("MainActivity", "loadMapData - Lines array size: " + linesArray.length());
 
         for (int i = 0; i < linesArray.length(); i++) {
             JSONObject lineObject = linesArray.getJSONObject(i);
             boolean isCircle = lineObject.optBoolean("isCircle", false);
             String lineType = lineObject.optString("lineType", "single");
             String displayNumber = lineObject.optString("displayNumber", null);
+            
+            // Проверяем, что displayNumber не равен строке "null"
+            if (displayNumber != null && displayNumber.equals("null")) {
+                displayNumber = null;
+            }
+            
+            // Оставляем displayNumber как есть из JSON, даже если он равен id
+            // Логика фильтрации будет в местах отображения
             String displayShape = lineObject.optString("displayShape", null);
             Tariff tariff = createTariff(lineObject.optJSONObject("tariff"));
+            
+            Log.d("MainActivity", "Creating Line from JSON: id=" + lineObject.optString("id") + ", displayNumber=" + displayNumber + ", name=" + lineObject.optString("name"));
+            
             Line line = new Line(lineObject.getString("id"), lineObject.getString("name"), lineObject.getString("color"), isCircle, lineType, tariff, displayNumber, displayShape);
+            
+            Log.d("MainActivity", "Loaded line: id=" + line.getId() + ", displayNumber=" + line.getdisplayNumber() + ", name=" + line.getName());
             JSONArray stationsArray = lineObject.getJSONArray("stations");
+            
+            Log.d("MainActivity", "Loading line: " + line.getName() + " with " + stationsArray.length() + " stations");
             for (int j = 0; j < stationsArray.length(); j++) {
                 JSONObject stationObject = stationsArray.getJSONObject(j);
                 String schedule = stationObject.optString("schedule", "5:30 - 0:00");
                 int escalators = stationObject.optInt("escalators", 0);
                 int elevators = stationObject.optInt("elevators", 0);
                 String[] exits = toStringArray(stationObject.optJSONArray("exits"));
-                int textPosition = stationObject.optInt("textPosition", 0);
+                int textPosition = 0;
+                Integer labelX = null;
+                Integer labelY = null;
+                if (stationObject.has("textPosition")) {
+                    Object textPositionValue = stationObject.opt("textPosition");
+                    if (textPositionValue instanceof JSONObject) {
+                        JSONObject textPositionObject = (JSONObject) textPositionValue;
+                        if (textPositionObject.has("x") && textPositionObject.has("y")) {
+                            labelX = textPositionObject.optInt("x");
+                            labelY = textPositionObject.optInt("y");
+                        }
+                        if (textPositionObject.has("position")) {
+                            textPosition = textPositionObject.optInt("position", 0);
+                        } else {
+                            textPosition = 0;
+                        }
+                    } else {
+                        textPosition = stationObject.optInt("textPosition", 0);
+                    }
+                }
                 String ESP = stationObject.optString("ESP", null); // Добавляем поле ESP
-// Загружаем широту и долготу
-                double latitude = stationObject.optDouble("latitude", 0.0);
-                double longitude = stationObject.optDouble("longitude", 0.0);
+                // Загружаем широту и долготу (поддерживаем оба формата)
+                double latitude = stationObject.optDouble("latitude", stationObject.optDouble("lat", 0.0));
+                double longitude = stationObject.optDouble("longitude", stationObject.optDouble("lon", 0.0));
                 Facilities facilities = new Facilities(schedule, escalators, elevators, exits);
                 Station station = new Station(
                         stationObject.getString("id"),
@@ -558,6 +960,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         facilities,
                         textPosition
                 );
+                if (labelX != null && labelY != null) {
+                    station.setLabelCoordinates(labelX, labelY);
+                }
 
                 // Устанавливаем широту и долготу
                 if (latitude != 0.0 && longitude != 0.0 && !Double.isNaN(latitude) && !Double.isNaN(longitude)) {
@@ -569,25 +974,34 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 line.getStations().add(station);
             }
             lines.add(line);
+            Log.d("MainActivity", "Added line: " + line.getName() + " with " + line.getStations().size() + " stations");
         }
 
+        Log.d("MainActivity", "Total lines loaded: " + lines.size());
+        Log.d("MainActivity", "Total stations loaded: " + stations.size());
+
+        // Первый проход: создаём переходы по ID и станциям (пока без разрешения ссылок TR_*)
         JSONArray transfersArray = mapData.getJSONArray("transfers");
+        Map<String, Transfer> idToTransfer = new HashMap<>();
+        List<JSONObject> unresolvedLinkTransfers = new ArrayList<>();
         for (int i = 0; i < transfersArray.length(); i++) {
             JSONObject transferObject = transfersArray.getJSONObject(i);
+            String transferId = transferObject.optString("id", null);
             JSONArray stationsArray = transferObject.getJSONArray("stations");
             List<Station> transferStations = new ArrayList<>();
+            boolean hasLink = false;
+            List<String> linkedStationIds = new ArrayList<>();
             for (int j = 0; j < stationsArray.length(); j++) {
-                String stationId = stationsArray.getString(j);
-                Station station = findStationById(stationId, stations);
-                if (station != null) {
-                    transferStations.add(station);
-                }
+                String token = stationsArray.getString(j);
+                if (token.startsWith("TR_")) { hasLink = true; }
+                if (!token.startsWith("TR_")) linkedStationIds.add(token);
+                Station station = findStationById(token, stations);
+                if (station != null) transferStations.add(station);
             }
             int time = transferObject.optInt("time", 3);
             String type = transferObject.optString("type", "regular");
             String transferMap = transferObject.optString("transfer_map", null);
 
-            // Парсинг transfer_routes
             List<TransferRoute> transferRoutes = new ArrayList<>();
             if (transferObject.has("transfers_routes")) {
                 JSONArray transferRoutesArray = transferObject.getJSONArray("transfers_routes");
@@ -600,16 +1014,69 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     JSONArray wayArray = routeObject.optJSONArray("way");
                     List<String> way = new ArrayList<>();
                     if (wayArray != null) {
-                        for (int l = 0; l < wayArray.length(); l++) {
-                            way.add(wayArray.getString(l));
-                        }
+                        for (int l = 0; l < wayArray.length(); l++) way.add(wayArray.getString(l));
                     }
                     transferRoutes.add(new TransferRoute(routeTransferMap, from, to, way, prev, null));
                 }
             }
 
-            // Создание объекта Transfer с учетом transferRoutes
-            transfers.add(new Transfer(transferStations, time, type, transferMap, transferRoutes));
+            if (hasLink) {
+                // Сохраняем на второй проход — нужно разрешить TR_* в станции
+                unresolvedLinkTransfers.add(transferObject);
+            } else {
+                Transfer t = new Transfer(transferId, transferStations, time, type, transferMap, transferRoutes);
+                transfers.add(t);
+                if (transferId != null) idToTransfer.put(transferId, t);
+            }
+        }
+
+        // Второй проход: разрешаем ссылки TR_* в списках stations
+        for (JSONObject transferObject : unresolvedLinkTransfers) {
+            String transferId = transferObject.optString("id", null);
+            JSONArray stationsArray = transferObject.getJSONArray("stations");
+            List<Station> combined = new ArrayList<>();
+            List<String> linkedIds = new ArrayList<>();
+            List<String> linkedStationIds = new ArrayList<>();
+            boolean hasLinks = false;
+            
+            for (int j = 0; j < stationsArray.length(); j++) {
+                String token = stationsArray.getString(j);
+                if (token.startsWith("TR_")) {
+                    hasLinks = true;
+                    linkedIds.add(token);
+                    Transfer ref = idToTransfer.get(token);
+                    if (ref != null && ref.getStations() != null) combined.addAll(ref.getStations());
+                } else {
+                    Station station = findStationById(token, stations);
+                    if (station != null) {
+                        combined.add(station);
+                        linkedStationIds.add(token);
+                    }
+                }
+            }
+            int time = transferObject.optInt("time", 3);
+            String type = transferObject.optString("type", "regular");
+            String transferMap = transferObject.optString("transfer_map", null);
+            List<TransferRoute> transferRoutes = new ArrayList<>();
+            if (transferObject.has("transfers_routes")) {
+                JSONArray transferRoutesArray = transferObject.getJSONArray("transfers_routes");
+                for (int k = 0; k < transferRoutesArray.length(); k++) {
+                    JSONObject routeObject = transferRoutesArray.getJSONObject(k);
+                    String routeTransferMap = routeObject.optString("transfer_map", null);
+                    String prev = routeObject.optString("prev", null);
+                    String from = routeObject.optString("from", null);
+                    String to = routeObject.optString("to", null);
+                    JSONArray wayArray = routeObject.optJSONArray("way");
+                    List<String> way = new ArrayList<>();
+                    if (wayArray != null) {
+                        for (int l = 0; l < wayArray.length(); l++) way.add(wayArray.getString(l));
+                    }
+                    transferRoutes.add(new TransferRoute(routeTransferMap, from, to, way, prev, null));
+                }
+            }
+            Transfer t = new Transfer(transferId, combined, time, type, transferMap, transferRoutes, hasLinks, linkedIds, linkedStationIds);
+            transfers.add(t);
+            if (transferId != null) idToTransfer.put(transferId, t);
         }
 
 
@@ -719,7 +1186,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 JSONObject stationObject = stationsArray.getJSONObject(j);
                 Station station = findStationById(stationObject.getString("id"), allStations);
                 if (station != null) {
+                    if (stationObject.has("neighbors")) {
                     JSONArray neighborsArray = stationObject.getJSONArray("neighbors");
+                        Log.d("MainActivity", "Station " + station.getName() + " has " + neighborsArray.length() + " neighbors");
                     for (int k = 0; k < neighborsArray.length(); k++) {
                         JSONArray neighborArray = neighborsArray.getJSONArray(k);
                         String neighborId = neighborArray.getString(0);
@@ -727,6 +1196,36 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         Station neighborStation = findStationById(neighborId, allStations);
                         if (neighborStation != null) {
                             station.addNeighbor(new Station.Neighbor(neighborStation, time));
+                                Log.d("MainActivity", "Added neighbor: " + neighborStation.getName() + " to " + station.getName());
+                            } else {
+                                Log.w("MainActivity", "Neighbor station not found: " + neighborId);
+                            }
+                        }
+                    } else {
+                        Log.w("MainActivity", "Station " + station.getName() + " has no neighbors field");
+                    }
+
+                    // Для кольцевых линий обозначим связь первой и последней станций (если есть флаг в JSON)
+                    boolean isCircle = stationObject.optBoolean("_belongsToCircle", false);
+                    if (isCircle && stationsArray.length() > 1) {
+                        Station first = findStationById(stationsArray.getJSONObject(0).getString("id"), allStations);
+                        Station last = findStationById(stationsArray.getJSONObject(stationsArray.length()-1).getString("id"), allStations);
+                        if (first != null && last != null) {
+                            // Добавим взаимных соседей, если их нет
+                            boolean hasFirstLast = false;
+                            for (Station.Neighbor n : first.getNeighbors()) {
+                                if (n.getStation().getId().equals(last.getId())) { hasFirstLast = true; break; }
+                            }
+                            if (!hasFirstLast) {
+                                first.addNeighbor(new Station.Neighbor(last, 2));
+                            }
+                            boolean hasLastFirst = false;
+                            for (Station.Neighbor n : last.getNeighbors()) {
+                                if (n.getStation().getId().equals(first.getId())) { hasLastFirst = true; break; }
+                            }
+                            if (!hasLastFirst) {
+                                last.addNeighbor(new Station.Neighbor(first, 2));
+                            }
                         }
                     }
                 }
@@ -795,6 +1294,15 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     }
                     curline = line;
                     Log.d("MainActivity", "Line found: " + line.getName());
+                    // Обработка кольцевых линий: замыкаем начало и конец
+                    if (curline != null && curline.isCircle() && lineStations.size() > 1) {
+                        if (prevStation == null) {
+                            prevStation = lineStations.get(lineStations.size() - 1);
+                        }
+                        if (nextStation == null) {
+                            nextStation = lineStations.get(0);
+                        }
+                    }
                     break;
                 }
             }
@@ -804,32 +1312,158 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         clearFrameLayout();
 
         // Создание и установка адаптера для ViewPager2
+        List<Line> grayedLines = new ArrayList<>();
+        
+        // Добавляем неактивные линии как серые
+        if (isMetroMap) {
+            if (suburbanLines != null) grayedLines.addAll(suburbanLines);
+            if (riverTramLines != null) grayedLines.addAll(riverTramLines);
+            if (tramLines != null) grayedLines.addAll(tramLines);
+        } else if (isSuburbanMap) {
+            if (lines != null) grayedLines.addAll(lines);
+            if (riverTramLines != null) grayedLines.addAll(riverTramLines);
+            if (tramLines != null) grayedLines.addAll(tramLines);
+        } else if (isRiverTramMap) {
+            if (lines != null) grayedLines.addAll(lines);
+            if (suburbanLines != null) grayedLines.addAll(suburbanLines);
+            if (tramLines != null) grayedLines.addAll(tramLines);
+        } else if (isTramMap) {
+            if (lines != null) grayedLines.addAll(lines);
+            if (suburbanLines != null) grayedLines.addAll(suburbanLines);
+            if (riverTramLines != null) grayedLines.addAll(riverTramLines);
+        }
+        
+        // Получаем активные переходы
+        List<Transfer> activeTransfers = getActiveTransfers();
+        
         StationPagerAdapter pagerAdapter = new StationPagerAdapter(
                 this, station, curline, prevStation, nextStation,
-                transfers, lines, suburbanLines, this
+                activeTransfers, activeLines, grayedLines, this
         );
 
         ViewPager2 stationPager = findViewById(R.id.stationPager);
         stationPager.setAdapter(pagerAdapter);
         stationPager.setVisibility(View.VISIBLE); // Показываем ViewPager2
+        addHorizontalPagerDots(stationPager, pagerAdapter);
+        metroMapView.selectedStation = station;
+        metroMapView.invalidate();
+    }
+
+    private void addHorizontalPagerDots(ViewPager2 pager, StationPagerAdapter adapter) {
+        int count = adapter != null ? adapter.getItemCount() : 0;
+        LinearLayout dotsHost = findViewById(R.id.stationPagerDots);
+        if (dotsHost == null) return;
+        dotsHost.removeAllViews();
+
+        LinearLayout dots = new LinearLayout(this);
+        dots.setOrientation(LinearLayout.HORIZONTAL);
+        dots.setPadding(16, 8, 16, 8);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dots.setLayoutParams(lp);
+
+        int dp8 = (int) (8 * getResources().getDisplayMetrics().density);
+        int dp4 = (int) (4 * getResources().getDisplayMetrics().density);
+
+        if (dotsHost.getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) dotsHost.getLayoutParams();
+            params.topToBottom = R.id.stationPager;
+            params.bottomToTop = R.id.linearLayout2;
+            params.matchConstraintMaxHeight = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD;
+            dotsHost.setLayoutParams(params);
+        }
+        if (stationPagerChangeCallback != null) {
+            pager.unregisterOnPageChangeCallback(stationPagerChangeCallback);
+            stationPagerChangeCallback = null;
+        }
+
+        // Скрываем индикатор если одна страница или 0
+        if (count <= 1) {
+            dotsHost.setVisibility(View.GONE);
+            return;
+        } else {
+            dotsHost.setVisibility(View.VISIBLE);
+        }
+
+        // Получаем цвет primary из темы
+        int primaryColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary, Color.parseColor("#1976D2"));
+        
+        for (int i = 0; i < count; i++) {
+            View v = new View(this);
+            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(dp8, dp8);
+            vp.setMargins(dp4, 0, dp4, 0);
+            v.setLayoutParams(vp);
+            if (i == 0) {
+                // Создаем drawable программно для активной точки с цветом из темы
+                android.graphics.drawable.GradientDrawable selectedDot = new android.graphics.drawable.GradientDrawable();
+                selectedDot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                selectedDot.setSize(dp8, dp8);
+                selectedDot.setColor(primaryColor);
+                v.setBackground(selectedDot);
+            } else {
+                v.setBackgroundResource(R.drawable.dot_unselected);
+            }
+            dots.addView(v);
+        }
+
+        dotsHost.addView(dots);
+
+        stationPagerChangeCallback = new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < dots.getChildCount(); i++) {
+                    if (i == position) {
+                        // Создаем drawable программно для активной точки с цветом из темы
+                        android.graphics.drawable.GradientDrawable selectedDot = new android.graphics.drawable.GradientDrawable();
+                        selectedDot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                        selectedDot.setSize(dp8, dp8);
+                        selectedDot.setColor(primaryColor);
+                        dots.getChildAt(i).setBackground(selectedDot);
+                    } else {
+                        dots.getChildAt(i).setBackgroundResource(R.drawable.dot_unselected);
+                    }
+                }
+
+                Station currentStation = adapter.getStationAtPosition(position);
+                if (currentStation != null) {
+                    metroMapView.selectedStation = currentStation;
+                    metroMapView.invalidate();
+                }
+            }
+        };
+        pager.registerOnPageChangeCallback(stationPagerChangeCallback);
     }
 
     // Метод для получения активных линий в зависимости от текущей карты
     private List<Line> getActiveLines() {
         if (isMetroMap) {
-            return lines;
+            return lines != null ? lines : new ArrayList<>();
         } else if (isSuburbanMap) {
-            return suburbanLines;
+            return suburbanLines != null ? suburbanLines : new ArrayList<>();
         } else if (isRiverTramMap) {
-            return riverTramLines;
+            return riverTramLines != null ? riverTramLines : new ArrayList<>();
+        } else if (isTramMap) {
+            return tramLines != null ? tramLines : new ArrayList<>();
         }
-        return Collections.emptyList(); // Возвращаем пустой список, если ни одна карта не активна
+        return new ArrayList<>(); // Возвращаем пустой список, если ни одна карта не активна
+    }
+
+    // Метод для получения активных переходов в зависимости от текущей карты
+    private List<Transfer> getActiveTransfers() {
+        if (isMetroMap) {
+            return transfers != null ? transfers : new ArrayList<>();
+        } else if (isSuburbanMap) {
+            return suburbanTransfers != null ? suburbanTransfers : new ArrayList<>();
+        } else if (isRiverTramMap) {
+            return riverTramTransfers != null ? riverTramTransfers : new ArrayList<>();
+        } else if (isTramMap) {
+            return tramTransfers != null ? tramTransfers : new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 
     @Override
     public void onDismiss() {
-        ViewPager2 stationPager = findViewById(R.id.stationPager);
-        stationPager.setVisibility(View.GONE); // Скрываем ViewPager2
+        hideStationPager();
     }
 
     private void clearFrameLayout() {
@@ -842,6 +1476,37 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
+    private void resetStationPagerIfNoSelection() {
+        if (selectedStartStation != null || selectedEndStation != null) {
+            return;
+        }
+        hideStationPager();
+    }
+
+    private void hideStationPager() {
+        ViewPager2 stationPager = findViewById(R.id.stationPager);
+        if (stationPager != null) {
+            if (stationPagerChangeCallback != null) {
+                stationPager.unregisterOnPageChangeCallback(stationPagerChangeCallback);
+                stationPagerChangeCallback = null;
+            }
+            stationPager.setAdapter(null);
+            stationPager.setVisibility(View.GONE);
+        }
+        LinearLayout dotsHost = findViewById(R.id.stationPagerDots);
+        if (dotsHost != null) {
+            dotsHost.removeAllViews();
+            dotsHost.setVisibility(View.GONE);
+            if (dotsHost.getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) dotsHost.getLayoutParams();
+                params.matchConstraintMaxHeight = 0;
+                params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
+                params.bottomToTop = ConstraintLayout.LayoutParams.UNSET;
+                dotsHost.setLayoutParams(params);
+            }
+        }
+    }
+
     @Override
     public void onSetStart(Station station, boolean fromStationInfoFragment) {
         if (selectedStartStation != null) {
@@ -851,9 +1516,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
         setStationInfo(startStationEditText, station);
+        startStationEditText.setHint("");
+        startStationEditText.clearFocus();
+        startStationEditText.setEnabled(false);
 
         // Показываем station_info_layout для начальной станции
         showStationInfoLayout(station, true);
+
+        rebuildRouteIfPossible();
 
         if (fromStationInfoFragment) {
             hideStationsList();
@@ -869,15 +1539,14 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         selectedStations.add(station);
         metroMapView.setSelectedStations(selectedStations);
         setStationInfo(endStationEditText, station);
+        endStationEditText.setHint("");
+        endStationEditText.clearFocus();
+        endStationEditText.setEnabled(false);
 
         // Показываем station_info_layout для конечной станции
         showStationInfoLayout(station, false);
 
-        if (selectedStartStation != null) {
-            List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
-            metroMapView.setRoute(route);
-            showRouteInfo(route);
-        }
+        rebuildRouteIfPossible();
 
         if (fromStationInfoFragment) {
             hideStationsList();
@@ -942,14 +1611,53 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private List<Station> findOptimalRoute(Station start, Station end) {
         Log.d("MainActivity", "Finding optimal route from " + start.getName() + " to " + end.getName());
-        Map<Station, Station> previous = new HashMap<>();
-        Map<Station, Integer> distances = new HashMap<>();
-        PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
+        // Собираем множество всех станций
         List<Station> allStations = new ArrayList<>(stations);
         allStations.addAll(suburbanStations);
         allStations.addAll(riverTramStations);
+        if (tramStations != null) allStations.addAll(tramStations);
 
+        // Строим граф смежности: соседи по линиям + рёбра-переходы
+        Map<Station, List<Station.Neighbor>> adjacency = new HashMap<>();
+        for (Station station : allStations) {
+            adjacency.put(station, new ArrayList<>());
+        }
+
+        // Добавляем рёбра линий
+        for (Station station : allStations) {
+            if (station.getNeighbors() == null) continue;
+            for (Station.Neighbor neighbor : station.getNeighbors()) {
+                adjacency.get(station).add(new Station.Neighbor(neighbor.getStation(), neighbor.getTime()));
+            }
+        }
+
+        // Добавляем рёбра переходов (метро + пригород + речной трамвай + трамвай)
+        List<Transfer> allTransfers = new ArrayList<>();
+        if (this.transfers != null) allTransfers.addAll(this.transfers);
+        if (this.suburbanTransfers != null) allTransfers.addAll(this.suburbanTransfers);
+        if (this.riverTramTransfers != null) allTransfers.addAll(this.riverTramTransfers);
+        if (this.tramTransfers != null) allTransfers.addAll(this.tramTransfers);
+
+        for (Transfer transfer : allTransfers) {
+            List<Station> tStations = transfer.getStations();
+            if (tStations == null || tStations.size() < 2) continue;
+            int cost = Math.max(1, transfer.getTime());
+            for (int i = 0; i < tStations.size(); i++) {
+                Station a = tStations.get(i);
+                for (int j = 0; j < tStations.size(); j++) {
+                    if (i == j) continue;
+                    Station b = tStations.get(j);
+                    if (!adjacency.containsKey(a)) adjacency.put(a, new ArrayList<>());
+                    adjacency.get(a).add(new Station.Neighbor(b, cost));
+                }
+            }
+        }
+
+        // Дейкстра
+        Map<Station, Station> previous = new HashMap<>();
+        Map<Station, Integer> distances = new HashMap<>();
+        PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
         for (Station station : allStations) {
             distances.put(station, Integer.MAX_VALUE);
         }
@@ -958,21 +1666,25 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         while (!queue.isEmpty()) {
             Station current = queue.poll();
+            if (current == null) break;
             if (current.getId().equals(end.getId())) {
                 break;
             }
-
-            for (Station.Neighbor neighbor : current.getNeighbors()) {
-                Station neighborStation = neighbor.getStation(); // Use getStation() instead of getStationId()
-                int distance = distances.get(current) + neighbor.getTime();
-                if (distance < distances.get(neighborStation)) {
-                    distances.put(neighborStation, distance);
+            List<Station.Neighbor> neighbors = adjacency.get(current);
+            if (neighbors == null) continue;
+            for (Station.Neighbor neighbor : neighbors) {
+                Station neighborStation = neighbor.getStation();
+                if (!distances.containsKey(neighborStation)) continue;
+                int newDistance = distances.get(current) + neighbor.getTime();
+                if (newDistance < distances.get(neighborStation)) {
+                    distances.put(neighborStation, newDistance);
                     previous.put(neighborStation, current);
                     queue.add(neighborStation);
                 }
             }
         }
 
+        // Восстановление пути
         List<Station> route = new ArrayList<>();
         for (Station station = end; station != null; station = previous.get(station)) {
             route.add(station);
@@ -981,9 +1693,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return route;
     }
 
+    private void rebuildRouteIfPossible() {
+        if (selectedStartStation != null && selectedEndStation != null) {
+            List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
+            metroMapView.setRoute(route);
+            showRouteInfo(route);
+        }
+    }
+
     public void clearRouteInputs() {
         startStationEditText.setText("");
         endStationEditText.setText("");
+    }
+
+    private void clearRoute() {
+        metroMapView.clearRoute();
+        clearFrameLayout();
     }
 
     private void showRouteInfo(List<Station> route) {

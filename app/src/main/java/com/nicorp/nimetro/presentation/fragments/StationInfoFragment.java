@@ -13,6 +13,7 @@ import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -41,7 +43,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -110,42 +115,16 @@ public class StationInfoFragment extends Fragment {
         prevStationArrivalTime = view.findViewById(R.id.prevStationArrivalTime);
         nextStationArrivalTime = view.findViewById(R.id.nextStationArrivalTime);
 
-        // Находим TextView для предыдущей и следующей станции
-        TextView prevStationName = view.findViewById(R.id.prevStationName);
-        TextView nextStationName = view.findViewById(R.id.nextStationName);
+        // Контейнеры для списков соседних станций
+        LinearLayout upperStationsContainer = view.findViewById(R.id.upperStationsContainer);
+        LinearLayout lowerStationsContainer = view.findViewById(R.id.lowerStationsContainer);
 
-        // Устанавливаем видимость и иконки в зависимости от isCircle
-        if (line.isCircle()) {
-            // Если линия круговая, используем стрелки по часовой и против часовой
-            setStationNameDrawable(prevStationName, R.drawable.ic_clockwise);
-            setStationNameDrawable(nextStationName, R.drawable.ic_counter_clockwise);
-        } else {
-            // Если линия не круговая, используем стрелки вверх и вниз
-            setStationNameDrawable(prevStationName, R.drawable.ic_arrow_up);
-            setStationNameDrawable(nextStationName, R.drawable.ic_arrow_down);
-        }
+        updateNeighborViews(upperStationsContainer, lowerStationsContainer);
 
         // Остальная логика
         TextView stationName = view.findViewById(R.id.stationName);
         stationName.setText(station.getName());
         Log.d("StationInfoFragmentInfo", "Station name: " + station.getName());
-
-        // Если станция конечная, отображаем только одну станцию (prev или next)
-        if (prevStation == null || nextStation == null) {
-            if (prevStation != null) {
-                // Если есть только предыдущая станция, отображаем ее в nextStationName
-                setStationNameVisibility(nextStationName, prevStation);
-                prevStationName.setVisibility(View.INVISIBLE); // Используем INVISIBLE вместо GONE
-            } else if (nextStation != null) {
-                // Если есть только следующая станция, отображаем ее в prevStationName
-                setStationNameVisibility(prevStationName, nextStation);
-                nextStationName.setVisibility(View.INVISIBLE); // Используем INVISIBLE вместо GONE
-            }
-        } else {
-            // Если есть обе станции, отображаем их как обычно
-            setStationNameVisibility(prevStationName, prevStation);
-            setStationNameVisibility(nextStationName, nextStation);
-        }
 
         TextView fromButton = view.findViewById(R.id.fromButton);
         fromButton.setOnClickListener(v -> onFromButtonClick());
@@ -164,18 +143,6 @@ public class StationInfoFragment extends Fragment {
         fetchESPSchedule(station);
 
         return view;
-    }
-
-    /**
-     * Устанавливает drawableStart для TextView
-     *
-     * @param textView TextView, для которого нужно установить иконку
-     * @param drawableResId ID ресурса иконки
-     */
-    private void setStationNameDrawable(TextView textView, int drawableResId) {
-        if (textView != null) {
-            textView.setCompoundDrawablesWithIntrinsicBounds(drawableResId, 0, 0, 0);
-        }
     }
 
     private void fetchESPSchedule(Station station) {
@@ -295,13 +262,394 @@ public class StationInfoFragment extends Fragment {
         }
     }
 
-    private void setStationNameVisibility(TextView stationNameTextView, Station station) {
-        if (station != null) {
-            stationNameTextView.setText(station.getName());
-            stationNameTextView.setVisibility(View.VISIBLE);
-        } else {
-            stationNameTextView.setVisibility(View.GONE);
+    private void updateNeighborViews(LinearLayout upperContainer, LinearLayout lowerContainer) {
+        if (upperContainer != null) {
+            upperContainer.removeAllViews();
+            upperContainer.setVisibility(View.GONE);
         }
+        if (lowerContainer != null) {
+            lowerContainer.removeAllViews();
+            lowerContainer.setVisibility(View.GONE);
+        }
+
+        Line currentLine = findLineByStation(station);
+        if (currentLine == null) {
+            currentLine = line;
+        }
+
+        if (currentLine != null && currentLine.isCircle()) {
+            applyCircularNeighbors(upperContainer, lowerContainer, currentLine);
+            return;
+        }
+
+        applyDirectionalNeighbors(upperContainer, lowerContainer, currentLine);
+    }
+
+    private void applyDirectionalNeighbors(LinearLayout upperContainer, LinearLayout lowerContainer, Line currentLine) {
+        List<Station> neighbors = getNeighborStations(currentLine, station);
+        List<Station> aboveStations = new ArrayList<>();
+        List<Station> sameLevelStations = new ArrayList<>();
+        List<Station> belowStations = new ArrayList<>();
+
+        if (neighbors != null) {
+            for (Station neighbor : neighbors) {
+                if (neighbor == null || neighbor.getId() == null || station == null || station.getId() == null) {
+                    continue;
+                }
+                if (neighbor.getId().equals(station.getId())) {
+                    continue;
+                }
+                int deltaY = neighbor.getY() - station.getY();
+                if (deltaY < 0) {
+                    aboveStations.add(neighbor);
+                } else if (deltaY > 0) {
+                    belowStations.add(neighbor);
+                } else {
+                    sameLevelStations.add(neighbor);
+                }
+            }
+        }
+
+        aboveStations.sort((a, b) -> {
+            int deltaA = Math.abs(a.getY() - station.getY());
+            int deltaB = Math.abs(b.getY() - station.getY());
+            if (deltaA != deltaB) {
+                return Integer.compare(deltaA, deltaB);
+            }
+            return compareStationsById(a, b);
+        });
+
+        belowStations.sort((a, b) -> {
+            int deltaA = Math.abs(a.getY() - station.getY());
+            int deltaB = Math.abs(b.getY() - station.getY());
+            if (deltaA != deltaB) {
+                return Integer.compare(deltaA, deltaB);
+            }
+            return compareStationsById(a, b);
+        });
+
+        sameLevelStations.sort(this::compareStationsById);
+
+        if (!aboveStations.isEmpty()) {
+            this.prevStation = aboveStations.get(0);
+        } else {
+            this.prevStation = null;
+        }
+
+        if (!belowStations.isEmpty()) {
+            this.nextStation = belowStations.get(0);
+        } else if (!sameLevelStations.isEmpty()) {
+            this.nextStation = sameLevelStations.get(0);
+        } else {
+            this.nextStation = null;
+        }
+
+        for (Station neighbor : aboveStations) {
+            addNeighborView(upperContainer, neighbor, null);
+        }
+
+        for (Station neighbor : sameLevelStations) {
+            addNeighborView(lowerContainer, neighbor, null);
+        }
+
+        for (Station neighbor : belowStations) {
+            addNeighborView(lowerContainer, neighbor, null);
+        }
+
+        if ((aboveStations.isEmpty()) && prevStationArrivalTime != null) {
+            prevStationArrivalTime.setText("");
+        }
+        if ((belowStations.isEmpty() && sameLevelStations.isEmpty()) && nextStationArrivalTime != null) {
+            nextStationArrivalTime.setText("");
+        }
+    }
+
+    private void applyCircularNeighbors(LinearLayout upperContainer, LinearLayout lowerContainer, Line currentLine) {
+        List<Station> stationList = currentLine.getStations();
+        int index = findStationIndexById(stationList, station);
+        Station previous = null;
+        Station next = null;
+        if (index != -1 && stationList != null && !stationList.isEmpty()) {
+            previous = stationList.get((index - 1 + stationList.size()) % stationList.size());
+            next = stationList.get((index + 1) % stationList.size());
+        }
+
+        this.prevStation = previous;
+        this.nextStation = next;
+
+        addNeighborView(upperContainer, previous, R.drawable.ic_clockwise);
+        addNeighborView(lowerContainer, next, R.drawable.ic_counter_clockwise);
+
+        if (previous == null && prevStationArrivalTime != null) {
+            prevStationArrivalTime.setText("");
+        }
+        if (next == null && nextStationArrivalTime != null) {
+            nextStationArrivalTime.setText("");
+        }
+    }
+
+    private void addNeighborView(LinearLayout container, Station neighbor, Integer overrideArrowRes) {
+        if (container == null || neighbor == null) {
+            return;
+        }
+        TextView textView = createNeighborTextView(container.getContext());
+        textView.setText(neighbor.getName());
+
+        int drawableRes = overrideArrowRes != null ? overrideArrowRes : getDirectionArrowDrawable(neighbor);
+        Drawable arrowDrawable = AppCompatResources.getDrawable(requireContext(), drawableRes);
+        textView.setCompoundDrawablesRelativeWithIntrinsicBounds(arrowDrawable, null, null, null);
+
+        int tintColor = textView.getCurrentTextColor();
+        textView.setCompoundDrawableTintList(ColorStateList.valueOf(tintColor));
+
+        container.addView(textView);
+        container.setVisibility(View.VISIBLE);
+    }
+
+    private TextView createNeighborTextView(android.content.Context context) {
+        TextView textView = new TextView(context);
+        int textColor = resolveThemeColor(com.google.android.material.R.attr.colorOnBackground);
+        textView.setTextColor(textColor);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setCompoundDrawablePadding(dpToPx(4));
+        Typeface customTypeface = ResourcesCompat.getFont(context, R.font.emyslabaltblack);
+        if (customTypeface != null) {
+            textView.setTypeface(customTypeface, Typeface.NORMAL);
+        }
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.topMargin = dpToPx(4);
+        textView.setLayoutParams(params);
+        return textView;
+    }
+
+    private int getDirectionArrowDrawable(Station neighbor) {
+        if (neighbor == null || station == null) {
+            return R.drawable.ic_arrow_dir_n;
+        }
+        float dx = neighbor.getX() - station.getX();
+        float dy = neighbor.getY() - station.getY();
+        if (dx == 0 && dy == 0) {
+            return R.drawable.ic_arrow_dir_n;
+        }
+
+        double angle = Math.atan2(-dy, dx);
+        double degrees = Math.toDegrees(angle);
+        if (degrees < 0) {
+            degrees += 360.0;
+        }
+
+        if (degrees >= 337.5 || degrees < 22.5) {
+            return R.drawable.ic_arrow_dir_e;
+        } else if (degrees < 67.5) {
+            return R.drawable.ic_arrow_dir_ne;
+        } else if (degrees < 112.5) {
+            return R.drawable.ic_arrow_dir_n;
+        } else if (degrees < 157.5) {
+            return R.drawable.ic_arrow_dir_nw;
+        } else if (degrees < 202.5) {
+            return R.drawable.ic_arrow_dir_w;
+        } else if (degrees < 247.5) {
+            return R.drawable.ic_arrow_dir_sw;
+        } else if (degrees < 292.5) {
+            return R.drawable.ic_arrow_dir_s;
+        } else {
+            return R.drawable.ic_arrow_dir_se;
+        }
+    }
+
+    private List<Station> getNeighborStations(Line currentLine, Station currentStation) {
+        List<Station> neighbors = new ArrayList<>();
+        if (currentStation == null) {
+            return neighbors;
+        }
+        if (currentLine == null) {
+            return neighbors;
+        }
+
+        List<Station.Neighbor> neighborEntries = currentStation.getNeighbors();
+        if (neighborEntries != null) {
+            Set<String> seenIds = new LinkedHashSet<>();
+            for (Station.Neighbor neighborEntry : neighborEntries) {
+                if (neighborEntry == null || neighborEntry.getStation() == null) {
+                    continue;
+                }
+                String neighborId = neighborEntry.getStation().getId();
+                if (neighborId == null || !seenIds.add(neighborId)) {
+                    continue;
+                }
+                Station resolved = findStationInLineById(currentLine, neighborId);
+                if (resolved != null) {
+                    neighbors.add(resolved);
+                }
+            }
+        }
+
+        if (neighbors.isEmpty() && currentLine != null) {
+            List<Station> sorted = getSortedStations(currentLine);
+            Station prev = findNeighborById(sorted, currentStation, true);
+            Station next = findNeighborById(sorted, currentStation, false);
+            if (prev != null) {
+                neighbors.add(prev);
+            }
+            if (next != null) {
+                neighbors.add(next);
+            }
+        }
+        return neighbors;
+    }
+
+    private Station findStationInLineById(Line line, String stationId) {
+        if (line == null || stationId == null || line.getStations() == null) {
+            return null;
+        }
+        for (Station candidate : line.getStations()) {
+            if (candidate != null && stationId.equals(candidate.getId())) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private int resolveThemeColor(int attrRes) {
+        TypedValue typedValue = new TypedValue();
+        if (requireContext().getTheme().resolveAttribute(attrRes, typedValue, true)) {
+            return typedValue.data;
+        }
+        return Color.WHITE;
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
+    private List<Station> getSortedStations(Line sourceLine) {
+        if (sourceLine == null || sourceLine.getStations() == null) {
+            return Collections.emptyList();
+        }
+        List<Station> sorted = new ArrayList<>();
+        for (Station entry : sourceLine.getStations()) {
+            if (entry != null) {
+                sorted.add(entry);
+            }
+        }
+        sorted.sort(this::compareStationsById);
+        return sorted;
+    }
+
+    private int compareStationsById(Station first, Station second) {
+        if (first == null && second == null) {
+            return 0;
+        }
+        if (first == null) {
+            return 1;
+        }
+        if (second == null) {
+            return -1;
+        }
+        String idFirst = first.getId();
+        String idSecond = second.getId();
+        int numericCompare = Integer.compare(extractNumericSuffix(idFirst), extractNumericSuffix(idSecond));
+        if (numericCompare != 0) {
+            return numericCompare;
+        }
+        if (idFirst == null && idSecond == null) {
+            return 0;
+        }
+        if (idFirst == null) {
+            return 1;
+        }
+        if (idSecond == null) {
+            return -1;
+        }
+        return idFirst.compareTo(idSecond);
+    }
+
+    private int extractNumericSuffix(String id) {
+        if (id == null || id.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+        int index = id.length() - 1;
+        int start = id.length();
+        while (index >= 0 && Character.isDigit(id.charAt(index))) {
+            start = index;
+            index--;
+        }
+        if (start == id.length()) {
+            return Integer.MAX_VALUE;
+        }
+        try {
+            return Integer.parseInt(id.substring(start));
+        } catch (NumberFormatException e) {
+            return Integer.MAX_VALUE;
+        }
+    }
+
+    private Station findNeighborById(List<Station> sortedStations, Station current, boolean previous) {
+        if (sortedStations == null || current == null || current.getId() == null) {
+            return null;
+        }
+        String targetId = current.getId();
+        for (int i = 0; i < sortedStations.size(); i++) {
+            Station candidate = sortedStations.get(i);
+            if (candidate != null && targetId.equals(candidate.getId())) {
+                int neighborIndex = previous ? i - 1 : i + 1;
+                if (neighborIndex >= 0 && neighborIndex < sortedStations.size()) {
+                    return sortedStations.get(neighborIndex);
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    private Station findNeighborByGeometry(List<Station> stations, Station current, boolean searchAbove) {
+        if (stations == null || current == null) {
+            return null;
+        }
+        int referenceY = current.getY();
+        Station best = null;
+        int bestDelta = Integer.MAX_VALUE;
+        for (Station candidate : stations) {
+            if (candidate == null || candidate.getId() == null || current.getId() == null) {
+                continue;
+            }
+            if (candidate.getId().equals(current.getId())) {
+                continue;
+            }
+            int delta = candidate.getY() - referenceY;
+            if (searchAbove && delta >= 0) {
+                continue;
+            }
+            if (!searchAbove && delta <= 0) {
+                continue;
+            }
+            int absDelta = Math.abs(delta);
+            if (best == null || absDelta < bestDelta) {
+                best = candidate;
+                bestDelta = absDelta;
+            } else if (absDelta == bestDelta && compareStationsById(candidate, best) < 0) {
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+    private int findStationIndexById(List<Station> stations, Station target) {
+        if (stations == null || target == null || target.getId() == null) {
+            return -1;
+        }
+        for (int i = 0; i < stations.size(); i++) {
+            Station candidate = stations.get(i);
+            if (candidate != null && target.getId().equals(candidate.getId())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void onFromButtonClick() {
@@ -319,17 +667,40 @@ public class StationInfoFragment extends Fragment {
     }
 
     private void setLineNumberAndColor(TextView lineNumber, View lineColorStrip, Station station) {
-        String lineId = String.valueOf(line.getLineDisplayNumberForStation(station));
-        lineNumber.setText(lineId);
+        Line foundLine = findLineByStation(station);
+        if (foundLine == null) {
+            // Если не нашли линию, используем переданную линию
+            foundLine = line;
+        }
+        
+        if (foundLine == null) {
+            lineNumber.setText("");
+            return;
+        }
+        
+        // Используем getLineDisplayNumberForStation для правильного получения displayNumber
+        String displayNumber = foundLine.getLineDisplayNumberForStation(station);
+        
+        // Если displayNumber не найден для станции, используем общий displayNumber линии
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = foundLine.getdisplayNumber();
+        }
+        
+        // Если displayNumber все еще null или пустой, используем id
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = foundLine.getId();
+        }
+        
+        lineNumber.setText(displayNumber != null ? displayNumber : "");
 
-        lineColorStrip.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(station.getColor())));
+        lineColorStrip.setBackgroundTintList(ColorStateList.valueOf(parseColorOrDefault(station.getColor(), Color.BLACK)));
 
         Shape shape = getLineShapeForStation(station);
         float density = getResources().getDisplayMetrics().density;
 
         // Создаем LayerDrawable для комбинации отступов и формы
         ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
-        shapeDrawable.getPaint().setColor(Color.parseColor(station.getColor()));
+        shapeDrawable.getPaint().setColor(parseColorOrDefault(station.getColor(), Color.BLACK));
 
         // Добавляем отступы к drawable
         int margin = (int) (8 * density);
@@ -373,16 +744,33 @@ public class StationInfoFragment extends Fragment {
     }
 
     private void addTransferCircles(LinearLayout transferCirclesContainer) {
+        if (transferCirclesContainer == null || transfers == null || station == null) {
+            return;
+        }
+        Set<String> seenStationKeys = new LinkedHashSet<>();
         for (Transfer transfer : transfers) {
-            if (transfer.getStations().contains(station)) {
-                for (Station transferStation : transfer.getStations()) {
-                    if (!transferStation.equals(station)) {
-                        Log.d("StationInfoFragment", "Transfer station: " + transferStation);
-
-                        TextView transferCircle = createTransferCircle(transferStation);
-                        transferCirclesContainer.addView(transferCircle);
-                    }
+            if (transfer == null) {
+                continue;
+            }
+            List<Station> transferStations = transfer.getStations();
+            if (transferStations == null || !transferStations.contains(station)) {
+                continue;
+            }
+            for (Station transferStation : transferStations) {
+                if (transferStation == null || transferStation.equals(station)) {
+                    continue;
                 }
+                String transferName = transferStation.getName();
+                if (transferName == null || transferName.trim().isEmpty()) {
+                    continue;
+                }
+                String key = buildStationKey(transferStation);
+                if (!seenStationKeys.add(key)) {
+                    continue;
+                }
+                Log.d("StationInfoFragment", "Transfer station: " + transferStation);
+                TextView transferCircle = createTransferCircle(transferStation);
+                transferCirclesContainer.addView(transferCircle);
             }
         }
     }
@@ -390,21 +778,23 @@ public class StationInfoFragment extends Fragment {
     private TextView createTransferCircle(Station transferStation) {
         TextView transferCircle = new TextView(getContext());
         String transferLineId = getLineIdForStation(transferStation);
-        transferCircle.setText(String.valueOf(transferLineId));
+        if (transferLineId == null || transferLineId.trim().isEmpty()) {
+            transferLineId = transferStation.getName();
+        }
+        transferCircle.setText(transferLineId != null ? transferLineId : "");
 
         Shape shape = getLineShapeForStation(transferStation);
         ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
-        shapeDrawable.getPaint().setColor(Color.parseColor(getColorForStation(transferStation)));
+        shapeDrawable.getPaint().setColor(parseColorOrDefault(getColorForStation(transferStation), Color.BLACK));
         float density = getResources().getDisplayMetrics().density;
         shapeDrawable.setIntrinsicHeight((int) (24 * density)); // Установите нужную высоту
         shapeDrawable.setIntrinsicWidth((int) (24 * density));  // Установите нужную ширину
 
         transferCircle.setBackground(shapeDrawable);
         transferCircle.setGravity(Gravity.CENTER);
-        transferCircle.setTextColor(Color.WHITE);
-        if (shape instanceof DoubleCircleShape) {
-            transferCircle.setTextColor(Color.BLACK);
-        }
+        TypedValue tvOnPrimary = new TypedValue();
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, tvOnPrimary, true);
+        transferCircle.setTextColor(tvOnPrimary.data);
         transferCircle.setTextSize(11);
         transferCircle.setPadding(3, 3, 3, 3);
 
@@ -435,30 +825,42 @@ public class StationInfoFragment extends Fragment {
     }
 
     private Line findLineForStation(Station station) {
-        for (Line line : lines) {
-            if (line.getStations().contains(station)) {
-                return line;
+        if (station == null || station.getId() == null) {
+            return null;
+        }
+        if (lines != null) {
+            for (Line candidateLine : lines) {
+                if (candidateLine != null && candidateLine.getStations() != null) {
+                    for (Station candidateStation : candidateLine.getStations()) {
+                        if (candidateStation != null && station.getId().equals(candidateStation.getId())) {
+                            return candidateLine;
+                        }
+                    }
+                }
+            }
+        }
+        if (grayedLines != null) {
+            for (Line candidateLine : grayedLines) {
+                if (candidateLine != null && candidateLine.getStations() != null) {
+                    for (Station candidateStation : candidateLine.getStations()) {
+                        if (candidateStation != null && station.getId().equals(candidateStation.getId())) {
+                            return candidateLine;
+                        }
+                    }
+                }
             }
         }
         return null;
     }
 
     private Station findPrevStation(Line line, Station currentStation) {
-        List<Station> stations = line.getStations();
-        int index = stations.indexOf(currentStation);
-        if (index > 0) {
-            return stations.get(index - 1);
-        }
-        return null;
+        List<Station> sortedStations = getSortedStations(line);
+        return findNeighborById(sortedStations, currentStation, true);
     }
 
     private Station findNextStation(Line line, Station currentStation) {
-        List<Station> stations = line.getStations();
-        int index = stations.indexOf(currentStation);
-        if (index < stations.size() - 1) {
-            return stations.get(index + 1);
-        }
-        return null;
+        List<Station> sortedStations = getSortedStations(line);
+        return findNeighborById(sortedStations, currentStation, false);
     }
 
     public void updateStationInfo(Station newStation, Line newLine, Station newPrevStation, Station newNextStation, List<Transfer> newTransfers) {
@@ -472,11 +874,9 @@ public class StationInfoFragment extends Fragment {
         TextView stationName = getView().findViewById(R.id.stationName);
         stationName.setText(newStation.getName());
 
-        TextView prevStationName = getView().findViewById(R.id.prevStationName);
-        setStationNameVisibility(prevStationName, newPrevStation);
-
-        TextView nextStationName = getView().findViewById(R.id.nextStationName);
-        setStationNameVisibility(nextStationName, newNextStation);
+        LinearLayout upperStationsContainer = getView().findViewById(R.id.upperStationsContainer);
+        LinearLayout lowerStationsContainer = getView().findViewById(R.id.lowerStationsContainer);
+        updateNeighborViews(upperStationsContainer, lowerStationsContainer);
 
         TextView lineNumber = getView().findViewById(R.id.lineNumber);
         View lineColorStrip = getView().findViewById(R.id.lineColorStrip);
@@ -490,38 +890,108 @@ public class StationInfoFragment extends Fragment {
         fetchESPSchedule(newStation);
     }
 
-    private String getLineIdForStation(Station station) {
-        for (Line line : lines) {
-            if (line.getStations().contains(station)) {
-                return line.getdisplayNumber();
+    private Line findLineByStation(Station station) {
+        if (station == null) return null;
+        
+        // Проверяем в основном списке линий
+        if (lines != null) {
+            for (Line l : lines) {
+                if (l != null && l.getStations() != null) {
+                    for (Station s : l.getStations()) {
+                        if (s != null && s.getId() != null && s.getId().equals(station.getId())) {
+                            return l;
+                        }
+                    }
+                }
             }
         }
-        for (Line line : grayedLines) {
-            if (line.getStations().contains(station)) {
-                return line.getdisplayNumber();
+        
+        // Проверяем в серых линиях
+        if (grayedLines != null) {
+            for (Line l : grayedLines) {
+                if (l != null && l.getStations() != null) {
+                    for (Station s : l.getStations()) {
+                        if (s != null && s.getId() != null && s.getId().equals(station.getId())) {
+                            return l;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    private String getLineIdForStation(Station station) {
+        if (lines != null) {
+            for (Line line : lines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    return line.getdisplayNumber();
+                }
+            }
+        }
+        if (grayedLines != null) {
+            for (Line line : grayedLines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    return line.getdisplayNumber();
+                }
             }
         }
         return null;
     }
 
+    private String buildStationKey(Station station) {
+        if (station == null) {
+            return "";
+        }
+        String id = station.getId();
+        if (id != null && !id.trim().isEmpty()) {
+            return id.trim();
+        }
+        String name = station.getName();
+        return name != null ? name.trim() : "";
+    }
+
+    private int parseColorOrDefault(String color, int fallback) {
+        if (color == null) {
+            return fallback;
+        }
+        String trimmed = color.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
+            return fallback;
+        }
+        try {
+            return Color.parseColor(trimmed);
+        } catch (IllegalArgumentException ex) {
+            Log.w("StationInfoFragment", "Invalid color string: " + trimmed, ex);
+            return fallback;
+        }
+    }
+
     private Shape getLineShapeForStation(Station station) {
-        for (Line line : lines) {
-            if (line.getStations().contains(station)) {
-                if (line.getDisplayShape().equals("SQUARE")) {
-                    return new RectShape();
-                } else if (line.getDisplayShape().equals("CIRCLE")) {
-                    return new CircleShape(Color.parseColor(line.getColor()));
-                } else if (line.getDisplayShape().equals("DOUBLE_CIRCLE")) {
-                    return new CircleShape(Color.parseColor(line.getColor()));
-                } else if (line.getDisplayShape().equals("PARALLELOGRAM")) {
-                    return new ParallelogramShape(Color.parseColor(line.getColor()));
+        if (lines != null) {
+            for (Line line : lines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    String displayShape = line.getDisplayShape();
+                    if (displayShape != null && displayShape.equals("SQUARE")) {
+                        return new RectShape();
+                    } else if (displayShape != null && displayShape.equals("CIRCLE")) {
+                        return new CircleShape(parseColorOrDefault(line.getColor(), Color.BLACK));
+                    } else if (displayShape != null && displayShape.equals("DOUBLE_CIRCLE")) {
+                        return new CircleShape(parseColorOrDefault(line.getColor(), Color.BLACK));
+                    } else if (displayShape != null && displayShape.equals("PARALLELOGRAM")) {
+                        return new ParallelogramShape(parseColorOrDefault(line.getColor(), Color.BLACK));
+                    }
                 }
             }
         }
-        for (Line line : grayedLines) {
-            if (line.getStations().contains(station)) {
-                if (line.getDisplayShape().equals("SQUARE")) {
-                    return new RectShape();
+        if (grayedLines != null) {
+            for (Line line : grayedLines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    String displayShape = line.getDisplayShape();
+                    if (displayShape != null && displayShape.equals("SQUARE")) {
+                        return new RectShape();
+                    }
                 }
             }
         }
@@ -529,14 +999,18 @@ public class StationInfoFragment extends Fragment {
     }
 
     private String getColorForStation(Station station) {
-        for (Line line : lines) {
-            if (line.getStations().contains(station)) {
-                return line.getColor();
+        if (lines != null) {
+            for (Line line : lines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    return line.getColor();
+                }
             }
         }
-        for (Line line : grayedLines) {
-            if (line.getStations().contains(station)) {
-                return line.getColor();
+        if (grayedLines != null) {
+            for (Line line : grayedLines) {
+                if (line != null && line.getStations() != null && line.getStations().contains(station)) {
+                    return line.getColor();
+                }
             }
         }
         return "#000000";

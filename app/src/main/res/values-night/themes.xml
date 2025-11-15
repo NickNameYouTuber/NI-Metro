@@ -11,7 +11,10 @@
         <item name="colorBackground">@color/my_dark_background</item>
         <item name="colorSurface">@color/my_dark_surface</item>
         <item name="colorOnSurface">@color/my_dark_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/my_dark_on_surface_variant</item>
+        <item name="colorCloseIcon">@color/close_icon_color</item>
         <item name="colorError">@color/my_dark_error</item>
         <item name="colorOnError">@color/my_dark_on_error</item>
+        <item name="colorControlHighlight">@color/my_dark_on_surface</item>
     </style>
 </resources>

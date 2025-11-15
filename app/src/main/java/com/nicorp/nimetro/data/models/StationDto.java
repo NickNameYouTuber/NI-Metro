@@ -11,6 +11,8 @@ public class StationDto {
     private String color;
     private Facilities facilities;
     private int textPosition;
+    private Integer labelX;
+    private Integer labelY;
 
     public StationDto(int id, String name, int x, int y, String color, Facilities facilities, int textPosition) {
         this.id = id;
@@ -20,6 +22,8 @@ public class StationDto {
         this.color = color;
         this.facilities = facilities;
         this.textPosition = textPosition;
+        this.labelX = null;
+        this.labelY = null;
     }
 
     // Getters and setters
@@ -78,5 +82,21 @@ public class StationDto {
 
     public void setTextPosition(int textPosition) {
         this.textPosition = textPosition;
+    }
+
+    public Integer getLabelX() {
+        return labelX;
+    }
+
+    public void setLabelX(Integer labelX) {
+        this.labelX = labelX;
+    }
+
+    public Integer getLabelY() {
+        return labelY;
+    }
+
+    public void setLabelY(Integer labelY) {
+        this.labelY = labelY;
     }
 }

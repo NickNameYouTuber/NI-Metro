@@ -123,6 +123,10 @@ public class Line implements Parcelable {
         return lineType;
     }
 
+    public String getType() {
+        return lineType;
+    }
+
     public void setLineType(String lineType) {
         this.lineType = lineType;
     }
@@ -136,8 +140,13 @@ public class Line implements Parcelable {
     }
 
     public String getLineDisplayNumberForStation(Station station) {
-        if (stations.contains(station)) {
-            return displayNumber;
+        if (station == null) return null;
+        if (stations == null || stations.isEmpty()) return null;
+        // Сравниваем станции по id, так как объекты могут быть разными экземплярами
+        for (Station s : stations) {
+            if (s != null && s.getId() != null && s.getId().equals(station.getId())) {
+                return displayNumber;
+            }
         }
         return null;
     }

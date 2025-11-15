@@ -98,6 +98,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         currentMetroMapLayout.setOnClickListener(v -> onCurrentMetroMapClick(v));
+        
+        // Обработчик для левой кнопки (главный экран)
+        androidx.constraintlayout.widget.ConstraintLayout mainTabButton = findViewById(R.id.mainTabButton);
+        mainTabButton.setOnClickListener(v -> navigateToMainActivity());
+        
+        // Правая кнопка (настройки) - уже активна, не добавляем клик
     }
 
     /**
@@ -203,6 +209,7 @@ public class SettingsActivity extends AppCompatActivity {
         Log.d("MainActivity", "Settings button clicked");
         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
     }
 }

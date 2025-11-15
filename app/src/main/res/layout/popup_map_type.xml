@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="6dp"
+    android:background="@drawable/bg_popup_rounded">
+
+    <LinearLayout
+        android:id="@+id/row_metro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple">
+
+        <ImageView
+            android:id="@+id/icon_metro"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_metro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Метро" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_suburban"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_suburban"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_suburban"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Пригород" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_river"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_river"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_river"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Речной транспорт" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_river_tram"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_river_tram"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_river_tram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Речной трамвай" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_tram"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_tram"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_tram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Трамвай" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_monorail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_monorail"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_monorail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Монорельс" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_funicular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_funicular"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_funicular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Фуникулёр" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_gondola"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_item_ripple"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/icon_gondola"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@null"
+            android:contentDescription="icon" />
+
+        <TextView
+            android:id="@+id/title_gondola"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:text="Канатная дорога" />
+    </LinearLayout>
+
+</LinearLayout>
+

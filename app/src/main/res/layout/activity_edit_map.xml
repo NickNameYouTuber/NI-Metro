@@ -9,7 +9,41 @@
         android:id="@+id/editMetroMapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomButtons" />
+        android:layout_above="@+id/editControlsPanel" />
+
+    <LinearLayout
+        android:id="@+id/editControlsPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomButtons"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <CheckBox
+            android:id="@+id/moveStationsCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Станции" />
+
+        <CheckBox
+            android:id="@+id/moveIntermediatePointsCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Точки" />
+
+        <CheckBox
+            android:id="@+id/moveMapCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Карта" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottomButtons"

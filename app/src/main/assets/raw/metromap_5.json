@@ -1,0 +1,16 @@
+{
+  "info": {
+    "version": "1.0",
+    "author": "Nicorp",
+    "country": "Saudi Arabia",
+    "name": "Riyadh",
+    "icon": "https://static.wikia.nocookie.net/metro/images/a/aa/Riyadh_Metro_Logo.svg.png/revision/latest/scale-to-width-down/180?cb=20200215104924"
+  },
+  "metro_map": {
+    "lines": [],
+    "transfers": [],
+    "intermediatePoints": [],
+    "rivers": [],
+    "objects": []
+  }
+}

@@ -15,6 +15,7 @@ import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -26,13 +27,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
+import android.animation.ValueAnimator;
+import android.animation.Animator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,10 +106,19 @@ public class RouteInfoFragment extends Fragment {
     private Station previousStation = null;
 
     private List<Station> route;
-    private boolean isExpanded = false;
     private TextToSpeech textToSpeech;
     private TextToSpeech textToSpeechInfo;
     private AnimatedPathMapView transferMapView;
+
+    private enum State {
+        COLLAPSED,
+        INFO,
+        ROUTE,
+        TRANSFER
+    }
+    private State currentState = State.INFO;
+    private boolean isAnimating = false;
+    private boolean isShowingTransferMap = false;
 
     private TextView routeTime;
     private TextView routeStationsCount;
@@ -115,9 +127,15 @@ public class RouteInfoFragment extends Fragment {
     private TextView routeTimeTitle;
     private TextView routeStationsCountTitle;
     private TextView routeTransfersCountTitle;
+    private TextView nearestTrainsTitle;
     private LinearLayout routeDetailsContainer;
-    private LinearLayout layoutCollapsed;
-    private LinearLayout layoutExpanded;
+    private android.widget.ScrollView routeScrollView;
+    private LinearLayout layoutSummary;
+    private RecyclerView summaryNearestTrainsRV;
+    private TextView summaryRouteTime, summaryRouteStations;
+    private LinearLayout layoutInfo;
+    private LinearLayout layoutRoute;
+    private LinearLayout layoutTransfer;
     private FrameLayout routeInfoContainer;
     private MetroMapView metroMapView;
     private MainActivity mainActivity;
@@ -129,6 +147,22 @@ public class RouteInfoFragment extends Fragment {
     private boolean isTripStarted = false; // Флаг, указывающий, началась ли поездка
     private boolean isAlmostArrivedNotificationSent = false;
     private boolean isRouteActive = false;
+    private float summaryHeightPx, infoHeightPx, routeHeightPx, transferHeightPx;
+
+    // Marquee hints cycle for transfer
+    private static final long MIN_TRANSFER_HINT_INTERVAL_MS = 5000L;
+    private android.os.Handler transferHintsHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable transferHintsRunnable;
+    private java.util.List<String> currentTransferHints = new java.util.ArrayList<>();
+    private int currentTransferHintIndex = 0;
+    private View dotTop, dotMiddle, dotBottom, dotTransfer;
+    private int touchSlop;
+    private Float gestureStartY = null;
+    private Float gestureStartX = null;
+    private List<YandexRaspResponse.Segment> summaryNearestSegments = new ArrayList<>();
+    private TransferRoute currentTransferRoute;
+    private Handler transferHandler;
+    private Runnable transferCompleteRunnable;
 
     public static RouteInfoFragment newInstance(List<Station> route, MetroMapView metroMapView, MainActivity mainActivity) {
         RouteInfoFragment fragment = new RouteInfoFragment();
@@ -144,6 +178,8 @@ public class RouteInfoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initTextToSpeech();
+        // Инициализируем Handler
+        transferHandler = new Handler(Looper.getMainLooper());
         if (getArguments() != null) {
             Route routeParcelable = getArguments().getParcelable(ARG_ROUTE);
             if (routeParcelable != null) {
@@ -173,6 +209,8 @@ public class RouteInfoFragment extends Fragment {
         int colorOnSurface = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
         initializeViews(view, colorOnSurface);
+
+        touchSlop = android.view.ViewConfiguration.get(requireContext()).getScaledTouchSlop();
         setViewColors(colorOnSurface);
         try {
             calculateAndSetRouteStatistics();
@@ -180,7 +218,47 @@ public class RouteInfoFragment extends Fragment {
             throw new RuntimeException(e);
         }
         setupCloseButton(view);
-        setupSwipeGestureDetector(view);
+        setupStateChangeGestures();
+
+        view.post(() -> {
+            calculateHeights();
+            transitionToState(State.INFO, false);
+        });
+
+        if (routeScrollView != null) {
+            routeScrollView.setOnTouchListener((v, event) -> {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        gestureStartY = event.getRawY();
+                        gestureStartX = event.getRawX();
+                        return false;
+                    case MotionEvent.ACTION_MOVE: {
+                        if (gestureStartY == null || gestureStartX == null) return false;
+                        float dy = event.getRawY() - gestureStartY;
+                        float dx = event.getRawX() - gestureStartX;
+                        if (currentState == State.ROUTE && dy > touchSlop && Math.abs(dy) > Math.abs(dx) && isRouteListAtTop()) {
+                            transitionToState(State.INFO, true);
+                            gestureStartY = null;
+                            gestureStartX = null;
+                            return true;
+                        }
+                        if (currentState == State.ROUTE && dy < -touchSlop && Math.abs(dy) > Math.abs(dx) && isRouteListAtBottom() && currentTransferRoute != null) {
+                            transitionToState(State.TRANSFER, true);
+                            gestureStartY = null;
+                            gestureStartX = null;
+                            return true;
+                        }
+                        return false;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        gestureStartY = null;
+                        gestureStartX = null;
+                        return false;
+                }
+                return false;
+            });
+        }
 
         calculateTotalCost(route, cost -> {
             routeCost.setText(String.format("%.2f руб.", cost));
@@ -196,6 +274,36 @@ public class RouteInfoFragment extends Fragment {
         return view;
     }
 
+    private void calculateHeights() {
+        // Force measure pass for all layouts
+        int measureSpec = View.MeasureSpec.makeMeasureSpec(routeInfoContainer.getWidth() - routeInfoContainer.getPaddingLeft() - routeInfoContainer.getPaddingRight(), View.MeasureSpec.AT_MOST);
+        layoutSummary.measure(measureSpec, View.MeasureSpec.UNSPECIFIED);
+        layoutInfo.measure(measureSpec, View.MeasureSpec.UNSPECIFIED);
+        layoutRoute.measure(measureSpec, View.MeasureSpec.UNSPECIFIED);
+
+        int titleAndCloseHeight = 0;
+        View titleView = getView().findViewById(R.id.routeTitle);
+        if (titleView != null) {
+            titleAndCloseHeight = titleView.getHeight();
+        }
+
+        int padding = (int) (16 * getResources().getDisplayMetrics().density * 2);
+
+        summaryHeightPx = layoutSummary.getMeasuredHeight() + titleAndCloseHeight + padding;
+        infoHeightPx = layoutInfo.getMeasuredHeight() + titleAndCloseHeight + padding;
+        routeHeightPx = layoutRoute.getMeasuredHeight() + titleAndCloseHeight + padding;
+        if (layoutTransfer != null) {
+            layoutTransfer.measure(measureSpec, View.MeasureSpec.UNSPECIFIED);
+            transferHeightPx = layoutTransfer.getMeasuredHeight() + titleAndCloseHeight + padding;
+        }
+
+        float density = getResources().getDisplayMetrics().density;
+        if (routeHeightPx > 500 * density) {
+            routeHeightPx = 500 * density;
+        }
+    }
+
+
     private void startRouteTracking() {
         if (isRouteActive) return; // Уже активно
         if (route != null && !route.isEmpty()) {
@@ -209,6 +317,7 @@ public class RouteInfoFragment extends Fragment {
             Intent serviceIntent = new Intent(requireContext(), StationTrackingService.class);
             serviceIntent.putParcelableArrayListExtra("route", new ArrayList<>(route));
             serviceIntent.putParcelableArrayListExtra("lines", new ArrayList<>(mainActivity.getAllLines())); // Передаем линии
+            serviceIntent.putParcelableArrayListExtra("transfers", new ArrayList<>(mainActivity.getAllTransfers()));
             serviceIntent.putExtra("currentStation", route.get(0)); // Передаем начальную станцию
             requireContext().startService(serviceIntent);
 
@@ -272,16 +381,24 @@ public class RouteInfoFragment extends Fragment {
             }
             if (intent != null && intent.hasExtra("currentStation")) {
                 Station currentStation = intent.getParcelableExtra("currentStation");
-                Log.d("RouteInfoFragment", "Current station from broadcast: " + currentStation.getName());
-                Log.d("RouteInfoFragment", "Current station index from broadcast: " + route.indexOf(currentStation));
+                Log.d("RouteInfoFragment", "Current station from broadcast: " + currentStation.getName() + " (" + currentStation.getId() + ")");
+                
+                // Найдем индекс станции в маршруте
+                int routeIndex = -1;
                 for (int i = 0; i < route.size(); i++) {
                     if (route.get(i).getId().equals(currentStation.getId())) {
+                        routeIndex = i;
                         updateRouteDisplay(i);
                         break;
                     }
                 }
-                if (currentStation != null) {
-                    updateRouteDisplay(route.indexOf(currentStation));
+                
+                Log.d("RouteInfoFragment", "Current station index in route: " + routeIndex);
+                Log.d("RouteInfoFragment", "Route size: " + route.size());
+                
+                // Обрабатываем переходы
+                if (currentStation != null && routeIndex >= 0) {
+                    handleTransfer(currentStation);
                 }
             }
         }
@@ -302,6 +419,7 @@ public class RouteInfoFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (transferHintsRunnable != null) transferHintsHandler.removeCallbacks(transferHintsRunnable);
         if (getContext() != null) {
             getContext().unregisterReceiver(stationUpdateReceiver);
         }
@@ -357,6 +475,16 @@ public class RouteInfoFragment extends Fragment {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+        
+        // Очищаем Handler и Runnable
+        if (transferHandler != null) {
+            if (transferCompleteRunnable != null) {
+                transferHandler.removeCallbacks(transferCompleteRunnable);
+                transferCompleteRunnable = null;
+            }
+            transferHandler = null;
+        }
+        
         super.onDestroy();
         stopLocationTracking();
     }
@@ -622,13 +750,16 @@ public class RouteInfoFragment extends Fragment {
                 transferMapView.setDashIntervals(50f, 30f);
                 transferMapView.setAnimationDuration(1000); // 1 секунда на цикл
 
+                isShowingTransferMap = true;
                 transferMapView.setVisibility(View.VISIBLE);
 
-                // Скрываем группу элементов "Время", "Станций" и т.д.
+                // Скрываем все остальные элементы интерфейса
                 LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
-                if (routeInfoGroup != null) {
-                    routeInfoGroup.setVisibility(View.GONE);
-                }
+                if (routeInfoGroup != null) routeInfoGroup.setVisibility(View.GONE);
+                if (tripInfoGroup != null) tripInfoGroup.setVisibility(View.GONE);
+                if (layoutSummary != null) layoutSummary.setVisibility(View.GONE);
+                if (layoutInfo != null) layoutInfo.setVisibility(View.GONE);
+                if (layoutRoute != null) layoutRoute.setVisibility(View.GONE);
             }
         });
     }
@@ -638,12 +769,30 @@ public class RouteInfoFragment extends Fragment {
 
         getActivity().runOnUiThread(() -> {
             if (transferMapView != null) {
+                Log.d("RouteInfoFragment", "Hiding transfer map");
                 transferMapView.setVisibility(View.GONE);
+                isShowingTransferMap = false;
+                
+                // Очищаем таймер
+                if (transferHandler != null && transferCompleteRunnable != null) {
+                    transferHandler.removeCallbacks(transferCompleteRunnable);
+                    transferCompleteRunnable = null;
+                }
 
-                // Показываем группу элементов "Время", "Станций" и т.д.
-                LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
-                if (routeInfoGroup != null) {
-                    routeInfoGroup.setVisibility(View.VISIBLE);
+                // Скрываем layout перехода
+                if (layoutTransfer != null) {
+                    layoutTransfer.setVisibility(View.GONE);
+                }
+
+                // НЕ восстанавливаем все элементы интерфейса здесь - это делает transitionToState
+                // Только очищаем состояние перехода
+                currentTransferRoute = null;
+                
+                // Принудительно обновляем лейаут
+                if (routeInfoContainer != null) {
+                    calculateHeights();
+                    routeInfoContainer.requestLayout();
+                    routeInfoContainer.invalidate();
                 }
             }
         });
@@ -664,6 +813,7 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void updateRouteDisplay(int currentStationIndex) {
+        if (isShowingTransferMap) return;
         if (currentStationIndex < 0 || currentStationIndex >= route.size()) {
             return;
         }
@@ -678,6 +828,9 @@ public class RouteInfoFragment extends Fragment {
 
         // Обновляем информацию в tripInfoGroup
         updateTripInfoGroup(currentStationIndex);
+
+        // После обновления содержимого пересчитаем высоты, чтобы исключить «сжатие» при возврате
+        routeInfoContainer.post(this::calculateHeights);
     }
 
     private void updateTripInfoGroup(int currentStationIndex) {
@@ -698,11 +851,69 @@ public class RouteInfoFragment extends Fragment {
                 if (tripNextStationValue != null) {
                     tripNextStationValue.setText(nextStation.getName());
                 }
+                // Подсказка о пересадке (динамически)
+                TextView transferHint = getView().findViewById(R.id.tripTransferHint);
+                if (transferHint != null) {
+                    Line curLine = getLineForStation(currentStation);
+                    Line nextLine = getLineForStation(nextStation);
+                    boolean isTransfer = (curLine != null && nextLine != null && curLine != nextLine && !curLine.getId().equals(nextLine.getId()));
+                    if (isTransfer) {
+                        String nextLineName = nextLine.getName() != null ? nextLine.getName() : ("Линия " + nextLine.getdisplayNumber());
+                        String dir = "";
+                        if (currentStationIndex + 2 < route.size()) {
+                            Station afterNext = route.get(currentStationIndex + 2);
+                            dir = " в сторону \"" + afterNext.getName() + "\"";
+                        }
+                        // Подготовим 6 вариантов советов и запустим цикл показа
+                        currentTransferHints.clear();
+                        currentTransferHintIndex = 0;
+                        String base = "Пересадка на " + nextLineName + dir + ". ";
+                        currentTransferHints.add(base + "Держитесь правее, удобнее из головного вагона.");
+                        currentTransferHints.add(base + "Двери откроются справа. Готовьтесь к выходу.");
+                        currentTransferHints.add(base + String.format("До конца маршрута ~%d мин.", calculateTotalTime(route.subList(currentStationIndex, route.size()))));
+                        currentTransferHints.add(base + "Для быстрого выхода используйте выход №1 или №2.");
+                        currentTransferHints.add(base + "Есть лифт/эскалатор на пересадке: ориентируйтесь по указателям.");
+                        currentTransferHints.add(base + "Не задерживайтесь у дверей, проходите к центру платформы.");
+
+                        transferHint.setSelected(true); // для marquee
+                        transferHint.setVisibility(View.VISIBLE);
+                        long hintInterval = calculateHintIntervalMs(currentStation, nextStation, currentTransferHints.size());
+
+                        if (transferHintsRunnable != null) transferHintsHandler.removeCallbacks(transferHintsRunnable);
+                        if (!currentTransferHints.isEmpty()) {
+                            transferHint.setText(currentTransferHints.get(0));
+                            currentTransferHintIndex = 1;
+                            final long finalHintInterval = hintInterval;
+                            transferHintsRunnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (getView() == null) {
+                                        return;
+                                    }
+                                    if (currentTransferHints.isEmpty()) {
+                                        transferHint.setVisibility(View.GONE);
+                                        return;
+                                    }
+                                    String text = currentTransferHints.get(currentTransferHintIndex % currentTransferHints.size());
+                                    transferHint.setText(text);
+                                    currentTransferHintIndex++;
+                                    transferHintsHandler.postDelayed(this, finalHintInterval);
+                                }
+                            };
+                            transferHintsHandler.postDelayed(transferHintsRunnable, hintInterval);
+                        }
+                    } else {
+                        transferHint.setVisibility(View.GONE);
+                        if (transferHintsRunnable != null) transferHintsHandler.removeCallbacks(transferHintsRunnable);
+                    }
+                }
             } else {
                 TextView tripNextStationValue = getView().findViewById(R.id.tripNextStationValue);
                 if (tripNextStationValue != null) {
                     tripNextStationValue.setText("Конечная станция");
                 }
+                TextView transferHint = getView().findViewById(R.id.tripTransferHint);
+                if (transferHint != null) transferHint.setVisibility(View.GONE);
             }
 
             // Время до конца маршрута
@@ -712,6 +923,41 @@ public class RouteInfoFragment extends Fragment {
                 tripRemainingTimeValue.setText(String.format("%d мин", remainingTime));
             }
         });
+    }
+
+    private long calculateHintIntervalMs(Station currentStation, Station nextStation, int hintsCount) {
+        if (hintsCount <= 0) {
+            return MIN_TRANSFER_HINT_INTERVAL_MS;
+        }
+        long segmentDuration = calculateSegmentDurationMs(currentStation, nextStation);
+        long interval = segmentDuration / hintsCount;
+        return Math.max(MIN_TRANSFER_HINT_INTERVAL_MS, interval);
+    }
+
+    private long calculateSegmentDurationMs(Station currentStation, Station nextStation) {
+        if (currentStation == null || nextStation == null) {
+            return TimeUnit.MINUTES.toMillis(1);
+        }
+
+        List<Station.Neighbor> neighbors = currentStation.getNeighbors();
+        if (neighbors != null) {
+            for (Station.Neighbor neighbor : neighbors) {
+                Station neighborStation = neighbor.getStation();
+                if (neighborStation != null && nextStation.getId().equals(neighborStation.getId())) {
+                    int minutes = neighbor.getTime();
+                    if (minutes > 0) {
+                        return TimeUnit.MINUTES.toMillis(minutes);
+                    }
+                }
+            }
+        }
+
+        Transfer transfer = findTransferBetweenStations(currentStation, nextStation);
+        if (transfer != null && transfer.getTime() > 0) {
+            return TimeUnit.MINUTES.toMillis(transfer.getTime());
+        }
+
+        return TimeUnit.MINUTES.toMillis(1);
     }
 
     private void updateRouteInfo(List<Station> remainingRoute) {
@@ -735,7 +981,7 @@ public class RouteInfoFragment extends Fragment {
         });
 
         // Обновляем список станций в интерфейсе
-        populateRouteDetails(routeDetailsContainer, remainingRoute);
+        populateRouteDetails(routeDetailsContainer);
     }
 
     private int calculateTransfersCount(List<Station> route) {
@@ -769,45 +1015,50 @@ public class RouteInfoFragment extends Fragment {
             container.removeAllViews();
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            for (int i = 0; i < route.size(); i++) {
-                Station station = route.get(i);
-                Line line = getLineForStation(station);
+            int idx = 0;
+            while (idx < route.size()) {
+                Line curLine = getLineForStation(route.get(idx));
+                int end = idx;
+                while (end + 1 < route.size() && getLineForStation(route.get(end + 1)) == curLine) end++;
 
-                View stationView = inflater.inflate(R.layout.item_route_station, container, false);
-                TextView stationName = stationView.findViewById(R.id.stationName);
-                View stationIndicator = stationView.findViewById(R.id.stationIndicator);
-                View stationIndicatorDouble = stationView.findViewById(R.id.stationIndicatorDouble);
-                RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
+                int edges = Math.max(0, end - idx);
+                int blockMinutes = edges * 2;
 
-                stationName.setText(station.getName());
-                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
+                // Блок ЛИНИИ
+                View lineBlock = inflater.inflate(R.layout.item_route_line, container, false);
+                TextView lineBlockTime = lineBlock.findViewById(R.id.lineBlockTime);
+                View indPrimary = lineBlock.findViewById(R.id.lineBlockIndicatorPrimary);
+                View indGap = lineBlock.findViewById(R.id.lineBlockIndicatorGap);
+                View indSecondary = lineBlock.findViewById(R.id.lineBlockIndicatorSecondary);
+                LinearLayout stationsContainer = lineBlock.findViewById(R.id.lineBlockStationsContainer);
 
-                if (nearestTrainsRV != null) {
-                    nearestTrainsRV.setVisibility(View.GONE);
+                lineBlockTime.setText(blockMinutes > 0 ? String.valueOf(blockMinutes) : "");
+                int c = Color.parseColor(route.get(idx).getColor());
+                indPrimary.setBackgroundColor(c);
+                if ("double".equals(curLine.getLineType())) {
+                    indGap.setVisibility(View.VISIBLE);
+                    indSecondary.setVisibility(View.VISIBLE);
+                    indSecondary.setBackgroundColor(c);
+                } else {
+                    indGap.setVisibility(View.INVISIBLE);
+                    indSecondary.setVisibility(View.INVISIBLE);
                 }
 
-                if (isLineDouble(station)) {
-                    stationIndicatorDouble.setVisibility(View.VISIBLE);
-                    stationIndicatorDouble.setBackgroundColor(Color.parseColor(station.getColor()));
+                for (int s = idx; s <= end; s++) {
+                    TextView name = new TextView(getContext());
+                    name.setText(route.get(s).getName());
+                    // Use themed color for text based on current theme
+                    TypedValue tv = new TypedValue();
+                    requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnBackground, tv, true);
+                    name.setTextColor(tv.data);
+                    name.setTextSize(16);
+                    name.setPadding(0, (s==idx?0:4), 0, 0);
+                    stationsContainer.addView(name);
                 }
+                container.addView(lineBlock);
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(0, 0, 0, 0);
-                stationView.setLayoutParams(params);
-
-                if (i == 0 || i == route.size() - 1) {
-                    stationName.setTypeface(null, Typeface.BOLD);
-                }
-
-                String tag = station.getName() + "|" + line.getTariff().getName();
-                stationView.setTag(tag);
-
-                container.addView(stationView);
-
-                if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
+                // Переход (если есть после блока)
+                if (end < route.size() - 1) {
                     View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
                     LinearLayout.LayoutParams transferParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -815,8 +1066,14 @@ public class RouteInfoFragment extends Fragment {
                     );
                     transferParams.setMargins(0, 8, 0, 8);
                     transferView.setLayoutParams(transferParams);
+                    TextView transferTime = transferView.findViewById(R.id.transferTime);
+                    Transfer tr = findTransferBetweenStations(route.get(end), route.get(end + 1));
+                    int tMin = tr != null ? Math.max(1, tr.getTime()) : 3;
+                    transferTime.setText(String.valueOf(tMin));
                     container.addView(transferView);
                 }
+
+                idx = end + 1;
             }
 
             container.requestLayout();
@@ -846,11 +1103,34 @@ public class RouteInfoFragment extends Fragment {
         routeTimeTitle = view.findViewById(R.id.routeTimeTitle);
         routeStationsCountTitle = view.findViewById(R.id.routeStationsTitle);
         routeTransfersCountTitle = view.findViewById(R.id.routeTransfersTitle);
+        nearestTrainsTitle = view.findViewById(R.id.nearestTrainsTitle);
         routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
-        layoutCollapsed = view.findViewById(R.id.layoutCollapsed);
-        layoutExpanded = view.findViewById(R.id.layoutExpanded);
+        routeScrollView = view.findViewById(R.id.routeScrollView);
+        layoutSummary = view.findViewById(R.id.layoutSummary);
+        summaryNearestTrainsRV = view.findViewById(R.id.summaryNearestTrainsRV);
+        summaryRouteTime = view.findViewById(R.id.summaryRouteTime);
+        summaryRouteStations = view.findViewById(R.id.summaryRouteStations);
+        layoutInfo = view.findViewById(R.id.layoutInfo);
+        layoutRoute = view.findViewById(R.id.layoutRoute);
+        layoutTransfer = view.findViewById(R.id.layoutTransfer);
         routeInfoContainer = view.findViewById(R.id.routeInfoContainer);
         routeCost = view.findViewById(R.id.routeCost);
+        dotTop = view.findViewById(R.id.dotTop);
+        dotMiddle = view.findViewById(R.id.dotMiddle);
+        dotBottom = view.findViewById(R.id.dotBottom);
+        dotTransfer = view.findViewById(R.id.dotTransfer);
+
+        // По умолчанию скрываем блок "Ближайшие поезда"
+        if (nearestTrainsRecyclerView != null) {
+            nearestTrainsRecyclerView.setVisibility(View.GONE);
+        }
+        if (nearestTrainsTitle != null) {
+            nearestTrainsTitle.setVisibility(View.GONE);
+        }
+        if (summaryNearestTrainsRV != null) {
+            summaryNearestTrainsRV.setVisibility(View.GONE);
+            summaryNearestTrainsRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        }
     }
 
     private void setViewColors(int colorOnSurface) {
@@ -861,6 +1141,11 @@ public class RouteInfoFragment extends Fragment {
         routeTimeTitle.setTextColor(colorOnSurface);
         routeStationsCountTitle.setTextColor(colorOnSurface);
         routeTransfersCountTitle.setTextColor(colorOnSurface);
+        summaryRouteTime.setTextColor(colorOnSurface);
+        summaryRouteStations.setTextColor(colorOnSurface);
+        if (nearestTrainsTitle != null) {
+            nearestTrainsTitle.setTextColor(colorOnSurface);
+        }
     }
 
     private void calculateAndSetRouteStatistics() throws JSONException {
@@ -869,9 +1154,14 @@ public class RouteInfoFragment extends Fragment {
             int stationsCount = route.size();
             int transfersCount = calculateTransfersCount();
 
-            routeTime.setText(String.format("%d мин", totalTime));
-            routeStationsCount.setText(String.format("%d", stationsCount));
+            String timeText = String.format("%d мин", totalTime);
+            String stationsText = String.format("%d ст.", stationsCount);
+            routeTime.setText(timeText);
+            routeStationsCount.setText(String.valueOf(stationsCount));
             routeTransfersCount.setText(String.format("%d", transfersCount));
+
+            summaryRouteTime.setText(timeText);
+            summaryRouteStations.setText(stationsText);
 
             populateRouteDetails(routeDetailsContainer);
         }
@@ -930,10 +1220,14 @@ public class RouteInfoFragment extends Fragment {
 
     public Line getLineForStation(Station station) {
         for (Line line : mainActivity.getAllLines()) {
-            if (line.getStations().contains(station)) {
+            for (Station lineStation : line.getStations()) {
+                if (lineStation.getId().equals(station.getId())) {
+                    Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + "): " + line.getName());
                 return line;
             }
         }
+        }
+        Log.d("RouteUpdate", "No line found for station " + station.getName() + " (" + station.getId() + ")");
         return null;
     }
 
@@ -945,26 +1239,86 @@ public class RouteInfoFragment extends Fragment {
         });
     }
 
-    private void setupSwipeGestureDetector(View view) {
-        GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (Math.abs(velocityY) > Math.abs(velocityX)) {
-                    if (velocityY > 0) {
-                        if (isExpanded) {
-                            collapse();
-                        }
-                    } else {
-                        if (!isExpanded) {
-                            expand();
-                        }
-                    }
-                }
-                return super.onFling(e1, e2, velocityX, velocityY);
-            }
-        });
+    private void setupStateChangeGestures() {
+        routeInfoContainer.setOnTouchListener((v, event) -> {
+            if (isAnimating) return true;
 
-        routeInfoContainer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    gestureStartY = event.getRawY();
+                    gestureStartX = event.getRawX();
+                    return true;
+
+                case MotionEvent.ACTION_MOVE:
+                    if (gestureStartY == null || gestureStartX == null) break;
+
+                    float deltaY = event.getRawY() - gestureStartY;
+                    float deltaX = event.getRawX() - gestureStartX;
+
+                    if (Math.abs(deltaY) < touchSlop || Math.abs(deltaY) < Math.abs(deltaX)) {
+                        break;
+                    }
+
+                    // Handle swipe
+                    if (deltaY < 0) { // Swipe Up
+                        handleSwipeUp();
+                    } else { // Swipe Down
+                        handleSwipeDown();
+                    }
+                    gestureStartY = null;
+                    gestureStartX = null;
+                    return true;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    gestureStartY = null;
+                    gestureStartX = null;
+                    break;
+            }
+            return false;
+        });
+    }
+
+    private void handleSwipeUp() {
+        if (currentState == State.COLLAPSED) {
+            transitionToState(State.INFO, true);
+        } else if (currentState == State.INFO) {
+            transitionToState(State.ROUTE, true);
+        } else if (currentState == State.ROUTE) {
+            if (isRouteListAtBottom() && currentTransferRoute != null) {
+                // Убедимся, что transferMapView настроен, если мы вошли в ROUTE до анимации
+                if (layoutTransfer != null && layoutTransfer.getVisibility() != View.VISIBLE) {
+                    layoutSummary.setVisibility(View.GONE);
+                    layoutInfo.setVisibility(View.GONE);
+                    layoutRoute.setVisibility(View.GONE);
+                    layoutTransfer.setVisibility(View.VISIBLE);
+                }
+                transitionToState(State.TRANSFER, true);
+            }
+        } else if (currentState == State.TRANSFER) {
+            // Конечное состояние вверх — остаемся в TRANSFER
+        }
+    }
+
+    private void handleSwipeDown() {
+        if (currentState == State.TRANSFER) {
+            transitionToState(State.ROUTE, true);
+        } else if (currentState == State.INFO) {
+            transitionToState(State.COLLAPSED, true);
+        } else if (currentState == State.ROUTE && isRouteListAtTop()) {
+            transitionToState(State.INFO, true);
+        }
+    }
+
+
+    private boolean isRouteListAtTop() {
+        if (routeScrollView == null) return true;
+        return !routeScrollView.canScrollVertically(-1);
+    }
+
+    private boolean isRouteListAtBottom() {
+        if (routeScrollView == null) return true;
+        return !routeScrollView.canScrollVertically(1);
     }
 
     private void dismiss() {
@@ -1000,17 +1354,28 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private Station findTransferStation(List<Station> route, Station currentStation) {
-        int currentIndex = route.indexOf(currentStation);
+        // Ищем индекс по ID, а не по equals()
+        int currentIndex = -1;
+        for (int i = 0; i < route.size(); i++) {
+            if (route.get(i).getId().equals(currentStation.getId())) {
+                currentIndex = i;
+                break;
+            }
+        }
+        
+        Log.d("RouteUpdate", "Current station ID: " + currentStation.getId() + " found at index: " + currentIndex);
+        
         if (currentIndex == -1 || currentIndex >= route.size() - 1) {
             return null; // Текущая станция не найдена или это последняя станция
         }
 
         Line currentLine = getLineForStation(currentStation);
         Line nextLine = getLineForStation(route.get(currentIndex + 1));
-        Log.d("RouteUpdate", "Current line: " + currentLine + ", next line: " + nextLine);
+        Log.d("RouteUpdate", "Current line: " + (currentLine != null ? currentLine.getName() : "null") + 
+               ", next line: " + (nextLine != null ? nextLine.getName() : "null"));
 
         if (currentLine != null && nextLine != null && currentLine != nextLine) {
-            Log.d("RouteUpdate", "Found transfer station: " + route.get(currentIndex + 1));
+            Log.d("RouteUpdate", "Found transfer station: " + route.get(currentIndex + 1).getName() + " (" + route.get(currentIndex + 1).getId() + ")");
             return route.get(currentIndex + 1);
         }
 
@@ -1025,76 +1390,68 @@ public class RouteInfoFragment extends Fragment {
         // Находим следующую станцию пересадки
         Station nextTransferStation = findTransferStation(route, currentStation);
         if (nextTransferStation != null) {
-            // Находим индекс текущей станции
-            int currentIndex = route.indexOf(currentStation);
-            int transferIndex = route.indexOf(nextTransferStation);
+            // Находим индекс текущей станции по ID
+            int currentIndex = -1;
+            for (int i = 0; i < route.size(); i++) {
+                if (route.get(i).getId().equals(currentStation.getId())) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+            
+            // Находим индекс станции пересадки по ID
+            int transferIndex = -1;
+            for (int i = 0; i < route.size(); i++) {
+                if (route.get(i).getId().equals(nextTransferStation.getId())) {
+                    transferIndex = i;
+                    break;
+                }
+            }
+            
+            Log.d("RouteInfoFragment", "Current index: " + currentIndex + ", transfer index: " + transferIndex);
 
             // Если текущая станция - это станция пересадки
             if (currentIndex == transferIndex - 1) {
                 // Получаем предыдущую станцию из маршрута
                 Log.d("RouteInfoFragment", "Current station: " + currentStation.getName());
                 Station prevStation = (currentIndex > 0) ? route.get(currentIndex - 1) : null;
-//                Log.d("RouteInfoFragment", "Previous station: " + Objects.requireNonNull(prevStation).getName());
-
-                // Обновляем текущую станцию на следующую (первую станцию новой линии)
-                currentStationIndex = transferIndex;
-                previousStation = nextTransferStation;
 
                 Transfer transfer = findTransferBetweenStations(currentStation, nextTransferStation);
                 if (transfer != null) {
+                    Log.d("RouteInfoFragment", "Transfer found! Current: " + currentStation.getName() + " (" + currentStation.getId() + ")");
+                    Log.d("RouteInfoFragment", "Next transfer: " + nextTransferStation.getName() + " (" + nextTransferStation.getId() + ")");
+                    Log.d("RouteInfoFragment", "Prev station: " + (prevStation != null ? prevStation.getName() + " (" + prevStation.getId() + ")" : "null"));
+                    
                     // Передаем предыдущую станцию в getTransferRoute
                     TransferRoute transferRoute = transfer.getTransferRoute(prevStation, currentStation, nextTransferStation);
                     if (transferRoute != null && transferRoute.getTransferMap() != null) {
-                        Log.d("RouteInfoFragment", "Transfer found between " + transfer.getStations().get(0));
-                        // Отображаем карту перехода
-                        displayTransferMap(transferRoute);
-                    }
-                }
-
-                // Обновляем отображение маршрута
-                updateRouteDisplay(currentStationIndex);
-
-                // Оповещаем пользователя о переходе
-                String transferMessage = "Перейдите на станцию " + nextTransferStation.getName() + " " + Objects.requireNonNull(getLineForStation(nextTransferStation)).getName().replace("линия", "линии");
-                if (textToSpeech != null) {
-                    textToSpeech.speak(transferMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_notification");
-                }
-
-                // Ожидание пока текст перехода говорится
-                if (textToSpeech != null) {
-                    textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                        @Override
-                        public void onStart(String utteranceId) {
-                            // Текст перехода начал говориться
-                        }
-
-                        @Override
-                        public void onDone(String utteranceId) {
-                            // Получаем текст перехода
-                            Transfer transfer = findTransferBetweenStations(currentStation, nextTransferStation);
-                            String transferMessage = transfer != null
-                                    ? transfer.getTransitionText(currentStation, nextTransferStation)
-                                    : "Переход недоступен.";
-
-                            // Оповещаем пользователя о переходе
-                            if (textToSpeechInfo != null) {
-                                textToSpeechInfo.speak(transferMessage, TextToSpeech.QUEUE_FLUSH, null, "transfer_notification");
+                        Log.d("RouteInfoFragment", "TransferRoute found! Map: " + transferRoute.getTransferMap());
+                        Log.d("RouteInfoFragment", "Route from: " + transferRoute.getFrom() + " to: " + transferRoute.getTo() + " prev: " + transferRoute.getPrev());
+                        // Отображаем карту перехода БЕЗ автоматического перехода на следующую станцию
+                        currentTransferRoute = transferRoute;
+                        displayTransferMap(transferRoute, transfer);
+                        return; // Выходим из функции, не обновляя индекс станции
+                    } else {
+                        Log.d("RouteInfoFragment", "TransferRoute NOT found or no transfer_map");
+                        if (transferRoute == null) {
+                            Log.d("RouteInfoFragment", "transferRoute is null");
+                            
+                            // ВРЕМЕННОЕ РЕШЕНИЕ: создаём тестовый TransferRoute для Китая-города
+                            if (currentStation.getId().equals("METRO_712") && nextTransferStation.getId().equals("METRO_610")) {
+                                Log.d("RouteInfoFragment", "Creating test transfer route for China Town");
+                                List<String> testWay = Arrays.asList("600:400", "600:800");
+                                TransferRoute testRoute = new TransferRoute("cross_2_2", "METRO_712", "METRO_610", testWay, "METRO_713", "METRO_611");
+                                // Создаем тестовый Transfer с временем 3 секунды
+                                Transfer testTransfer = new Transfer(Arrays.asList(currentStation, nextTransferStation), 3, "default", "cross_2_2", null);
+                                displayTransferMap(testRoute, testTransfer);
+                                return; // Выходим из функции, не обновляя индекс станции
                             }
+                        } else if (transferRoute.getTransferMap() == null) {
+                            Log.d("RouteInfoFragment", "transferRoute.getTransferMap() is null");
                         }
-
-                        @Override
-                        public void onError(String utteranceId) {
-                            // Ошибка при говорении текста перехода
-                        }
-                    });
-                }
-
-                // Отправляем уведомление о переходе
-                sendTransferNotification(transferMessage);
-
-                // Обновляем позицию пользователя на карте
-                if (metroMapView != null) {
-                    metroMapView.updateUserPosition(nextTransferStation);
+                    }
+                } else {
+                    Log.d("RouteInfoFragment", "Transfer NOT found between stations");
                 }
             }
         }
@@ -1104,6 +1461,9 @@ public class RouteInfoFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (isRouteActive) {
+                if (route != null && !route.isEmpty()) {
+                    updateRouteDisplay(route.size() - 1);
+                }
                 stopRouteTracking();
                 showRouteCompletion(); // Показываем уведомление о завершении маршрута
                 dismiss(); // Закрываем фрагмент
@@ -1124,7 +1484,10 @@ public class RouteInfoFragment extends Fragment {
             TextView completionMessage = new TextView(getContext());
             completionMessage.setText("Вы прибыли в конечную точку маршрута");
             completionMessage.setTextSize(18);
-            completionMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.textPrimary));
+            // Themed text color for completion message
+            TypedValue tv2 = new TypedValue();
+            requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnBackground, tv2, true);
+            completionMessage.setTextColor(tv2.data);
             completionMessage.setGravity(Gravity.CENTER);
 
             // Добавляем сообщение в layout
@@ -1151,33 +1514,113 @@ public class RouteInfoFragment extends Fragment {
         }
     }
 
-    private void displayTransferMap(TransferRoute transferRoute) {
+    private void displayTransferMap(TransferRoute transferRoute, Transfer transfer) {
         if (getActivity() == null) return;
 
         getActivity().runOnUiThread(() -> {
             if (transferMapView != null) {
+                Log.d("RouteInfoFragment", "Displaying transfer map for route: " + transferRoute.getTransferMap());
+                
+                // Переходим в состояние TRANSFER и показываем четвёртую точку
+                if (layoutTransfer != null) {
+                    layoutSummary.setVisibility(View.GONE);
+                    layoutInfo.setVisibility(View.GONE);
+                    layoutRoute.setVisibility(View.GONE);
+                    layoutTransfer.setVisibility(View.VISIBLE);
+                    currentState = State.TRANSFER;
+                    if (dotTransfer != null) dotTransfer.setVisibility(View.VISIBLE);
+                    updateDots();
+                    updateTitle();
+                }
+
+                isShowingTransferMap = true;
+
+                // Показываем transferMapView и принудительно обновляем лейаут
+                transferMapView.setVisibility(View.VISIBLE);
+                transferMapView.bringToFront();
+                
+                // Принудительно устанавливаем размер контейнера
+                if (routeInfoContainer != null) {
+                    routeInfoContainer.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    routeInfoContainer.requestLayout();
+                    routeInfoContainer.invalidate();
+                }
+
+                // Ждем завершения лейаута перед установкой анимации
+                transferMapView.post(() -> {
                 // Показываем карту перехода
-                transferMapView.setSvgDrawable(getDrawableResource(transferRoute.getTransferMap())); // Замените на ваш метод получения ресурса
+                    transferMapView.setSvgDrawable(getDrawableResource(transferRoute.getTransferMap()));
 
                 // Устанавливаем точки для анимации пути
-                List<PointF> points = getTransferPathPoints(transferRoute.getWay()); // Метод для получения точек пути
+                    List<PointF> points = getTransferPathPoints(transferRoute.getWay());
                 transferMapView.setPath(points);
 
                 // Настраиваем внешний вид анимации
                 transferMapView.setPathColor(Color.BLUE);
                 transferMapView.setStrokeWidth(10f);
                 transferMapView.setDashIntervals(50f, 30f);
-                transferMapView.setAnimationDuration(1000); // 1 секунда на цикл
+                    transferMapView.setAnimationDuration(1000);
 
-                transferMapView.setVisibility(View.VISIBLE);
+                    // Принудительно обновляем отображение
+                    transferMapView.invalidate();
+                    transferMapView.requestLayout();
+                    
+                    Log.d("RouteInfoFragment", "Transfer map setup completed");
+                });
 
-                // Скрываем группу элементов "Время", "Станций" и т.д.
-                LinearLayout routeInfoGroup = getView().findViewById(R.id.routeInfoGroup);
-                if (routeInfoGroup != null) {
-                    routeInfoGroup.setVisibility(View.GONE);
+                // Настраиваем автоматическое завершение перехода
+                if (transferHandler != null && transferCompleteRunnable != null) {
+                    transferHandler.removeCallbacks(transferCompleteRunnable);
+                }
+                transferCompleteRunnable = () -> {
+                    Log.d("RouteInfoFragment", "Transfer completed, moving to next station");
+                    completeTransfer();
+                };
+                // Время перехода из самого объекта Transfer (в минутах, переводим в миллисекунды)
+                int transferTimeMs = transfer.getTime() * 60 * 1000;
+                Log.d("RouteInfoFragment", "Transfer time: " + transfer.getTime() + " seconds");
+                if (transferHandler != null) {
+                    transferHandler.postDelayed(transferCompleteRunnable, transferTimeMs);
                 }
             }
         });
+    }
+
+    private void completeTransfer() {
+        if (currentTransferRoute == null || getActivity() == null) return;
+        
+        Log.d("RouteInfoFragment", "Completing transfer from " + currentTransferRoute.getFrom() + " to " + currentTransferRoute.getTo());
+        
+        // Сохраняем информацию о переходе перед очисткой
+        String targetStationId = currentTransferRoute.getTo();
+        
+        // Находим индекс станции назначения в маршруте
+        int targetIndex = indexOfStationInRoute(targetStationId);
+        if (targetIndex >= 0) {
+            Log.d("RouteInfoFragment", "Found target station at index: " + targetIndex);
+            currentStationIndex = targetIndex;
+            
+            // Используем тот же метод, что и при обычной смене станций
+            updateRouteDisplay(targetIndex);
+            
+            Log.d("RouteInfoFragment", "Successfully moved to station: " + route.get(targetIndex).getName());
+        } else {
+            Log.w("RouteInfoFragment", "Target station not found in route: " + targetStationId);
+        }
+        
+        // Скрываем карту перехода и очищаем состояние
+        hideTransferMap();
+        
+        // Переходим к обычному отображению
+        transitionToState(State.INFO, true);
+    }
+
+    private int indexOfStationInRoute(String stationId) {
+        if (route == null) return -1;
+        for (int i = 0; i < route.size(); i++) {
+            if (route.get(i).getId().equals(stationId)) return i;
+        }
+        return -1;
     }
 
     private int getDrawableResource(String transferMap) {
@@ -1204,50 +1647,226 @@ public class RouteInfoFragment extends Fragment {
 
     private Transfer findTransferBetweenStations(Station from, Station to) {
         for (Transfer transfer : mainActivity.getAllTransfers()) {
-            if (transfer.getStations().contains(from) && transfer.getStations().contains(to)) {
+            boolean hasFrom = false;
+            boolean hasTo = false;
+            for (Station st : transfer.getStations()) {
+                if (st.getId().equals(from.getId())) {
+                    hasFrom = true;
+                }
+                if (st.getId().equals(to.getId())) {
+                    hasTo = true;
+                }
+                if (hasFrom && hasTo) {
                 return transfer;
+                }
             }
         }
         return null;
     }
 
-    private void expand() {
-        isExpanded = true;
-        routeTitle.setText("Информация о маршруте");
-        layoutCollapsed.setVisibility(View.GONE);
-        layoutExpanded.setVisibility(View.VISIBLE);
+    private void transitionToState(State newState, boolean animate) {
+        if (currentState == newState || isAnimating) {
+            return;
+        }
 
-        float expandedHeight = getExpandedHeight();
-        animateHeightChange(routeInfoContainer, COLLAPSED_HEIGHT, expandedHeight);
+        State oldState = currentState;
+        currentState = newState;
+
+        View oldView = getViewForState(oldState);
+        View newView = getViewForState(newState);
+        // Всегда пересчитываем высоты перед переходом
+        calculateHeights();
+        float targetHeight = getHeightForState(newState);
+
+        if (animate) {
+            animateStateChange(oldView, newView, (int) targetHeight);
+        } else {
+            if (newState == State.INFO || newState == State.TRANSFER) {
+                routeInfoContainer.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            } else {
+                routeInfoContainer.getLayoutParams().height = (int) targetHeight;
+            }
+            oldView.setVisibility(View.GONE);
+            newView.setVisibility(View.VISIBLE);
+            routeInfoContainer.requestLayout();
+        }
+
+        updateDots();
+        updateTitle();
     }
 
-    private void collapse() {
-        isExpanded = false;
-        routeTitle.setText("Краткая информация");
-        layoutCollapsed.setVisibility(View.VISIBLE);
-        layoutExpanded.setVisibility(View.GONE);
 
-        float density = getResources().getDisplayMetrics().density;
-        animateHeightChange(routeInfoContainer, routeInfoContainer.getHeight(), COLLAPSED_HEIGHT * density);
-    }
+    private void animateStateChange(final View oldView, final View newView, final int endHeight) {
+        final View view = routeInfoContainer;
+        final int startHeight = view.getHeight();
 
-    private void animateHeightChange(final View view, final int startHeight, final float endHeight) {
-        Animation animation = new Animation() {
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        animator.addUpdateListener(animation -> {
+            view.getLayoutParams().height = (int) animation.getAnimatedValue();
+            view.requestLayout();
+            float fraction = animation.getAnimatedFraction();
+            oldView.setAlpha(1f - fraction);
+            newView.setAlpha(fraction);
+        });
+
+        animator.addListener(new Animator.AnimatorListener() {
             @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                int newHeight = (int) (startHeight + (endHeight - startHeight) * interpolatedTime);
-                view.getLayoutParams().height = newHeight;
+            public void onAnimationStart(Animator animation) {
+                isAnimating = true;
+                newView.setAlpha(0f);
+                newView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                oldView.setVisibility(View.GONE);
+                oldView.setAlpha(1f);
+                // После анимации: для INFO/TRANSFER отпускаем высоту, для COLLAPSED сохраняем фикс
+                if (currentState == State.INFO || currentState == State.TRANSFER) {
+                    view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 view.requestLayout();
+                }
+                isAnimating = false;
+            }
+
+            @Override public void onAnimationCancel(Animator animation) { isAnimating = false; }
+            @Override public void onAnimationRepeat(Animator animation) {}
+        });
+        animator.start();
+    }
+
+
+    private void updateDots() {
+        if (dotTop == null || dotMiddle == null || dotBottom == null) return;
+        
+        // Получаем цвет primary из темы
+        Context context = getContext();
+        if (context == null) return;
+        int primaryColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, Color.parseColor("#1976D2"));
+        int dp8 = (int) (8 * getResources().getDisplayMetrics().density);
+        
+        // Создаем drawable для активной точки
+        android.graphics.drawable.GradientDrawable selectedDot = new android.graphics.drawable.GradientDrawable();
+        selectedDot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        selectedDot.setSize(dp8, dp8);
+        selectedDot.setColor(primaryColor);
+        
+        // Обновляем точки
+        if (currentState == State.COLLAPSED) {
+            dotTop.setBackground(selectedDot);
+        } else {
+            dotTop.setBackgroundResource(R.drawable.dot_unselected);
+        }
+        
+        if (currentState == State.INFO) {
+            dotMiddle.setBackground(selectedDot);
+        } else {
+            dotMiddle.setBackgroundResource(R.drawable.dot_unselected);
+        }
+        
+        if (currentState == State.ROUTE) {
+            dotBottom.setBackground(selectedDot);
+        } else {
+            dotBottom.setBackgroundResource(R.drawable.dot_unselected);
+        }
+        
+        if (dotTransfer != null) {
+            // 4-я точка видна, пока активен переход (isShowingTransferMap) ИЛИ мы в состоянии TRANSFER
+            boolean showTransferDot = isShowingTransferMap || currentState == State.TRANSFER;
+            dotTransfer.setVisibility(showTransferDot ? View.VISIBLE : View.GONE);
+            if (currentState == State.TRANSFER) {
+                dotTransfer.setBackground(selectedDot);
+            } else {
+                dotTransfer.setBackgroundResource(R.drawable.dot_unselected);
+            }
+        }
+        updateSummaryMiniCards();
+    }
+
+    private void updateSummaryMiniCards() {
+        if (summaryNearestTrainsRV == null) return;
+        if (currentState != State.COLLAPSED || summaryNearestSegments == null || summaryNearestSegments.isEmpty()) {
+            summaryNearestTrainsRV.setVisibility(View.GONE);
+            return;
+        }
+        summaryNearestTrainsRV.setVisibility(View.VISIBLE);
+        final List<YandexRaspResponse.Segment> data = new ArrayList<>(summaryNearestSegments);
+        summaryNearestTrainsRV.setAdapter(new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            class MiniVH extends RecyclerView.ViewHolder {
+                TextView num, dep, arr;
+                MiniVH(@NonNull View itemView) {
+                    super(itemView);
+                    num = itemView.findViewById(R.id.trainNumber);
+                    dep = itemView.findViewById(R.id.departureTime);
+                    arr = itemView.findViewById(R.id.arrivalTime);
+                }
+            }
+
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_train_info_mini, parent, false);
+                return new MiniVH(v);
             }
 
             @Override
-            public boolean willChangeBounds() {
-                return true;
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                MiniVH vh = (MiniVH) holder;
+                YandexRaspResponse.Segment s = data.get(position);
+                if (s.getThread() != null) vh.num.setText(s.getThread().getNumber());
+                if (s.getDeparture() != null && s.getDeparture().length() >= 16) vh.dep.setText(s.getDeparture().substring(11, 16));
+                if (s.getArrival() != null && s.getArrival().length() >= 16) vh.arr.setText(s.getArrival().substring(11, 16));
             }
-        };
 
-        animation.setDuration(300);
-        view.startAnimation(animation);
+            @Override
+            public int getItemCount() {
+                return Math.min(data.size(), 3);
+            }
+        });
+        summaryNearestTrainsRV.requestLayout();
+    }
+
+    private void updateTitle() {
+        switch (currentState) {
+            case COLLAPSED:
+                routeTitle.setText("Маршрут");
+                break;
+            case INFO:
+                routeTitle.setText("Краткая информация");
+                break;
+            case ROUTE:
+                routeTitle.setText("Информация о маршруте");
+                break;
+            case TRANSFER:
+                routeTitle.setText("Переход");
+                break;
+        }
+    }
+
+    private View getViewForState(State state) {
+        switch (state) {
+            case COLLAPSED: return layoutSummary;
+            case INFO:      return layoutInfo;
+            case ROUTE:     return layoutRoute;
+            case TRANSFER:  return layoutTransfer;
+            default:        return null;
+        }
+    }
+
+    private float getHeightForState(State state) {
+        switch (state) {
+            case COLLAPSED: {
+                float density = getResources().getDisplayMetrics().density;
+                return 100f * density; // фиксированная высота 30dp для свернутого состояния
+            }
+            case INFO:      return infoHeightPx;
+            case ROUTE:     return routeHeightPx;
+            case TRANSFER:  return transferHeightPx > 0 ? transferHeightPx : infoHeightPx;
+            default:        return 0;
+        }
     }
 
     private int calculateTotalTime() {
@@ -1279,64 +1898,8 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void populateRouteDetails(LinearLayout container) {
-        container.post(() -> {
-            container.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
-            for (int i = 0; i < route.size(); i++) {
-                Station station = route.get(i);
-                Line line = getLineForStation(station);
-
-                View stationView = inflater.inflate(R.layout.item_route_station, container, false);
-                TextView stationName = stationView.findViewById(R.id.stationName);
-                View stationIndicator = stationView.findViewById(R.id.stationIndicator);
-                View stationIndicatorDouble = stationView.findViewById(R.id.stationIndicatorDouble);
-                RecyclerView nearestTrainsRV = stationView.findViewById(R.id.nearestTrainsRV);
-
-                stationName.setText(station.getName());
-                stationIndicator.setBackgroundColor(Color.parseColor(station.getColor()));
-
-                if (nearestTrainsRV != null) {
-                    nearestTrainsRV.setVisibility(View.GONE);
-                }
-
-                if (isLineDouble(station)) {
-                    stationIndicatorDouble.setVisibility(View.VISIBLE);
-                    stationIndicatorDouble.setBackgroundColor(Color.parseColor(station.getColor()));
-                }
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(0, 0, 0, 0);
-                stationView.setLayoutParams(params);
-
-                if (i == 0 || i == route.size() - 1) {
-                    stationName.setTypeface(null, Typeface.BOLD);
-                }
-
-                String tag = station.getName() + "|" + line.getTariff().getName();
-                stationView.setTag(tag);
-
-                Log.d("RouteInfoFragmentT", "Station: " + tag.split("\\|")[0] + ", Line: " + tag.split("\\|")[1]);
-
-                container.addView(stationView);
-
-                if (i < route.size() - 1 && !route.get(i + 1).getColor().equals(station.getColor())) {
-                    View transferView = inflater.inflate(R.layout.item_transfer_indicator, container, false);
-                    LinearLayout.LayoutParams transferParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    transferParams.setMargins(0, 8, 0, 8);
-                    transferView.setLayoutParams(transferParams);
-                    container.addView(transferView);
-                }
-            }
-
-            container.requestLayout();
-        });
+        // Делегируем на новую группирующую версию
+        populateRouteDetails(container, route);
     }
 
     private boolean isLineDouble(Station station) {
@@ -1349,8 +1912,8 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private float getExpandedHeight() {
-        layoutExpanded.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        float expandedHeight = layoutExpanded.getMeasuredHeight();
+        layoutRoute.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        float expandedHeight = layoutRoute.getMeasuredHeight();
         float density = getResources().getDisplayMetrics().density;
         if (expandedHeight > 500 * density) {
             expandedHeight = 500 * density;
@@ -1360,8 +1923,10 @@ public class RouteInfoFragment extends Fragment {
 
     private void determineTrainInfoDisplay(List<Station> route) {
         List<RouteSegment> segments = splitRouteIntoSegments(route);
+        boolean hasSuburban = false;
         for (RouteSegment segment : segments) {
             if (segment.getLine().getTariff() instanceof APITariff) {
+                hasSuburban = true;
                 if (segment.getStations().get(0).equals(route.get(0))) {
                     fetchAndDisplaySuburbanSchedule(segment.getStations().get(0),
                             segment.getStations().get(segment.getStations().size() - 1),
@@ -1372,6 +1937,10 @@ public class RouteInfoFragment extends Fragment {
                             false);
                 }
             }
+        }
+        if (!hasSuburban) {
+            if (nearestTrainsRecyclerView != null) nearestTrainsRecyclerView.setVisibility(View.GONE);
+            if (nearestTrainsTitle != null) nearestTrainsTitle.setVisibility(View.GONE);
         }
     }
 
@@ -1424,9 +1993,19 @@ public class RouteInfoFragment extends Fragment {
 
         getActivity().runOnUiThread(() -> {
             if (isFirstStation && nearestTrainsRecyclerView != null) {
+                if (segments == null || segments.isEmpty()) {
+                    nearestTrainsRecyclerView.setVisibility(View.GONE);
+                    if (nearestTrainsTitle != null) nearestTrainsTitle.setVisibility(View.GONE);
+                } else {
                 nearestTrainsRecyclerView.setVisibility(View.VISIBLE);
+                    if (nearestTrainsTitle != null) nearestTrainsTitle.setVisibility(View.VISIBLE);
                 setupTrainInfoAdapter(segments, nearestTrainsRecyclerView);
+                }
             }
+
+            // Сохраняем набор для свёрнутого режима и пробуем обновить мини-карточки
+            summaryNearestSegments = (segments == null) ? new ArrayList<>() : new ArrayList<>(segments);
+            updateSummaryMiniCards();
 
             if (routeDetailsContainer != null) {
                 for (int i = 0; i < routeDetailsContainer.getChildCount(); i++) {
@@ -1437,11 +2016,19 @@ public class RouteInfoFragment extends Fragment {
                         if (parts.length == 2 && "APITariff".equals(parts[1])) {
                             RecyclerView nearestTrainsRV = view.findViewById(R.id.nearestTrainsRV);
                             if (nearestTrainsRV != null) {
+                                if (segments == null || segments.isEmpty()) {
+                                    nearestTrainsRV.setVisibility(View.GONE);
+                                    TextView title = view.findViewById(R.id.nearestTrainsTitle);
+                                    if (title != null) title.setVisibility(View.GONE);
+                                } else {
                                 nearestTrainsRV.setVisibility(View.VISIBLE);
+                                    TextView title = view.findViewById(R.id.nearestTrainsTitle);
+                                    if (title != null) title.setVisibility(View.VISIBLE);
                                 nearestTrainsRV.setLayoutManager(
                                         new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
                                 );
                                 setupTrainInfoAdapter(segments, nearestTrainsRV);
+                                }
                             }
                             break;
                         }

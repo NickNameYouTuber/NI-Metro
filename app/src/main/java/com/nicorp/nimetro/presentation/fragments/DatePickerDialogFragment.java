@@ -1,6 +1,7 @@
 package com.nicorp.nimetro.presentation.fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.DatePicker;
@@ -29,7 +30,12 @@ public class DatePickerDialogFragment extends DialogFragment implements DatePick
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        Context context = getActivity();
+        if (context == null) {
+            return new DatePickerDialog(getContext());
+        }
+        int themeResId = com.google.android.material.R.style.ThemeOverlay_Material3_MaterialCalendar;
+        return new DatePickerDialog(context, themeResId, this, year, month, day);
     }
 
     @Override

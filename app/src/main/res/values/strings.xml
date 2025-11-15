@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NIMetro</string>
+    <string name="from_hint">Отсюда</string>
+    <string name="to_hint">Сюда</string>
 </resources>

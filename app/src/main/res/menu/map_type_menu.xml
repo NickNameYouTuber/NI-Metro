@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_metro"
+        android:title="Метро"
+        android:icon="@drawable/metro_map_icon" />
+    <item
+        android:id="@+id/menu_suburban"
+        android:title="Пригород"
+        android:icon="@drawable/suburban_map_icon" />
+    <item
+        android:id="@+id/menu_river"
+        android:title="Речной транспорт"
+        android:icon="@drawable/river_map_icon" />
+</menu>
+

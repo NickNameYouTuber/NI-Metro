@@ -1,1275 +1,1502 @@
 {
   "info": {
     "version": "1.0",
-    "author": "Nicorp",
-    "country": "Saudi Arabia",
+    "author": "xAI",
+    "country": "UAE",
     "name": "Dubai",
-    "icon": "https://lh3.googleusercontent.com/LrRUIktCzQbduZM5BhphEo0AowJSGm3R3CyUnEccx9pgSnYyq1IEKSycn0kECR6RMw"
+    "icon": "https://upload.wikimedia.org/wikipedia/en/9/97/Dubai_Metro_Logo.png"
   },
   "metro_map": {
     "lines": [
       {
-        "id": 1,
-        "name": "Красная линия",
-        "color": "#E40520",
+        "id": "1",
+        "displayNumber": "Red",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Red Line",
+        "color": "#FF0000",
         "isCircle": false,
+        "lineType": "single",
         "stations": [
           {
-            "id": "METRO_100",
+            "id": "DUBAI_R11",
             "name": "Centrepoint",
-            "x": 100,
-            "y": 100,
-            "textPosition": 0,
+            "x": 950,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_101",
+                "DUBAI_R12",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_101",
+            "id": "DUBAI_R12",
             "name": "Emirates",
-            "x": 200,
-            "y": 100,
-            "textPosition": 0,
+            "x": 880,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_100",
+                "DUBAI_R11",
                 3
               ],
               [
-                "METRO_102",
+                "DUBAI_R13",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_102",
+            "id": "DUBAI_R13",
             "name": "Airport Terminal 3",
-            "x": 300,
-            "y": 100,
-            "textPosition": 0,
+            "x": 820,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_101",
+                "DUBAI_R12",
                 3
               ],
               [
-                "METRO_103",
+                "DUBAI_R14",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_103",
+            "id": "DUBAI_R14",
             "name": "Airport Terminal 1",
-            "x": 400,
-            "y": 100,
-            "textPosition": 0,
+            "x": 760,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_102",
+                "DUBAI_R13",
                 3
               ],
               [
-                "METRO_104",
+                "DUBAI_R15",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_104",
-            "name": "GGICO",
-            "x": 500,
-            "y": 100,
-            "textPosition": 0,
-            "neighbors": [
-              [
-                "METRO_103",
-                3
-              ],
-              [
-                "METRO_105",
-                3
-              ]
-            ],
-            "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
-              "exits": []
-            }
-          },
-          {
-            "id": "METRO_105",
-            "name": "City Centre Deira",
-            "x": 600,
-            "y": 100,
-            "textPosition": 0,
-            "neighbors": [
-              [
-                "METRO_104",
-                3
-              ],
-              [
-                "METRO_106",
-                3
-              ]
-            ],
-            "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
-              "exits": []
-            }
-          },
-          {
-            "id": "METRO_106",
-            "name": "Al Rigga",
+            "id": "DUBAI_R15",
+            "name": "Al Garhoud",
             "x": 700,
-            "y": 100,
-            "textPosition": 0,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_105",
+                "DUBAI_R14",
                 3
               ],
               [
-                "METRO_107",
+                "DUBAI_R16",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_107",
+            "id": "DUBAI_R16",
+            "name": "City Centre Deira",
+            "x": 640,
+            "y": 380,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "DUBAI_R15",
+                3
+              ],
+              [
+                "DUBAI_R17",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "DUBAI_R17",
+            "name": "Al Rigga",
+            "x": 580,
+            "y": 380,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "DUBAI_R16",
+                3
+              ],
+              [
+                "DUBAI_R18",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "DUBAI_R18",
             "name": "Union",
-            "x": 800,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 380,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_106",
+                "DUBAI_R17",
                 3
               ],
               [
-                "METRO_108",
+                "DUBAI_R19",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_108",
-            "name": "Burjuman",
-            "x": 900,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R19",
+            "name": "BurJuman",
+            "x": 520,
+            "y": 490,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_107",
+                "DUBAI_R18",
                 3
               ],
               [
-                "METRO_109",
+                "DUBAI_R20",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_109",
+            "id": "DUBAI_R20",
             "name": "ADCB",
-            "x": 1000,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 570,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_108",
+                "DUBAI_R19",
                 3
               ],
               [
-                "METRO_110",
+                "DUBAI_R21",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_110",
+            "id": "DUBAI_R21",
             "name": "Max",
-            "x": 1100,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 610,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_109",
+                "DUBAI_R20",
                 3
               ],
               [
-                "METRO_111",
+                "DUBAI_R22",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_111",
-            "name": "World Trade Center",
-            "x": 1200,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R22",
+            "name": "World Trade Centre",
+            "x": 520,
+            "y": 660,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_110",
+                "DUBAI_R21",
                 3
               ],
               [
-                "METRO_112",
+                "DUBAI_R23",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_112",
+            "id": "DUBAI_R23",
             "name": "Emirates Towers",
-            "x": 1300,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 710,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_111",
+                "DUBAI_R22",
                 3
               ],
               [
-                "METRO_113",
+                "DUBAI_R24",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_113",
+            "id": "DUBAI_R24",
             "name": "Financial Centre",
-            "x": 1400,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 750,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_112",
+                "DUBAI_R23",
                 3
               ],
               [
-                "METRO_114",
+                "DUBAI_R25",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_114",
-            "name": "Burj Khalifa / Dubai Mall",
-            "x": 1500,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R25",
+            "name": "Burj Khalifa/Dubai Mall",
+            "x": 520,
+            "y": 800,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_113",
+                "DUBAI_R24",
                 3
               ],
               [
-                "METRO_115",
+                "DUBAI_R26",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_115",
+            "id": "DUBAI_R26",
             "name": "Business Bay",
-            "x": 1600,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 850,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_114",
+                "DUBAI_R25",
                 3
               ],
               [
-                "METRO_116",
+                "DUBAI_R29",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_116",
-            "name": "ONPASSIVE",
-            "x": 1700,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R29",
+            "name": "Onpassive",
+            "x": 520,
+            "y": 980,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_115",
+                "DUBAI_R26",
                 3
               ],
               [
-                "METRO_117",
+                "DUBAI_R31",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_117",
+            "id": "DUBAI_R31",
             "name": "Equiti",
-            "x": 1800,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1030,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_116",
+                "DUBAI_R29",
                 3
               ],
               [
-                "METRO_118",
+                "DUBAI_R32",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_118",
+            "id": "DUBAI_R32",
             "name": "Mall of the Emirates",
-            "x": 1900,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1070,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_117",
+                "DUBAI_R31",
                 3
               ],
               [
-                "METRO_119",
+                "DUBAI_R33",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_119",
-            "name": "InsuranceMarket",
-            "x": 2000,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R33",
+            "name": "Insurance Market",
+            "x": 520,
+            "y": 1120,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_118",
+                "DUBAI_R32",
                 3
               ],
               [
-                "METRO_120",
+                "DUBAI_R34",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_120",
+            "id": "DUBAI_R34",
             "name": "Dubai Internet City",
-            "x": 2100,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1170,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_119",
+                "DUBAI_R33",
                 3
               ],
               [
-                "METRO_121",
+                "DUBAI_R35",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_121",
-            "name": "Al Khail",
-            "x": 2200,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R35",
+            "name": "Al Fardan Exchange",
+            "x": 520,
+            "y": 1210,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_120",
+                "DUBAI_R34",
                 3
               ],
               [
-                "METRO_122",
+                "DUBAI_R36",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_122",
+            "id": "DUBAI_R36",
             "name": "Sobha Realty",
-            "x": 2300,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1260,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_121",
+                "DUBAI_R35",
                 3
               ],
               [
-                "METRO_123",
+                "DUBAI_R37",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_123",
+            "id": "DUBAI_R37",
             "name": "DMCC",
-            "x": 2400,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1310,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_122",
+                "DUBAI_R36",
                 3
               ],
               [
-                "METRO_124",
+                "DUBAI_R38",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_124",
+            "id": "DUBAI_R38",
             "name": "Jabal Ali",
-            "x": 2500,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1360,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_123",
+                "DUBAI_R37",
                 3
               ],
               [
-                "METRO_125",
+                "DUBAI_R39",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_125",
+            "id": "DUBAI_R39",
             "name": "Ibn Battuta",
-            "x": 2600,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1440,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_124",
+                "DUBAI_R38",
                 3
               ],
               [
-                "METRO_126",
+                "DUBAI_R40",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_126",
+            "id": "DUBAI_R40",
             "name": "Energy",
-            "x": 2700,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1490,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_125",
+                "DUBAI_R39",
                 3
               ],
               [
-                "METRO_127",
+                "DUBAI_R41",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_127",
+            "id": "DUBAI_R41",
             "name": "Danube",
-            "x": 2800,
-            "y": 100,
-            "textPosition": 0,
+            "x": 520,
+            "y": 1540,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_126",
+                "DUBAI_R40",
                 3
               ],
               [
-                "METRO_128",
+                "DUBAI_R42",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_128",
-            "name": "UAE Exchange",
-            "x": 2900,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R42",
+            "name": "Life Pharmacy",
+            "x": 520,
+            "y": 1590,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_127",
+                "DUBAI_R41",
                 3
               ],
               [
-                "METRO_129",
+                "DUBAI_R70",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_129",
+            "id": "DUBAI_R70",
             "name": "The Gardens",
-            "x": 3000,
-            "y": 100,
-            "textPosition": 0,
+            "x": 590,
+            "y": 1400,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_128",
+                "DUBAI_R42",
                 3
               ],
               [
-                "METRO_130",
+                "DUBAI_R71",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_130",
+            "id": "DUBAI_R71",
             "name": "Discovery Gardens",
-            "x": 3100,
-            "y": 100,
-            "textPosition": 0,
+            "x": 670,
+            "y": 1400,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_129",
+                "DUBAI_R70",
                 3
               ],
               [
-                "METRO_131",
+                "DUBAI_R72",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_131",
+            "id": "DUBAI_R72",
             "name": "Al Furjan",
-            "x": 3200,
-            "y": 100,
-            "textPosition": 0,
+            "x": 750,
+            "y": 1400,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_130",
+                "DUBAI_R71",
                 3
               ],
               [
-                "METRO_132",
+                "DUBAI_R73",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_132",
+            "id": "DUBAI_R73",
             "name": "Jumeirah Golf Estates",
-            "x": 3300,
-            "y": 100,
-            "textPosition": 0,
+            "x": 800,
+            "y": 1440,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_131",
+                "DUBAI_R72",
                 3
               ],
               [
-                "METRO_133",
+                "DUBAI_R74",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_133",
+            "id": "DUBAI_R74",
             "name": "Dubai Investment Park",
-            "x": 3400,
-            "y": 100,
-            "textPosition": 0,
+            "x": 800,
+            "y": 1490,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_132",
+                "DUBAI_R73",
                 3
               ],
               [
-                "METRO_134",
+                "DUBAI_R76",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_134",
-            "name": "EXPO 2020",
-            "x": 3500,
-            "y": 100,
-            "textPosition": 0,
+            "id": "DUBAI_R76",
+            "name": "Expo 2020",
+            "x": 800,
+            "y": 1540,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_133",
+                "DUBAI_R74",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           }
         ]
       },
       {
-        "id": 2,
-        "name": "Зеленая линия",
-        "color": "#008000",
+        "id": "2",
+        "displayNumber": "Green",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Green Line",
+        "color": "#00FF00",
         "isCircle": false,
+        "lineType": "single",
         "stations": [
           {
-            "id": "METRO_135",
-            "name": "Etisalat by e&",
-            "x": 100,
-            "y": 200,
-            "textPosition": 0,
+            "id": "DUBAI_G11",
+            "name": "Etisalat",
+            "x": 960,
+            "y": 230,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_136",
+                "DUBAI_G12",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_136",
+            "id": "DUBAI_G12",
             "name": "Al Qusais",
-            "x": 200,
-            "y": 200,
-            "textPosition": 0,
+            "x": 880,
+            "y": 230,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_135",
+                "DUBAI_G11",
                 3
               ],
               [
-                "METRO_137",
+                "DUBAI_G13",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_137",
+            "id": "DUBAI_G13",
             "name": "Dubai Airport Free Zone",
-            "x": 300,
-            "y": 200,
-            "textPosition": 0,
+            "x": 820,
+            "y": 230,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_136",
+                "DUBAI_G12",
                 3
               ],
               [
-                "METRO_138",
+                "DUBAI_G14",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_138",
+            "id": "DUBAI_G14",
             "name": "Al Nahda",
-            "x": 400,
-            "y": 200,
-            "textPosition": 0,
+            "x": 760,
+            "y": 230,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_137",
+                "DUBAI_G13",
                 3
               ],
               [
-                "METRO_139",
+                "DUBAI_G15",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_139",
+            "id": "DUBAI_G15",
             "name": "Stadium",
-            "x": 500,
-            "y": 200,
-            "textPosition": 0,
-            "neighbors": [
-              [
-                "METRO_138",
-                3
-              ],
-              [
-                "METRO_140",
-                3
-              ]
-            ],
-            "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
-              "exits": []
-            }
-          },
-          {
-            "id": "METRO_140",
-            "name": "Al Qiyadah",
-            "x": 600,
-            "y": 200,
-            "textPosition": 0,
-            "neighbors": [
-              [
-                "METRO_139",
-                3
-              ],
-              [
-                "METRO_141",
-                3
-              ]
-            ],
-            "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
-              "exits": []
-            }
-          },
-          {
-            "id": "METRO_141",
-            "name": "Abu Hail",
             "x": 700,
-            "y": 200,
-            "textPosition": 0,
+            "y": 230,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_140",
+                "DUBAI_G14",
                 3
               ],
               [
-                "METRO_142",
+                "DUBAI_G16",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_142",
+            "id": "DUBAI_G16",
+            "name": "Al Qiyadah",
+            "x": 630,
+            "y": 230,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "DUBAI_G15",
+                3
+              ],
+              [
+                "DUBAI_G17",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "DUBAI_G17",
+            "name": "Abu Hail",
+            "x": 570,
+            "y": 230,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "DUBAI_G16",
+                3
+              ],
+              [
+                "DUBAI_G18",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "DUBAI_G18",
             "name": "Abu Baker Al Siddique",
-            "x": 800,
-            "y": 200,
-            "textPosition": 0,
+            "x": 520,
+            "y": 250,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_141",
+                "DUBAI_G17",
                 3
               ],
               [
-                "METRO_143",
+                "DUBAI_G19",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_143",
+            "id": "DUBAI_G19",
             "name": "Salah Al Din",
-            "x": 900,
-            "y": 200,
-            "textPosition": 0,
+            "x": 520,
+            "y": 310,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_142",
+                "DUBAI_G18",
                 3
               ],
               [
-                "METRO_144",
+                "DUBAI_G20",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_144",
+            "id": "DUBAI_G20",
             "name": "Union",
-            "x": 1000,
-            "y": 200,
-            "textPosition": 0,
+            "x": 500,
+            "y": 360,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_143",
+                "DUBAI_G19",
                 3
               ],
               [
-                "METRO_145",
+                "DUBAI_G21",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_145",
+            "id": "DUBAI_G21",
             "name": "Baniyas Square",
-            "x": 1100,
-            "y": 200,
-            "textPosition": 0,
+            "x": 440,
+            "y": 370,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_144",
+                "DUBAI_G20",
                 3
               ],
               [
-                "METRO_146",
+                "DUBAI_G22",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_146",
+            "id": "DUBAI_G22",
             "name": "Gold Souq",
-            "x": 1200,
-            "y": 200,
-            "textPosition": 0,
+            "x": 380,
+            "y": 400,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_145",
+                "DUBAI_G21",
                 3
               ],
               [
-                "METRO_147",
+                "DUBAI_G23",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_147",
+            "id": "DUBAI_G23",
             "name": "Al Ras",
-            "x": 1300,
-            "y": 200,
-            "textPosition": 0,
+            "x": 380,
+            "y": 450,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_146",
+                "DUBAI_G22",
                 3
               ],
               [
-                "METRO_148",
+                "DUBAI_G24",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_148",
-            "name": "Al Gubaiba",
-            "x": 1400,
-            "y": 200,
-            "textPosition": 0,
+            "id": "DUBAI_G24",
+            "name": "Al Ghubaiba",
+            "x": 380,
+            "y": 500,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_147",
+                "DUBAI_G23",
                 3
               ],
               [
-                "METRO_149",
+                "DUBAI_G25",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_149",
+            "id": "DUBAI_G25",
             "name": "Sharaf DG",
-            "x": 1500,
-            "y": 200,
-            "textPosition": 0,
+            "x": 440,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_148",
+                "DUBAI_G24",
                 3
               ],
               [
-                "METRO_150",
+                "DUBAI_G26",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_150",
-            "name": "Burjuman",
-            "x": 1600,
-            "y": 200,
-            "textPosition": 0,
+            "id": "DUBAI_G26",
+            "name": "BurJuman",
+            "x": 520,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_149",
+                "DUBAI_G25",
                 3
               ],
               [
-                "METRO_151",
+                "DUBAI_G27",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_151",
+            "id": "DUBAI_G27",
             "name": "Oud Metha",
-            "x": 1700,
-            "y": 200,
-            "textPosition": 0,
+            "x": 590,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_150",
+                "DUBAI_G26",
                 3
               ],
               [
-                "METRO_152",
+                "DUBAI_G28",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_152",
+            "id": "DUBAI_G28",
             "name": "Dubai Healthcare City",
-            "x": 1800,
-            "y": 200,
-            "textPosition": 0,
+            "x": 670,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_151",
+                "DUBAI_G27",
                 3
               ],
               [
-                "METRO_153",
+                "DUBAI_G29",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_153",
+            "id": "DUBAI_G29",
             "name": "Al Jadaf",
-            "x": 1900,
-            "y": 200,
-            "textPosition": 0,
+            "x": 750,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_152",
+                "DUBAI_G28",
                 3
               ],
               [
-                "METRO_154",
+                "DUBAI_G30",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
           },
           {
-            "id": "METRO_154",
+            "id": "DUBAI_G30",
             "name": "Creek",
-            "x": 2000,
-            "y": 200,
-            "textPosition": 0,
+            "x": 820,
+            "y": 520,
+            "textPosition": 3,
             "neighbors": [
               [
-                "METRO_153",
+                "DUBAI_G29",
                 3
               ]
             ],
             "facilities": {
-              "schedule": "5:00 - 0:00",
-              "escalators": 2,
-              "elevators": 2,
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
               "exits": []
             }
+          }
+        ]
+      }
+    ],
+    "transfers": [
+      {
+        "id": "TRANSFER_1",
+        "stations": [
+          "DUBAI_R18",
+          "DUBAI_G20"
+        ],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "id": "TRANSFER_2",
+        "stations": [
+          "DUBAI_R19",
+          "DUBAI_G26"
+        ],
+        "time": 3,
+        "type": "default"
+      }
+    ],
+    "intermediatePoints": [],
+    "rivers": [],
+    "objects": []
+  },
+  "suburban_map": {
+    "lines": [
+      {
+        "id": "line_1757359056263",
+        "name": "Линия 1",
+        "color": "#702D92",
+        "stations": [
+          {
+            "id": "station_1757359060027",
+            "name": "Станция 1",
+            "x": 420,
+            "y": 1100,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359072954",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359072954",
+            "name": "Станция 2",
+            "x": 420,
+            "y": 1130,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359060027",
+                3
+              ],
+              [
+                "station_1757359648835",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359648835",
+            "name": "Станция 3",
+            "x": 420,
+            "y": 1160,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359072954",
+                3
+              ],
+              [
+                "station_1757359660111",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359660111",
+            "name": "Станция 4",
+            "x": 420,
+            "y": 1190,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359648835",
+                3
+              ],
+              [
+                "station_1757359670539",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359670539",
+            "name": "Станция 5",
+            "x": 420,
+            "y": 1220,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359660111",
+                3
+              ],
+              [
+                "station_1757359680845",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359680845",
+            "name": "Станция 6",
+            "x": 470,
+            "y": 1220,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359670539",
+                3
+              ],
+              [
+                "station_1757359698636",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359698636",
+            "name": "Станция 7",
+            "x": 500,
+            "y": 1260,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359680845",
+                3
+              ],
+              [
+                "station_1757359710683",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359710683",
+            "name": "Станция 8",
+            "x": 500,
+            "y": 1280,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359698636",
+                3
+              ],
+              [
+                "station_1757359717488",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359717488",
+            "name": "Станция 9",
+            "x": 500,
+            "y": 1320,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359710683",
+                3
+              ],
+              [
+                "station_1757359721868",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359721868",
+            "name": "Станция 10",
+            "x": 420,
+            "y": 1320,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359717488",
+                3
+              ],
+              [
+                "station_1757359743095",
+                3
+              ]
+            ]
+          },
+          {
+            "id": "station_1757359743095",
+            "name": "Станция 11",
+            "x": 420,
+            "y": 1280,
+            "textPosition": 0,
+            "neighbors": [
+              [
+                "station_1757359721868",
+                3
+              ]
+            ]
           }
         ]
       }

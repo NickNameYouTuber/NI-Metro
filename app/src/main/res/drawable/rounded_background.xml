@@ -3,9 +3,9 @@
     <!-- Закругленные углы -->
     <corners android:radius="12dp" />
 
-    <!-- Черная обводка -->
-    <stroke android:width="2dp" android:color="#21212E" />
+    <!-- Обводка из палитры -->
+    <stroke android:width="2dp" android:color="@color/outlineColor" />
 
-    <!-- Белый фон -->
-    <solid android:color="#FFFFFF" />
+    <!-- Фон карточки из палитры -->
+    <solid android:color="@color/surfaceColor" />
 </shape>

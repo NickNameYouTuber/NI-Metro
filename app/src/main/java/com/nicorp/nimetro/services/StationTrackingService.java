@@ -41,6 +41,7 @@ import com.google.android.gms.location.Priority;
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Station;
+import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class StationTrackingService extends Service implements RecognitionListener {
 
@@ -66,6 +68,7 @@ public class StationTrackingService extends Service implements RecognitionListen
     private Station currentStation;
     private Station previousStation;
     private List<Station> route;
+    private List<Transfer> transfers = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private Handler handler = new Handler();
@@ -238,6 +241,18 @@ public class StationTrackingService extends Service implements RecognitionListen
         if (intent != null && intent.hasExtra("route")) {
             route = intent.getParcelableArrayListExtra("route");
             lines = intent.getParcelableArrayListExtra("lines");
+            if (lines == null) {
+                lines = new ArrayList<>();
+            }
+            transfers = intent.getParcelableArrayListExtra("transfers");
+            if (transfers == null) {
+                transfers = new ArrayList<>();
+            }
+            if (route == null || route.isEmpty()) {
+                Log.w("StationTrackingService", "Empty route received, stopping service");
+                stopSelf();
+                return START_NOT_STICKY;
+            }
             currentStation = intent.getParcelableExtra("currentStation");
 
             currentStationIndex = findStationIndex(currentStation);
@@ -280,14 +295,14 @@ public class StationTrackingService extends Service implements RecognitionListen
                 public void onStationCheck(boolean isAtStation) {
                     if (isAtStation) {
                         Log.d("StationTrackingService", "Arrived at next station: " + nextStation.getName());
-                        updateToNextStation(nextStation);
+                        updateToNextStation(nextStation, true);
                     } else if (elapsedTime >= travelTime * 1.1 * 60 * 1000) {
                         Log.d("StationTrackingService", "GPS signal lost, switching to time-based tracking");
-                        updateToNextStation(nextStation);
+                        updateToNextStation(nextStation, false);
                     } else if (voiceCommandStation != null && voiceCommandStation.equals(nextStation)) {
                         // Если пользователь озвучил станцию, и она совпадает с ожидаемой
                         Log.d("StationTrackingService", "Voice command confirmed arrival at: " + nextStation.getName());
-                        updateToNextStation(nextStation);
+                        updateToNextStation(nextStation, true);
                         voiceCommandStation = null; // Сбрасываем озвученную станцию
                     }
                 }
@@ -318,23 +333,29 @@ public class StationTrackingService extends Service implements RecognitionListen
         void onStationCheck(boolean isAtStation);
     }
 
-    private void updateToNextStation(Station nextStation) {
+    private void updateToNextStation(Station nextStation, boolean force) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastStationUpdateTime >= MIN_STATION_TIME) {
-            Station previousStation = currentStation;
-            currentStation = nextStation;
-            currentStationIndex = findStationIndex(currentStation);
-            lastStationUpdateTime = currentTime;
+        if (nextStation == null) {
+            return;
+        }
+        long requiredInterval = resolveRequiredInterval(currentStation, nextStation);
+        if (!force && currentTime - lastStationUpdateTime < requiredInterval) {
+            return;
+        }
 
-            checkAndAnnounceTransfers(previousStation);
-            updateNotification(currentStation);
-            Log.d("StationTrackingService", "Updated to next station: " + currentStation.getName());
-            sendStationUpdateBroadcast();
+        Station previousStation = currentStation;
+        currentStation = nextStation;
+        currentStationIndex = findStationIndex(currentStation);
+        lastStationUpdateTime = currentTime;
 
-            if (currentStationIndex == route.size() - 1) {
-                sendRouteCompletionBroadcast();
-                stopSelf();
-            }
+        checkAndAnnounceTransfers(previousStation);
+        updateNotification(currentStation);
+        Log.d("StationTrackingService", "Updated to next station: " + currentStation.getName());
+        sendStationUpdateBroadcast();
+
+        if (currentStationIndex == route.size() - 1) {
+            sendRouteCompletionBroadcast();
+            stopSelf();
         }
     }
 
@@ -367,6 +388,44 @@ public class StationTrackingService extends Service implements RecognitionListen
         return "";
     }
 
+    private long resolveRequiredInterval(Station current, Station next) {
+        long segmentMs = TimeUnit.MINUTES.toMillis(Math.max(1, getTravelTime(current, next)));
+        if (segmentMs <= 0) {
+            segmentMs = TimeUnit.SECONDS.toMillis(60);
+        }
+        long required = Math.min(segmentMs, MIN_STATION_TIME);
+        if (route != null && next != null && route.indexOf(next) == route.size() - 1) {
+            return Math.max(TimeUnit.SECONDS.toMillis(30), required);
+        }
+        return Math.max(TimeUnit.SECONDS.toMillis(30), required);
+    }
+
+    private Transfer findTransferBetween(Station current, Station next) {
+        if (transfers == null || current == null || next == null) {
+            return null;
+        }
+        for (Transfer transfer : transfers) {
+            List<Station> transferStations = transfer.getStations();
+            if (transferStations == null || transferStations.size() < 2) {
+                continue;
+            }
+            boolean hasCurrent = false;
+            boolean hasNext = false;
+            for (Station station : transferStations) {
+                if (station.getId().equals(current.getId())) {
+                    hasCurrent = true;
+                }
+                if (station.getId().equals(next.getId())) {
+                    hasNext = true;
+                }
+                if (hasCurrent && hasNext) {
+                    return transfer;
+                }
+            }
+        }
+        return null;
+    }
+
     private void announceTransfer(String stationName, String newLineName) {
         String message = "Перейдите на станцию " + stationName + " " + formatLineName(newLineName);
         speak(message);
@@ -393,12 +452,24 @@ public class StationTrackingService extends Service implements RecognitionListen
     }
 
     private int getTravelTime(Station current, Station next) {
-        for (Station.Neighbor neighbor : current.getNeighbors()) {
-            if (neighbor.getStation().getId().equals(next.getId())) {
-                return neighbor.getTime();
+        if (current == null || next == null) {
+            return 2;
+        }
+        List<Station.Neighbor> neighbors = current.getNeighbors();
+        if (neighbors != null) {
+            for (Station.Neighbor neighbor : neighbors) {
+                Station neighborStation = neighbor.getStation();
+                if (neighborStation != null && neighborStation.getId().equals(next.getId())) {
+                    int time = neighbor.getTime();
+                    return time > 0 ? time : 2;
+                }
             }
         }
-        return 180;
+        Transfer transfer = findTransferBetween(current, next);
+        if (transfer != null && transfer.getTime() > 0) {
+            return transfer.getTime();
+        }
+        return 2;
     }
 
     private int findStationIndex(Station station) {
@@ -530,11 +601,11 @@ public class StationTrackingService extends Service implements RecognitionListen
 
             // Если пользователь находится в пределах допустимой погрешности от следующей станции
             if (distanceToNextStation <= MAX_ACCEPTABLE_ACCURACY) {
-                updateToNextStation(nextStation);
+                updateToNextStation(nextStation, true);
             } else if (voiceCommandStation != null && voiceCommandStation.equals(nextStation)) {
                 // Если пользователь озвучил станцию, и она совпадает с ожидаемой
                 Log.d("StationTrackingService", "Voice command confirmed arrival at: " + nextStation.getName());
-                updateToNextStation(nextStation);
+                updateToNextStation(nextStation, true);
                 voiceCommandStation = null; // Сбрасываем озвученную станцию
             }
         }

@@ -44,7 +44,7 @@
 
         android:gravity="center"
         android:text="1"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/colorOnPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/stationName"
@@ -57,41 +57,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Сокольники"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/prevStationName"
+    <LinearLayout
+        android:id="@+id/upperStationsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:drawableStart="@drawable/ic_arrow_up"
-        android:drawablePadding="4dp"
-        android:text="Преображенская площадь"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="@+id/stationName"
         app:layout_constraintTop_toBottomOf="@+id/stationName" />
 
-    <TextView
-        android:id="@+id/nextStationName"
+    <LinearLayout
+        android:id="@+id/lowerStationsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
-        android:drawableStart="@drawable/ic_arrow_down"
-        android:drawablePadding="4dp"
-        android:text="Красносельская"
-        android:textColor="@android:color/black"
-        android:gravity="center_vertical"
-        android:textSize="14sp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="@+id/prevStationName"
-        app:layout_constraintTop_toBottomOf="@+id/prevStationName" />
+        app:layout_constraintStart_toStartOf="@+id/upperStationsContainer"
+        app:layout_constraintTop_toBottomOf="@+id/upperStationsContainer" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -116,7 +106,7 @@
             android:padding="8dp"
             android:text="Отсюда"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -130,7 +120,7 @@
             android:padding="8dp"
             android:text="Сюда"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -143,6 +133,7 @@
         android:layout_marginEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_close" />
+        app:srcCompat="@drawable/ic_close"
+        app:tint="?attr/colorCloseIcon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
