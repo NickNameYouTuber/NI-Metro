@@ -19059,13 +19059,13 @@
       {
         "id": "T1",
         "displayNumber": "T1",
-        "displayShape": "PARALLELOGRAM",
+        "displayShape": "MTD",
         "tariff": {
           "type": "FlatRateTariff",
           "price": 50
         },
         "name": "Трамвай Т1",
-        "color": "#F36B21",
+        "color": "#45B051",
         "isCircle": false,
         "lineType": "single",
         "stations": [
@@ -20624,6 +20624,1493 @@
             "neighbors": [
               [
                 "TRAM_T1_062",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          }
+        ]
+      },
+      {
+        "id": "T39",
+        "displayNumber": "39",
+        "displayShape": "PARALLELOGRAM",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 50
+        },
+        "name": "Трамвай 39",
+        "color": "#D54646",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "TRAM_T1_001",
+            "name": "Университет",
+            "x": 970,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_002",
+                3
+              ],
+              [
+                "METRO_116",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_002",
+            "name": "Драмтеатр",
+            "x": 990,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_001",
+                3
+              ],
+              [
+                "TRAM_T1_003",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_003",
+            "name": "Ленинский\nпроспект",
+            "x": 1010,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_002",
+                3
+              ],
+              [
+                "TRAM_T1_004",
+                3
+              ],
+              [
+                "METRO_614",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_004",
+            "name": "Центр\nздоровья\nдетей",
+            "x": 1030,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_003",
+                3
+              ],
+              [
+                "TRAM_T1_005",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_005",
+            "name": "Черёмушкинский\nрынок",
+            "x": 1050,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_004",
+                3
+              ],
+              [
+                "TRAM_T1_006",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_006",
+            "name": "Университетская\nклиника\nРУДН",
+            "x": 1070,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_005",
+                3
+              ],
+              [
+                "TRAM_T1_007",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_007",
+            "name": "Дарвиновский\nмузей",
+            "x": 1100,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_006",
+                3
+              ],
+              [
+                "TRAM_T1_008",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_008",
+            "name": "Улица\nГубкина",
+            "x": 1130,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_007",
+                3
+              ],
+              [
+                "TRAM_T1_009",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_009",
+            "name": "Улица\nЛяпунова",
+            "x": 1150,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_008",
+                3
+              ],
+              [
+                "TRAM_T1_010",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_010",
+            "name": "Улица\nБардина",
+            "x": 1180,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_009",
+                3
+              ],
+              [
+                "TRAM_T1_011",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_011",
+            "name": "Проспект\n60-летия\nОктября",
+            "x": 1210,
+            "y": 2170,
+            "textPosition": 5,
+            "neighbors": [
+              [
+                "TRAM_T1_010",
+                3
+              ],
+              [
+                "TRAM_T1_012",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_012",
+            "name": "метро\nЛенинский\nпроспект,\nюжный\nвход",
+            "x": 1240,
+            "y": 2170,
+            "textPosition": 1,
+            "neighbors": [
+              [
+                "TRAM_T1_011",
+                3
+              ],
+              [
+                "TRAM_T1_013",
+                3
+              ],
+              [
+                "METRO_614",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_013",
+            "name": "метро\nЛенинский\nпроспект,\nсеверный\nвход",
+            "x": 1270,
+            "y": 2150,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_012",
+                3
+              ],
+              [
+                "TRAM_T1_014",
+                3
+              ],
+              [
+                "METRO_614",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_014",
+            "name": "Улица\nОрджоникидзе",
+            "x": 1280,
+            "y": 2130,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_013",
+                3
+              ],
+              [
+                "TRAM_T1_015",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_015",
+            "name": "Донской\nмонастырь",
+            "x": 1290,
+            "y": 2110,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_014",
+                3
+              ],
+              [
+                "TRAM_T1_016",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_016",
+            "name": "Серпуховский\nВал",
+            "x": 1313,
+            "y": 2096,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_015",
+                3
+              ],
+              [
+                "TRAM_T1_017",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_017",
+            "name": "Хавская\nулица",
+            "x": 1331,
+            "y": 2080,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_016",
+                3
+              ],
+              [
+                "TRAM_T1_018",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_018",
+            "name": "Даниловский\nрынок",
+            "x": 1340,
+            "y": 2072,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_017",
+                3
+              ],
+              [
+                "TRAM_T1_019",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_019",
+            "name": "Серпуховская\nЗастава",
+            "x": 1349,
+            "y": 2065,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_018",
+                3
+              ],
+              [
+                "TRAM_T1_020",
+                3
+              ],
+              [
+                "METRO_1011",
+                3
+              ],
+              [
+                "METRO_1010",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_020",
+            "name": "Свято-Данилов\nмонастырь",
+            "x": 1370,
+            "y": 2050,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_019",
+                3
+              ],
+              [
+                "TRAM_T1_021",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_021",
+            "name": "Улица\nДаниловский\nВал",
+            "x": 1410,
+            "y": 2050,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_020",
+                3
+              ],
+              [
+                "TRAM_T1_022",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_022",
+            "name": "1-й\nПавловский\nпереулок",
+            "x": 1430,
+            "y": 2050,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_021",
+                3
+              ],
+              [
+                "TRAM_T1_023",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_023",
+            "name": "Дубининская\nулица,\n57",
+            "x": 1450,
+            "y": 2050,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_022",
+                3
+              ],
+              [
+                "TRAM_T1_024",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_024",
+            "name": "Жуков\nпроезд",
+            "x": 1470,
+            "y": 2050,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_023",
+                3
+              ],
+              [
+                "TRAM_T1_025",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_025",
+            "name": "Стремянный\nпереулок",
+            "x": 1480,
+            "y": 2030,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_024",
+                3
+              ],
+              [
+                "TRAM_T1_026",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_026",
+            "name": "Павелецкий\nвокзал",
+            "x": 1480,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_025",
+                3
+              ],
+              [
+                "TRAM_T1_027",
+                3
+              ],
+              [
+                "METRO_213",
+                3
+              ],
+              [
+                "METRO_85",
+                3
+              ],
+              [
+                "METRO_1515",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_027",
+            "name": "Метро\nПавелецкая",
+            "x": 1480,
+            "y": 1990,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_026",
+                3
+              ],
+              [
+                "TRAM_T1_028",
+                3
+              ],
+              [
+                "METRO_213",
+                3
+              ],
+              [
+                "METRO_85",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_028",
+            "name": "Вишняковский\nпереулок",
+            "x": 1480,
+            "y": 1960,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_027",
+                3
+              ],
+              [
+                "TRAM_T1_029",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_029",
+            "name": "Метро\nТретьяковская",
+            "x": 1470,
+            "y": 1930,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_028",
+                3
+              ],
+              [
+                "TRAM_T1_030",
+                3
+              ],
+              [
+                "METRO_611",
+                3
+              ],
+              [
+                "METRO_807",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_030",
+            "name": "Метро\nНовокузнецкая",
+            "x": 1470,
+            "y": 1910,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_029",
+                3
+              ],
+              [
+                "TRAM_T1_031",
+                3
+              ],
+              [
+                "METRO_212",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_031",
+            "name": "Комиссариатский\nмост",
+            "x": 1470,
+            "y": 1880,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_030",
+                3
+              ],
+              [
+                "TRAM_T1_032",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_032",
+            "name": "Яузские\nВорота",
+            "x": 1470,
+            "y": 1830,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_031",
+                3
+              ],
+              [
+                "TRAM_T1_033",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_033",
+            "name": "Воронцово\nПоле",
+            "x": 1472,
+            "y": 1769,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_032",
+                3
+              ],
+              [
+                "TRAM_T1_034",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_034",
+            "name": "Казарменный\nпереулок",
+            "x": 1472,
+            "y": 1712,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_033",
+                3
+              ],
+              [
+                "TRAM_T1_035",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_035",
+            "name": "Покровские\nВорота",
+            "x": 1472,
+            "y": 1684,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_034",
+                3
+              ],
+              [
+                "TRAM_T1_036",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_036",
+            "name": "Большой\nХаритоньевский\nпереулок",
+            "x": 1472,
+            "y": 1650,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_035",
+                3
+              ],
+              [
+                "TRAM_T1_037",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_037",
+            "name": "Метро\nЧистые\nпруды",
+            "x": 1480,
+            "y": 1630,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_036",
+                3
+              ],
+              [
+                "METRO_107",
+                3
+              ],
+              [
+                "METRO_609",
+                3
+              ],
+              [
+                "METRO_1113",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          }
+        ]
+      },
+      {
+        "id": "T_A",
+        "displayNumber": "A",
+        "displayShape": "PARALLELOGRAM",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 50
+        },
+        "name": "Трамвай А",
+        "color": "#F2A711",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "TRAM_TA_001",
+            "name": "МЦД\nКалитники",
+            "x": 1760,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_002",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_002",
+            "name": "Октябрьское\nтрамвайное\nдепо",
+            "x": 1710,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_001",
+                3
+              ],
+              [
+                "TRAM_TA_003",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_003",
+            "name": "Малый\nКалитниковский\nпроезд",
+            "x": 1660,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_002",
+                3
+              ],
+              [
+                "TRAM_TA_004",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_004",
+            "name": "Воловья\nулица",
+            "x": 1630,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_003",
+                3
+              ],
+              [
+                "TRAM_TA_005",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_005",
+            "name": "Большая\nКалитниковская\nулица",
+            "x": 1600,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_004",
+                3
+              ],
+              [
+                "TRAM_TA_006",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_006",
+            "name": "Кинотеатр\nПобеда\n–\nДетский\nтеатр",
+            "x": 1570,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_005",
+                3
+              ],
+              [
+                "TRAM_TA_007",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_007",
+            "name": "Метро\nПролетарская",
+            "x": 1540,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_006",
+                3
+              ],
+              [
+                "TRAM_TA_008",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_008",
+            "name": "Динамовская\nулица",
+            "x": 1510,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_007",
+                3
+              ],
+              [
+                "TRAM_TA_009",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_009",
+            "name": "Новоспасский\nмост",
+            "x": 1495,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_008",
+                3
+              ],
+              [
+                "TRAM_TA_010",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_TA_010",
+            "name": "Кожевническая\nулица",
+            "x": 1485,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_009",
+                3
+              ],
+              [
+                "TRAM_T1_026",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_026",
+            "name": "Павелецкий\nвокзал",
+            "x": 1480,
+            "y": 2010,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_TA_010",
+                3
+              ],
+              [
+                "TRAM_T1_027",
+                3
+              ],
+              [
+                "METRO_213",
+                3
+              ],
+              [
+                "METRO_85",
+                3
+              ],
+              [
+                "METRO_1515",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_027",
+            "name": "Метро\nПавелецкая",
+            "x": 1480,
+            "y": 1990,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_026",
+                3
+              ],
+              [
+                "TRAM_T1_028",
+                3
+              ],
+              [
+                "METRO_213",
+                3
+              ],
+              [
+                "METRO_85",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_028",
+            "name": "Вишняковский\nпереулок",
+            "x": 1480,
+            "y": 1960,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_027",
+                3
+              ],
+              [
+                "TRAM_T1_029",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_029",
+            "name": "Метро\nТретьяковская",
+            "x": 1470,
+            "y": 1930,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_028",
+                3
+              ],
+              [
+                "TRAM_T1_030",
+                3
+              ],
+              [
+                "METRO_611",
+                3
+              ],
+              [
+                "METRO_807",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_030",
+            "name": "Метро\nНовокузнецкая",
+            "x": 1470,
+            "y": 1910,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_029",
+                3
+              ],
+              [
+                "TRAM_T1_031",
+                3
+              ],
+              [
+                "METRO_212",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_031",
+            "name": "Комиссариатский\nмост",
+            "x": 1470,
+            "y": 1880,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_030",
+                3
+              ],
+              [
+                "TRAM_T1_032",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_032",
+            "name": "Яузские\nВорота",
+            "x": 1470,
+            "y": 1830,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_031",
+                3
+              ],
+              [
+                "TRAM_T1_033",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_033",
+            "name": "Воронцово\nПоле",
+            "x": 1472,
+            "y": 1769,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_032",
+                3
+              ],
+              [
+                "TRAM_T1_034",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_034",
+            "name": "Казарменный\nпереулок",
+            "x": 1472,
+            "y": 1712,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_033",
+                3
+              ],
+              [
+                "TRAM_T1_035",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_035",
+            "name": "Покровские\nВорота",
+            "x": 1472,
+            "y": 1684,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_034",
+                3
+              ],
+              [
+                "TRAM_T1_036",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_036",
+            "name": "Большой\nХаритоньевский\nпереулок",
+            "x": 1472,
+            "y": 1650,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_035",
+                3
+              ],
+              [
+                "TRAM_T1_037",
+                3
+              ]
+            ],
+            "facilities": {
+              "schedule": "",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "TRAM_T1_037",
+            "name": "Метро\nЧистые\nпруды",
+            "x": 1480,
+            "y": 1630,
+            "textPosition": 3,
+            "neighbors": [
+              [
+                "TRAM_T1_036",
+                3
+              ],
+              [
+                "TRAM_T1_038",
+                3
+              ],
+              [
+                "METRO_107",
+                3
+              ],
+              [
+                "METRO_609",
+                3
+              ],
+              [
+                "METRO_1113",
                 3
               ]
             ],

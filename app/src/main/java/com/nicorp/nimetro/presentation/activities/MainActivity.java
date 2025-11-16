@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
     private ViewPager2.OnPageChangeCallback stationPagerChangeCallback;
+    private StationPagerAdapter currentPagerAdapter;
 
     private Handler locationUpdateHandler;
     private Runnable locationUpdateRunnable;
@@ -1340,6 +1341,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 this, station, curline, prevStation, nextStation,
                 activeTransfers, activeLines, grayedLines, this
         );
+        currentPagerAdapter = pagerAdapter;
 
         ViewPager2 stationPager = findViewById(R.id.stationPager);
         stationPager.setAdapter(pagerAdapter);
@@ -1428,6 +1430,16 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     metroMapView.selectedStation = currentStation;
                     metroMapView.invalidate();
                 }
+
+                Line currentLine = adapter.getLineAtPosition(position);
+                if (currentLine != null) {
+                    androidx.fragment.app.FragmentManager fragmentManager = getSupportFragmentManager();
+                    String fragmentTag = "f" + pager.getId() + ":" + position;
+                    androidx.fragment.app.Fragment fragment = fragmentManager.findFragmentByTag(fragmentTag);
+                    if (fragment instanceof com.nicorp.nimetro.presentation.fragments.StationInfoFragment) {
+                        ((com.nicorp.nimetro.presentation.fragments.StationInfoFragment) fragment).updateLineNumber(currentLine);
+                    }
+                }
             }
         };
         pager.registerOnPageChangeCallback(stationPagerChangeCallback);
@@ -1492,6 +1504,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
             stationPager.setAdapter(null);
             stationPager.setVisibility(View.GONE);
+            currentPagerAdapter = null;
         }
         LinearLayout dotsHost = findViewById(R.id.stationPagerDots);
         if (dotsHost != null) {
@@ -1507,21 +1520,40 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         }
     }
 
+    private Station getCurrentStation() {
+        ViewPager2 stationPager = findViewById(R.id.stationPager);
+        if (stationPager != null && currentPagerAdapter != null) {
+            int currentPosition = stationPager.getCurrentItem();
+            return currentPagerAdapter.getStationAtPosition(currentPosition);
+        }
+        return null;
+    }
+
     @Override
-    public void onSetStart(Station station, boolean fromStationInfoFragment) {
+    public void onSetStart(Station station, Line line, boolean fromStationInfoFragment) {
+        Line lineToUse = line;
+        if (lineToUse == null && selectedEndStation != null) {
+            lineToUse = findOptimalLineForRoute(station, selectedEndStation);
+        }
+        
+        Station stationToUse = findStationInLine(station, lineToUse);
+        if (stationToUse == null) {
+            stationToUse = station;
+        }
+        
         if (selectedStartStation != null) {
             selectedStations.remove(selectedStartStation);
         }
-        selectedStartStation = station;
-        selectedStations.add(station);
+        selectedStartStation = stationToUse;
+        selectedStations.add(stationToUse);
         metroMapView.setSelectedStations(selectedStations);
-        setStationInfo(startStationEditText, station);
+        setStationInfo(startStationEditText, stationToUse);
         startStationEditText.setHint("");
         startStationEditText.clearFocus();
         startStationEditText.setEnabled(false);
 
         // Показываем station_info_layout для начальной станции
-        showStationInfoLayout(station, true);
+        showStationInfoLayout(stationToUse, true);
 
         rebuildRouteIfPossible();
 
@@ -1531,26 +1563,127 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     }
 
     @Override
-    public void onSetEnd(Station station, boolean fromStationInfoFragment) {
+    public void onSetEnd(Station station, Line line, boolean fromStationInfoFragment) {
+        Station stationToUse = findStationInLine(station, line);
+        if (stationToUse == null) {
+            stationToUse = station;
+        }
+        
         if (selectedEndStation != null) {
             selectedStations.remove(selectedEndStation);
         }
-        selectedEndStation = station;
-        selectedStations.add(station);
+        selectedEndStation = stationToUse;
+        selectedStations.add(stationToUse);
         metroMapView.setSelectedStations(selectedStations);
-        setStationInfo(endStationEditText, station);
+        setStationInfo(endStationEditText, stationToUse);
         endStationEditText.setHint("");
         endStationEditText.clearFocus();
         endStationEditText.setEnabled(false);
 
         // Показываем station_info_layout для конечной станции
-        showStationInfoLayout(station, false);
+        showStationInfoLayout(stationToUse, false);
 
         rebuildRouteIfPossible();
 
         if (fromStationInfoFragment) {
             hideStationsList();
         }
+    }
+    
+    private List<Line> findAllLinesForStation(Station station) {
+        List<Line> result = new ArrayList<>();
+        if (station == null || station.getId() == null) {
+            return result;
+        }
+        
+        String stationId = station.getId();
+        Set<String> seenLineIds = new LinkedHashSet<>();
+        
+        List<Line> allLines = new ArrayList<>();
+        if (lines != null) allLines.addAll(lines);
+        if (suburbanLines != null) allLines.addAll(suburbanLines);
+        if (riverTramLines != null) allLines.addAll(riverTramLines);
+        if (tramLines != null) allLines.addAll(tramLines);
+        
+        for (Line line : allLines) {
+            if (line == null || line.getStations() == null || line.getId() == null) {
+                continue;
+            }
+            if (seenLineIds.contains(line.getId())) {
+                continue;
+            }
+            for (Station lineStation : line.getStations()) {
+                if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                    result.add(line);
+                    seenLineIds.add(line.getId());
+                    break;
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    private Line findOptimalLineForRoute(Station startStation, Station endStation) {
+        if (startStation == null || endStation == null || startStation.getId() == null || endStation.getId() == null) {
+            return null;
+        }
+        
+        List<Line> allLinesForStation = findAllLinesForStation(startStation);
+        if (allLinesForStation.isEmpty()) {
+            return null;
+        }
+        
+        if (allLinesForStation.size() == 1) {
+            return allLinesForStation.get(0);
+        }
+        
+        Line optimalLine = null;
+        int minTransfers = Integer.MAX_VALUE;
+        
+        for (Line line : allLinesForStation) {
+            Station stationInLine = findStationInLine(startStation, line);
+            if (stationInLine == null) {
+                continue;
+            }
+            
+            List<Station> route = findOptimalRoute(stationInLine, endStation);
+            if (route == null || route.isEmpty()) {
+                continue;
+            }
+            
+            int transfers = countTransfersInRoute(route);
+            if (transfers < minTransfers) {
+                minTransfers = transfers;
+                optimalLine = line;
+            }
+        }
+        
+        if (optimalLine == null && !allLinesForStation.isEmpty()) {
+            optimalLine = allLinesForStation.get(0);
+        }
+        
+        return optimalLine;
+    }
+
+    private Station findStationInLine(Station station, Line line) {
+        if (station == null || line == null || station.getId() == null) {
+            return null;
+        }
+        
+        List<Station> lineStations = line.getStations();
+        if (lineStations == null) {
+            return null;
+        }
+        
+        String stationId = station.getId();
+        for (Station lineStation : lineStations) {
+            if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                return lineStation;
+            }
+        }
+        
+        return null;
     }
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -1575,7 +1708,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
                             if (nearestStation != null) {
                                 // Устанавливаем ближайшую станцию как начальную
-                                onSetStart(nearestStation, false);
+                                onSetStart(nearestStation, null, false);
                             }
                         }
                     }
@@ -1609,52 +1742,24 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return nearestStation;
     }
 
+    private interface RouteEdgeCostStrategy {
+        int getEdgeCost(Station currentStation, Station.Neighbor neighbor);
+    }
+
     private List<Station> findOptimalRoute(Station start, Station end) {
         Log.d("MainActivity", "Finding optimal route from " + start.getName() + " to " + end.getName());
+        return findRouteWithStrategy(start, end, this::getFastestEdgeCost);
+    }
 
-        // Собираем множество всех станций
-        List<Station> allStations = new ArrayList<>(stations);
-        allStations.addAll(suburbanStations);
-        allStations.addAll(riverTramStations);
-        if (tramStations != null) allStations.addAll(tramStations);
+    private List<Station> findRouteWithFewTransfers(Station start, Station end) {
+        Log.d("MainActivity", "Finding few-transfers route from " + start.getName() + " to " + end.getName());
+        return findRouteWithStrategy(start, end, this::getFewTransfersEdgeCost);
+    }
 
-        // Строим граф смежности: соседи по линиям + рёбра-переходы
-        Map<Station, List<Station.Neighbor>> adjacency = new HashMap<>();
-        for (Station station : allStations) {
-            adjacency.put(station, new ArrayList<>());
-        }
+    private List<Station> findRouteWithStrategy(Station start, Station end, RouteEdgeCostStrategy edgeCostStrategy) {
+        List<Station> allStations = buildAllStationsForRouting();
+        Map<Station, List<Station.Neighbor>> adjacency = buildRoutingAdjacency(allStations);
 
-        // Добавляем рёбра линий
-        for (Station station : allStations) {
-            if (station.getNeighbors() == null) continue;
-            for (Station.Neighbor neighbor : station.getNeighbors()) {
-                adjacency.get(station).add(new Station.Neighbor(neighbor.getStation(), neighbor.getTime()));
-            }
-        }
-
-        // Добавляем рёбра переходов (метро + пригород + речной трамвай + трамвай)
-        List<Transfer> allTransfers = new ArrayList<>();
-        if (this.transfers != null) allTransfers.addAll(this.transfers);
-        if (this.suburbanTransfers != null) allTransfers.addAll(this.suburbanTransfers);
-        if (this.riverTramTransfers != null) allTransfers.addAll(this.riverTramTransfers);
-        if (this.tramTransfers != null) allTransfers.addAll(this.tramTransfers);
-
-        for (Transfer transfer : allTransfers) {
-            List<Station> tStations = transfer.getStations();
-            if (tStations == null || tStations.size() < 2) continue;
-            int cost = Math.max(1, transfer.getTime());
-            for (int i = 0; i < tStations.size(); i++) {
-                Station a = tStations.get(i);
-                for (int j = 0; j < tStations.size(); j++) {
-                    if (i == j) continue;
-                    Station b = tStations.get(j);
-                    if (!adjacency.containsKey(a)) adjacency.put(a, new ArrayList<>());
-                    adjacency.get(a).add(new Station.Neighbor(b, cost));
-                }
-            }
-        }
-
-        // Дейкстра
         Map<Station, Station> previous = new HashMap<>();
         Map<Station, Integer> distances = new HashMap<>();
         PriorityQueue<Station> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
@@ -1666,16 +1771,23 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         while (!queue.isEmpty()) {
             Station current = queue.poll();
-            if (current == null) break;
+            if (current == null) {
+                break;
+            }
             if (current.getId().equals(end.getId())) {
                 break;
             }
             List<Station.Neighbor> neighbors = adjacency.get(current);
-            if (neighbors == null) continue;
+            if (neighbors == null) {
+                continue;
+            }
             for (Station.Neighbor neighbor : neighbors) {
                 Station neighborStation = neighbor.getStation();
-                if (!distances.containsKey(neighborStation)) continue;
-                int newDistance = distances.get(current) + neighbor.getTime();
+                if (!distances.containsKey(neighborStation)) {
+                    continue;
+                }
+                int edgeCost = edgeCostStrategy.getEdgeCost(current, neighbor);
+                int newDistance = distances.get(current) + edgeCost;
                 if (newDistance < distances.get(neighborStation)) {
                     distances.put(neighborStation, newDistance);
                     previous.put(neighborStation, current);
@@ -1684,7 +1796,6 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         }
 
-        // Восстановление пути
         List<Station> route = new ArrayList<>();
         for (Station station = end; station != null; station = previous.get(station)) {
             route.add(station);
@@ -1693,17 +1804,161 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return route;
     }
 
+    private List<Station> buildAllStationsForRouting() {
+        List<Station> allStations = new ArrayList<>(stations);
+        allStations.addAll(suburbanStations);
+        allStations.addAll(riverTramStations);
+        if (tramStations != null) {
+            allStations.addAll(tramStations);
+        }
+        return allStations;
+    }
+
+    private Map<Station, List<Station.Neighbor>> buildRoutingAdjacency(List<Station> allStations) {
+        Map<Station, List<Station.Neighbor>> adjacency = new HashMap<>();
+        for (Station station : allStations) {
+            adjacency.put(station, new ArrayList<>());
+        }
+
+        for (Station station : allStations) {
+            if (station.getNeighbors() == null) {
+                continue;
+            }
+            for (Station.Neighbor neighbor : station.getNeighbors()) {
+                adjacency.get(station).add(new Station.Neighbor(neighbor.getStation(), neighbor.getTime()));
+            }
+        }
+
+        List<Transfer> allTransfers = new ArrayList<>();
+        if (transfers != null) {
+            allTransfers.addAll(transfers);
+        }
+        if (suburbanTransfers != null) {
+            allTransfers.addAll(suburbanTransfers);
+        }
+        if (riverTramTransfers != null) {
+            allTransfers.addAll(riverTramTransfers);
+        }
+        if (tramTransfers != null) {
+            allTransfers.addAll(tramTransfers);
+        }
+
+        for (Transfer transfer : allTransfers) {
+            List<Station> transferStations = transfer.getStations();
+            if (transferStations == null || transferStations.size() < 2) {
+                continue;
+            }
+            int cost = Math.max(1, transfer.getTime());
+            for (int i = 0; i < transferStations.size(); i++) {
+                Station stationFrom = transferStations.get(i);
+                for (int j = 0; j < transferStations.size(); j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    Station stationTo = transferStations.get(j);
+                    if (!adjacency.containsKey(stationFrom)) {
+                        adjacency.put(stationFrom, new ArrayList<>());
+                    }
+                    adjacency.get(stationFrom).add(new Station.Neighbor(stationTo, cost));
+                }
+            }
+        }
+
+        return adjacency;
+    }
+
+    private int getFastestEdgeCost(Station currentStation, Station.Neighbor neighbor) {
+        return neighbor.getTime();
+    }
+
+    private int getFewTransfersEdgeCost(Station currentStation, Station.Neighbor neighbor) {
+        Station neighborStation = neighbor.getStation();
+        if (currentStation == null || neighborStation == null) {
+            return neighbor.getTime();
+        }
+        String currentColor = currentStation.getColor();
+        String neighborColor = neighborStation.getColor();
+        int baseTime = neighbor.getTime();
+        if (currentColor != null && neighborColor != null && !currentColor.equals(neighborColor)) {
+            int transferPenalty = 10;
+            return baseTime + transferPenalty;
+        }
+        return baseTime;
+    }
+
+    private int countTransfersInRoute(List<Station> route) {
+        if (route == null || route.size() < 2) {
+            return 0;
+        }
+        
+        int transfers = 0;
+        for (int i = 1; i < route.size(); i++) {
+            Station prevStation = route.get(i - 1);
+            Station currentStation = route.get(i);
+            
+            if (prevStation == null || currentStation == null) {
+                continue;
+            }
+            
+            String prevColor = prevStation.getColor();
+            String currentColor = currentStation.getColor();
+            
+            if (prevColor != null && currentColor != null && !prevColor.equals(currentColor)) {
+                transfers++;
+            }
+        }
+        
+        return transfers;
+    }
+
     private void rebuildRouteIfPossible() {
         if (selectedStartStation != null && selectedEndStation != null) {
-            List<Station> route = findOptimalRoute(selectedStartStation, selectedEndStation);
-            metroMapView.setRoute(route);
-            showRouteInfo(route);
+            if (metroMapView != null) {
+                metroMapView.clearRoute();
+            }
+            List<Station> fastestRoute = findOptimalRoute(selectedStartStation, selectedEndStation);
+            List<Station> fewTransfersRoute = findRouteWithFewTransfers(selectedStartStation, selectedEndStation);
+            if (fastestRoute != null && !fastestRoute.isEmpty()) {
+                if (metroMapView != null) {
+                    metroMapView.setRoute(fastestRoute);
+                }
+                showRouteInfo(fastestRoute, fewTransfersRoute);
+            } else {
+                if (metroMapView != null) {
+                    metroMapView.clearRoute();
+                }
+            }
+        } else {
+            if (metroMapView != null) {
+                metroMapView.clearRoute();
+            }
         }
     }
 
     public void clearRouteInputs() {
+        if (metroMapView != null) {
+            metroMapView.clearRoute();
+        }
         startStationEditText.setText("");
         endStationEditText.setText("");
+        if (selectedStartStation != null) {
+            if (selectedStations != null) {
+                selectedStations.remove(selectedStartStation);
+            }
+        }
+        if (selectedEndStation != null) {
+            if (selectedStations != null) {
+                selectedStations.remove(selectedEndStation);
+            }
+        }
+        selectedStartStation = null;
+        selectedEndStation = null;
+        if (selectedStations != null) {
+            selectedStations.clear();
+        }
+        if (metroMapView != null) {
+            metroMapView.clearSelectedStations();
+        }
     }
 
     private void clearRoute() {
@@ -1714,6 +1969,19 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private void showRouteInfo(List<Station> route) {
         clearFrameLayout();
         RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(route, metroMapView, this);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, routeInfoFragment)
+                .commit();
+    }
+
+    private void showRouteInfo(List<Station> fastestRoute, List<Station> fewTransfersRoute) {
+        clearFrameLayout();
+        RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstanceWithVariants(
+                fastestRoute,
+                fewTransfersRoute,
+                metroMapView,
+                this
+        );
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, routeInfoFragment)
                 .commit();
@@ -1755,10 +2023,10 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     public void onStationSelected(Station station) {
         if (startStationEditText.hasFocus()) {
             setStationInfo(startStationEditText, station);
-            onSetStart(station, true);
+            onSetStart(station, null, true);
         } else if (endStationEditText.hasFocus()) {
             setStationInfo(endStationEditText, station);
-            onSetEnd(station, true);
+            onSetEnd(station, null, true);
         }
         hideStationsList();
     }

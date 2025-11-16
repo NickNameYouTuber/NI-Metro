@@ -27,27 +27,11 @@
         app:layout_constraintTop_toTopOf="@+id/nextStationName" />
 
     <!-- Main content container -->
-    <View
-        android:id="@+id/lineColorStrip"
+    <FrameLayout
+        android:id="@+id/lineColorStripContainer"
         android:layout_width="30dp"
         android:layout_height="0dp"
-        android:background="@drawable/linestrip_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/lineNumber"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/circle_background_red"
-
-        android:gravity="center"
-        android:text="1"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/stationName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,11 +40,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
         android:text="Сокольники"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintStart_toEndOf="@+id/lineColorStripContainer"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -94,7 +79,7 @@
         android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lineColorStrip">
+        app:layout_constraintStart_toEndOf="@+id/lineColorStripContainer">
 
         <TextView
             android:id="@+id/fromButton"

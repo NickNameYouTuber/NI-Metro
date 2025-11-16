@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.color.MaterialColors;
 
 import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.api.YandexRaspApi;
@@ -74,6 +77,7 @@ public class StationInfoFragment extends Fragment {
     private Station prevStation;
     private Station nextStation;
     private OnStationInfoListener listener;
+    private Line selectedLineForStation;
 
     public static StationInfoFragment newInstance(Line line, Station station, Station prevStation, Station nextStation, List<Transfer> transfers, List<Line> lines, List<Line> grayedLines) {
         StationInfoFragment fragment = new StationInfoFragment();
@@ -135,9 +139,7 @@ public class StationInfoFragment extends Fragment {
         ImageView closeButton = view.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> dismiss());
 
-        TextView lineNumber = view.findViewById(R.id.lineNumber);
-        View lineColorStrip = view.findViewById(R.id.lineColorStrip);
-        setLineNumberAndColor(lineNumber, lineColorStrip, station);
+        setupLinesList(view, station);
 
         // Вызов fetchESPSchedule
         fetchESPSchedule(station);
@@ -408,7 +410,7 @@ public class StationInfoFragment extends Fragment {
 
     private TextView createNeighborTextView(android.content.Context context) {
         TextView textView = new TextView(context);
-        int textColor = resolveThemeColor(com.google.android.material.R.attr.colorOnBackground);
+        int textColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, Color.BLACK);
         textView.setTextColor(textColor);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
         textView.setGravity(Gravity.CENTER_VERTICAL);
@@ -654,23 +656,22 @@ public class StationInfoFragment extends Fragment {
 
     private void onFromButtonClick() {
         if (listener != null) {
-            listener.onSetStart(station, true);
+            listener.onSetStart(station, null, true);
         }
         dismiss();
     }
 
     private void onToButtonClick() {
         if (listener != null) {
-            listener.onSetEnd(station, true);
+            listener.onSetEnd(station, null, true);
         }
         dismiss();
     }
 
     private void setLineNumberAndColor(TextView lineNumber, View lineColorStrip, Station station) {
-        Line foundLine = findLineByStation(station);
+        Line foundLine = line;
         if (foundLine == null) {
-            // Если не нашли линию, используем переданную линию
-            foundLine = line;
+            foundLine = findLineByStation(station);
         }
         
         if (foundLine == null) {
@@ -693,7 +694,6 @@ public class StationInfoFragment extends Fragment {
         
         lineNumber.setText(displayNumber != null ? displayNumber : "");
 
-        lineColorStrip.setBackgroundTintList(ColorStateList.valueOf(parseColorOrDefault(station.getColor(), Color.BLACK)));
 
         Shape shape = getLineShapeForStation(station);
         float density = getResources().getDisplayMetrics().density;
@@ -874,13 +874,14 @@ public class StationInfoFragment extends Fragment {
         TextView stationName = getView().findViewById(R.id.stationName);
         stationName.setText(newStation.getName());
 
+        if (getView() != null && newStation != null) {
+            setupLinesList(getView(), newStation);
+        }
+
         LinearLayout upperStationsContainer = getView().findViewById(R.id.upperStationsContainer);
         LinearLayout lowerStationsContainer = getView().findViewById(R.id.lowerStationsContainer);
         updateNeighborViews(upperStationsContainer, lowerStationsContainer);
 
-        TextView lineNumber = getView().findViewById(R.id.lineNumber);
-        View lineColorStrip = getView().findViewById(R.id.lineColorStrip);
-        setLineNumberAndColor(lineNumber, lineColorStrip, newStation);
 
 //        LinearLayout transferCirclesContainer = getView().findViewById(R.id.transferCirclesContainer);
 //        transferCirclesContainer.removeAllViews(); // Очищаем старые переходы
@@ -888,6 +889,16 @@ public class StationInfoFragment extends Fragment {
 
         // Обновляем расписание (если нужно)
         fetchESPSchedule(newStation);
+    }
+
+    public void updateLineNumber(Line newLine) {
+        if (newLine == null || getView() == null) {
+            return;
+        }
+        this.line = newLine;
+        if (getView() != null && station != null) {
+            setupLinesList(getView(), station);
+        }
     }
 
     private Line findLineByStation(Station station) {
@@ -920,6 +931,52 @@ public class StationInfoFragment extends Fragment {
         }
         
         return null;
+    }
+
+    private List<Line> findAllLinesForStation(Station station) {
+        List<Line> result = new ArrayList<>();
+        if (station == null || station.getId() == null) {
+            return result;
+        }
+        
+        String stationId = station.getId();
+        Set<String> seenLineIds = new LinkedHashSet<>();
+        
+        if (lines != null) {
+            for (Line l : lines) {
+                if (l != null && l.getStations() != null && l.getId() != null) {
+                    if (seenLineIds.contains(l.getId())) {
+                        continue;
+                    }
+                    for (Station s : l.getStations()) {
+                        if (s != null && s.getId() != null && s.getId().equals(stationId)) {
+                            result.add(l);
+                            seenLineIds.add(l.getId());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (grayedLines != null) {
+            for (Line l : grayedLines) {
+                if (l != null && l.getStations() != null && l.getId() != null) {
+                    if (seenLineIds.contains(l.getId())) {
+                        continue;
+                    }
+                    for (Station s : l.getStations()) {
+                        if (s != null && s.getId() != null && s.getId().equals(stationId)) {
+                            result.add(l);
+                            seenLineIds.add(l.getId());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
 
     private String getLineIdForStation(Station station) {
@@ -981,6 +1038,8 @@ public class StationInfoFragment extends Fragment {
                         return new CircleShape(parseColorOrDefault(line.getColor(), Color.BLACK));
                     } else if (displayShape != null && displayShape.equals("PARALLELOGRAM")) {
                         return new ParallelogramShape(parseColorOrDefault(line.getColor(), Color.BLACK));
+                    } else if (displayShape != null && displayShape.equals("MTD")) {
+                        return new ParallelogramShape(parseColorOrDefault(line.getColor(), Color.BLACK));
                     }
                 }
             }
@@ -1016,6 +1075,208 @@ public class StationInfoFragment extends Fragment {
         return "#000000";
     }
 
+    private View createLineIndicatorView(Line line, Station stationForLine) {
+        if (line == null || getContext() == null) {
+            return null;
+        }
+
+        TextView lineIndicator = new TextView(getContext());
+        
+        String displayNumber = line.getLineDisplayNumberForStation(stationForLine);
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = line.getdisplayNumber();
+        }
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = line.getId();
+        }
+        lineIndicator.setText(displayNumber != null ? displayNumber : "");
+
+        int textColor = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnBackground, Color.BLACK);
+        lineIndicator.setTextColor(textColor);
+        
+        Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+        if (customTypeface != null) {
+            lineIndicator.setTypeface(customTypeface, Typeface.BOLD);
+        } else {
+            lineIndicator.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        }
+        
+        lineIndicator.setTextSize(16);
+        lineIndicator.setPadding(0, (int) (4 * getResources().getDisplayMetrics().density), 0, (int) (4 * getResources().getDisplayMetrics().density));
+        
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        lineIndicator.setLayoutParams(params);
+        
+        lineIndicator.setOnClickListener(v -> {
+            selectedLineForStation = line;
+            updateStationInfoForLine(line);
+        });
+        
+        return lineIndicator;
+    }
+
+    private LinearLayout createLineColorStripLayer(Line line, Station stationForLine, int layerIndex, int totalLayers) {
+        if (line == null || getContext() == null) {
+            return null;
+        }
+
+        LinearLayout layer = new LinearLayout(getContext());
+        layer.setOrientation(LinearLayout.VERTICAL);
+        layer.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        layer.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.linestrip_background));
+        
+        int lineColor = parseColorOrDefault(stationForLine.getColor(), Color.BLACK);
+        layer.setBackgroundTintList(ColorStateList.valueOf(lineColor));
+
+        float density = getResources().getDisplayMetrics().density;
+        
+        boolean isSelected = (selectedLineForStation != null && selectedLineForStation.getId().equals(line.getId())) ||
+                             (selectedLineForStation == null && line == null && layerIndex == 0) ||
+                             (selectedLineForStation == null && line != null && this.line != null && this.line.getId().equals(line.getId()));
+        
+        if (isSelected) {
+            layer.setPadding((int) (2 * density), (int) (2 * density), (int) (2 * density), (int) (2 * density));
+        }
+        float textSizeSp = 16f;
+        float textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSizeSp, getResources().getDisplayMetrics());
+        float textPaddingTop = 4 * density;
+        float textPaddingBottom = 4 * density;
+        float textHeight = textSizePx + textPaddingTop + textPaddingBottom;
+        float offsetDp = (textHeight / density) + 8f;
+        int offsetPx = (int) (offsetDp * density);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        );
+        params.topMargin = offsetPx * layerIndex;
+        params.bottomMargin = offsetPx * (totalLayers - layerIndex - 1);
+        layer.setLayoutParams(params);
+
+        TextView lineNumberView = new TextView(getContext());
+        String displayNumber = line.getLineDisplayNumberForStation(stationForLine);
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = line.getdisplayNumber();
+        }
+        if (displayNumber == null || displayNumber.isEmpty()) {
+            displayNumber = line.getId();
+        }
+        lineNumberView.setText(displayNumber != null ? displayNumber : "");
+
+        int textColor = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorOnBackground, Color.BLACK);
+        lineNumberView.setTextColor(textColor);
+
+        Typeface customTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+        if (customTypeface != null) {
+            lineNumberView.setTypeface(customTypeface, Typeface.BOLD);
+        } else {
+            lineNumberView.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        }
+
+        lineNumberView.setTextSize(16);
+        lineNumberView.setPadding(0, (int) (4 * density), 0, (int) (4 * density));
+        lineNumberView.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        lineNumberView.setLayoutParams(textParams);
+
+        lineNumberView.setOnClickListener(v -> {
+            selectedLineForStation = line;
+            updateStationInfoForLine(line);
+        });
+
+        layer.addView(lineNumberView);
+
+        return layer;
+    }
+
+    private void setupLinesList(View view, Station station) {
+        if (view == null || station == null) {
+            return;
+        }
+
+        FrameLayout lineColorStripContainer = view.findViewById(R.id.lineColorStripContainer);
+        if (lineColorStripContainer == null) {
+            return;
+        }
+
+        List<Line> allLinesForStation = findAllLinesForStation(station);
+        if (allLinesForStation == null || allLinesForStation.isEmpty()) {
+            lineColorStripContainer.removeAllViews();
+            return;
+        }
+
+        lineColorStripContainer.removeAllViews();
+
+        int totalLayers = allLinesForStation.size();
+        for (int i = 0; i < totalLayers; i++) {
+            Line line = allLinesForStation.get(i);
+            Station lineStation = findStationInLine(station, line);
+            if (lineStation == null) {
+                lineStation = station;
+            }
+            
+            LinearLayout layer = createLineColorStripLayer(line, lineStation, i, totalLayers);
+            if (layer != null) {
+                lineColorStripContainer.addView(layer);
+            }
+        }
+
+        if (line == null && !allLinesForStation.isEmpty()) {
+            selectedLineForStation = allLinesForStation.get(0);
+            line = selectedLineForStation;
+        } else {
+            selectedLineForStation = line;
+        }
+    }
+
+    private Station findStationInLine(Station station, Line line) {
+        if (station == null || line == null || station.getId() == null || line.getStations() == null) {
+            return null;
+        }
+        String stationId = station.getId();
+        for (Station lineStation : line.getStations()) {
+            if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                return lineStation;
+            }
+        }
+        return null;
+    }
+
+    private void updateStationInfoForLine(Line selectedLine) {
+        if (selectedLine == null || station == null || getView() == null) {
+            return;
+        }
+
+        Station stationForLine = findStationInLine(station, selectedLine);
+        if (stationForLine == null) {
+            stationForLine = station;
+        }
+
+        this.line = selectedLine;
+        this.selectedLineForStation = selectedLine;
+
+        Station prev = findPrevStation(selectedLine, stationForLine);
+        Station next = findNextStation(selectedLine, stationForLine);
+        this.prevStation = prev;
+        this.nextStation = next;
+
+        if (getView() != null && stationForLine != null) {
+            setupLinesList(getView(), stationForLine);
+        }
+
+        updateNeighborViews(
+                getView().findViewById(R.id.upperStationsContainer),
+                getView().findViewById(R.id.lowerStationsContainer)
+        );
+    }
+
     public void setOnStationInfoListener(OnStationInfoListener listener) {
         this.listener = listener;
     }
@@ -1027,8 +1288,8 @@ public class StationInfoFragment extends Fragment {
     }
 
     public interface OnStationInfoListener {
-        void onSetStart(Station station, boolean fromStationInfoFragment);
-        void onSetEnd(Station station, boolean fromStationInfoFragment);
-        void onDismiss(); // Добавляем новый метод для закрытия ViewPager2
+        void onSetStart(Station station, Line line, boolean fromStationInfoFragment);
+        void onSetEnd(Station station, Line line, boolean fromStationInfoFragment);
+        void onDismiss();
     }
 }

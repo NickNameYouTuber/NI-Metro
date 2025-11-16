@@ -60,18 +60,22 @@ public class StationPagerAdapter extends FragmentStateAdapter {
             return fragment;
         }
 
-        TransferStationEntry entry = getTransferStationEntry(position - 1);
-        if (entry != null) {
-            Station transferStation = entry.station;
-            Line transferLine = findLineForStation(transferStation);
-            Station transferPrev = findPrevStation(transferLine, transferStation);
-            Station transferNext = findNextStation(transferLine, transferStation);
+        int transferCount = transferStationEntries.size();
+        if (position <= transferCount) {
+            // Станции из переходов
+            TransferStationEntry entry = getTransferStationEntry(position - 1);
+            if (entry != null) {
+                Station transferStation = entry.station;
+                Line transferLine = findLineForStation(transferStation);
+                Station transferPrev = findPrevStation(transferLine, transferStation);
+                Station transferNext = findNextStation(transferLine, transferStation);
 
-            StationInfoFragment fragment = StationInfoFragment.newInstance(
-                    transferLine, transferStation, transferPrev, transferNext,
-                    transfers, lines, grayedLines);
-            fragment.setOnStationInfoListener(listener);
-            return fragment;
+                StationInfoFragment fragment = StationInfoFragment.newInstance(
+                        transferLine, transferStation, transferPrev, transferNext,
+                        transfers, lines, grayedLines);
+                fragment.setOnStationInfoListener(listener);
+                return fragment;
+            }
         }
         return new Fragment(); // Fallback
     }
@@ -85,17 +89,26 @@ public class StationPagerAdapter extends FragmentStateAdapter {
         if (position == 0) {
             return mainStation;
         }
-        TransferStationEntry entry = getTransferStationEntry(position - 1);
-        return entry != null ? entry.station : null;
+        
+        int transferCount = transferStationEntries.size();
+        if (position <= transferCount) {
+            TransferStationEntry entry = getTransferStationEntry(position - 1);
+            return entry != null ? entry.station : null;
+        }
+        return null;
     }
 
     public Line getLineAtPosition(int position) {
         if (position == 0) {
             return mainLine;
         }
-        TransferStationEntry entry = getTransferStationEntry(position - 1);
-        if (entry != null) {
-            return findLineForStation(entry.station);
+        
+        int transferCount = transferStationEntries.size();
+        if (position <= transferCount) {
+            TransferStationEntry entry = getTransferStationEntry(position - 1);
+            if (entry != null) {
+                return findLineForStation(entry.station);
+            }
         }
         return null;
     }

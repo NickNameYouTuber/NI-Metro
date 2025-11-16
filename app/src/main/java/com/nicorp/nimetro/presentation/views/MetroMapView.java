@@ -78,10 +78,14 @@ public class MetroMapView extends View {
     }
     
     private static final LineRenderingMethod LINE_RENDERING_METHOD = LineRenderingMethod.POLYGONAL_OUTLINE;
-    
+
     private static final float LINE_WIDTH = 6f;
     private static final float DOUBLE_LINE_WIDTH = 4.5f;
     private static final float DOUBLE_LINE_GAP = 2.5f;
+    
+    private static final float TRAM_STRIPE_WIDTH = 4f;
+    private static final float TRAM_STRIPE_OFFSET = 2f;
+    private static final int TRAM_STRIPE_ALPHA = 255;
     private static final float BEZIER_SEGMENT_STEP = 0.01f;
     
     public Station selectedStation = null;
@@ -657,8 +661,8 @@ public class MetroMapView extends View {
     public void setRoute(List<Station> route) {
         this.route = route;
         isSelectionBlocked = true; // Блокируем выбор станций
-        updateRouteCache(); // Очищаем кэш перед обновлением
-        needsRedraw = true;
+        needsRedraw = true; // Устанавливаем флаг перерисовки перед обновлением кэша
+        updateRouteCache(); // Обновляем кэш маршрута
         invalidate();
 
         if (route != null && route.size() > 1) {
@@ -687,8 +691,8 @@ public class MetroMapView extends View {
     public void clearRoute() {
         this.route = null; // Очищаем текущий маршрут
         isSelectionBlocked = false; // Разблокируем выбор станций
-        updateRouteCache(); // Очищаем кэш маршрута
         needsRedraw = true; // Указываем, что нужно перерисовать карту
+        updateRouteCache(); // Очищаем кэш маршрута (вызываем после установки needsRedraw)
         invalidate(); // Запускаем перерисовку
     }
 
@@ -815,6 +819,7 @@ public class MetroMapView extends View {
 
         List<StrokeSegment> transferStrokes = new ArrayList<>(); // красные основные сегменты
         List<CrossSegmentStroke> crossStrokes = new ArrayList<>(); // кроссплатформенные цветные сегменты
+        Map<String, SegmentInfo> segmentInfos = new HashMap<>(); // Информация о сегментах для трамвайных маршрутов
         boolean isInitialized = false;
     }
 
@@ -840,12 +845,16 @@ public class MetroMapView extends View {
         int startIndex;
         int endIndex;
         Path segmentPath;
+        Float cachedIndicatorX;
+        Float cachedIndicatorY;
 
         RouteLineSegment(Line line, int startIndex, int endIndex, Path segmentPath) {
             this.line = line;
             this.startIndex = startIndex;
             this.endIndex = endIndex;
             this.segmentPath = segmentPath;
+            this.cachedIndicatorX = null;
+            this.cachedIndicatorY = null;
         }
     }
 
@@ -866,6 +875,26 @@ public class MetroMapView extends View {
             this.edge = edge;
             this.nearestStationX = nearestStationX;
             this.nearestStationY = nearestStationY;
+        }
+    }
+
+    private static class SegmentInfo {
+        String segmentKey;
+        Station station1;
+        Station station2;
+        List<Line> lines;
+        Path basePath;
+        List<Point> intermediatePoints;
+        String lineType;
+
+        SegmentInfo(String segmentKey, Station station1, Station station2, List<Line> lines, Path basePath, List<Point> intermediatePoints, String lineType) {
+            this.segmentKey = segmentKey;
+            this.station1 = station1;
+            this.station2 = station2;
+            this.lines = lines;
+            this.basePath = basePath;
+            this.intermediatePoints = intermediatePoints;
+            this.lineType = lineType;
         }
     }
 
@@ -995,42 +1024,12 @@ public class MetroMapView extends View {
     }
 
 
-    private void drawSelectedStationIndicator(Canvas canvas, float stationX, float stationY) {
-        if (selectedStation == null) {
-            return;
-        }
-        Line lineForStation = findLineForStation(selectedStation);
-        if (lineForStation == null) {
+    private void drawLineIndicatorShape(Canvas canvas, Line line, Station station, float centerX, float centerY, float radius, Paint bubblePaint, Paint outlinePaint) {
+        if (line == null || station == null) {
             return;
         }
 
-        String displayNumber = lineForStation.getLineDisplayNumberForStation(selectedStation);
-        if (displayNumber == null || displayNumber.trim().isEmpty()) {
-            displayNumber = lineForStation.getdisplayNumber();
-        }
-        if (displayNumber == null || displayNumber.trim().isEmpty()) {
-            displayNumber = lineForStation.getId();
-        }
-        if (displayNumber == null || displayNumber.trim().isEmpty()) {
-            return;
-        }
-
-        int lineColor = parseColorSafely(lineForStation.getColor(), mapTextColor);
-        String displayShape = lineForStation.getDisplayShape();
-        float radius = 40f;
-        float verticalSpacing = 30f;
-        float shapeCenterY = stationY - radius - verticalSpacing;
-        float centerX = stationX;
-        float centerY = shapeCenterY;
-
-        Paint bubblePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bubblePaint.setStyle(Paint.Style.FILL);
-        bubblePaint.setColor(lineColor);
-
-        Paint outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        outlinePaint.setStyle(Paint.Style.STROKE);
-        outlinePaint.setStrokeWidth(6f);
-        outlinePaint.setColor(mapBackgroundColor);
+        String displayShape = line.getDisplayShape();
 
         if (displayShape != null && displayShape.equals("SQUARE")) {
             RectF squareRect = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
@@ -1050,30 +1049,211 @@ public class MetroMapView extends View {
             parallelogramPath.close();
             canvas.drawPath(parallelogramPath, bubblePaint);
             canvas.drawPath(parallelogramPath, outlinePaint);
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float x = radius * 2.0f / 3.0f;
+            float longSide = radius * 2.0f;
+            float height = x * (float) Math.sqrt(3.0);
+            float horizontalOffset = x * 0.5f;
+            
+            float trapezoidOffset = radius * 0.3f;
+            float trapezoidTopWidth = longSide * 1.3f;
+            float trapezoidHeight = height;
+            
+            Paint mtdPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdPaint.setColor(parseColorSafely("#4564B7", mapTextColor));
+            mtdPaint.setStyle(Paint.Style.FILL);
+            
+            Path trapezoidPath = new Path();
+            float trapezoidLeft = centerX - longSide / 2.0f - trapezoidTopWidth - trapezoidOffset;
+            float topLeftX = trapezoidLeft;
+            float topRightX = trapezoidLeft + trapezoidTopWidth;
+            float topY = centerY + trapezoidHeight / 2.0f;
+            float bottomY = centerY - trapezoidHeight / 2.0f;
+            
+            float bottomLeftX = topLeftX + horizontalOffset;
+            float bottomRightX = topRightX - horizontalOffset;
+            
+            trapezoidPath.moveTo(topLeftX, topY);
+            trapezoidPath.lineTo(topRightX, topY);
+            trapezoidPath.lineTo(bottomRightX, bottomY);
+            trapezoidPath.lineTo(bottomLeftX, bottomY);
+            trapezoidPath.close();
+            canvas.drawPath(trapezoidPath, mtdPaint);
+            canvas.drawPath(trapezoidPath, outlinePaint);
+            
+            Paint mtdTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdTextPaint.setColor(Color.WHITE);
+            mtdTextPaint.setTextAlign(Paint.Align.CENTER);
+            Typeface mtdTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            if (mtdTypeface != null) {
+                mtdTextPaint.setTypeface(Typeface.create(mtdTypeface, Typeface.BOLD));
+            } else {
+                mtdTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+            mtdTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.2f);
+            float mtdTextX = trapezoidLeft + trapezoidTopWidth / 2.0f;
+            float mtdTextY = centerY - (mtdTextPaint.ascent() + mtdTextPaint.descent()) / 2f;
+            canvas.drawText("МТД", mtdTextX, mtdTextY, mtdTextPaint);
+            
+            Path parallelogramPath = new Path();
+            parallelogramPath.moveTo(centerX - longSide / 2.0f, centerY + height / 2.0f);
+            parallelogramPath.lineTo(centerX + longSide / 2.0f, centerY + height / 2.0f);
+            parallelogramPath.lineTo(centerX + longSide / 2.0f - horizontalOffset, centerY - height / 2.0f);
+            parallelogramPath.lineTo(centerX - longSide / 2.0f - horizontalOffset, centerY - height / 2.0f);
+            parallelogramPath.close();
+            canvas.drawPath(parallelogramPath, bubblePaint);
+            canvas.drawPath(parallelogramPath, outlinePaint);
         } else {
             canvas.drawCircle(centerX, centerY, radius, bubblePaint);
             canvas.drawCircle(centerX, centerY, radius, outlinePaint);
         }
+    }
 
-        Paint indicatorTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        indicatorTextPaint.setColor(mapStationFillColor);
-        indicatorTextPaint.setTextAlign(Paint.Align.CENTER);
-        Typeface indicatorTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
-        if (indicatorTypeface != null) {
-            indicatorTextPaint.setTypeface(indicatorTypeface);
-        } else {
-            indicatorTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+    private void drawLineIndicatorText(Canvas canvas, Line line, Station station, float centerX, float centerY, float radius, Paint indicatorTextPaint) {
+        if (line == null || station == null) {
+            return;
         }
-        indicatorTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.6f);
 
-        float textX = stationX;
+        String displayNumber = line.getLineDisplayNumberForStation(station);
+        if (displayNumber == null || displayNumber.trim().isEmpty()) {
+            displayNumber = line.getdisplayNumber();
+        }
+        if (displayNumber == null || displayNumber.trim().isEmpty()) {
+            displayNumber = line.getId();
+        }
+        if (displayNumber == null || displayNumber.trim().isEmpty()) {
+            return;
+        }
+
+        String displayShape = line.getDisplayShape();
+        float textX = centerX;
         if (displayShape != null && displayShape.equals("PARALLELOGRAM")) {
             float x = radius * 2.0f / 3.0f;
             float horizontalOffset = x * 0.5f;
             textX = centerX + horizontalOffset / 2.0f;
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float x = radius * 2.0f / 3.0f;
+            float horizontalOffset = x * 0.5f;
+            textX = centerX - horizontalOffset / 2.0f;
         }
         float textY = centerY - (indicatorTextPaint.ascent() + indicatorTextPaint.descent()) / 2f;
         canvas.drawText(displayNumber, textX, textY, indicatorTextPaint);
+    }
+
+    private void drawSelectedStationIndicator(Canvas canvas, float stationX, float stationY) {
+        if (selectedStation == null) {
+            return;
+        }
+
+        if (isSharedStation(selectedStation)) {
+            List<Line> allLines = findAllLinesForStation(selectedStation);
+            if (allLines == null || allLines.size() < 2) {
+                return;
+            }
+
+            float radius = 40f;
+            float verticalSpacing = 30f;
+            float shapeCenterY = stationY - radius - verticalSpacing;
+            float horizontalSpacing = radius * 2.5f;
+            float startX = stationX - (horizontalSpacing * (allLines.size() - 1)) / 2f;
+
+            Paint bubblePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            bubblePaint.setStyle(Paint.Style.FILL);
+
+            Paint outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            outlinePaint.setStyle(Paint.Style.STROKE);
+            outlinePaint.setStrokeWidth(6f);
+            outlinePaint.setColor(mapBackgroundColor);
+
+            Paint indicatorTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            indicatorTextPaint.setColor(mapStationFillColor);
+            indicatorTextPaint.setTextAlign(Paint.Align.CENTER);
+            Typeface indicatorTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            if (indicatorTypeface != null) {
+                indicatorTextPaint.setTypeface(indicatorTypeface);
+            } else {
+                indicatorTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+            indicatorTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.6f);
+
+            for (int i = 0; i < allLines.size(); i++) {
+                Line line = allLines.get(i);
+                Station lineStation = findStationInLine(selectedStation, line);
+                if (lineStation == null) {
+                    lineStation = selectedStation;
+                }
+
+                float centerX = startX + horizontalSpacing * i;
+                float centerY = shapeCenterY;
+
+                int lineColor = parseColorSafely(line.getColor(), mapTextColor);
+                bubblePaint.setColor(lineColor);
+
+                drawLineIndicatorShape(canvas, line, lineStation, centerX, centerY, radius, bubblePaint, outlinePaint);
+                drawLineIndicatorText(canvas, line, lineStation, centerX, centerY, radius, indicatorTextPaint);
+            }
+        } else {
+            Line lineForStation = findLineForStation(selectedStation);
+            if (lineForStation == null) {
+                return;
+            }
+
+            String displayNumber = lineForStation.getLineDisplayNumberForStation(selectedStation);
+            if (displayNumber == null || displayNumber.trim().isEmpty()) {
+                displayNumber = lineForStation.getdisplayNumber();
+            }
+            if (displayNumber == null || displayNumber.trim().isEmpty()) {
+                displayNumber = lineForStation.getId();
+            }
+            if (displayNumber == null || displayNumber.trim().isEmpty()) {
+                return;
+            }
+
+            int lineColor = parseColorSafely(lineForStation.getColor(), mapTextColor);
+            String displayShape = lineForStation.getDisplayShape();
+            float radius = 40f;
+            float verticalSpacing = 30f;
+            float shapeCenterY = stationY - radius - verticalSpacing;
+            float centerX = stationX;
+            float centerY = shapeCenterY;
+
+            Paint bubblePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            bubblePaint.setStyle(Paint.Style.FILL);
+            bubblePaint.setColor(lineColor);
+
+            Paint outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            outlinePaint.setStyle(Paint.Style.STROKE);
+            outlinePaint.setStrokeWidth(6f);
+            outlinePaint.setColor(mapBackgroundColor);
+
+            drawLineIndicatorShape(canvas, lineForStation, selectedStation, centerX, centerY, radius, bubblePaint, outlinePaint);
+
+            Paint indicatorTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            indicatorTextPaint.setColor(mapStationFillColor);
+            indicatorTextPaint.setTextAlign(Paint.Align.CENTER);
+            Typeface indicatorTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            if (indicatorTypeface != null) {
+                indicatorTextPaint.setTypeface(indicatorTypeface);
+            } else {
+                indicatorTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+            indicatorTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.6f);
+
+            drawLineIndicatorText(canvas, lineForStation, selectedStation, centerX, centerY, radius, indicatorTextPaint);
+        }
+    }
+
+    private Station findStationInLine(Station station, Line line) {
+        if (station == null || line == null || station.getId() == null || line.getStations() == null) {
+            return null;
+        }
+        String stationId = station.getId();
+        for (Station lineStation : line.getStations()) {
+            if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                return lineStation;
+            }
+        }
+        return null;
     }
 
     private LinePath findLinePathForSegment(Station station1, Station station2, List<LinePath> routeLinesPaths) {
@@ -1144,7 +1324,7 @@ public class MetroMapView extends View {
         return continuousPath;
     }
 
-    private void drawRouteLineIndicator(Canvas canvas, float centerX, float centerY, Line line, List<RouteLineSegment> allRouteSegments) {
+    private void drawRouteLineIndicator(Canvas canvas, float centerX, float centerY, Line line, List<RouteLineSegment> allRouteSegments, RouteLineSegment currentSegment) {
         if (line == null) {
             return;
         }
@@ -1161,7 +1341,7 @@ public class MetroMapView extends View {
         String displayShape = line.getDisplayShape();
         float radius = 40f;
         float baseSpacing = 150f;
-        float spacing = baseSpacing * scaleFactor;
+        float spacing = baseSpacing;
         float routeLineWidth = 9f;
         float minDistanceFromRoute = radius + routeLineWidth / 2f + 30f;
 
@@ -1206,19 +1386,28 @@ public class MetroMapView extends View {
             };
         }
 
-        float bestX = centerX;
-        float bestY = centerY;
-        if (isVerticalLine) {
-            bestX = centerX + radius + spacing;
-            bestY = centerY;
+        float bestX;
+        float bestY;
+        float bestScore;
+        
+        if (currentSegment != null && currentSegment.cachedIndicatorX != null && currentSegment.cachedIndicatorY != null) {
+            bestX = currentSegment.cachedIndicatorX;
+            bestY = currentSegment.cachedIndicatorY;
+            bestScore = 1f;
         } else {
-            bestY = centerY - radius - spacing;
-        }
-        float bestScore = -1f;
+            bestX = centerX;
+            bestY = centerY;
+            if (isVerticalLine) {
+                bestX = centerX + radius + spacing;
+                bestY = centerY;
+            } else {
+                bestY = centerY - radius - spacing;
+            }
+            bestScore = -1f;
 
-        for (int i = 0; i < positions.length; i += 2) {
-            float testX = positions[i];
-            float testY = positions[i + 1];
+            for (int i = 0; i < positions.length; i += 2) {
+                float testX = positions[i];
+                float testY = positions[i + 1];
             
             boolean overlapsRoute = false;
             float minDistToRoute = Float.MAX_VALUE;
@@ -1318,9 +1507,15 @@ public class MetroMapView extends View {
                 }
             }
         }
+        }
         
         if (bestScore < 0) {
             return;
+        }
+        
+        if (currentSegment != null && currentSegment.cachedIndicatorX == null && currentSegment.cachedIndicatorY == null) {
+            currentSegment.cachedIndicatorX = bestX;
+            currentSegment.cachedIndicatorY = bestY;
         }
 
         Paint bubblePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1350,6 +1545,60 @@ public class MetroMapView extends View {
             parallelogramPath.close();
             canvas.drawPath(parallelogramPath, bubblePaint);
             canvas.drawPath(parallelogramPath, outlinePaint);
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float x = radius * 2.0f / 3.0f;
+            float longSide = radius * 2.0f;
+            float height = x * (float) Math.sqrt(3.0);
+            float horizontalOffset = x * 0.5f;
+            
+            float trapezoidOffset = radius * 0.3f;
+            float trapezoidTopWidth = longSide * 1.3f;
+            float trapezoidHeight = height;
+            
+            Paint mtdPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdPaint.setColor(parseColorSafely("#4564B7", mapTextColor));
+            mtdPaint.setStyle(Paint.Style.FILL);
+            
+            Path trapezoidPath = new Path();
+            float trapezoidLeft = bestX - longSide / 2.0f - trapezoidTopWidth - trapezoidOffset;
+            float topLeftX = trapezoidLeft;
+            float topRightX = trapezoidLeft + trapezoidTopWidth;
+            float topY = bestY + trapezoidHeight / 2.0f;
+            float bottomY = bestY - trapezoidHeight / 2.0f;
+            
+            float bottomLeftX = topLeftX + horizontalOffset;
+            float bottomRightX = topRightX - horizontalOffset;
+            
+            trapezoidPath.moveTo(topLeftX, topY);
+            trapezoidPath.lineTo(topRightX, topY);
+            trapezoidPath.lineTo(bottomRightX, bottomY);
+            trapezoidPath.lineTo(bottomLeftX, bottomY);
+            trapezoidPath.close();
+            canvas.drawPath(trapezoidPath, mtdPaint);
+            canvas.drawPath(trapezoidPath, outlinePaint);
+            
+            Paint mtdTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdTextPaint.setColor(Color.WHITE);
+            mtdTextPaint.setTextAlign(Paint.Align.CENTER);
+            Typeface mtdTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            if (mtdTypeface != null) {
+                mtdTextPaint.setTypeface(Typeface.create(mtdTypeface, Typeface.BOLD));
+            } else {
+                mtdTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+            mtdTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.2f);
+            float mtdTextX = trapezoidLeft + trapezoidTopWidth / 2.0f;
+            float mtdTextY = bestY - (mtdTextPaint.ascent() + mtdTextPaint.descent()) / 2f;
+            canvas.drawText("МТД", mtdTextX, mtdTextY, mtdTextPaint);
+            
+            Path parallelogramPath = new Path();
+            parallelogramPath.moveTo(bestX - longSide / 2.0f, bestY + height / 2.0f);
+            parallelogramPath.lineTo(bestX + longSide / 2.0f, bestY + height / 2.0f);
+            parallelogramPath.lineTo(bestX + longSide / 2.0f - horizontalOffset, bestY - height / 2.0f);
+            parallelogramPath.lineTo(bestX - longSide / 2.0f - horizontalOffset, bestY - height / 2.0f);
+            parallelogramPath.close();
+            canvas.drawPath(parallelogramPath, bubblePaint);
+            canvas.drawPath(parallelogramPath, outlinePaint);
         } else {
             canvas.drawCircle(bestX, bestY, radius, bubblePaint);
             canvas.drawCircle(bestX, bestY, radius, outlinePaint);
@@ -1371,6 +1620,10 @@ public class MetroMapView extends View {
             float x = radius * 2.0f / 3.0f;
             float horizontalOffset = x * 0.5f;
             textX = bestX + horizontalOffset / 2.0f;
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float x = radius * 2.0f / 3.0f;
+            float horizontalOffset = x * 0.5f;
+            textX = bestX - horizontalOffset / 2.0f;
         }
         float textY = bestY - (indicatorTextPaint.ascent() + indicatorTextPaint.descent()) / 2f;
         canvas.drawText(displayNumber, textX, textY, indicatorTextPaint);
@@ -1461,6 +1714,65 @@ public class MetroMapView extends View {
         
         return false;
     }
+    
+    private boolean isMTDIntersectingLine(float centerX, float centerY, float radius, float x1, float y1, float x2, float y2) {
+        float x = radius * 2.0f / 3.0f;
+        float longSide = radius * 2.0f;
+        float height = x * (float) Math.sqrt(3.0);
+        float horizontalOffset = x * 0.5f;
+        
+        float trapezoidOffset = radius * 0.3f;
+        float trapezoidTopWidth = longSide * 1.3f;
+        float trapezoidHeight = height;
+        float trapezoidLeft = centerX - longSide / 2.0f - trapezoidTopWidth - trapezoidOffset;
+        
+        float[] parallelogramVertices = new float[]{
+            centerX - longSide / 2.0f, centerY + height / 2.0f,
+            centerX + longSide / 2.0f, centerY + height / 2.0f,
+            centerX + longSide / 2.0f - horizontalOffset, centerY - height / 2.0f,
+            centerX - longSide / 2.0f - horizontalOffset, centerY - height / 2.0f
+        };
+        
+        for (int i = 0; i < parallelogramVertices.length; i += 2) {
+            int nextIdx = (i + 2) % parallelogramVertices.length;
+            float edgeX1 = parallelogramVertices[i];
+            float edgeY1 = parallelogramVertices[i + 1];
+            float edgeX2 = parallelogramVertices[nextIdx];
+            float edgeY2 = parallelogramVertices[nextIdx + 1];
+            
+            if (linesIntersect(edgeX1, edgeY1, edgeX2, edgeY2, x1, y1, x2, y2)) {
+                return true;
+            }
+        }
+        
+        float topLeftX = trapezoidLeft;
+        float topRightX = trapezoidLeft + trapezoidTopWidth;
+        float topY = centerY + trapezoidHeight / 2.0f;
+        float bottomY = centerY - trapezoidHeight / 2.0f;
+        float bottomLeftX = topLeftX + horizontalOffset;
+        float bottomRightX = topRightX + horizontalOffset;
+        
+        float[] trapezoidVertices = new float[]{
+            topLeftX, topY,
+            topRightX, topY,
+            bottomRightX, bottomY,
+            bottomLeftX, bottomY
+        };
+        
+        for (int i = 0; i < trapezoidVertices.length; i += 2) {
+            int nextIdx = (i + 2) % trapezoidVertices.length;
+            float edgeX1 = trapezoidVertices[i];
+            float edgeY1 = trapezoidVertices[i + 1];
+            float edgeX2 = trapezoidVertices[nextIdx];
+            float edgeY2 = trapezoidVertices[nextIdx + 1];
+            
+            if (linesIntersect(edgeX1, edgeY1, edgeX2, edgeY2, x1, y1, x2, y2)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     private boolean linesIntersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         float denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
@@ -1502,6 +1814,8 @@ public class MetroMapView extends View {
                 intersects = isSquareIntersectingLine(indicatorX, indicatorY, indicatorRadius, x1, y1, x2, y2);
             } else if (displayShape != null && displayShape.equals("PARALLELOGRAM")) {
                 intersects = isParallelogramIntersectingLine(indicatorX, indicatorY, indicatorRadius, x1, y1, x2, y2);
+            } else if (displayShape != null && displayShape.equals("MTD")) {
+                intersects = isMTDIntersectingLine(indicatorX, indicatorY, indicatorRadius, x1, y1, x2, y2);
             } else {
                 intersects = isCircleIntersectingLine(indicatorX, indicatorY, effectiveRadius, x1, y1, x2, y2);
             }
@@ -1776,6 +2090,60 @@ public class MetroMapView extends View {
             parallelogramPath.close();
             canvas.drawPath(parallelogramPath, bubblePaint);
             canvas.drawPath(parallelogramPath, outlinePaint);
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float xShape = radius * 2.0f / 3.0f;
+            float longSide = radius * 2.0f;
+            float height = xShape * (float) Math.sqrt(3.0);
+            float horizontalOffset = xShape * 0.5f;
+            
+            float trapezoidOffset = radius * 0.3f;
+            float trapezoidTopWidth = longSide * 1.3f;
+            float trapezoidHeight = height;
+            
+            Paint mtdPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdPaint.setColor(parseColorSafely("#4564B7", mapTextColor));
+            mtdPaint.setStyle(Paint.Style.FILL);
+            
+            Path trapezoidPath = new Path();
+            float trapezoidLeft = x - longSide / 2.0f - trapezoidTopWidth - trapezoidOffset;
+            float topLeftX = trapezoidLeft;
+            float topRightX = trapezoidLeft + trapezoidTopWidth;
+            float topY = y + trapezoidHeight / 2.0f;
+            float bottomY = y - trapezoidHeight / 2.0f;
+            
+            float bottomLeftX = topLeftX + horizontalOffset;
+            float bottomRightX = topRightX - horizontalOffset;
+            
+            trapezoidPath.moveTo(topLeftX, topY);
+            trapezoidPath.lineTo(topRightX, topY);
+            trapezoidPath.lineTo(bottomRightX, bottomY);
+            trapezoidPath.lineTo(bottomLeftX, bottomY);
+            trapezoidPath.close();
+            canvas.drawPath(trapezoidPath, mtdPaint);
+            canvas.drawPath(trapezoidPath, outlinePaint);
+            
+            Paint mtdTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mtdTextPaint.setColor(Color.WHITE);
+            mtdTextPaint.setTextAlign(Paint.Align.CENTER);
+            Typeface mtdTypeface = ResourcesCompat.getFont(getContext(), R.font.emyslabaltblack);
+            if (mtdTypeface != null) {
+                mtdTextPaint.setTypeface(Typeface.create(mtdTypeface, Typeface.BOLD));
+            } else {
+                mtdTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+            mtdTextPaint.setTextSize(STATION_NAME_TEXT_SIZE * 1.0f);
+            float mtdTextX = trapezoidLeft + trapezoidTopWidth / 2.0f;
+            float mtdTextY = y - (mtdTextPaint.ascent() + mtdTextPaint.descent()) / 2f;
+            canvas.drawText("МТД", mtdTextX, mtdTextY, mtdTextPaint);
+            
+            Path parallelogramPath = new Path();
+            parallelogramPath.moveTo(x - longSide / 2.0f, y + height / 2.0f);
+            parallelogramPath.lineTo(x + longSide / 2.0f, y + height / 2.0f);
+            parallelogramPath.lineTo(x + longSide / 2.0f - horizontalOffset, y - height / 2.0f);
+            parallelogramPath.lineTo(x - longSide / 2.0f - horizontalOffset, y - height / 2.0f);
+            parallelogramPath.close();
+            canvas.drawPath(parallelogramPath, bubblePaint);
+            canvas.drawPath(parallelogramPath, outlinePaint);
         } else {
             canvas.drawCircle(x, y, radius, bubblePaint);
             canvas.drawCircle(x, y, radius, outlinePaint);
@@ -1797,6 +2165,10 @@ public class MetroMapView extends View {
             float xShape = radius * 2.0f / 3.0f;
             float horizontalOffset = xShape * 0.5f;
             textX = x + horizontalOffset / 2.0f;
+        } else if (displayShape != null && displayShape.equals("MTD")) {
+            float xShape = radius * 2.0f / 3.0f;
+            float horizontalOffset = xShape * 0.5f;
+            textX = x - horizontalOffset / 2.0f;
         }
         float textY = y - (indicatorTextPaint.ascent() + indicatorTextPaint.descent()) / 2f;
         canvas.drawText(displayNumber, textX, textY, indicatorTextPaint);
@@ -1860,13 +2232,19 @@ public class MetroMapView extends View {
         }
 
         // Draw lines
-        for (LinePath linePath : pathCache.linesPaths) {
+        if (isTramMap && !pathCache.segmentInfos.isEmpty()) {
+            for (SegmentInfo segmentInfo : pathCache.segmentInfos.values()) {
+                drawMultiLayeredSegment(canvas, segmentInfo);
+            }
+        } else {
+            for (LinePath linePath : pathCache.linesPaths) {
 
-            linePaint.setColor(parseColorSafely(linePath.color, mapTextColor));
-            canvas.drawPath(linePath.path, linePaint);
+                linePaint.setColor(parseColorSafely(linePath.color, mapTextColor));
+                canvas.drawPath(linePath.path, linePaint);
 
-            if (linePath.innerPath != null) {
-                canvas.drawPath(linePath.innerPath, linePath.whitePaint);
+                if (linePath.innerPath != null) {
+                    canvas.drawPath(linePath.innerPath, linePath.whitePaint);
+                }
             }
         }
 
@@ -1966,7 +2344,23 @@ public class MetroMapView extends View {
 
             Paint strokePaint = new Paint();
 
-            strokePaint.setColor(parseColorSafely(stationPath.color, mapTextColor));
+            int strokeColor;
+            boolean isSharedStationFlag = false;
+            
+            if (stationPath.stationName != null) {
+                Station currentStation = findStationByName(stationPath.stationName);
+                if (currentStation != null) {
+                    isSharedStationFlag = isSharedStation(currentStation);
+                }
+            }
+            
+            if (isSharedStationFlag) {
+                strokeColor = mapTextColor;
+            } else {
+                strokeColor = parseColorSafely(stationPath.color, mapTextColor);
+            }
+            
+            strokePaint.setColor(strokeColor);
             strokePaint.setStyle(Paint.Style.STROKE);
             strokePaint.setStrokeWidth(7);
             canvas.drawPath(stationPath.path, strokePaint);
@@ -1982,6 +2376,11 @@ public class MetroMapView extends View {
 
         if (isEditMode) {
             drawIntermediatePoints(canvas);
+        }
+
+        // Синхронизация кэша маршрута: если route == null, но кэш инициализирован, очищаем его
+        if (route == null && routePathCache.isInitialized) {
+            updateRouteCache();
         }
 
         // Draw dark overlay and route if exists
@@ -2083,7 +2482,7 @@ public class MetroMapView extends View {
                     if (count > 0) {
                         float centerX = sumX / count;
                         float centerY = sumY / count;
-                        drawRouteLineIndicator(canvas, centerX, centerY, segment.line, routePathCache.routeLineSegments);
+                        drawRouteLineIndicator(canvas, centerX, centerY, segment.line, routePathCache.routeLineSegments, segment);
                     }
                 }
             }
@@ -2098,7 +2497,19 @@ public class MetroMapView extends View {
 
                 Paint strokePaint = new Paint();
 
-                strokePaint.setColor(parseColorSafely(routeStationPath.color, mapTextColor));
+                int strokeColor;
+                if (routeStationPath.stationName != null) {
+                    Station currentStation = findStationByName(routeStationPath.stationName);
+                    if (currentStation != null && isSharedStation(currentStation)) {
+                        strokeColor = mapTextColor;
+                    } else {
+                        strokeColor = parseColorSafely(routeStationPath.color, mapTextColor);
+                    }
+                } else {
+                    strokeColor = parseColorSafely(routeStationPath.color, mapTextColor);
+                }
+
+                strokePaint.setColor(strokeColor);
                 strokePaint.setStyle(Paint.Style.STROKE);
                 strokePaint.setStrokeWidth(7);
                 canvas.drawPath(routeStationPath.path, strokePaint);
@@ -3261,12 +3672,89 @@ public class MetroMapView extends View {
         return null;
     }
 
+    private List<Line> findAllLinesForStation(Station station) {
+        List<Line> allLines = new ArrayList<>();
+        if (station == null || station.getId() == null) {
+            return allLines;
+        }
+
+        String stationId = station.getId();
+        Set<String> seenLineIds = new HashSet<>();
+
+        List<Line> allLineLists = new ArrayList<>();
+        if (lines != null) allLineLists.addAll(lines);
+        if (suburbanLines != null) allLineLists.addAll(suburbanLines);
+        if (riverTramLines != null) allLineLists.addAll(riverTramLines);
+        if (tramLines != null) allLineLists.addAll(tramLines);
+
+        for (Line line : allLineLists) {
+            if (line == null || line.getStations() == null || line.getId() == null) {
+                continue;
+            }
+
+            if (seenLineIds.contains(line.getId())) {
+                continue;
+            }
+
+            for (Station lineStation : line.getStations()) {
+                if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                    allLines.add(line);
+                    seenLineIds.add(line.getId());
+                    break;
+                }
+            }
+        }
+
+        return allLines;
+    }
+    
+    private boolean isSharedStation(Station station) {
+        if (station == null || station.getId() == null) {
+            return false;
+        }
+        
+        String stationId = station.getId();
+        int lineCount = 0;
+        
+        List<Line> allLines = new ArrayList<>();
+        if (lines != null) allLines.addAll(lines);
+        if (suburbanLines != null) allLines.addAll(suburbanLines);
+        if (riverTramLines != null) allLines.addAll(riverTramLines);
+        if (tramLines != null) allLines.addAll(tramLines);
+        
+        Set<String> seenLineIds = new HashSet<>();
+        for (Line line : allLines) {
+            if (line == null || line.getStations() == null || line.getId() == null) {
+                continue;
+            }
+            
+            if (seenLineIds.contains(line.getId())) {
+                continue;
+            }
+            
+            for (Station lineStation : line.getStations()) {
+                if (lineStation != null && lineStation.getId() != null && lineStation.getId().equals(stationId)) {
+                    lineCount++;
+                    seenLineIds.add(line.getId());
+                    break;
+                }
+            }
+            
+            if (lineCount >= 2) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private RoutePathCache routePathCache = new RoutePathCache();
 
     private void updateRouteCache() {
         if (route == null || route.isEmpty()) {
             routePathCache.routeLinesPaths.clear();
             routePathCache.routeStationsPaths.clear();
+            routePathCache.routeFaintStationsPaths.clear();
             routePathCache.transfersPath.reset();
 
             routePathCache.dashedTransfersPath.reset();
@@ -3277,8 +3765,18 @@ public class MetroMapView extends View {
             routePathCache.transfersFillOverlayAngularPath.reset();
             routePathCache.convexHullPath.reset();
             routePathCache.crossStrokes.clear();
+            routePathCache.routeLineSegments.clear();
             routePathCache.isInitialized = false;
             return;
+        }
+
+        // Сохраняем кэшированные позиции индикаторов перед очисткой
+        Map<String, PointF> cachedIndicatorPositions = new HashMap<>();
+        for (RouteLineSegment segment : routePathCache.routeLineSegments) {
+            if (segment != null && segment.line != null && segment.cachedIndicatorX != null && segment.cachedIndicatorY != null) {
+                String key = segment.line.getId() + "_" + segment.startIndex + "_" + segment.endIndex;
+                cachedIndicatorPositions.put(key, new PointF(segment.cachedIndicatorX, segment.cachedIndicatorY));
+            }
         }
 
         // Очищаем кэш перед построением нового маршрута
@@ -3330,7 +3828,15 @@ public class MetroMapView extends View {
                     if (currentLine == null || !currentLine.getId().equals(line.getId())) {
                         if (currentLine != null && segmentStart < i) {
                             Path segmentPath = buildContinuousPathForSegment(route, segmentStart, i, currentLine);
-                            routePathCache.routeLineSegments.add(new RouteLineSegment(currentLine, segmentStart, i, segmentPath));
+                            RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, i, segmentPath);
+                            routePathCache.routeLineSegments.add(segment);
+                            
+                            String key = currentLine.getId() + "_" + segmentStart + "_" + i;
+                            PointF cachedPos = cachedIndicatorPositions.get(key);
+                            if (cachedPos != null) {
+                                segment.cachedIndicatorX = cachedPos.x;
+                                segment.cachedIndicatorY = cachedPos.y;
+                            }
                         }
                         currentLine = line;
                         segmentStart = i;
@@ -3338,7 +3844,15 @@ public class MetroMapView extends View {
                 } else {
                     if (currentLine != null && segmentStart < i) {
                         Path segmentPath = buildContinuousPathForSegment(route, segmentStart, i, currentLine);
-                        routePathCache.routeLineSegments.add(new RouteLineSegment(currentLine, segmentStart, i, segmentPath));
+                        RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, i, segmentPath);
+                        routePathCache.routeLineSegments.add(segment);
+                        
+                        String key = currentLine.getId() + "_" + segmentStart + "_" + i;
+                        PointF cachedPos = cachedIndicatorPositions.get(key);
+                        if (cachedPos != null) {
+                            segment.cachedIndicatorX = cachedPos.x;
+                            segment.cachedIndicatorY = cachedPos.y;
+                        }
                     }
                     currentLine = null;
                 }
@@ -3346,7 +3860,26 @@ public class MetroMapView extends View {
             
             if (currentLine != null && segmentStart < route.size() - 1) {
                 Path segmentPath = buildContinuousPathForSegment(route, segmentStart, route.size() - 1, currentLine);
-                routePathCache.routeLineSegments.add(new RouteLineSegment(currentLine, segmentStart, route.size() - 1, segmentPath));
+                RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, route.size() - 1, segmentPath);
+                routePathCache.routeLineSegments.add(segment);
+                
+                String key = currentLine.getId() + "_" + segmentStart + "_" + (route.size() - 1);
+                PointF cachedPos = cachedIndicatorPositions.get(key);
+                if (cachedPos != null) {
+                    segment.cachedIndicatorX = cachedPos.x;
+                    segment.cachedIndicatorY = cachedPos.y;
+                }
+            }
+        }
+        
+        for (RouteLineSegment segment : routePathCache.routeLineSegments) {
+            if (segment != null && segment.line != null) {
+                String key = segment.line.getId() + "_" + segment.startIndex + "_" + segment.endIndex;
+                PointF cachedPos = cachedIndicatorPositions.get(key);
+                if (cachedPos != null && segment.cachedIndicatorX == null && segment.cachedIndicatorY == null) {
+                    segment.cachedIndicatorX = cachedPos.x;
+                    segment.cachedIndicatorY = cachedPos.y;
+                }
             }
         }
 
@@ -3366,7 +3899,15 @@ public class MetroMapView extends View {
                 labelXScaled = station.getLabelX() * currentCoordinateScaleFactor;
                 labelYScaled = station.getLabelY() * currentCoordinateScaleFactor;
             }
-            routePathCache.routeStationsPaths.add(new StationPath(stationPath, station.getColor(), station.getTextPosition(), station.getName(), labelXScaled, labelYScaled));
+            
+            String stationColor;
+            if (isSharedStation(station)) {
+                stationColor = String.format("#%06X", (0xFFFFFF & mapTextColor));
+            } else {
+                stationColor = station.getColor();
+            }
+            
+            routePathCache.routeStationsPaths.add(new StationPath(stationPath, stationColor, station.getTextPosition(), station.getName(), labelXScaled, labelYScaled));
         }
 
         // Добавим бледные точки всех станций, входящих в переходы маршрута, но не являющихся текущими в route
@@ -3445,6 +3986,26 @@ public class MetroMapView extends View {
         }
         if (riverTramStations != null) {
             for (Station s : riverTramStations) if (id.equals(s.getId())) return s;
+        }
+        if (tramStations != null) {
+            for (Station s : tramStations) if (id.equals(s.getId())) return s;
+        }
+        return null;
+    }
+    
+    private Station findStationByName(String name) {
+        if (name == null) return null;
+        if (stations != null) {
+            for (Station s : stations) if (name.equals(s.getName())) return s;
+        }
+        if (suburbanStations != null) {
+            for (Station s : suburbanStations) if (name.equals(s.getName())) return s;
+        }
+        if (riverTramStations != null) {
+            for (Station s : riverTramStations) if (name.equals(s.getName())) return s;
+        }
+        if (tramStations != null) {
+            for (Station s : tramStations) if (name.equals(s.getName())) return s;
         }
         return null;
     }
@@ -3764,6 +4325,7 @@ public class MetroMapView extends View {
         pathCache.riversPath.reset();
         pathCache.partialCircles.clear();
         pathCache.convexHullPath.reset();
+        pathCache.segmentInfos.clear();
 
         // Выбираем данные для отрисовки в зависимости от текущей карты
         if (isMetroMap) {
@@ -3774,6 +4336,141 @@ public class MetroMapView extends View {
             drawColoredMap(riverTramLines, riverTramStations, riverTramTransfers, rivers, riverTramMapObjects);
         } else if (isTramMap) {
             drawColoredMap(tramLines, tramStations, tramTransfers, rivers, tramMapObjects);
+        }
+    }
+
+    private void buildSegmentInfoForTramMap(List<Line> lines, List<Station> stations) {
+        pathCache.segmentInfos.clear();
+
+        Map<String, Station> allStationsById = new HashMap<>();
+        for (Station station : stations) {
+            if (station != null && station.getId() != null) {
+                if (!allStationsById.containsKey(station.getId())) {
+                    allStationsById.put(station.getId(), station);
+                }
+            }
+        }
+        
+        for (Line line : lines) {
+            java.util.List<Station> lineStations = line.getStations();
+            if (lineStations != null) {
+                for (Station station : lineStations) {
+                    if (station != null && station.getId() != null) {
+                        if (!allStationsById.containsKey(station.getId())) {
+                            allStationsById.put(station.getId(), station);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Line line : lines) {
+            java.util.List<Station> lineStations = line.getStations();
+            if (lineStations == null || lineStations.isEmpty()) continue;
+
+            Map<String, Station> lineStationsById = new HashMap<>();
+            for (Station station : lineStations) {
+                if (station != null && station.getId() != null) {
+                    lineStationsById.put(station.getId(), station);
+                }
+            }
+
+            for (int i = 0; i < lineStations.size() - 1; i++) {
+                Station station1 = lineStations.get(i);
+                Station station2 = lineStations.get(i + 1);
+                if (station1 == null || station2 == null) continue;
+                if (station1.getId() == null || station2.getId() == null) continue;
+
+                String station1Id = station1.getId();
+                String station2Id = station2.getId();
+
+                Station startStation = allStationsById.get(station1Id);
+                Station endStation = allStationsById.get(station2Id);
+                if (startStation == null || endStation == null) continue;
+
+                String segmentKey = station1Id.compareTo(station2Id) < 0
+                        ? station1Id + "-" + station2Id
+                        : station2Id + "-" + station1Id;
+
+                if (station1Id.compareTo(station2Id) > 0) {
+                    Station temp = startStation;
+                    startStation = endStation;
+                    endStation = temp;
+                }
+
+                SegmentInfo segmentInfo = pathCache.segmentInfos.get(segmentKey);
+                if (segmentInfo == null) {
+                    List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
+                    Path basePath = new Path();
+
+                    createBasePathForSegment(startStation, endStation, intermediatePoints, line.getLineType(), basePath);
+
+                    List<Line> linesList = new ArrayList<>();
+                    linesList.add(line);
+
+                    segmentInfo = new SegmentInfo(segmentKey, startStation, endStation, linesList, basePath, intermediatePoints, line.getLineType());
+                    pathCache.segmentInfos.put(segmentKey, segmentInfo);
+                } else {
+                    boolean lineExists = false;
+                    for (Line existingLine : segmentInfo.lines) {
+                        if (existingLine != null && existingLine.getId() != null && existingLine.getId().equals(line.getId())) {
+                            lineExists = true;
+                            break;
+                        }
+                    }
+                    if (!lineExists) {
+                        segmentInfo.lines.add(line);
+                    }
+                }
+            }
+
+            if (line.isCircle() && lineStations.size() > 2) {
+                Station firstStation = lineStations.get(0);
+                Station lastStation = lineStations.get(lineStations.size() - 1);
+                if (firstStation != null && lastStation != null && firstStation.getId() != null && lastStation.getId() != null) {
+                    String firstId = firstStation.getId();
+                    String lastId = lastStation.getId();
+
+                    Station startStation = allStationsById.get(firstId);
+                    Station endStation = allStationsById.get(lastId);
+                    if (startStation != null && endStation != null) {
+                        String segmentKey = firstId.compareTo(lastId) < 0
+                                ? firstId + "-" + lastId
+                                : lastId + "-" + firstId;
+
+                        if (firstId.compareTo(lastId) > 0) {
+                            Station temp = startStation;
+                            startStation = endStation;
+                            endStation = temp;
+                        }
+
+                        SegmentInfo segmentInfo = pathCache.segmentInfos.get(segmentKey);
+                        if (segmentInfo == null) {
+                            List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
+                            Path basePath = new Path();
+
+                            createBasePathForSegment(startStation, endStation, intermediatePoints, line.getLineType(), basePath);
+
+                            List<Line> linesList = new ArrayList<>();
+                            linesList.add(line);
+
+                            segmentInfo = new SegmentInfo(segmentKey, startStation, endStation, linesList, basePath, intermediatePoints, line.getLineType());
+                            pathCache.segmentInfos.put(segmentKey, segmentInfo);
+                        } else {
+                            boolean lineExists = false;
+                            for (Line existingLine : segmentInfo.lines) {
+                                if (existingLine != null && existingLine.getId() != null && existingLine.getId().equals(line.getId())) {
+                                    lineExists = true;
+                                    break;
+                                }
+                            }
+                            if (!lineExists) {
+                                segmentInfo.lines.add(line);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -3805,6 +4502,7 @@ public class MetroMapView extends View {
         pathCache.riversPath.reset();
         pathCache.partialCircles.clear();
         pathCache.convexHullPath.reset();
+        pathCache.segmentInfos.clear();
 
         // Отрисовка рек
             for (River river : rivers) {
@@ -3821,46 +4519,62 @@ public class MetroMapView extends View {
         }
 
         // Отрисовка линий
-        Set<String> drawnConnections = new HashSet<>();
-        for (Line line : lines) {
-            Path linePath = new Path();
-            String lineColor = line.getColor();
+        if (isTramMap) {
+            buildSegmentInfoForTramMap(lines, stations);
+        } else {
+            Set<String> drawnConnections = new HashSet<>();
+            for (Line line : lines) {
+                Path linePath = new Path();
+                String lineColor = line.getColor();
 
 
-            java.util.List<Station> lineStations = line.getStations();
-            if (lineStations == null) {
-                pathCache.linesPaths.add(new LinePath(linePath, lineColor));
-                continue;
-            }
+                java.util.List<Station> lineStations = line.getStations();
+                if (lineStations == null) {
+                    pathCache.linesPaths.add(new LinePath(linePath, lineColor));
+                    continue;
+                }
 
-            for (Station station : lineStations) {
-                java.util.List<Station.Neighbor> neighborsList = station.getNeighbors();
-                if (neighborsList == null) continue;
-                for (Station.Neighbor neighbor : neighborsList) {
-                    Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
-                    if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
-                        String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
-                                ? station.getId() + "-" + neighborStation.getId()
-                                : neighborStation.getId() + "-" + station.getId();
+                for (Station station : lineStations) {
+                    java.util.List<Station.Neighbor> neighborsList = station.getNeighbors();
+                    if (neighborsList == null) continue;
+                    for (Station.Neighbor neighbor : neighborsList) {
+                        Station neighborStation = findStationById(neighbor.getStation().getId(), stations);
+                        if (neighborStation != null && line.getLineIdForStation(neighborStation) != null) {
+                            String connectionKey = station.getId().compareTo(neighborStation.getId()) < 0
+                                    ? station.getId() + "-" + neighborStation.getId()
+                                    : neighborStation.getId() + "-" + station.getId();
 
-                        if (!drawnConnections.contains(connectionKey)) {
-                            addLinePathToCache(station, neighborStation, line.getLineType(), linePath);
-                            drawnConnections.add(connectionKey);
+                            if (!drawnConnections.contains(connectionKey)) {
+                                addLinePathToCache(station, neighborStation, line.getLineType(), linePath);
+                                drawnConnections.add(connectionKey);
+                            }
                         }
                     }
                 }
-            }
 
-            pathCache.linesPaths.add(new LinePath(linePath, lineColor));
+                pathCache.linesPaths.add(new LinePath(linePath, lineColor));
+            }
         }
 
         // Отрисовка станций
+        Set<String> drawnStations = new HashSet<>();
         for (Station station : stations) {
+            String stationId = station.getId();
+            if (drawnStations.contains(stationId)) {
+                continue;
+            }
+            drawnStations.add(stationId);
+
             float stationX = station.getX() * currentCoordinateScaleFactor;
             float stationY = station.getY() * currentCoordinateScaleFactor;
 
-            Line stationLine = findLineForStation(station);
-            String stationColor = stationLine != null ? stationLine.getColor() : "#000000";
+            String stationColor;
+            if (isSharedStation(station)) {
+                stationColor = String.format("#%06X", (0xFFFFFF & mapTextColor));
+            } else {
+                Line stationLine = findLineForStation(station);
+                stationColor = stationLine != null ? stationLine.getColor() : "#000000";
+            }
 
             Path stationPath = new Path();
             stationPath.addCircle(stationX, stationY, 14, Path.Direction.CW);
@@ -3914,6 +4628,166 @@ public class MetroMapView extends View {
         } else if (intermediatePoints.size() == 2) {
             // Обработка обычной кривой линии
             addQuadrilateralBezierPathToCache(startStation, endStation, intermediatePoints, linePath);
+        }
+    }
+
+    private void createBasePathForSegment(Station station1, Station station2, List<Point> intermediatePoints, String lineType, Path basePath) {
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            if (lineType.equals("double")) {
+                addDoubleStraightLineToCache(station1, station2, basePath);
+            } else {
+                addQuadrilateralLinePathToCache(station1, station2, basePath);
+            }
+        } else if (intermediatePoints.size() == 1) {
+            addQuadrilateralWithIntermediatePointPathToCache(station1, station2, intermediatePoints.get(0), basePath);
+        } else if (intermediatePoints.size() == 2 && lineType.equals("double")) {
+            addDoubleQuadrilateralBezierPathToCache(station1, station2, intermediatePoints, basePath);
+        } else if (intermediatePoints.size() == 2) {
+            addQuadrilateralBezierPathToCache(station1, station2, intermediatePoints, basePath);
+        }
+    }
+
+    private Path createOffsetPath(Path basePath, Station station1, Station station2, List<Point> intermediatePoints, float offset, float width, String lineType) {
+        Path offsetPath = new Path();
+        Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
+        Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
+
+        float x1 = startStation.getX();
+        float y1 = startStation.getY();
+        float x2 = endStation.getX();
+        float y2 = endStation.getY();
+
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (length == 0) return offsetPath;
+
+        float nx = -dy / length;
+        float ny = dx / length;
+
+        float halfWidth = width / 2f;
+
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            float scaledX1 = x1 * currentCoordinateScaleFactor;
+            float scaledY1 = y1 * currentCoordinateScaleFactor;
+            float scaledX2 = x2 * currentCoordinateScaleFactor;
+            float scaledY2 = y2 * currentCoordinateScaleFactor;
+            float scaledOffsetX = nx * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledOffsetY = ny * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledHalfWidthX = nx * halfWidth * currentCoordinateScaleFactor;
+            float scaledHalfWidthY = ny * halfWidth * currentCoordinateScaleFactor;
+            
+            offsetPath.moveTo(scaledX1 + scaledOffsetX, scaledY1 + scaledOffsetY);
+            offsetPath.lineTo(scaledX2 + scaledOffsetX, scaledY2 + scaledOffsetY);
+            offsetPath.lineTo(scaledX2 + scaledOffsetX - 2 * scaledHalfWidthX, scaledY2 + scaledOffsetY - 2 * scaledHalfWidthY);
+            offsetPath.lineTo(scaledX1 + scaledOffsetX - 2 * scaledHalfWidthX, scaledY1 + scaledOffsetY - 2 * scaledHalfWidthY);
+            offsetPath.close();
+        } else if (intermediatePoints.size() == 1) {
+            Point middle = intermediatePoints.get(0);
+            float mx = middle.x;
+            float my = middle.y;
+
+            float dx1 = mx - x1;
+            float dy1 = my - y1;
+            float length1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+            if (length1 == 0) return offsetPath;
+            float nx1 = -dy1 / length1;
+            float ny1 = dx1 / length1;
+
+            float dx2 = x2 - mx;
+            float dy2 = y2 - my;
+            float length2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
+            if (length2 == 0) return offsetPath;
+            float nx2 = -dy2 / length2;
+            float ny2 = dx2 / length2;
+
+            float scaledX1 = x1 * currentCoordinateScaleFactor;
+            float scaledY1 = y1 * currentCoordinateScaleFactor;
+            float scaledMx = mx * currentCoordinateScaleFactor;
+            float scaledMy = my * currentCoordinateScaleFactor;
+            float scaledX2 = x2 * currentCoordinateScaleFactor;
+            float scaledY2 = y2 * currentCoordinateScaleFactor;
+            
+            float scaledOffset1X = nx1 * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledOffset1Y = ny1 * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledOffset2X = nx2 * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledOffset2Y = ny2 * (offset + halfWidth) * currentCoordinateScaleFactor;
+            float scaledHalfWidth1X = nx1 * halfWidth * currentCoordinateScaleFactor;
+            float scaledHalfWidth1Y = ny1 * halfWidth * currentCoordinateScaleFactor;
+            float scaledHalfWidth2X = nx2 * halfWidth * currentCoordinateScaleFactor;
+            float scaledHalfWidth2Y = ny2 * halfWidth * currentCoordinateScaleFactor;
+
+            offsetPath.moveTo(scaledX1 + scaledOffset1X, scaledY1 + scaledOffset1Y);
+            offsetPath.lineTo(scaledMx + scaledOffset1X, scaledMy + scaledOffset1Y);
+            offsetPath.lineTo(scaledMx + scaledOffset2X, scaledMy + scaledOffset2Y);
+            offsetPath.lineTo(scaledX2 + scaledOffset2X, scaledY2 + scaledOffset2Y);
+            offsetPath.lineTo(scaledX2 + scaledOffset2X - 2 * scaledHalfWidth2X, scaledY2 + scaledOffset2Y - 2 * scaledHalfWidth2Y);
+            offsetPath.lineTo(scaledMx + scaledOffset2X - 2 * scaledHalfWidth2X, scaledMy + scaledOffset2Y - 2 * scaledHalfWidth2Y);
+            offsetPath.lineTo(scaledMx + scaledOffset1X - 2 * scaledHalfWidth1X, scaledMy + scaledOffset1Y - 2 * scaledHalfWidth1Y);
+            offsetPath.lineTo(scaledX1 + scaledOffset1X - 2 * scaledHalfWidth1X, scaledY1 + scaledOffset1Y - 2 * scaledHalfWidth1Y);
+            offsetPath.close();
+        } else if (intermediatePoints.size() == 2) {
+            PathMeasure pathMeasure = new PathMeasure(basePath, false);
+            float pathLength = pathMeasure.getLength();
+            if (pathLength == 0) return offsetPath;
+            
+            List<PointF> leftPoints = new ArrayList<>();
+            List<PointF> rightPoints = new ArrayList<>();
+
+            for (float t = 0; t <= 1; t += 0.01f) {
+                float distance = t * pathLength;
+                float[] pos = new float[2];
+                float[] tan = new float[2];
+                if (!pathMeasure.getPosTan(distance, pos, tan)) {
+                    continue;
+                }
+
+                float normalX = -tan[1];
+                float normalY = tan[0];
+                
+                float totalOffset = offset;
+
+                leftPoints.add(new PointF(pos[0] + normalX * (totalOffset + halfWidth), pos[1] + normalY * (totalOffset + halfWidth)));
+                rightPoints.add(new PointF(pos[0] + normalX * (totalOffset - halfWidth), pos[1] + normalY * (totalOffset - halfWidth)));
+            }
+
+            if (!leftPoints.isEmpty()) {
+                offsetPath.moveTo(leftPoints.get(0).x, leftPoints.get(0).y);
+                for (int i = 1; i < leftPoints.size(); i++) {
+                    offsetPath.lineTo(leftPoints.get(i).x, leftPoints.get(i).y);
+                }
+                for (int i = rightPoints.size() - 1; i >= 0; i--) {
+                    offsetPath.lineTo(rightPoints.get(i).x, rightPoints.get(i).y);
+                }
+                offsetPath.close();
+            }
+        }
+
+        return offsetPath;
+    }
+
+    private void drawMultiLayeredSegment(Canvas canvas, SegmentInfo segmentInfo) {
+        int routeCount = segmentInfo.lines.size();
+        if (routeCount == 0) return;
+
+        float baseLineWidth = getAdjustedLineWidth(LINE_WIDTH);
+        float stripeWidth = baseLineWidth;
+        float stripeOffset = TRAM_STRIPE_OFFSET;
+
+        for (int i = 0; i < routeCount; i++) {
+            Line line = segmentInfo.lines.get(i);
+            String lineColor = line.getColor();
+
+            float totalWidth = (routeCount - 1) * stripeOffset + routeCount * stripeWidth;
+            float startOffset = -totalWidth / 2f + stripeWidth / 2f + i * (stripeWidth + stripeOffset);
+
+            Path stripePath = createOffsetPath(segmentInfo.basePath, segmentInfo.station1, segmentInfo.station2, segmentInfo.intermediatePoints, startOffset, stripeWidth, segmentInfo.lineType);
+
+            linePaint.setColor(parseColorSafely(lineColor, mapTextColor));
+            linePaint.setAlpha(TRAM_STRIPE_ALPHA);
+            canvas.drawPath(stripePath, linePaint);
+            linePaint.setAlpha(255);
         }
     }
 
@@ -5568,27 +6442,153 @@ public class MetroMapView extends View {
     }
 
     private Line findLineForConnection(Station station1, Station station2) {
-        for (Line line : lines) {
-            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
-                return line;
+        if (station1 == null || station2 == null || station1.getId() == null || station2.getId() == null) {
+            return null;
+        }
+        
+        String station1Id = station1.getId();
+        String station2Id = station2.getId();
+        
+        List<Station.Neighbor> neighbors = station1.getNeighbors();
+        if (neighbors != null) {
+            for (Station.Neighbor neighbor : neighbors) {
+                if (neighbor != null && neighbor.getStation() != null) {
+                    String neighborId = neighbor.getStation().getId();
+                    if (neighborId != null && neighborId.equals(station2Id)) {
+                        List<Line> allLines = new ArrayList<>();
+                        if (lines != null) allLines.addAll(lines);
+                        if (suburbanLines != null) allLines.addAll(suburbanLines);
+                        if (riverTramLines != null) allLines.addAll(riverTramLines);
+                        if (tramLines != null) allLines.addAll(tramLines);
+                        
+                        for (Line line : allLines) {
+                            if (line == null || line.getStations() == null) {
+                                continue;
+                            }
+                            
+                            boolean hasStation1 = false;
+                            boolean hasStation2 = false;
+                            Station lineStation1 = null;
+                            Station lineStation2 = null;
+                            
+                            for (Station station : line.getStations()) {
+                                if (station == null || station.getId() == null) {
+                                    continue;
+                                }
+                                if (station.getId().equals(station1Id)) {
+                                    hasStation1 = true;
+                                    lineStation1 = station;
+                                }
+                                if (station.getId().equals(station2Id)) {
+                                    hasStation2 = true;
+                                    lineStation2 = station;
+                                }
+                            }
+                            
+                            if (hasStation1 && hasStation2) {
+                                if (areNeighborsInLine(lineStation1, lineStation2, line)) {
+                                    return line;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        for (Line line : suburbanLines) {
-            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
-                return line;
+        
+        List<Line> allLines = new ArrayList<>();
+        if (lines != null) allLines.addAll(lines);
+        if (suburbanLines != null) allLines.addAll(suburbanLines);
+        if (riverTramLines != null) allLines.addAll(riverTramLines);
+        if (tramLines != null) allLines.addAll(tramLines);
+        
+        for (Line line : allLines) {
+            if (line == null || line.getStations() == null) {
+                continue;
+            }
+            
+            boolean hasStation1 = false;
+            boolean hasStation2 = false;
+            Station lineStation1 = null;
+            Station lineStation2 = null;
+            
+            for (Station station : line.getStations()) {
+                if (station == null || station.getId() == null) {
+                    continue;
+                }
+                if (station.getId().equals(station1Id)) {
+                    hasStation1 = true;
+                    lineStation1 = station;
+                }
+                if (station.getId().equals(station2Id)) {
+                    hasStation2 = true;
+                    lineStation2 = station;
+                }
+            }
+            
+            if (hasStation1 && hasStation2) {
+                if (areNeighborsInLine(lineStation1, lineStation2, line)) {
+                    return line;
+                }
             }
         }
-        for (Line line : riverTramLines) {
-            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
-                return line;
-            }
-        }
-        for (Line line : tramLines) {
-            if (line.getStations().contains(station1) && line.getStations().contains(station2)) {
-                return line;
-            }
-        }
+        
         return null;
+    }
+    
+    private boolean areNeighborsInLine(Station station1, Station station2, Line line) {
+        if (station1 == null || station2 == null || line == null) {
+            return false;
+        }
+        
+        List<Station.Neighbor> neighbors = station1.getNeighbors();
+        if (neighbors != null) {
+            for (Station.Neighbor neighbor : neighbors) {
+                if (neighbor != null && neighbor.getStation() != null) {
+                    String neighborId = neighbor.getStation().getId();
+                    if (neighborId != null && neighborId.equals(station2.getId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        List<Station> lineStations = line.getStations();
+        if (lineStations != null) {
+            for (int i = 0; i < lineStations.size(); i++) {
+                Station current = lineStations.get(i);
+                if (current != null && current.getId() != null && current.getId().equals(station1.getId())) {
+                    if (i > 0) {
+                        Station prev = lineStations.get(i - 1);
+                        if (prev != null && prev.getId() != null && prev.getId().equals(station2.getId())) {
+                            return true;
+                        }
+                    }
+                    if (i < lineStations.size() - 1) {
+                        Station next = lineStations.get(i + 1);
+                        if (next != null && next.getId() != null && next.getId().equals(station2.getId())) {
+                            return true;
+                        }
+                    }
+                    if (line.isCircle() && lineStations.size() > 2) {
+                        if (i == 0) {
+                            Station last = lineStations.get(lineStations.size() - 1);
+                            if (last != null && last.getId() != null && last.getId().equals(station2.getId())) {
+                                return true;
+                            }
+                        }
+                        if (i == lineStations.size() - 1) {
+                            Station first = lineStations.get(0);
+                            if (first != null && first.getId() != null && first.getId().equals(station2.getId())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
     public static List<Float> getAngle(double x1, double y1, double x2, double y2, double x3, double y3) {
