@@ -60,6 +60,7 @@ import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.domain.entities.TransferRoute;
 import com.nicorp.nimetro.domain.entities.ZoneBasedTariff;
+import com.nicorp.nimetro.presentation.adapters.RoutePagerAdapter;
 import com.nicorp.nimetro.presentation.adapters.StationPagerAdapter;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
 import com.nicorp.nimetro.R;
@@ -106,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private StationsAdapter stationsAdapter;
     private ViewPager2.OnPageChangeCallback stationPagerChangeCallback;
     private StationPagerAdapter currentPagerAdapter;
+    private ViewPager2.OnPageChangeCallback routePagerChangeCallback;
+    private RoutePagerAdapter currentRoutePagerAdapter;
 
     private Handler locationUpdateHandler;
     private Runnable locationUpdateRunnable;
@@ -1445,6 +1448,86 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         pager.registerOnPageChangeCallback(stationPagerChangeCallback);
     }
 
+    private void addRoutePagerDots(ViewPager2 pager, RoutePagerAdapter adapter) {
+        int count = adapter != null ? adapter.getItemCount() : 0;
+        LinearLayout dotsHost = findViewById(R.id.routePagerDots);
+        if (dotsHost == null) return;
+        dotsHost.removeAllViews();
+
+        LinearLayout dots = new LinearLayout(this);
+        dots.setOrientation(LinearLayout.HORIZONTAL);
+        dots.setPadding(16, 8, 16, 8);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dots.setLayoutParams(lp);
+
+        int dp8 = (int) (8 * getResources().getDisplayMetrics().density);
+        int dp4 = (int) (4 * getResources().getDisplayMetrics().density);
+
+        if (dotsHost.getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) dotsHost.getLayoutParams();
+            params.topToBottom = R.id.frameLayout;
+            params.bottomToTop = R.id.linearLayout2;
+            params.matchConstraintMaxHeight = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD;
+            dotsHost.setLayoutParams(params);
+        }
+        if (routePagerChangeCallback != null) {
+            pager.unregisterOnPageChangeCallback(routePagerChangeCallback);
+            routePagerChangeCallback = null;
+        }
+
+        if (count <= 1) {
+            dotsHost.setVisibility(View.GONE);
+            return;
+        } else {
+            dotsHost.setVisibility(View.VISIBLE);
+        }
+
+        int primaryColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary, Color.parseColor("#1976D2"));
+        
+        for (int i = 0; i < count; i++) {
+            View v = new View(this);
+            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(dp8, dp8);
+            vp.setMargins(dp4, 0, dp4, 0);
+            v.setLayoutParams(vp);
+            if (i == 0) {
+                android.graphics.drawable.GradientDrawable selectedDot = new android.graphics.drawable.GradientDrawable();
+                selectedDot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                selectedDot.setSize(dp8, dp8);
+                selectedDot.setColor(primaryColor);
+                v.setBackground(selectedDot);
+            } else {
+                v.setBackgroundResource(R.drawable.dot_unselected);
+            }
+            dots.addView(v);
+        }
+
+        dotsHost.addView(dots);
+
+        routePagerChangeCallback = new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < dots.getChildCount(); i++) {
+                    if (i == position) {
+                        android.graphics.drawable.GradientDrawable selectedDot = new android.graphics.drawable.GradientDrawable();
+                        selectedDot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                        selectedDot.setSize(dp8, dp8);
+                        selectedDot.setColor(primaryColor);
+                        dots.getChildAt(i).setBackground(selectedDot);
+                    } else {
+                        dots.getChildAt(i).setBackgroundResource(R.drawable.dot_unselected);
+                    }
+                }
+
+                List<Station> selectedRoute = adapter.getRouteAtPosition(position);
+                if (selectedRoute != null && metroMapView != null) {
+                    metroMapView.setRoute(selectedRoute);
+                    metroMapView.invalidate();
+                }
+            }
+        };
+        pager.registerOnPageChangeCallback(routePagerChangeCallback);
+    }
+
     // Метод для получения активных линий в зависимости от текущей карты
     private List<Line> getActiveLines() {
         if (isMetroMap) {
@@ -1486,6 +1569,23 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     .remove(fragment)
                     .commit();
         }
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
+        if (frameLayout != null) {
+            frameLayout.removeAllViews();
+        }
+        LinearLayout routePagerDots = findViewById(R.id.routePagerDots);
+        if (routePagerDots != null) {
+            routePagerDots.setVisibility(View.GONE);
+            routePagerDots.removeAllViews();
+        }
+        if (routePagerChangeCallback != null) {
+            routePagerChangeCallback = null;
+        }
+        currentRoutePagerAdapter = null;
+    }
+
+    public void dismissRouteInfo() {
+        clearFrameLayout();
     }
 
     private void resetStationPagerIfNoSelection() {
@@ -1976,15 +2076,79 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private void showRouteInfo(List<Station> fastestRoute, List<Station> fewTransfersRoute) {
         clearFrameLayout();
-        RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstanceWithVariants(
+        
+        if (fastestRoute == null || fewTransfersRoute == null || 
+            fastestRoute.isEmpty() || fewTransfersRoute.isEmpty()) {
+            RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(
+                    fastestRoute != null && !fastestRoute.isEmpty() ? fastestRoute : fewTransfersRoute,
+                    metroMapView,
+                    this
+            );
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, routeInfoFragment)
+                    .commit();
+            LinearLayout routePagerDots = findViewById(R.id.routePagerDots);
+            if (routePagerDots != null) {
+                routePagerDots.setVisibility(View.GONE);
+            }
+            return;
+        }
+        
+        boolean routesAreEqual = fastestRoute.size() == fewTransfersRoute.size();
+        if (routesAreEqual) {
+            for (int i = 0; i < fastestRoute.size(); i++) {
+                if (!fastestRoute.get(i).getId().equals(fewTransfersRoute.get(i).getId())) {
+                    routesAreEqual = false;
+                    break;
+                }
+            }
+        }
+        
+        if (routesAreEqual) {
+            RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(
+                    fastestRoute != null && !fastestRoute.isEmpty() ? fastestRoute : fewTransfersRoute,
+                    metroMapView,
+                    this
+            );
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, routeInfoFragment)
+                    .commit();
+            LinearLayout routePagerDots = findViewById(R.id.routePagerDots);
+            if (routePagerDots != null) {
+                routePagerDots.setVisibility(View.GONE);
+            }
+            return;
+        }
+        
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
+        if (frameLayout == null) return;
+        
+        frameLayout.removeAllViews();
+        
+        ViewPager2 routePager = new ViewPager2(this);
+        routePager.setId(View.generateViewId());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        routePager.setLayoutParams(params);
+        frameLayout.addView(routePager);
+        
+        RoutePagerAdapter routePagerAdapter = new RoutePagerAdapter(
+                this,
                 fastestRoute,
                 fewTransfersRoute,
                 metroMapView,
                 this
         );
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, routeInfoFragment)
-                .commit();
+        currentRoutePagerAdapter = routePagerAdapter;
+        routePager.setAdapter(routePagerAdapter);
+        
+        addRoutePagerDots(routePager, routePagerAdapter);
+        
+        if (metroMapView != null && !fastestRoute.isEmpty()) {
+            metroMapView.setRoute(fastestRoute);
+        }
     }
 
     public Station findStationByNameAndAPITariff(String stationName) {

@@ -66,6 +66,7 @@ import com.nicorp.nimetro.domain.entities.TariffCallback;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import com.nicorp.nimetro.domain.entities.TransferRoute;
 import com.nicorp.nimetro.presentation.activities.MainActivity;
+import com.nicorp.nimetro.presentation.adapters.RoutePagerAdapter;
 import com.nicorp.nimetro.presentation.adapters.TrainInfoAdapter;
 import com.nicorp.nimetro.presentation.views.AnimatedPathMapView;
 import com.nicorp.nimetro.presentation.views.MetroMapView;
@@ -102,10 +103,12 @@ public class RouteInfoFragment extends Fragment {
     private Set<String> announcedTransfers = new HashSet<>();
     private Station lastAnnouncedStation = null;
     private static final String ARG_ROUTE = "route";
+    private static final String ARG_ROUTE_TYPE = "route_type";
     private static final int COLLAPSED_HEIGHT = 308;
     private Station previousStation = null;
 
     private List<Station> route;
+    private RoutePagerAdapter.RouteType routeType;
     private TextToSpeech textToSpeech;
     private TextToSpeech textToSpeechInfo;
     private AnimatedPathMapView transferMapView;
@@ -128,6 +131,7 @@ public class RouteInfoFragment extends Fragment {
     private TextView routeStationsCountTitle;
     private TextView routeTransfersCountTitle;
     private TextView nearestTrainsTitle;
+    private TextView routeTypeLabel;
     private LinearLayout routeDetailsContainer;
     private android.widget.ScrollView routeScrollView;
     private LinearLayout layoutSummary;
@@ -174,6 +178,18 @@ public class RouteInfoFragment extends Fragment {
         return fragment;
     }
 
+    public static RouteInfoFragment newInstanceWithVariants(List<Station> fastestRoute, List<Station> fewTransfersRoute, MetroMapView metroMapView, MainActivity mainActivity, RoutePagerAdapter.RouteType routeType) {
+        RouteInfoFragment fragment = new RouteInfoFragment();
+        Bundle args = new Bundle();
+        List<Station> routeToUse = routeType == RoutePagerAdapter.RouteType.FASTEST ? fastestRoute : fewTransfersRoute;
+        args.putParcelable(ARG_ROUTE, new Route(routeToUse));
+        args.putString(ARG_ROUTE_TYPE, routeType.name());
+        fragment.metroMapView = metroMapView;
+        fragment.mainActivity = mainActivity;
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,6 +200,14 @@ public class RouteInfoFragment extends Fragment {
             Route routeParcelable = getArguments().getParcelable(ARG_ROUTE);
             if (routeParcelable != null) {
                 route = routeParcelable.getStations();
+            }
+            String routeTypeString = getArguments().getString(ARG_ROUTE_TYPE);
+            if (routeTypeString != null) {
+                try {
+                    routeType = RoutePagerAdapter.RouteType.valueOf(routeTypeString);
+                } catch (IllegalArgumentException e) {
+                    routeType = null;
+                }
             }
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -1104,6 +1128,7 @@ public class RouteInfoFragment extends Fragment {
         routeStationsCountTitle = view.findViewById(R.id.routeStationsTitle);
         routeTransfersCountTitle = view.findViewById(R.id.routeTransfersTitle);
         nearestTrainsTitle = view.findViewById(R.id.nearestTrainsTitle);
+        routeTypeLabel = view.findViewById(R.id.routeTypeLabel);
         routeDetailsContainer = view.findViewById(R.id.routeDetailsContainer);
         routeScrollView = view.findViewById(R.id.routeScrollView);
         layoutSummary = view.findViewById(R.id.layoutSummary);
@@ -1162,6 +1187,12 @@ public class RouteInfoFragment extends Fragment {
 
             summaryRouteTime.setText(timeText);
             summaryRouteStations.setText(stationsText);
+
+            if (routeTypeLabel != null && routeType != null) {
+                String routeTypeText = routeType == RoutePagerAdapter.RouteType.FASTEST ? "Быстрый" : "Мин. пересадок";
+                routeTypeLabel.setText(routeTypeText);
+                routeTypeLabel.setVisibility(View.VISIBLE);
+            }
 
             populateRouteDetails(routeDetailsContainer);
         }
@@ -1327,27 +1358,21 @@ public class RouteInfoFragment extends Fragment {
                 stopRouteTracking();
             }
 
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .remove(this)
-                    .commit();
-
             if (metroMapView != null) {
                 metroMapView.clearRoute();
-                metroMapView.clearSelectedStations();
-            }
-
-            if (mainActivity != null) {
-                mainActivity.clearRouteInputs();
             }
 
             mainActivity.stopStationTrackingService();
 
             isAlmostArrivedNotificationSent = false;
-            resetTransferTracking(); // Clear transfer tracking when dismissing
+            resetTransferTracking();
 
-            // Сбрасываем текущий индекс и предыдущую станцию
             currentStationIndex = 0;
             previousStation = null;
+
+            if (mainActivity != null) {
+                mainActivity.dismissRouteInfo();
+            }
 
             Log.d("RouteInfoFragment", "Fragment dismissed and route cleared.");
         }

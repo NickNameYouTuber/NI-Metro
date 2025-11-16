@@ -66,6 +66,17 @@
                     app:layout_constraintTop_toTopOf="@id/routeTitle" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/routeTypeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Быстрый"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,8 +107,6 @@
                         android:text="0 ст."
                         android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
-
-                    <!-- Мини-карточки электричек вынесены в заголовок (ConstraintLayout) справа от routeTitle -->
                 </LinearLayout>
 
                 <LinearLayout
@@ -107,7 +116,6 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <!-- Группа элементов "Время", "Станций" и т.д. -->
                     <LinearLayout
                         android:id="@+id/routeInfoGroup"
                         android:layout_width="match_parent"
@@ -177,7 +185,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <!-- Аналогичные улучшения для других строк: Станций, Пересадок, Цена -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -211,8 +218,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-
-                        <!-- Пересадки -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -246,7 +251,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <!-- Цена -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -281,7 +285,6 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Группа "tripinfo" (новая группа) -->
                     <LinearLayout
                         android:id="@+id/tripInfoGroup"
                         android:layout_width="match_parent"
@@ -290,7 +293,6 @@
                         android:padding="16dp"
                         android:visibility="gone">
 
-                        <!-- Карта перехода для "tripinfo" -->
                         <com.nicorp.nimetro.presentation.views.AnimatedPathMapView
                             android:id="@+id/tripTransferMapView"
                             android:layout_width="300dp"
@@ -302,7 +304,6 @@
                             android:minHeight="300dp"
                             android:visibility="gone" />
 
-                        <!-- Текущая станция -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -342,7 +343,6 @@
                             android:layout_marginVertical="4dp"
                             android:background="?attr/colorOutline" />
 
-                        <!-- Следующая станция -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -382,7 +382,6 @@
                             android:layout_marginVertical="4dp"
                             android:background="?attr/colorOutline" />
 
-                        <!-- Время до перехода -->
                         <LinearLayout
                             android:id="@+id/tripTransferTimeContainer"
                             android:layout_width="match_parent"
@@ -418,7 +417,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <!-- Время до конца маршрута -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -452,7 +450,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <!-- Подсказка о переходе -->
                         <TextView
                             android:id="@+id/tripTransferHint"
                             android:layout_width="match_parent"
@@ -488,7 +485,6 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Отдельный экран для анимированного перехода -->
                 <LinearLayout
                     android:id="@+id/layoutTransfer"
                     android:layout_width="match_parent"
