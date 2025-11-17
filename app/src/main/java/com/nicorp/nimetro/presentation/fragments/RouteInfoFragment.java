@@ -1030,14 +1030,59 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private int calculateTotalTime(List<Station> route) {
+        if (route == null || route.size() < 2) {
+            return 0;
+        }
+        
         int totalTime = 0;
-        totalTime += (route.size() - 1) * 2; // Время на проезд между станциями
-
-        for (int i = 1; i < route.size(); i++) {
-            if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
-                totalTime += 3; // Время на пересадку
+        for (int i = 0; i < route.size() - 1; i++) {
+            Station currentStation = route.get(i);
+            Station nextStation = route.get(i + 1);
+            
+            if (currentStation == null || nextStation == null) {
+                continue;
+            }
+            
+            // Проверяем, являются ли станции смежными (одинаковый ID, разные линии)
+            boolean isAdjacent = false;
+            if (currentStation.getId() != null && nextStation.getId() != null
+                && currentStation.getId().equals(nextStation.getId())) {
+                // Проверяем, что они на разных линиях
+                Line currentLine = getLineForStation(currentStation, i > 0 ? route.get(i - 1) : null);
+                Line nextLine = getLineForStation(nextStation, currentStation);
+                if (currentLine != null && nextLine != null
+                    && !currentLine.getId().equals(nextLine.getId())) {
+                    // Это смежные станции на разных линиях - переход стоит 2 минуты
+                    totalTime += 2;
+                    continue;
+                }
+            }
+            
+            // Ищем время между текущей и следующей станцией через neighbors
+            boolean found = false;
+            if (currentStation.getNeighbors() != null && !currentStation.getNeighbors().isEmpty()) {
+                for (Station.Neighbor neighbor : currentStation.getNeighbors()) {
+                    if (neighbor.getStation() != null && neighbor.getStation().getId() != null 
+                        && neighbor.getStation().getId().equals(nextStation.getId())) {
+                        totalTime += neighbor.getTime();
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Если не нашли через neighbors, это transfer - ищем время из данных transfers
+            if (!found) {
+                int transferTime = findTransferTime(currentStation, nextStation);
+                if (transferTime > 0) {
+                    totalTime += transferTime;
+                } else {
+                    // Если не нашли transfer, используем время по умолчанию
+                    totalTime += 3;
+                }
             }
         }
+        
         return totalTime;
     }
 
@@ -1058,8 +1103,54 @@ public class RouteInfoFragment extends Fragment {
                     end++;
                 }
 
-                int edges = Math.max(0, end - idx);
-                int blockMinutes = edges * 2;
+                // Рассчитываем реальное время для сегмента линии
+                int blockMinutes = 0;
+                for (int s = idx; s < end; s++) {
+                    Station currentStation = route.get(s);
+                    Station nextStation = route.get(s + 1);
+                    
+                    if (currentStation == null || nextStation == null) {
+                        continue;
+                    }
+                    
+                    // Проверяем, являются ли станции смежными (одинаковый ID, разные линии)
+                    if (currentStation.getId() != null && nextStation.getId() != null
+                        && currentStation.getId().equals(nextStation.getId())) {
+                        // Проверяем, что они на разных линиях
+                        Line currentLineForCheck = getLineForStation(currentStation, s > 0 ? route.get(s - 1) : null);
+                        Line nextLineForCheck = getLineForStation(nextStation, currentStation);
+                        if (currentLineForCheck != null && nextLineForCheck != null
+                            && !currentLineForCheck.getId().equals(nextLineForCheck.getId())) {
+                            // Это смежные станции на разных линиях - переход стоит 2 минуты
+                            blockMinutes += 2;
+                            continue;
+                        }
+                    }
+                    
+                    // Ищем время между станциями через neighbors
+                    boolean found = false;
+                    if (currentStation.getNeighbors() != null && !currentStation.getNeighbors().isEmpty()) {
+                        for (Station.Neighbor neighbor : currentStation.getNeighbors()) {
+                            if (neighbor.getStation() != null && neighbor.getStation().getId() != null 
+                                && neighbor.getStation().getId().equals(nextStation.getId())) {
+                                blockMinutes += neighbor.getTime();
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Если не нашли через neighbors, это transfer - ищем время из данных transfers
+                    if (!found) {
+                        int transferTime = findTransferTime(currentStation, nextStation);
+                        if (transferTime > 0) {
+                            blockMinutes += transferTime;
+                        } else {
+                            // Если не нашли transfer, используем время по умолчанию
+                            blockMinutes += 3;
+                        }
+                    }
+                }
 
                 // Блок ЛИНИИ
                 View lineBlock = inflater.inflate(R.layout.item_route_line, container, false);
@@ -1104,8 +1195,46 @@ public class RouteInfoFragment extends Fragment {
                     transferParams.setMargins(0, 8, 0, 8);
                     transferView.setLayoutParams(transferParams);
                     TextView transferTime = transferView.findViewById(R.id.transferTime);
-                    Transfer tr = findTransferBetweenStations(route.get(end), route.get(end + 1));
-                    int tMin = tr != null ? Math.max(1, tr.getTime()) : 3;
+                    
+                    Station stationFrom = route.get(end);
+                    Station stationTo = route.get(end + 1);
+                    
+                    // Проверяем, являются ли станции смежными (одинаковый ID, разные линии)
+                    int tMin = 3; // По умолчанию
+                    if (stationFrom.getId() != null && stationTo.getId() != null
+                        && stationFrom.getId().equals(stationTo.getId())) {
+                        // Проверяем, что они на разных линиях
+                        Line lineFrom = getLineForStation(stationFrom, end > 0 ? route.get(end - 1) : null);
+                        Line lineTo = getLineForStation(stationTo, stationFrom);
+                        if (lineFrom != null && lineTo != null
+                            && !lineFrom.getId().equals(lineTo.getId())) {
+                            // Это смежные станции на разных линиях - переход стоит 2 минуты
+                            tMin = 2;
+                        } else {
+                            // Ищем время из transfers
+                            int transferTimeValue = findTransferTime(stationFrom, stationTo);
+                            if (transferTimeValue > 0) {
+                                tMin = transferTimeValue;
+                            } else {
+                                Transfer tr = findTransferBetweenStations(stationFrom, stationTo);
+                                if (tr != null) {
+                                    tMin = Math.max(1, tr.getTime());
+                                }
+                            }
+                        }
+                    } else {
+                        // Ищем время из transfers
+                        int transferTimeValue = findTransferTime(stationFrom, stationTo);
+                        if (transferTimeValue > 0) {
+                            tMin = transferTimeValue;
+                        } else {
+                            Transfer tr = findTransferBetweenStations(stationFrom, stationTo);
+                            if (tr != null) {
+                                tMin = Math.max(1, tr.getTime());
+                            }
+                        }
+                    }
+                    
                     transferTime.setText(String.valueOf(tMin));
                     container.addView(transferView);
                 }
@@ -2014,6 +2143,25 @@ public class RouteInfoFragment extends Fragment {
             Station currentStation = route.get(i);
             Station nextStation = route.get(i + 1);
             
+            if (currentStation == null || nextStation == null) {
+                continue;
+            }
+            
+            // Проверяем, являются ли станции смежными (одинаковый ID, разные линии)
+            boolean isAdjacent = false;
+            if (currentStation.getId() != null && nextStation.getId() != null
+                && currentStation.getId().equals(nextStation.getId())) {
+                // Проверяем, что они на разных линиях
+                Line currentLine = getLineForStation(currentStation, i > 0 ? route.get(i - 1) : null);
+                Line nextLine = getLineForStation(nextStation, currentStation);
+                if (currentLine != null && nextLine != null
+                    && !currentLine.getId().equals(nextLine.getId())) {
+                    // Это смежные станции на разных линиях - переход стоит 2 минуты
+                    totalTime += 2;
+                    continue;
+                }
+            }
+            
             // Ищем время между текущей и следующей станцией через neighbors
             boolean found = false;
             if (currentStation.getNeighbors() != null && !currentStation.getNeighbors().isEmpty()) {
@@ -2027,20 +2175,55 @@ public class RouteInfoFragment extends Fragment {
                 }
             }
             
-            // Если не нашли через neighbors, это может быть transfer - добавляем время по умолчанию
+            // Если не нашли через neighbors, это transfer - ищем время из данных transfers
             if (!found) {
-                totalTime += 3; // Время по умолчанию для transfers
+                int transferTime = findTransferTime(currentStation, nextStation);
+                if (transferTime > 0) {
+                    totalTime += transferTime;
+                } else {
+                    // Если не нашли transfer, используем время по умолчанию
+                    totalTime += 3;
+                }
             }
         }
-
-        // Добавляем время на пересадки (смена цвета линии)
-        for (int i = 1; i < route.size(); i++) {
-            if (route.get(i).getColor() != null && route.get(i - 1).getColor() != null
-                && !route.get(i).getColor().equals(route.get(i - 1).getColor())) {
-                totalTime += 3;
-            }
-        }
+        
         return totalTime;
+    }
+    
+    private int findTransferTime(Station station1, Station station2) {
+        if (mainActivity == null || station1 == null || station2 == null
+            || station1.getId() == null || station2.getId() == null) {
+            return 0;
+        }
+        
+        // Получаем transfers через mainActivity
+        List<Transfer> transfers = mainActivity.getTransfers();
+        if (transfers == null) {
+            return 0;
+        }
+        
+        for (Transfer transfer : transfers) {
+            if (transfer.getStations() != null) {
+                List<Station> transferStations = transfer.getStations();
+                boolean hasStation1 = false;
+                boolean hasStation2 = false;
+                for (Station transferStation : transferStations) {
+                    if (transferStation != null && transferStation.getId() != null) {
+                        if (transferStation.getId().equals(station1.getId())) {
+                            hasStation1 = true;
+                        }
+                        if (transferStation.getId().equals(station2.getId())) {
+                            hasStation2 = true;
+                        }
+                    }
+                }
+                if (hasStation1 && hasStation2) {
+                    return transfer.getTime();
+                }
+            }
+        }
+        
+        return 0;
     }
 
     private int calculateTransfersCount() {

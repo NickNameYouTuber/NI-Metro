@@ -19385,7 +19385,7 @@
             "name": "Улица\nОрджоникидзе",
             "x": 1280,
             "y": 2130,
-            "textPosition": 3,
+            "textPosition": 7,
             "neighbors": [
               [
                 "TRAM_T1_013",
@@ -19408,7 +19408,7 @@
             "name": "Донской\nмонастырь",
             "x": 1290,
             "y": 2110,
-            "textPosition": 3,
+            "textPosition": 7,
             "neighbors": [
               [
                 "TRAM_T1_014",
@@ -20969,7 +20969,7 @@
             "name": "Улица\nОрджоникидзе",
             "x": 1280,
             "y": 2130,
-            "textPosition": 3,
+            "textPosition": 7,
             "neighbors": [
               [
                 "TRAM_T1_013",
@@ -20992,7 +20992,7 @@
             "name": "Донской\nмонастырь",
             "x": 1290,
             "y": 2110,
-            "textPosition": 3,
+            "textPosition": 7,
             "neighbors": [
               [
                 "TRAM_T1_014",
@@ -22862,9 +22862,9 @@
           {
             "id": "TRAM_T38_031",
             "name": "3-я Рощинская улица",
-            "x": 1200,
-            "y": 2260,
-            "textPosition": 1,
+            "x": 1313,
+            "y": 2116,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_030",
@@ -22885,9 +22885,9 @@
           {
             "id": "TRAM_T38_032",
             "name": "Духовской переулок",
-            "x": 1170,
-            "y": 2280,
-            "textPosition": 5,
+            "x": 1313,
+            "y": 2136,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_031",
@@ -22908,9 +22908,9 @@
           {
             "id": "TRAM_T38_033",
             "name": "Спортивная школа\nТринта",
-            "x": 1140,
-            "y": 2300,
-            "textPosition": 1,
+            "x": 1313,
+            "y": 2156,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_032",
@@ -22931,9 +22931,9 @@
           {
             "id": "TRAM_T38_034",
             "name": "Больница имени\nАлексеева",
-            "x": 1110,
-            "y": 2320,
-            "textPosition": 5,
+            "x": 1313,
+            "y": 2176,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_033",
@@ -22954,9 +22954,9 @@
           {
             "id": "TRAM_T38_035",
             "name": "Севастопольский\nпроспект, 1",
-            "x": 1080,
-            "y": 2340,
-            "textPosition": 1,
+            "x": 1313,
+            "y": 2196,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_034",
@@ -22977,9 +22977,9 @@
           {
             "id": "TRAM_T38_036",
             "name": "Загородное шоссе",
-            "x": 1050,
-            "y": 2360,
-            "textPosition": 5,
+            "x": 1313,
+            "y": 2216,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_035",
@@ -23000,9 +23000,9 @@
           {
             "id": "TRAM_T38_037",
             "name": "Улица Шверника",
-            "x": 1020,
-            "y": 2380,
-            "textPosition": 1,
+            "x": 1313,
+            "y": 2236,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_036",
@@ -23023,9 +23023,9 @@
           {
             "id": "TRAM_T38_038",
             "name": "Улица Винокурова",
-            "x": 990,
-            "y": 2400,
-            "textPosition": 5,
+            "x": 1313,
+            "y": 2256,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_037",
@@ -23046,9 +23046,9 @@
           {
             "id": "TRAM_T38_039",
             "name": "Улица Дмитрия\nУльянова",
-            "x": 960,
-            "y": 2420,
-            "textPosition": 1,
+            "x": 1313,
+            "y": 2276,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_038",
@@ -23069,9 +23069,9 @@
           {
             "id": "TRAM_T38_040",
             "name": "Черёмушки",
-            "x": 930,
-            "y": 2440,
-            "textPosition": 5,
+            "x": 1313,
+            "y": 2296,
+            "textPosition": 3,
             "neighbors": [
               [
                 "TRAM_T38_039",
