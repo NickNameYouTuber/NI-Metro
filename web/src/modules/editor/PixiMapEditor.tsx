@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as PIXI from 'pixi.js';
-import { Button, Checkbox, Group, NumberInput, Paper, Select, Stack, Text as MantineText, TextInput, Title, ScrollArea, Divider, Badge, FileInput, Modal, MultiSelect } from '@mantine/core';
+import { Button, Checkbox, Group, NumberInput, Paper, Select, Stack, Text as MantineText, TextInput, Title, ScrollArea, Divider, Badge, FileInput, Modal, MultiSelect, Slider } from '@mantine/core';
 
 type Station = {
   id: string;
@@ -58,6 +58,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
   const riverLayerRef = useRef<PIXI.Container | null>(null);
   const transferLayerRef = useRef<PIXI.Container | null>(null);
   const stationLayerRef = useRef<PIXI.Container | null>(null);
+  const neighborLayerRef = useRef<PIXI.Container | null>(null);
   const controlLayerRef = useRef<PIXI.Container | null>(null);
   const backgroundSpriteRef = useRef<PIXI.Sprite | null>(null);
   const stationContainersRef = useRef<Map<string, PIXI.Container>>(new Map());
@@ -76,6 +77,8 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
   const [showLabels, setShowLabels] = useState<boolean>(true);
   const [snapStep, setSnapStep] = useState<number>(10);
   const [draggingControlPoint, setDraggingControlPoint] = useState<null | { index: 0 | 1 }>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [coordinateScale, setCoordinateScale] = useState<number>(1);
   const contentSnapshotRef = useRef<FileShape | null>(null);
   const [isAddingRiver, setIsAddingRiver] = useState<boolean>(false);
   const tempRiverPointsRef = useRef<{ x: number; y: number }[]>([]);
@@ -134,8 +137,8 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
 
   const getStationPosition = useCallback((station: Station) => {
     const cont = stationContainersRef.current.get(station.id);
-    return { x: cont ? cont.x : station.x, y: cont ? cont.y : station.y };
-  }, []);
+    return { x: cont ? cont.x : station.x * coordinateScale, y: cont ? cont.y : station.y * coordinateScale };
+  }, [coordinateScale]);
 
   const findStationById = useCallback((id: string): Station | null => {
     const map = metro;
@@ -166,17 +169,17 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       graphics.moveTo(aPos.x, aPos.y);
       if (intermediatePoint && intermediatePoint.points.length === 2) {
         const [c1, c2] = intermediatePoint.points;
-        graphics.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, bPos.x, bPos.y);
+        graphics.bezierCurveTo(c1.x * coordinateScale, c1.y * coordinateScale, c2.x * coordinateScale, c2.y * coordinateScale, bPos.x, bPos.y);
       } else {
         graphics.lineTo(bPos.x, bPos.y);
       }
       graphics.stroke({ width: 6, color: Number((line.color || '#cccccc').replace('#', '0x')) });
-      // Подсветка выбранного сегмента
+        // Подсветка выбранного сегмента
       if (isSelectedSeg) {
         graphics.moveTo(aPos.x, aPos.y);
         if (intermediatePoint && intermediatePoint.points.length === 2) {
           const [c1, c2] = intermediatePoint.points;
-          graphics.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, bPos.x, bPos.y);
+          graphics.bezierCurveTo(c1.x * coordinateScale, c1.y * coordinateScale, c2.x * coordinateScale, c2.y * coordinateScale, bPos.x, bPos.y);
         } else {
           graphics.lineTo(bPos.x, bPos.y);
         }
@@ -208,7 +211,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       }
     }
     return graphics;
-  }, [getStationPosition, selectedSegment, metro]);
+  }, [getStationPosition, selectedSegment, metro, coordinateScale]);
 
   const buildTransfersGraphics = useCallback((transfer: Transfer) => {
     const g = new PIXI.Graphics();
@@ -289,7 +292,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     if (!a || !b) return;
     const aPos = getStationPosition(a); const bPos = getStationPosition(b);
     const ip = map.intermediatePoints?.find(ip => (ip.neighborsId[0] === a.id && ip.neighborsId[1] === b.id) || (ip.neighborsId[0] === b.id && ip.neighborsId[1] === a.id));
-    const points = ip?.points || [
+    const points = ip?.points ? ip.points.map(p => ({ x: p.x * coordinateScale, y: p.y * coordinateScale })) : [
       { x: aPos.x + (bPos.x - aPos.x) * 0.33, y: aPos.y + (bPos.y - aPos.y) * 0.33 },
       { x: aPos.x + (bPos.x - aPos.x) * 0.66, y: aPos.y + (bPos.y - aPos.y) * 0.66 },
     ];
@@ -304,7 +307,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       g.on('pointerdown', () => { setDraggingControlPoint({ index: idx as 0 | 1 }); });
       layer.addChild(g);
     });
-  }, [metro, selectedSegment, getStationPosition]);
+  }, [metro, selectedSegment, getStationPosition, coordinateScale]);
 
   useEffect(() => {
     redrawSegmentControls();
@@ -335,15 +338,15 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       const g = new PIXI.Graphics();
       const pts: { x: number; y: number }[] = river.points || [];
       if (pts.length > 0) {
-        g.moveTo(pts[0].x, pts[0].y);
-        for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+        g.moveTo(pts[0].x * coordinateScale, pts[0].y * coordinateScale);
+        for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x * coordinateScale, pts[i].y * coordinateScale);
         g.stroke({ width: 6, color: 0x5dade2, alpha: 0.7 });
       }
       layer.addChild(g);
     });
     // временная полилиния при добавлении
     if (tempRiverGraphicsRef.current) layer.addChild(tempRiverGraphicsRef.current);
-  }, [metro]);
+  }, [metro, coordinateScale]);
 
   // Отрисовка станций
   const redrawStations = useCallback(() => {
@@ -356,20 +359,36 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     layer.removeChildren().forEach((c: any) => c.destroy?.());
     stationContainersRef.current.clear();
 
+    // Собираем все смежные станции для выбранной
+    const neighborIds = new Set<string>();
+    if (selectedStationId) {
+      const selectedStation = findStationById(selectedStationId);
+      if (selectedStation?.neighbors) {
+        selectedStation.neighbors.forEach(([id]) => neighborIds.add(id));
+      }
+    }
+
     // Новые станции
     let scount = 0;
     metro.lines?.forEach(line => {
       line.stations?.forEach(station => {
         scount++;
         const container = new PIXI.Container();
-        container.x = station.x;
-        container.y = station.y;
+        container.x = station.x * coordinateScale;
+        container.y = station.y * coordinateScale;
 
         // Круг
         const circle = new PIXI.Graphics();
         const isSelected = station.id === selectedStationId;
+        const isNeighbor = neighborIds.has(station.id);
         circle.circle(0, 0, 5);
-        circle.fill(isSelected ? 0x00e0ff : 0x111111);
+        if (isSelected) {
+          circle.fill(0x00e0ff);
+        } else if (isNeighbor) {
+          circle.fill(0xffaa00);
+        } else {
+          circle.fill(0x111111);
+        }
         container.addChild(circle);
 
         // Подпись (над кругом внутри контейнера)
@@ -408,7 +427,61 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       });
     });
     console.log('[PixiEditor] redrawStations: stations=', scount);
-  }, [metro, selectedStationId]);
+  }, [metro, selectedStationId, findStationById, coordinateScale]);
+
+  // Отрисовка связей смежных станций
+  const redrawNeighborConnections = useCallback(() => {
+    if (!appRef.current || !metro || !neighborLayerRef.current) return;
+    const layer = neighborLayerRef.current;
+    layer.removeChildren().forEach((c: any) => c.destroy?.());
+
+    if (!selectedStationId) return;
+
+    const selectedStation = findStationById(selectedStationId);
+    if (!selectedStation || !selectedStation.neighbors || selectedStation.neighbors.length === 0) return;
+
+    selectedStation.neighbors.forEach(([neighborId, time]) => {
+      const neighborStation = findStationById(neighborId);
+      if (!neighborStation) return;
+
+      const graphics = new PIXI.Graphics();
+      const dx = neighborStation.x * coordinateScale - selectedStation.x * coordinateScale;
+      const dy = neighborStation.y * coordinateScale - selectedStation.y * coordinateScale;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dashLength = 5;
+      const gapLength = 5;
+      const segments = Math.floor(dist / (dashLength + gapLength));
+      const stepX = dx / segments;
+      const stepY = dy / segments;
+      const dashStepX = stepX * (dashLength / (dashLength + gapLength));
+      const dashStepY = stepY * (dashLength / (dashLength + gapLength));
+      for (let i = 0; i < segments; i++) {
+        const startX = selectedStation.x * coordinateScale + stepX * i;
+        const startY = selectedStation.y * coordinateScale + stepY * i;
+        graphics.moveTo(startX, startY);
+        graphics.lineTo(startX + dashStepX, startY + dashStepY);
+      }
+      graphics.stroke({ width: 2, color: 0xffaa00, alpha: 0.6 });
+      layer.addChild(graphics);
+
+      if (time > 0) {
+        const midX = (selectedStation.x + neighborStation.x) / 2 * coordinateScale;
+        const midY = (selectedStation.y + neighborStation.y) / 2 * coordinateScale;
+        const timeText = new PIXI.Text({
+          text: `${time}с`,
+          style: {
+            fontSize: 10,
+            fill: 0xffaa00,
+            stroke: { color: 0xffffff, width: 2 },
+            fontFamily: 'system-ui, Arial'
+          }
+        } as any);
+        timeText.anchor.set(0.5);
+        timeText.position.set(midX, midY);
+        layer.addChild(timeText);
+      }
+    });
+  }, [metro, selectedStationId, findStationById]);
 
   // Перерисовка при изменении данных (без авто-fit)
   useEffect(() => {
@@ -420,7 +493,8 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     redrawRivers();
     redrawLines();
     redrawTransfers();
-  }, [metro, selectedSegment, selectedStationId, pixiReady, redrawLines, redrawTransfers, redrawStations, redrawRivers]);
+    redrawNeighborConnections();
+  }, [metro, selectedSegment, selectedStationId, pixiReady, redrawLines, redrawTransfers, redrawStations, redrawRivers, redrawNeighborConnections]);
 
   // После инициализации PIXI отрисовать текущие данные
   useEffect(() => {
@@ -429,7 +503,8 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     redrawStations();
     redrawLines();
     redrawTransfers();
-  }, [pixiReady]);
+    redrawNeighborConnections();
+  }, [pixiReady, redrawStations, redrawLines, redrawTransfers, redrawNeighborConnections]);
 
   // Инициализация PIXI приложения
   useEffect(() => {
@@ -506,6 +581,10 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       stationLayerRef.current = stationLayer;
       root.addChild(stationLayer);
 
+      const neighborLayer = new PIXI.Container();
+      neighborLayerRef.current = neighborLayer;
+      root.addChild(neighborLayer);
+
       const ctrlLayer = new PIXI.Container();
       controlLayerRef.current = ctrlLayer;
       root.addChild(ctrlLayer);
@@ -541,6 +620,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
         transferLayerRef.current = null;
         stationLayerRef.current = null;
         controlLayerRef.current = null;
+        neighborLayerRef.current = null;
         backgroundSpriteRef.current = null;
         canvasDomRef.current = null;
         stationContainersRef.current.clear();
@@ -608,6 +688,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     );
 
     root.scale.set(scale);
+    setZoomLevel(scale);
     root.position.set(
       padding + -minX * scale,
       padding + -minY * scale
@@ -808,9 +889,9 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
           const section = (prev as any)[activeSection]; if (!section) return prev as any;
           const ips = [...(section.intermediatePoints || [])];
           let entry = ips.find((ip: any) => (ip.neighborsId[0] === aId && ip.neighborsId[1] === bId) || (ip.neighborsId[0] === bId && ip.neighborsId[1] === aId));
-          if (!entry) { entry = { neighborsId: [aId, bId], points: [{ x: local.x, y: local.y }, { x: local.x, y: local.y }] }; ips.push(entry); }
+          if (!entry) { entry = { neighborsId: [aId, bId], points: [{ x: local.x / coordinateScale, y: local.y / coordinateScale }, { x: local.x / coordinateScale, y: local.y / coordinateScale }] }; ips.push(entry); }
           entry.points = [...entry.points];
-          entry.points[idx] = { x: local.x, y: local.y };
+          entry.points[idx] = { x: local.x / coordinateScale, y: local.y / coordinateScale };
           return { ...prev, [activeSection]: { ...section, intermediatePoints: ips } } as FileShape;
         });
         redrawLinesForStation(selectedSegment.aId);
@@ -832,6 +913,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
           // Живое обновление связанных сегментов и переходов
           redrawLinesForStation(dragTarget.stationId);
           redrawTransfers();
+          redrawNeighborConnections();
         }
       }
       if (isAddingRiver) {
@@ -865,7 +947,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       if (isDragging && dragTarget) {
         const container = stationContainersRef.current.get(dragTarget.stationId);
         if (container) {
-          // Коммитим изменения в состояние (в локальных координатах)
+          // Коммитим изменения в состояние (делим на coordinateScale для сохранения оригинальных координат)
           let computed: FileShape | null = null;
           setContent(prev => {
             pushHistory(prev);
@@ -878,7 +960,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
                 ...l,
                 stations: l.stations.map((s: Station) =>
                   s.id === dragTarget.stationId
-                    ? { ...s, x: container.x, y: container.y }
+                    ? { ...s, x: container.x / coordinateScale, y: container.y / coordinateScale }
                     : s
                 )
               } as Line;
@@ -897,6 +979,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       setDragTarget(null);
       // Глобальная перерисовка переходов после завершения
       redrawTransfers();
+      redrawNeighborConnections();
       if (isAddingRiver) {
         // коммит временной реки в данные
         let computed: FileShape | null = null;
@@ -928,7 +1011,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
         (app.stage as any)?.off?.('pointerupoutside', handlePointerUp);
       } catch {}
     };
-  }, [isDragging, dragTarget, activeSection, snapToGrid, redrawTransfers, redrawLinesForStation, draggingControlPoint, selectedSegment, metro, redrawSegmentControls]);
+  }, [isDragging, dragTarget, activeSection, snapToGrid, redrawTransfers, redrawLinesForStation, draggingControlPoint, selectedSegment, metro, redrawSegmentControls, coordinateScale]);
 
   // Поворот колеса: зум к курсору, панорамирование по зажатию
   useEffect(() => {
@@ -954,6 +1037,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
 
       const before = root.toLocal(new PIXI.Point(gx, gy));
       root.scale.set(newScale);
+      setZoomLevel(newScale);
       const after = root.toLocal(new PIXI.Point(gx, gy));
       root.position.x += (after.x - before.x) * newScale;
       root.position.y += (after.y - before.y) * newScale;
@@ -1076,7 +1160,10 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     const root = rootContainerRef.current;
     if (s.canvasView && root) {
       const { scale, posX, posY } = s.canvasView;
-      if (typeof scale === 'number' && scale > 0) root.scale.set(scale);
+      if (typeof scale === 'number' && scale > 0) {
+        root.scale.set(scale);
+        setZoomLevel(scale);
+      }
       if (typeof posX === 'number') root.position.x = posX;
       if (typeof posY === 'number') root.position.y = posY;
       pendingFitRef.current = false;
@@ -1111,7 +1198,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
       showLabels,
       snapStep,
       canvasView: {
-        scale: rootContainerRef.current?.scale?.x || 1,
+        scale: zoomLevel,
         posX: rootContainerRef.current?.position?.x || 0,
         posY: rootContainerRef.current?.position?.y || 0,
       },
@@ -1119,7 +1206,7 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     };
     next.info = info;
     onChange(next);
-  }, [onChange, content, showGrid, showLines, showTransfers, showStations, showLabels, snapStep, bgUrl, bgX, bgY, bgW, bgH, bgAlpha, cloneDeep]);
+  }, [onChange, content, showGrid, showLines, showTransfers, showStations, showLabels, snapStep, bgUrl, bgX, bgY, bgW, bgH, bgAlpha, zoomLevel, cloneDeep]);
 
   // Persist settings when toggled/changed
   useEffect(() => { persistEditorSettings(); }, [showGrid]);
@@ -1249,11 +1336,12 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
     if (onChange && computed) onChange(computed);
     const cont = stationContainersRef.current.get(selectedStation.id);
     if (cont) {
-      if (key === 'x') cont.x = value; else cont.y = value;
+      if (key === 'x') cont.x = value * coordinateScale; else cont.y = value * coordinateScale;
     }
     redrawLinesForStation(selectedStation.id);
     redrawTransfers();
-  }, [content, selectedLine, selectedStation, activeSection, pushHistory, onChange, redrawLinesForStation, redrawTransfers]);
+    redrawNeighborConnections();
+  }, [content, selectedLine, selectedStation, activeSection, pushHistory, onChange, redrawLinesForStation, redrawTransfers, redrawNeighborConnections]);
 
   const updateSelectedLine = useCallback((patch: Partial<Line>) => {
     if (!content || !selectedLine) return;
@@ -1447,7 +1535,9 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
             const c = canvasDomRef.current; const root = rootContainerRef.current; if (!c || !root) return;
             const rect = c.getBoundingClientRect(); const cx = rect.left + rect.width / 2; const cy = rect.top + rect.height / 2;
             const before = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
-            const newScale = Math.min(5, root.scale.x * 1.1); root.scale.set(newScale);
+            const newScale = Math.min(5, root.scale.x * 1.1); 
+            root.scale.set(newScale);
+            setZoomLevel(newScale);
             const after = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
             root.position.x += (after.x - before.x) * newScale; root.position.y += (after.y - before.y) * newScale; 
             redrawGrid(); persistEditorSettings();
@@ -1456,12 +1546,62 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
             const c = canvasDomRef.current; const root = rootContainerRef.current; if (!c || !root) return;
             const rect = c.getBoundingClientRect(); const cx = rect.left + rect.width / 2; const cy = rect.top + rect.height / 2;
             const before = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
-            const newScale = Math.max(0.2, root.scale.x / 1.1); root.scale.set(newScale);
+            const newScale = Math.max(0.2, root.scale.x / 1.1); 
+            root.scale.set(newScale);
+            setZoomLevel(newScale);
             const after = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
             root.position.x += (after.x - before.x) * newScale; root.position.y += (after.y - before.y) * newScale; 
             redrawGrid(); persistEditorSettings();
           }}>−</Button>
           <Button variant="light" onClick={() => { fitToContent(); persistEditorSettings(); }}>Fit</Button>
+          <Group gap={4} style={{ alignItems: 'center' }}>
+            <MantineText size="xs" style={{ minWidth: 50 }}>Масштаб:</MantineText>
+            <Slider
+              value={zoomLevel}
+              onChange={(value) => {
+                const root = rootContainerRef.current;
+                const canvas = canvasDomRef.current;
+                if (!root || !canvas) return;
+                const rect = canvas.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const before = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
+                root.scale.set(value);
+                setZoomLevel(value);
+                const after = root.toLocal(new PIXI.Point(cx - rect.left, cy - rect.top));
+                root.position.x += (after.x - before.x) * value;
+                root.position.y += (after.y - before.y) * value;
+                redrawGrid();
+                persistEditorSettings();
+              }}
+              min={0.1}
+              max={5}
+              step={0.1}
+              style={{ width: 150 }}
+            />
+            <MantineText size="xs" style={{ minWidth: 50 }}>{Math.round(zoomLevel * 100)}%</MantineText>
+          </Group>
+          <Group gap={4} style={{ alignItems: 'center' }}>
+            <MantineText size="xs" style={{ minWidth: 80 }}>Масштаб координат:</MantineText>
+            <Slider
+              value={coordinateScale}
+              onChange={(value) => {
+                if (value <= 0 || value === coordinateScale) return;
+                setCoordinateScale(value);
+                redrawStations();
+                redrawLines();
+                redrawTransfers();
+                redrawNeighborConnections();
+                redrawSegmentControls();
+                redrawRivers();
+              }}
+              min={0.1}
+              max={5}
+              step={0.1}
+              style={{ width: 150 }}
+            />
+            <MantineText size="xs" style={{ minWidth: 50 }}>{Math.round(coordinateScale * 100)}%</MantineText>
+          </Group>
         </Group>
         <Button onClick={addLine}>Добавить линию</Button>
         <Button onClick={addStation} disabled={!selectedLine}>Добавить станцию</Button>
@@ -1662,6 +1802,167 @@ export function PixiMapEditor({ mapPath, initialData, onChange }: { mapPath: str
                 <TextInput label="Название" value={selectedStation.name} onChange={(e) => updateSelectedStationName(e.currentTarget.value)} />
                 <NumberInput label="X" value={selectedStation.x} onChange={(v) => updateSelectedStationCoord('x', v as any)} />
                 <NumberInput label="Y" value={selectedStation.y} onChange={(v) => updateSelectedStationCoord('y', v as any)} />
+                <Divider label="Смежные станции" labelPosition="left" my="sm" />
+                <Stack gap={4}>
+                  {(selectedStation.neighbors || []).map(([neighborId, time]) => {
+                    const neighborStation = findStationById(neighborId);
+                    return (
+                      <Group key={neighborId} justify="space-between" align="center">
+                        <MantineText size="sm">{neighborStation?.name || neighborId}</MantineText>
+                        <Group gap={4}>
+                          <NumberInput 
+                            size="xs" 
+                            w={70} 
+                            value={time} 
+                            onChange={(v) => {
+                              if (!content || !selectedLine || !selectedStation) return;
+                              const newTime = Number(v) || 0;
+                              let computed: any = null;
+                              setContent(prev => {
+                                pushHistory(prev);
+                                if (!prev) { computed = prev; return prev as any; }
+                                const section = (prev as any)[activeSection]; if (!section) { computed = prev as any; return prev as any; }
+                                const lines = section.lines.map((l: Line) => l.id !== selectedLine.id ? l : ({
+                                  ...l,
+                                  stations: l.stations.map(s => s.id === selectedStation.id ? {
+                                    ...s,
+                                    neighbors: (s.neighbors || []).map(([id, t]) => id === neighborId ? [id, newTime] : [id, t])
+                                  } : s)
+                                } as Line));
+                                computed = { ...prev, [activeSection]: { ...section, lines } } as FileShape;
+                                return computed;
+                              });
+                              if (onChange && computed) onChange(computed);
+                              redrawNeighborConnections();
+                            }}
+                          />
+                          <Button 
+                            size="xs" 
+                            color="red" 
+                            variant="light" 
+                            onClick={() => {
+                              if (!content || !selectedLine || !selectedStation) return;
+                              let computed: any = null;
+                              setContent(prev => {
+                                pushHistory(prev);
+                                if (!prev) { computed = prev; return prev as any; }
+                                const section = (prev as any)[activeSection]; if (!section) { computed = prev as any; return prev as any; }
+                                const lines = section.lines.map((l: Line) => l.id !== selectedLine.id ? l : ({
+                                  ...l,
+                                  stations: l.stations.map(s => s.id === selectedStation.id ? {
+                                    ...s,
+                                    neighbors: (s.neighbors || []).filter(([id]) => id !== neighborId)
+                                  } : s)
+                                } as Line));
+                                computed = { ...prev, [activeSection]: { ...section, lines } } as FileShape;
+                                return computed;
+                              });
+                              if (onChange && computed) onChange(computed);
+                              redrawNeighborConnections();
+                            }}
+                          >
+                            Удалить
+                          </Button>
+                        </Group>
+                      </Group>
+                    );
+                  })}
+                  {(selectedStation.neighbors || []).length === 0 && (
+                    <MantineText size="xs" c="dimmed">Нет смежных станций</MantineText>
+                  )}
+                  <Button 
+                    size="xs" 
+                    variant="light" 
+                    onClick={() => {
+                      const allStations = (metro?.lines ?? []).flatMap(l => (l.stations || []).map(s => ({ value: s.id, label: `${s.name} (${l.name})` })));
+                      const existingNeighborIds = new Set<string>((selectedStation.neighbors || []).map(([id]) => id));
+                      const availableOptions = allStations.filter(o => o.value !== selectedStation.id && !existingNeighborIds.has(o.value));
+                      if (availableOptions.length === 0) {
+                        alert('Нет доступных станций для добавления');
+                        return;
+                      }
+                      setAddStationsModalOpen(prev => ({ ...prev, ['neighbors']: true }));
+                      setAddStationsModalValues(prev => ({ ...prev, ['neighbors']: [] }));
+                    }}
+                  >
+                    Добавить смежную станцию
+                  </Button>
+                  <Modal 
+                    opened={!!addStationsModalOpen['neighbors']} 
+                    onClose={() => {
+                      setAddStationsModalOpen(prev => ({ ...prev, ['neighbors']: false }));
+                      setAddStationsModalValues(prev => ({ ...prev, ['neighbors']: [] }));
+                    }} 
+                    title="Добавить смежную станцию" 
+                    centered
+                  >
+                    {(() => {
+                      const allStations = (metro?.lines ?? []).flatMap(l => (l.stations || []).map(s => ({ value: s.id, label: `${s.name} (${l.name})` })));
+                      const existingNeighborIds = new Set<string>((selectedStation.neighbors || []).map(([id]) => id));
+                      const availableOptions = allStations.filter(o => o.value !== selectedStation.id && !existingNeighborIds.has(o.value));
+                      const values = addStationsModalValues['neighbors'] || [];
+                      return (
+                        <Stack gap={12}>
+                          <MultiSelect
+                            searchable
+                            nothingFoundMessage="Ничего не найдено"
+                            placeholder="Выберите станции"
+                            data={availableOptions}
+                            value={values}
+                            onChange={(val) => setAddStationsModalValues(prev => ({ ...prev, ['neighbors']: val }))}
+                          />
+                          <NumberInput 
+                            label="Время перехода (сек)" 
+                            value={defaultNeighborTime} 
+                            onChange={(v) => setDefaultNeighborTime(Number(v) || 0)} 
+                          />
+                          <Group justify="end">
+                            <Button 
+                              variant="light" 
+                              onClick={() => {
+                                setAddStationsModalOpen(prev => ({ ...prev, ['neighbors']: false }));
+                                setAddStationsModalValues(prev => ({ ...prev, ['neighbors']: [] }));
+                              }}
+                            >
+                              Отмена
+                            </Button>
+                            <Button 
+                              onClick={() => {
+                                const pick = addStationsModalValues['neighbors'] || [];
+                                if (pick.length === 0) return;
+                                if (!content || !selectedLine || !selectedStation) return;
+                                let computed: any = null;
+                                setContent(prev => {
+                                  pushHistory(prev);
+                                  if (!prev) { computed = prev; return prev as any; }
+                                  const section = (prev as any)[activeSection]; if (!section) { computed = prev as any; return prev as any; }
+                                  const lines = section.lines.map((l: Line) => l.id !== selectedLine.id ? l : ({
+                                    ...l,
+                                    stations: l.stations.map(s => s.id === selectedStation.id ? {
+                                      ...s,
+                                      neighbors: [
+                                        ...(s.neighbors || []),
+                                        ...pick.map(id => [id, Number(defaultNeighborTime) || 0] as [string, number])
+                                      ]
+                                    } : s)
+                                  } as Line));
+                                  computed = { ...prev, [activeSection]: { ...section, lines } } as FileShape;
+                                  return computed;
+                                });
+                                if (onChange && computed) onChange(computed);
+                                setAddStationsModalOpen(prev => ({ ...prev, ['neighbors']: false }));
+                                setAddStationsModalValues(prev => ({ ...prev, ['neighbors']: [] }));
+                                redrawNeighborConnections();
+                              }}
+                            >
+                              Добавить
+                            </Button>
+                          </Group>
+                        </Stack>
+                      );
+                    })()}
+                  </Modal>
+                </Stack>
               </Stack>
             ) : (
               <MantineText c="dimmed">Не выбрана</MantineText>

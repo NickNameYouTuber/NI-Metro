@@ -56,6 +56,7 @@ import com.nicorp.nimetro.R;
 import com.nicorp.nimetro.data.models.MapObject;
 import com.nicorp.nimetro.data.models.River;
 import com.nicorp.nimetro.domain.entities.Line;
+import com.nicorp.nimetro.domain.entities.RouteStation;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Transfer;
 import java.util.ArrayList;
@@ -93,6 +94,8 @@ public class MetroMapView extends View {
     private List<Line> lines;
     private List<Station> stations;
     private List<Station> route;
+    private List<RouteStation> routeStations; // Список RouteStation для правильного определения линии для каждой позиции в маршруте
+    private Map<String, Line> routeLineMap; // Карта ID станций к линиям для правильного отображения маршрута (fallback)
     private List<Station> selectedStations;
     private List<Transfer> transfers;
     private List<River> rivers;
@@ -151,7 +154,7 @@ public class MetroMapView extends View {
         return baseWidth;
     }
 
-    private static final float CLICK_RADIUS = 30.0f;
+    private static final float CLICK_RADIUS = 10.0f;
 
     private static final float STATION_NAME_TEXT_SIZE = 22f;
     private Bitmap backgroundBitmap;
@@ -659,7 +662,16 @@ public class MetroMapView extends View {
     }
 
     public void setRoute(List<Station> route) {
+        setRouteInternal(route);
+    }
+    
+    private void setRouteInternal(List<Station> route) {
         this.route = route;
+        // Очищаем routeStations и routeLineMap при установке нового маршрута через setRoute
+        this.routeStations = null;
+        if (routeLineMap != null) {
+            routeLineMap.clear();
+        }
         isSelectionBlocked = true; // Блокируем выбор станций
         needsRedraw = true; // Устанавливаем флаг перерисовки перед обновлением кэша
         updateRouteCache(); // Обновляем кэш маршрута
@@ -667,6 +679,64 @@ public class MetroMapView extends View {
 
         if (route != null && route.size() > 1) {
             post(this::fitRouteToTopHalf);
+        }
+    }
+    
+    public void setRouteFromRouteStations(List<RouteStation> routeStations) {
+        if (routeStations == null) {
+            this.route = null;
+            this.routeStations = null;
+            if (routeLineMap != null) {
+                routeLineMap.clear();
+            }
+            isSelectionBlocked = true;
+            needsRedraw = true;
+            updateRouteCache();
+            invalidate();
+        } else {
+            // Сохраняем список RouteStation для использования при определении линии
+            this.routeStations = new ArrayList<>(routeStations);
+            
+            List<Station> stationRoute = new ArrayList<>();
+            // Инициализируем routeLineMap, если он еще не создан
+            if (routeLineMap == null) {
+                routeLineMap = new HashMap<>();
+            } else {
+                routeLineMap.clear();
+            }
+            
+            Log.d("ROUTE_INFO", "=== УСТАНОВКА МАРШРУТА ИЗ RouteStation (" + routeStations.size() + " станций) ===");
+            
+            // Сохраняем информацию о линиях для каждой станции
+            for (int i = 0; i < routeStations.size(); i++) {
+                RouteStation routeStation = routeStations.get(i);
+                if (routeStation != null && routeStation.getStation() != null) {
+                    Station station = routeStation.getStation();
+                    stationRoute.add(station);
+                    if (routeStation.getLine() != null && station.getId() != null) {
+                        // Сохраняем по ID для обратной совместимости
+                        routeLineMap.put(station.getId(), routeStation.getLine());
+                        String lineName = routeStation.getLine().getName() != null ? 
+                            routeStation.getLine().getName() : routeStation.getLine().getId();
+                        Log.d("ROUTE_INFO", String.format("[%d] %s (ID: %s) - %s", 
+                            i, station.getName(), station.getId(), lineName));
+                    } else {
+                        Log.d("ROUTE_INFO", String.format("[%d] %s (ID: %s) - линия: null", 
+                            i, station.getName(), station.getId()));
+                    }
+                }
+            }
+            
+            // Устанавливаем route напрямую, БЕЗ вызова setRouteInternal, чтобы не очистить routeStations
+            this.route = stationRoute;
+            isSelectionBlocked = true;
+            needsRedraw = true;
+            updateRouteCache(); // Обновляем кэш маршрута (routeStations будет доступен)
+            invalidate();
+            
+            if (route != null && route.size() > 1) {
+                post(this::fitRouteToTopHalf);
+            }
         }
     }
 
@@ -1264,6 +1334,9 @@ public class MetroMapView extends View {
                     int idx1 = lineStations.indexOf(station1);
                     int idx2 = lineStations.indexOf(station2);
                     if (Math.abs(idx1 - idx2) == 1) {
+                        String lineName = lp.line.getName() != null ? lp.line.getName() : lp.line.getId();
+                        Log.d("ROUTE_INFO", String.format("findLinePathForSegment: %s -> %s, найдена линия: %s", 
+                            station1.getName(), station2.getName(), lineName));
                         return lp;
                     }
                 }
@@ -1279,10 +1352,16 @@ public class MetroMapView extends View {
             return continuousPath;
         }
         
+        String lineName = line != null ? (line.getName() != null ? line.getName() : line.getId()) : "null";
+        Log.d("ROUTE_INFO", String.format("buildContinuousPathForSegment: [%d-%d], линия: %s", startIndex, endIndex, lineName));
+        
         boolean firstPoint = true;
         
         for (int i = startIndex; i <= endIndex; i++) {
             Station station = route.get(i);
+            if (i == startIndex || i == endIndex) {
+                Log.d("ROUTE_INFO", String.format("  [%d] %s (ID: %s)", i, station.getName(), station.getId()));
+            }
             float x = station.getX() * currentCoordinateScaleFactor;
             float y = station.getY() * currentCoordinateScaleFactor;
             
@@ -3797,25 +3876,175 @@ public class MetroMapView extends View {
         routePathCache.routeLineSegments.clear();
 
         // Построение нового маршрута
-        for (int i = 0; i < route.size() - 1; i++) {
-            Station station1 = route.get(i);
-            Station station2 = route.get(i + 1);
-            Line line = findLineForConnection(station1, station2);
+        // ИСПОЛЬЗУЕМ ТОЛЬКО RouteStation для определения линии и Station
+        if (routeStations != null && !routeStations.isEmpty() && routeStations.size() == route.size()) {
+            Log.d("ROUTE_INFO", "=== ПОСТРОЕНИЕ МАРШРУТА ИЗ RouteStation (" + routeStations.size() + " станций) ===");
+            // Используем routeStations для всего процесса отрисовки
+            for (int i = 0; i < routeStations.size() - 1; i++) {
+                RouteStation routeStation1 = routeStations.get(i);
+                RouteStation routeStation2 = routeStations.get(i + 1);
+                
+                if (routeStation1 == null || routeStation2 == null
+                    || routeStation1.getStation() == null || routeStation2.getStation() == null) {
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] Пропуск: routeStation null", i, i + 1));
+                    continue;
+                }
+                
+                // Используем Station и Line из RouteStation
+                Station station1 = routeStation1.getStation();
+                Station station2 = routeStation2.getStation();
+                Line line1 = routeStation1.getLine();
+                Line line2 = routeStation2.getLine();
+                
+                String line1Name = line1 != null ? (line1.getName() != null ? line1.getName() : line1.getId()) : "null";
+                String line2Name = line2 != null ? (line2.getName() != null ? line2.getName() : line2.getId()) : "null";
+                
+                // Если обе станции на одной линии, используем эту линию
+                if (line1 != null && line2 != null
+                    && line1.getId() != null && line2.getId() != null
+                    && line1.getId().equals(line2.getId())) {
+                    // Используем линию из RouteStation
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] %s -> %s: ОДНА ЛИНИЯ %s", 
+                        i, i + 1, station1.getName(), station2.getName(), line1Name));
+                    LinePath lp = buildRouteLinePath(station1, station2, line1.getLineType(), line1.getColor());
+                    lp.line = line1;
+                    routePathCache.routeLinesPaths.add(lp);
+                } else {
+                    // Линии разные - проверяем, являются ли станции neighbors
+                    // Если они neighbors, рисуем линию, а не переход
+                    boolean areNeighbors = areStationsNeighbors(station1, station2);
+                    if (areNeighbors) {
+                        // Станции связаны через neighbors - используем линию первой станции
+                        Log.d("ROUTE_INFO", String.format("[%d->%d] %s -> %s: NEIGHBORS (линия1: %s, линия2: %s), используем линию1: %s", 
+                            i, i + 1, station1.getName(), station2.getName(), line1Name, line2Name, line1Name));
+                        LinePath lp = buildRouteLinePath(station1, station2, line1.getLineType(), line1.getColor());
+                        lp.line = line1;
+                        routePathCache.routeLinesPaths.add(lp);
+                    } else {
+                        // Это переход между станциями
+                        Log.d("ROUTE_INFO", String.format("[%d->%d] %s -> %s: ПЕРЕХОД (линия1: %s, линия2: %s)", 
+                            i, i + 1, station1.getName(), station2.getName(), line1Name, line2Name));
+                        // Построим всё как для общей карты, но в routePathCache
+                        buildRouteTransferBetween(station1, station2);
+                    }
+                }
+            }
+        } else {
+            // Fallback для старого метода setRoute (без RouteStation)
+            for (int i = 0; i < route.size() - 1; i++) {
+                Station station1 = route.get(i);
+                Station station2 = route.get(i + 1);
+                Line line = findLineForConnection(station1, station2);
 
-            if (line != null) {
-
-                LinePath lp = buildRouteLinePath(station1, station2, line.getLineType(), line.getColor());
-                lp.line = line;
-                routePathCache.routeLinesPaths.add(lp);
-            } else {
-
-                // Это переход между станциями — построим всё как для общей карты, но в routePathCache
-                buildRouteTransferBetween(station1, station2);
+                if (line != null) {
+                    LinePath lp = buildRouteLinePath(station1, station2, line.getLineType(), line.getColor());
+                    lp.line = line;
+                    routePathCache.routeLinesPaths.add(lp);
+                } else {
+                    buildRouteTransferBetween(station1, station2);
+                }
             }
         }
 
         // Группируем станции по линиям для отображения индикаторов
-        if (route.size() > 1) {
+        // ИСПОЛЬЗУЕМ ТОЛЬКО RouteStation для определения линии
+        if (routeStations != null && !routeStations.isEmpty() && routeStations.size() == route.size() && route.size() > 1) {
+            Log.d("ROUTE_INFO", "=== ГРУППИРОВКА СТАНЦИЙ ПО ЛИНИЯМ ДЛЯ ИНДИКАТОРОВ ===");
+            int segmentStart = 0;
+            Line currentLine = null;
+            
+            for (int i = 0; i < routeStations.size() - 1; i++) {
+                RouteStation routeStation1 = routeStations.get(i);
+                RouteStation routeStation2 = routeStations.get(i + 1);
+                
+                if (routeStation1 == null || routeStation2 == null
+                    || routeStation1.getLine() == null || routeStation2.getLine() == null) {
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] Пропуск: нет линии", i, i + 1));
+                    continue;
+                }
+                
+                // Используем линию из RouteStation
+                // ВАЖНО: для смежных станций используем линию из RouteStation, даже если ID станций одинаковые
+                Line line = null;
+                if (routeStation1.getLine().getId() != null && routeStation2.getLine().getId() != null
+                    && routeStation1.getLine().getId().equals(routeStation2.getLine().getId())) {
+                    // Обе станции на одной линии - используем эту линию из RouteStation
+                    line = routeStation1.getLine();
+                    String lineName = line.getName() != null ? line.getName() : line.getId();
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] %s -> %s: ЛИНИЯ %s", 
+                        i, i + 1, routeStation1.getStation().getName(), routeStation2.getStation().getName(), lineName));
+                } else {
+                    // Линии разные - это переход
+                    // НО для построения пути используем линию первой станции, если она уже на правильной линии
+                    // Это важно для смежных станций
+                    line = routeStation1.getLine();
+                    String line1Name = routeStation1.getLine().getName() != null ? 
+                        routeStation1.getLine().getName() : routeStation1.getLine().getId();
+                    String line2Name = routeStation2.getLine().getName() != null ? 
+                        routeStation2.getLine().getName() : routeStation2.getLine().getId();
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] %s -> %s: ПЕРЕХОД (линия1: %s, линия2: %s), используем линию1: %s", 
+                        i, i + 1, routeStation1.getStation().getName(), routeStation2.getStation().getName(), line1Name, line2Name, line1Name));
+                }
+                
+                // ВСЕГДА используем линию из RouteStation для построения сегмента
+                if (line != null) {
+                    if (currentLine == null || !currentLine.getId().equals(line.getId())) {
+                        if (currentLine != null && segmentStart < i) {
+                            String currentLineName = currentLine.getName() != null ? currentLine.getName() : currentLine.getId();
+                            Log.d("ROUTE_INFO", String.format("Создание сегмента [%d-%d] с линией: %s", segmentStart, i, currentLineName));
+                            Path segmentPath = buildContinuousPathForSegment(route, segmentStart, i, currentLine);
+                            RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, i, segmentPath);
+                            routePathCache.routeLineSegments.add(segment);
+                            
+                            String key = currentLine.getId() + "_" + segmentStart + "_" + i;
+                            PointF cachedPos = cachedIndicatorPositions.get(key);
+                            if (cachedPos != null) {
+                                segment.cachedIndicatorX = cachedPos.x;
+                                segment.cachedIndicatorY = cachedPos.y;
+                            }
+                        }
+                        String newLineName = line.getName() != null ? line.getName() : line.getId();
+                        Log.d("ROUTE_INFO", String.format("Новая линия для сегмента: %s, начало: %d", newLineName, i));
+                        currentLine = line;
+                        segmentStart = i;
+                    }
+                } else {
+                    // Если line == null, это ошибка - не должно быть
+                    Log.d("ROUTE_INFO", String.format("[%d->%d] ОШИБКА: line == null", i, i + 1));
+                    if (currentLine != null && segmentStart < i) {
+                        String currentLineName = currentLine.getName() != null ? currentLine.getName() : currentLine.getId();
+                        Log.d("ROUTE_INFO", String.format("Создание сегмента [%d-%d] с линией: %s (fallback)", segmentStart, i, currentLineName));
+                        Path segmentPath = buildContinuousPathForSegment(route, segmentStart, i, currentLine);
+                        RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, i, segmentPath);
+                        routePathCache.routeLineSegments.add(segment);
+                        
+                        String key = currentLine.getId() + "_" + segmentStart + "_" + i;
+                        PointF cachedPos = cachedIndicatorPositions.get(key);
+                        if (cachedPos != null) {
+                            segment.cachedIndicatorX = cachedPos.x;
+                            segment.cachedIndicatorY = cachedPos.y;
+                        }
+                    }
+                    currentLine = null;
+                }
+            }
+            
+            if (currentLine != null && segmentStart < route.size() - 1) {
+                String currentLineName = currentLine.getName() != null ? currentLine.getName() : currentLine.getId();
+                Log.d("ROUTE_INFO", String.format("Создание финального сегмента [%d-%d] с линией: %s", segmentStart, route.size() - 1, currentLineName));
+                Path segmentPath = buildContinuousPathForSegment(route, segmentStart, route.size() - 1, currentLine);
+                RouteLineSegment segment = new RouteLineSegment(currentLine, segmentStart, route.size() - 1, segmentPath);
+                routePathCache.routeLineSegments.add(segment);
+                
+                String key = currentLine.getId() + "_" + segmentStart + "_" + (route.size() - 1);
+                PointF cachedPos = cachedIndicatorPositions.get(key);
+                if (cachedPos != null) {
+                    segment.cachedIndicatorX = cachedPos.x;
+                    segment.cachedIndicatorY = cachedPos.y;
+                }
+            }
+        } else if (route.size() > 1) {
+            // Fallback для старого метода setRoute (без RouteStation)
             int segmentStart = 0;
             Line currentLine = null;
             
@@ -5232,9 +5461,24 @@ public class MetroMapView extends View {
 
 
     private LinePath buildRouteLinePath(Station station1, Station station2, String lineType, String color) {
-        Station startStation = station1.getId().compareTo(station2.getId()) < 0 ? station1 : station2;
-        Station endStation = station1.getId().compareTo(station2.getId()) < 0 ? station2 : station1;
+        // ВАЖНО: для маршрута используем станции в том порядке, в котором они пришли
+        // Это гарантирует правильное направление маршрута
+        Station startStation = station1;
+        Station endStation = station2;
+        
+        // Пробуем получить intermediatePoints в прямом направлении
         List<Point> intermediatePoints = startStation.getIntermediatePoints(endStation);
+        
+        // Если не найдены, пробуем в обратном направлении (для обратной совместимости)
+        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
+            intermediatePoints = endStation.getIntermediatePoints(startStation);
+            // Если найдены в обратном направлении, меняем станции местами
+            if (intermediatePoints != null && !intermediatePoints.isEmpty()) {
+                Station temp = startStation;
+                startStation = endStation;
+                endStation = temp;
+            }
+        }
 
         if (intermediatePoints == null || intermediatePoints.isEmpty()) {
             if ("double".equals(lineType)) {
@@ -6409,7 +6653,10 @@ public class MetroMapView extends View {
             // Проверяем, попадает ли точка в область станции
             float stationX = station.getX();
             float stationY = station.getY();
-            float radius = 20; // Радиус области вокруг станции
+            float radius = CLICK_RADIUS;
+            if (isTramMap) {
+                radius = CLICK_RADIUS / 2.0f;
+            }
 
             if (Math.abs(stationX - x) < radius && Math.abs(stationY - y) < radius) {
                 return station;
@@ -6441,6 +6688,122 @@ public class MetroMapView extends View {
         return null;
     }
 
+    private Line findLineForConnectionWithRouteMap(Station station1, Station station2, int index1, int index2) {
+        // ИСПОЛЬЗУЕМ ТОЛЬКО RouteStation для определения линии
+        // Это гарантирует правильное отображение для смежных станций
+        if (routeStations != null && !routeStations.isEmpty()
+            && index1 >= 0 && index2 >= 0
+            && index1 < routeStations.size() && index2 < routeStations.size()) {
+            
+            RouteStation routeStation1 = routeStations.get(index1);
+            RouteStation routeStation2 = routeStations.get(index2);
+            
+            if (routeStation1 != null && routeStation2 != null
+                && routeStation1.getLine() != null && routeStation2.getLine() != null) {
+                Line line1 = routeStation1.getLine();
+                Line line2 = routeStation2.getLine();
+                
+                // Используем Station из RouteStation для правильной проверки neighbors
+                Station station1FromRoute = routeStation1.getStation();
+                Station station2FromRoute = routeStation2.getStation();
+                
+                // Если обе станции на одной линии, ВСЕГДА используем эту линию
+                // Алгоритм построения маршрута уже проверил, что это правильная связь
+                if (line1.getId() != null && line2.getId() != null
+                    && line1.getId().equals(line2.getId())) {
+                    // Проверяем, что это действительно neighbors-связь на этой линии
+                    if (areStationsNeighborsOnLine(station1FromRoute, station2FromRoute, line1)) {
+                        return line1;
+                    }
+                    // Даже если neighbors не найдены, возвращаем линию из RouteStation
+                    // Это важно для смежных станций
+                    return line1;
+                }
+                
+                // Если линии разные, проверяем neighbors для каждой линии
+                // Используем Station из RouteStation для правильной проверки
+                if (areStationsNeighborsOnLine(station1FromRoute, station2FromRoute, line1)) {
+                    return line1;
+                }
+                if (areStationsNeighborsOnLine(station1FromRoute, station2FromRoute, line2)) {
+                    return line2;
+                }
+                
+                // Если neighbors не найдены, но есть линия в RouteStation, используем её
+                // Приоритет: линия первой станции
+                return line1;
+            }
+        }
+        
+        // Если routeStations недоступен, возвращаем null
+        // Это означает, что маршрут не был установлен через setRouteFromRouteStations
+        return null;
+    }
+    
+    private boolean areStationsNeighbors(Station station1, Station station2) {
+        if (station1 == null || station2 == null || station1.getId() == null || station2.getId() == null) {
+            return false;
+        }
+        
+        // Проверяем neighbors первой станции
+        if (station1.getNeighbors() != null) {
+            for (Station.Neighbor neighbor : station1.getNeighbors()) {
+                if (neighbor.getStation() != null && neighbor.getStation().getId() != null
+                    && neighbor.getStation().getId().equals(station2.getId())) {
+                    return true;
+                }
+            }
+        }
+        
+        // Проверяем neighbors второй станции
+        if (station2.getNeighbors() != null) {
+            for (Station.Neighbor neighbor : station2.getNeighbors()) {
+                if (neighbor.getStation() != null && neighbor.getStation().getId() != null
+                    && neighbor.getStation().getId().equals(station1.getId())) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean areStationsNeighborsOnLine(Station station1, Station station2, Line line) {
+        if (line == null || line.getStations() == null || station1 == null || station2 == null
+            || station1.getId() == null || station2.getId() == null) {
+            return false;
+        }
+        
+        String station1Id = station1.getId();
+        String station2Id = station2.getId();
+        
+        // Проверяем, что обе станции есть на линии
+        boolean hasStation1 = false;
+        boolean hasStation2 = false;
+        Station lineStation1 = null;
+        Station lineStation2 = null;
+        
+        for (Station station : line.getStations()) {
+            if (station == null || station.getId() == null) {
+                continue;
+            }
+            if (station.getId().equals(station1Id)) {
+                hasStation1 = true;
+                lineStation1 = station;
+            }
+            if (station.getId().equals(station2Id)) {
+                hasStation2 = true;
+                lineStation2 = station;
+            }
+        }
+        
+        if (hasStation1 && hasStation2) {
+            return areNeighborsInLine(lineStation1, lineStation2, line);
+        }
+        
+        return false;
+    }
+    
     private Line findLineForConnection(Station station1, Station station2) {
         if (station1 == null || station2 == null || station1.getId() == null || station2.getId() == null) {
             return null;

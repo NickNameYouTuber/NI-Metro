@@ -60,6 +60,7 @@ import com.nicorp.nimetro.domain.entities.FlatRateTariff;
 import com.nicorp.nimetro.domain.entities.Line;
 import com.nicorp.nimetro.domain.entities.Route;
 import com.nicorp.nimetro.domain.entities.RouteSegment;
+import com.nicorp.nimetro.domain.entities.RouteStation;
 import com.nicorp.nimetro.domain.entities.Station;
 import com.nicorp.nimetro.domain.entities.Tariff;
 import com.nicorp.nimetro.domain.entities.TariffCallback;
@@ -79,9 +80,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -108,6 +112,7 @@ public class RouteInfoFragment extends Fragment {
     private Station previousStation = null;
 
     private List<Station> route;
+    private Map<Station, Line> routeLineMap; // Карта станций к линиям для правильного отображения
     private RoutePagerAdapter.RouteType routeType;
     private TextToSpeech textToSpeech;
     private TextToSpeech textToSpeechInfo;
@@ -746,8 +751,8 @@ public class RouteInfoFragment extends Fragment {
             return null; // Текущая станция не найдена или это последняя станция
         }
 
-        Line currentLine = getLineForStation(currentStation);
-        Line nextLine = getLineForStation(route.get(currentIndex + 2));
+        Line currentLine = getLineForStation(currentStation, currentIndex > 0 ? route.get(currentIndex - 1) : null);
+        Line nextLine = getLineForStation(route.get(currentIndex + 2), route.get(currentIndex + 1));
 
         if (currentLine != null && nextLine != null && currentLine != nextLine) {
             return route.get(currentIndex + 2);
@@ -847,7 +852,9 @@ public class RouteInfoFragment extends Fragment {
 
         List<Station> remainingRoute = new ArrayList<>(route.subList(currentStationIndex, route.size()));
 
-        metroMapView.setRoute(remainingRoute);
+        // Используем routeLineMap для правильного определения линий для каждой станции
+        List<RouteStation> remainingRouteStations = convertStationsToRouteStations(remainingRoute);
+        metroMapView.setRouteFromRouteStations(remainingRouteStations);
         updateRouteInfo(remainingRoute);
 
         // Обновляем информацию в tripInfoGroup
@@ -878,8 +885,8 @@ public class RouteInfoFragment extends Fragment {
                 // Подсказка о пересадке (динамически)
                 TextView transferHint = getView().findViewById(R.id.tripTransferHint);
                 if (transferHint != null) {
-                    Line curLine = getLineForStation(currentStation);
-                    Line nextLine = getLineForStation(nextStation);
+                    Line curLine = getLineForStation(currentStation, currentStationIndex > 0 ? route.get(currentStationIndex - 1) : null);
+                    Line nextLine = getLineForStation(nextStation, currentStation);
                     boolean isTransfer = (curLine != null && nextLine != null && curLine != nextLine && !curLine.getId().equals(nextLine.getId()));
                     if (isTransfer) {
                         String nextLineName = nextLine.getName() != null ? nextLine.getName() : ("Линия " + nextLine.getdisplayNumber());
@@ -1041,9 +1048,15 @@ public class RouteInfoFragment extends Fragment {
 
             int idx = 0;
             while (idx < route.size()) {
-                Line curLine = getLineForStation(route.get(idx));
+                Line curLine = getLineForStation(route.get(idx), idx > 0 ? route.get(idx - 1) : null);
                 int end = idx;
-                while (end + 1 < route.size() && getLineForStation(route.get(end + 1)) == curLine) end++;
+                while (end + 1 < route.size()) {
+                    Line nextLine = getLineForStation(route.get(end + 1), route.get(end));
+                    if (nextLine == null || curLine == null || !nextLine.getId().equals(curLine.getId())) {
+                        break;
+                    }
+                    end++;
+                }
 
                 int edges = Math.max(0, end - idx);
                 int blockMinutes = edges * 2;
@@ -1250,16 +1263,117 @@ public class RouteInfoFragment extends Fragment {
     }
 
     public Line getLineForStation(Station station) {
-        for (Line line : mainActivity.getAllLines()) {
-            for (Station lineStation : line.getStations()) {
-                if (lineStation.getId().equals(station.getId())) {
-                    Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + "): " + line.getName());
+        return getLineForStation(station, null);
+    }
+    
+    public Line getLineForStation(Station station, Station previousStation) {
+        // Сначала проверяем карту маршрута, если она есть
+        if (routeLineMap != null && routeLineMap.containsKey(station)) {
+            Line line = routeLineMap.get(station);
+            if (line != null) {
+                Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + ") from routeLineMap: " + line.getName());
                 return line;
             }
         }
+        
+        // Если есть предыдущая станция, пытаемся найти линию на основе контекста
+        if (previousStation != null && routeLineMap != null && routeLineMap.containsKey(previousStation)) {
+            Line previousLine = routeLineMap.get(previousStation);
+            if (previousLine != null) {
+                // Проверяем, есть ли текущая станция на той же линии, что и предыдущая
+                for (Station lineStation : previousLine.getStations()) {
+                    if (lineStation != null && lineStation.getId() != null && station.getId() != null
+                        && lineStation.getId().equals(station.getId())) {
+                        Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + 
+                              ") based on previous station context: " + previousLine.getName());
+                        return previousLine;
+                    }
+                }
+            }
         }
+        
+        // Fallback: ищем все линии для станции
+        List<Line> allLines = findAllLinesForStation(station);
+        if (!allLines.isEmpty()) {
+            // Если есть предыдущая станция, предпочитаем линию, на которой есть и предыдущая станция
+            if (previousStation != null) {
+                for (Line line : allLines) {
+                    for (Station lineStation : line.getStations()) {
+                        if (lineStation != null && lineStation.getId() != null && previousStation.getId() != null
+                            && lineStation.getId().equals(previousStation.getId())) {
+                            Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + 
+                                  ") based on previous station: " + line.getName());
+                            return line;
+                        }
+                    }
+                }
+            }
+            // Возвращаем первую найденную линию
+            Log.d("RouteUpdate", "Found line for station " + station.getName() + " (" + station.getId() + "): " + allLines.get(0).getName() + 
+                  " (total lines: " + allLines.size() + ")");
+            return allLines.get(0);
+        }
+        
         Log.d("RouteUpdate", "No line found for station " + station.getName() + " (" + station.getId() + ")");
         return null;
+    }
+    
+    private List<Line> findAllLinesForStation(Station station) {
+        List<Line> result = new ArrayList<>();
+        if (station == null || station.getId() == null) {
+            return result;
+        }
+        
+        String stationId = station.getId();
+        Set<String> seenLineIds = new LinkedHashSet<>();
+        
+        List<Line> allLines = mainActivity.getAllLines();
+        if (allLines != null) {
+            for (Line line : allLines) {
+                if (line != null && line.getStations() != null && line.getId() != null) {
+                    if (seenLineIds.contains(line.getId())) {
+                        continue;
+                    }
+                    for (Station s : line.getStations()) {
+                        if (s != null && s.getId() != null && s.getId().equals(stationId)) {
+                            result.add(line);
+                            seenLineIds.add(line.getId());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    public void setRouteLineMap(Map<Station, Line> routeLineMap) {
+        this.routeLineMap = routeLineMap;
+    }
+    
+    private List<RouteStation> convertStationsToRouteStations(List<Station> stations) {
+        List<RouteStation> routeStations = new ArrayList<>();
+        if (stations != null && routeLineMap != null) {
+            Station previousStation = null;
+            for (Station station : stations) {
+                Line line = routeLineMap.get(station);
+                if (line == null) {
+                    // Используем getLineForStation с previousStation для правильного определения линии смежных станций
+                    line = getLineForStation(station, previousStation);
+                }
+                routeStations.add(new RouteStation(station, line));
+                previousStation = station;
+            }
+        } else if (stations != null) {
+            Station previousStation = null;
+            for (Station station : stations) {
+                Line line = getLineForStation(station, previousStation);
+                routeStations.add(new RouteStation(station, line));
+                previousStation = station;
+            }
+        }
+        return routeStations;
     }
 
     private void setupCloseButton(View view) {
@@ -1394,8 +1508,8 @@ public class RouteInfoFragment extends Fragment {
             return null; // Текущая станция не найдена или это последняя станция
         }
 
-        Line currentLine = getLineForStation(currentStation);
-        Line nextLine = getLineForStation(route.get(currentIndex + 1));
+        Line currentLine = getLineForStation(currentStation, currentIndex > 0 ? route.get(currentIndex - 1) : null);
+        Line nextLine = getLineForStation(route.get(currentIndex + 1), currentStation);
         Log.d("RouteUpdate", "Current line: " + (currentLine != null ? currentLine.getName() : "null") + 
                ", next line: " + (nextLine != null ? nextLine.getName() : "null"));
 
@@ -1897,15 +2011,32 @@ public class RouteInfoFragment extends Fragment {
     private int calculateTotalTime() {
         int totalTime = 0;
         for (int i = 0; i < route.size() - 1; i++) {
-            for (Station station : route) {
-                if (station.getId().equals(route.get(i).getId())) {
-                    totalTime += station.getNeighbors().get(0).getStation().getId().equals(route.get(i + 1).getId()) ? station.getNeighbors().get(0).getTime() : 3;
+            Station currentStation = route.get(i);
+            Station nextStation = route.get(i + 1);
+            
+            // Ищем время между текущей и следующей станцией через neighbors
+            boolean found = false;
+            if (currentStation.getNeighbors() != null && !currentStation.getNeighbors().isEmpty()) {
+                for (Station.Neighbor neighbor : currentStation.getNeighbors()) {
+                    if (neighbor.getStation() != null && neighbor.getStation().getId() != null 
+                        && neighbor.getStation().getId().equals(nextStation.getId())) {
+                        totalTime += neighbor.getTime();
+                        found = true;
+                        break;
+                    }
                 }
+            }
+            
+            // Если не нашли через neighbors, это может быть transfer - добавляем время по умолчанию
+            if (!found) {
+                totalTime += 3; // Время по умолчанию для transfers
             }
         }
 
+        // Добавляем время на пересадки (смена цвета линии)
         for (int i = 1; i < route.size(); i++) {
-            if (!route.get(i).getColor().equals(route.get(i - 1).getColor())) {
+            if (route.get(i).getColor() != null && route.get(i - 1).getColor() != null
+                && !route.get(i).getColor().equals(route.get(i - 1).getColor())) {
                 totalTime += 3;
             }
         }
