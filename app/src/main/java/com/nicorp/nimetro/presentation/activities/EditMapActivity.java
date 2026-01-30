@@ -467,6 +467,10 @@ public class EditMapActivity extends AppCompatActivity implements AddTransferDia
                     stationObject.put("name", station.getName());
                     stationObject.put("x", station.getX());
                     stationObject.put("y", station.getY());
+                    if (station.getRealX() != null && station.getRealY() != null) {
+                        stationObject.put("realX", station.getRealX());
+                        stationObject.put("realY", station.getRealY());
+                    }
                         stationObject.put("textPosition", station.getTextPosition());
             stationObject.put("displayNumber", station.getdisplayNumber());
 

@@ -2284,7 +2284,7 @@ public class RouteInfoFragment extends Fragment {
     }
 
     private void fetchAndDisplaySuburbanSchedule(Station startStation, Station endStation, boolean isFirstStation) {
-        String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
+        String apiKey = "30512dc5-ba33-4a6d-8fba-9a7927cc1ef3";
         String from = startStation.getESP();
         String to = endStation.getESP();
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));

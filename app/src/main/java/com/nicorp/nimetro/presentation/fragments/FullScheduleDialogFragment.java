@@ -50,7 +50,7 @@ public class FullScheduleDialogFragment extends DialogFragment implements DatePi
 
     private String from;
     private String to;
-    private String apiKey = "e4d3d8fe-a921-4206-8048-8c7217648728";
+    private String apiKey = "30512dc5-ba33-4a6d-8fba-9a7927cc1ef3";
 
     public static FullScheduleDialogFragment newInstance(List<YandexRaspResponse.Segment> segments, String from, String to) {
         FullScheduleDialogFragment fragment = new FullScheduleDialogFragment();

@@ -2,4 +2,7 @@
     <string name="app_name">NIMetro</string>
     <string name="from_hint">Отсюда</string>
     <string name="to_hint">Сюда</string>
+    <string name="api_base_url">https://metro.nicorp.tech/api/v1</string>
+    <string name="default_metro_country">Россия</string>
+    <string name="default_metro_name_contains">Москва</string>
 </resources>

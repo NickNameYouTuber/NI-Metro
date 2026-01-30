@@ -70,6 +70,11 @@ import com.nicorp.nimetro.presentation.fragments.StationInfoFragment;
 import com.nicorp.nimetro.presentation.adapters.StationsAdapter;
 import com.nicorp.nimetro.domain.entities.Facilities;
 import com.nicorp.nimetro.services.StationTrackingService;
+import com.nicorp.nimetro.data.services.MapSyncService;
+import com.nicorp.nimetro.data.repositories.LocalMapCache;
+import com.nicorp.nimetro.data.exceptions.ApiException;
+import com.nicorp.nimetro.domain.entities.MetroMapItem;
+import com.nicorp.nimetro.data.workers.NotificationSyncWorkManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private TextInputEditText endStationEditText;
     private RecyclerView stationsRecyclerView;
     private StationsAdapter stationsAdapter;
+    private com.nicorp.nimetro.presentation.managers.NotificationPanelManager notificationPanelManager;
     private ViewPager2.OnPageChangeCallback stationPagerChangeCallback;
     private StationPagerAdapter currentPagerAdapter;
     private ViewPager2.OnPageChangeCallback routePagerChangeCallback;
@@ -114,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
     private Handler locationUpdateHandler;
     private Runnable locationUpdateRunnable;
     private static final long LOCATION_UPDATE_INTERVAL = 30000; // 30 секунд
+
+    private MapSyncService mapSyncService;
+    private LocalMapCache localMapCache;
 
     public static boolean isMetroMap = true; // Флаг для определения текущей карты
     public static boolean isSuburbanMap = false;
@@ -353,6 +362,9 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         suburbanMapObjects = new ArrayList<>();
         allLines = new ArrayList<>();
 
+        mapSyncService = new MapSyncService(this);
+        localMapCache = new LocalMapCache(this);
+
         SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
         String selectedMapFileName = sharedPreferences.getString("selected_map_file", "metromap_1.json");
         String selectedTheme = sharedPreferences.getString("selected_theme", "light");
@@ -394,11 +406,22 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             }
         });
 
-        loadMetroData(selectedMapFileName);
+        initializeMaps(selectedMapFileName);
 
         stationsAdapter = new StationsAdapter(new ArrayList<Station>(), this);
         stationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stationsRecyclerView.setAdapter(stationsAdapter);
+        
+        LinearLayout notificationPanel = findViewById(R.id.notificationPanel);
+        ImageView notificationCloseButton = findViewById(R.id.notificationCloseButton);
+        notificationPanelManager = new com.nicorp.nimetro.presentation.managers.NotificationPanelManager(
+            this, notificationPanel, notificationCloseButton);
+        notificationPanelManager.loadNotifications();
+        notificationPanelManager.setPositionAboveStationPager(false);
+        
+        NotificationSyncWorkManager.startPeriodicSync(this);
+
+        stationsAdapter.setStationNotifications(notificationPanelManager.getAllStationNotifications());
         
         // Скрываем список станций по умолчанию
         hideStationsList();
@@ -690,7 +713,18 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         
         // Очищаем старые данные перед загрузкой новых
         clearAllData();
-        loadMetroData(selectedMapFileName);
+        
+        // Проверяем обновления и загружаем карту
+        checkAndUpdateMaps(selectedMapFileName);
+        
+        // Обновляем оповещения
+        if (notificationPanelManager != null) {
+            notificationPanelManager.startPeriodicSync();
+            notificationPanelManager.checkAndShowNotifications();
+            if (stationsAdapter != null) {
+                stationsAdapter.setStationNotifications(notificationPanelManager.getAllStationNotifications());
+            }
+        }
         
         // Обновляем адаптер станций
         if (stationsAdapter != null) {
@@ -784,7 +818,23 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
     private void loadMetroData(String mapFileName) {
         try {
-            JSONObject jsonObject = new JSONObject(loadJSONFromAsset(mapFileName));
+            JSONObject jsonObject = null;
+            
+            String mapId = mapFileName.replace(".json", "");
+            jsonObject = loadMapFromCache(mapId);
+            
+            if (jsonObject == null) {
+                String jsonString = loadJSONFromAsset(mapFileName);
+                if (jsonString != null) {
+                    jsonObject = new JSONObject(jsonString);
+                    localMapCache.saveMap(mapId, jsonObject);
+                }
+            }
+            
+            if (jsonObject == null) {
+                Log.e("MainActivity", "Failed to load map: " + mapFileName);
+                return;
+            }
             JSONObject metroMapData = jsonObject.optJSONObject("metro_map");
             JSONObject suburbanMapData = jsonObject.optJSONObject("suburban_map");
             JSONObject tramMapData = jsonObject.optJSONObject("tram_map");
@@ -1285,6 +1335,114 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         return json;
     }
 
+    private void initializeMaps(String selectedMapFileName) {
+        String finalSelectedMapFileName = selectedMapFileName;
+        new Thread(() -> {
+            try {
+                if (mapSyncService.isOnline()) {
+                    List<MetroMapItem> mapsList = mapSyncService.syncMapsList();
+                    
+                    String defaultCountry = getString(getResources().getIdentifier("default_metro_country", "string", getPackageName()));
+                    String defaultNameContains = getString(getResources().getIdentifier("default_metro_name_contains", "string", getPackageName()));
+                    
+                    if (defaultCountry == null || defaultCountry.isEmpty()) {
+                        defaultCountry = "Россия";
+                    }
+                    if (defaultNameContains == null || defaultNameContains.isEmpty()) {
+                        defaultNameContains = "Москва";
+                    }
+
+                    MetroMapItem moscowMetro = mapSyncService.findMoscowMetro(mapsList, defaultCountry, defaultNameContains);
+                    
+                    String updatedMapFileName = finalSelectedMapFileName;
+                    if (moscowMetro != null) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("app_settings", MODE_PRIVATE);
+                        String currentSelectedMap = sharedPreferences.getString("selected_map_file", null);
+                        
+                        if (currentSelectedMap == null || currentSelectedMap.isEmpty()) {
+                            sharedPreferences.edit().putString("selected_map_file", moscowMetro.getFileName()).apply();
+                            updatedMapFileName = moscowMetro.getFileName();
+                        }
+                        
+                        String mapId = moscowMetro.getFileName().replace(".json", "");
+                        if (!localMapCache.hasMap(mapId)) {
+                            try {
+                                mapSyncService.downloadMapByFileName(moscowMetro.getFileName());
+                            } catch (ApiException e) {
+                                Log.e("MainActivity", "Failed to download Moscow metro map", e);
+                            }
+                        }
+                    }
+                    
+                    String finalUpdatedMapFileName = updatedMapFileName;
+                    
+                    runOnUiThread(() -> {
+                        loadMetroData(finalUpdatedMapFileName);
+                        checkAndUpdateMaps(finalUpdatedMapFileName);
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        loadMetroData(finalSelectedMapFileName);
+                        checkAndUpdateMaps(finalSelectedMapFileName);
+                    });
+                }
+            } catch (ApiException e) {
+                Log.e("MainActivity", "Failed to sync maps list", e);
+                runOnUiThread(() -> {
+                    loadMetroData(finalSelectedMapFileName);
+                });
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error initializing maps", e);
+                runOnUiThread(() -> {
+                    loadMetroData(finalSelectedMapFileName);
+                });
+            }
+        }).start();
+    }
+
+    private void checkAndUpdateMaps(String selectedMapFileName) {
+        new Thread(() -> {
+            try {
+                loadMetroData(selectedMapFileName);
+                
+                if (mapSyncService.isOnline()) {
+                    List<MetroMapItem> mapsList = mapSyncService.getMapsListFromCache();
+                    
+                    if (mapsList == null || mapsList.isEmpty()) {
+                        mapsList = mapSyncService.syncMapsList();
+                    }
+                    
+                    if (mapsList != null) {
+                        for (MetroMapItem item : mapsList) {
+                            String mapId = item.getFileName().replace(".json", "");
+                            if (localMapCache.hasMap(mapId)) {
+                                String updatedAt = mapSyncService.getMapUpdatedAt(item.getFileName());
+                                if (updatedAt != null && !updatedAt.isEmpty()) {
+                                    mapSyncService.updateMapIfNeeded(mapId, updatedAt);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error checking map updates", e);
+                loadMetroData(selectedMapFileName);
+            }
+        }).start();
+    }
+
+    private JSONObject loadMapFromCache(String mapId) {
+        if (mapId == null || mapId.isEmpty()) {
+            return null;
+        }
+
+        if (mapId.endsWith(".json")) {
+            mapId = mapId.substring(0, mapId.length() - 5);
+        }
+
+        return localMapCache.getMap(mapId);
+    }
+
     private Station findStationById(String id, List<Station> stations) {
         for (Station station : stations) {
             if (station.getId().equals(id)) {
@@ -1367,10 +1525,34 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
 
         ViewPager2 stationPager = findViewById(R.id.stationPager);
         stationPager.setAdapter(pagerAdapter);
-        stationPager.setVisibility(View.VISIBLE); // Показываем ViewPager2
+        stationPager.setVisibility(View.VISIBLE);
         addHorizontalPagerDots(stationPager, pagerAdapter);
         metroMapView.selectedStation = station;
         metroMapView.invalidate();
+
+        if (notificationPanelManager != null && station != null && station.getId() != null) {
+            List<Line> stationLines = findAllLinesForStation(station);
+            List<String> lineIds = new ArrayList<>();
+            for (Line line : stationLines) {
+                if (line != null && line.getId() != null) {
+                    lineIds.add(line.getId());
+                }
+            }
+            
+            com.nicorp.nimetro.domain.entities.Notification stationNotification = 
+                notificationPanelManager.getStationNotification(station.getId(), lineIds);
+            if (stationNotification != null) {
+                notificationPanelManager.setPositionAboveStationPager(true);
+                notificationPanelManager.clearStationNotifications();
+                notificationPanelManager.showStationNotification(stationNotification, station.getId());
+            } else {
+                notificationPanelManager.setPositionAboveStationPager(true);
+                notificationPanelManager.clearStationNotifications();
+                notificationPanelManager.checkAndShowNotifications();
+            }
+        } else {
+            notificationPanelManager.setPositionAboveStationPager(false);
+        }
     }
 
     private void addHorizontalPagerDots(ViewPager2 pager, StationPagerAdapter adapter) {
@@ -1451,6 +1633,28 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 if (currentStation != null) {
                     metroMapView.selectedStation = currentStation;
                     metroMapView.invalidate();
+
+                    if (notificationPanelManager != null && currentStation.getId() != null) {
+                        List<Line> currentStationLines = findAllLinesForStation(currentStation);
+                        List<String> currentLineIds = new ArrayList<>();
+                        for (Line line : currentStationLines) {
+                            if (line != null && line.getId() != null) {
+                                currentLineIds.add(line.getId());
+                            }
+                        }
+                        
+                        com.nicorp.nimetro.domain.entities.Notification stationNotification = 
+                            notificationPanelManager.getStationNotification(currentStation.getId(), currentLineIds);
+                        if (stationNotification != null) {
+                            notificationPanelManager.setPositionAboveStationPager(true);
+                            notificationPanelManager.clearStationNotifications();
+                            notificationPanelManager.showStationNotification(stationNotification, currentStation.getId());
+                        } else {
+                            notificationPanelManager.setPositionAboveStationPager(true);
+                            notificationPanelManager.clearStationNotifications();
+                            notificationPanelManager.checkAndShowNotifications();
+                        }
+                    }
                 }
 
                 Line currentLine = adapter.getLineAtPosition(position);
@@ -1636,6 +1840,12 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 params.bottomToTop = ConstraintLayout.LayoutParams.UNSET;
                 dotsHost.setLayoutParams(params);
             }
+        }
+
+        if (notificationPanelManager != null) {
+            notificationPanelManager.setPositionAboveStationPager(false);
+            notificationPanelManager.clearStationNotifications();
+            notificationPanelManager.checkAndShowNotifications();
         }
     }
 
@@ -1874,7 +2084,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         Log.d("MainActivity", "Finding few-transfers route from " + start.getName() + " to " + end.getName());
         return findRouteWithStrategy(start, end, this::getFewTransfersEdgeCost, false, -1);
     }
-    
+
     private List<RouteStation> findRouteWithFewTransfers(Station start, Station end, int maxTime) {
         Log.d("MainActivity", "Finding few-transfers route from " + start.getName() + " to " + end.getName() + " with max time: " + maxTime);
         return findRouteWithStrategy(start, end, this::getFewTransfersEdgeCost, false, maxTime);
@@ -1928,7 +2138,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     RouteStation rs = new RouteStation(stationInLine, line);
                     distances.put(rs, Integer.MAX_VALUE);
                     realTimes.put(rs, Integer.MAX_VALUE);
-                }
+        }
             }
         }
         
@@ -2147,7 +2357,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                     int newRealTime = currentRealTime + realEdgeTime;
                     
                     // Вычисляем новую стоимость пути (с учетом штрафов)
-                    int newDistance = distances.get(current) + edgeCost;
+                int newDistance = distances.get(current) + edgeCost;
                     
                     // Если задано максимальное время, проверяем РЕАЛЬНОЕ время (без штрафов)
                     if (maxTime > 0 && newRealTime > maxTime) {
@@ -2198,8 +2408,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                         Log.d("ROUTE_INFO", "  -> " + neighborStation.getName() + " (" + neighborStation.getId() + 
                               "), тип: " + connectionType + adjacentMark + ", линия: " + selectedLine + 
                               ", стоимость: " + edgeCost + ", ПРОПУЩЕНО (новое " + newDistance + " >= текущее " + neighborCurrentDistance + ")" + penaltyMark);
-                    }
-                }
+            }
+        }
             }
         }
 
@@ -2208,8 +2418,8 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
         if (endRouteStation != null) {
             for (RouteStation rs = endRouteStation; rs != null; rs = previous.get(rs)) {
                 route.add(rs);
-            }
-            Collections.reverse(route);
+        }
+        Collections.reverse(route);
             
             // Вычисляем итоговую стоимость маршрута
             int totalCost = 0;
@@ -2623,7 +2833,7 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
                 .replace(R.id.frameLayout, routeInfoFragment)
                 .commit();
     }
-    
+
     private Map<Station, Line> createRouteLineMap(List<RouteStation> routeStations) {
         Map<Station, Line> routeLineMap = new HashMap<>();
         if (routeStations != null) {
@@ -2646,13 +2856,13 @@ public class MainActivity extends AppCompatActivity implements MetroMapView.OnSt
             Map<Station, Line> routeLineMap = createRouteLineMap(routeToUse);
             RouteInfoFragment routeInfoFragment = RouteInfoFragment.newInstance(
                     stationRoute,
-                    metroMapView,
-                    this
-            );
+                metroMapView,
+                this
+        );
             routeInfoFragment.setRouteLineMap(routeLineMap);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frameLayout, routeInfoFragment)
-                    .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, routeInfoFragment)
+                .commit();
             LinearLayout routePagerDots = findViewById(R.id.routePagerDots);
             if (routePagerDots != null) {
                 routePagerDots.setVisibility(View.GONE);

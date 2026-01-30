@@ -33,7 +33,7 @@ public class APITariff implements Tariff {
         String currentDate = date.toInstant().atZone(ZoneId.of("Europe/Moscow")).toLocalDate().toString();
         Log.d("APITariff", "Current date: " + currentDate);
 
-        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", "e4d3d8fe-a921-4206-8048-8c7217648728", segment.getStations().get(0).getESP(), segment.getStations().get(segment.getStations().size() - 1).getESP(), "esr", currentDate, 1000);
+        Call<YandexRaspResponse> call = yandexRaspApi.getSchedule("ru_RU", "json", "30512dc5-ba33-4a6d-8fba-9a7927cc1ef3", segment.getStations().get(0).getESP(), segment.getStations().get(segment.getStations().size() - 1).getESP(), "esr", currentDate, 1000);
 
         call.enqueue(new Callback<YandexRaspResponse>() {
             @Override

@@ -1,0 +1,287 @@
+{
+  "info": {
+    "version": "1.0",
+    "author": "Nicorp",
+    "country": "Россия",
+    "name": "Москва",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg/330px-%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BC%D0%B5%D1%82%D1%80%D0%BE_%D0%B2_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B5_%D0%B1%D1%80%D0%B5%D0%BD%D0%B4%D0%B0_%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0.svg.png"
+  },
+  "metro_map": {
+    "lines": [
+      {
+        "id": "1",
+        "displayNumber": "1",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Сокольническая линия",
+        "color": "#E40520",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "METRO_100",
+            "name": "Бульвар Рокоссовского",
+            "x": 1659,
+            "y": 1252,
+            "textPosition": 3,
+            "neighbors": [
+              ["METRO_101", 3],
+              ["METRO_1505", 3],
+              ["TRAM_T1_057", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 2,
+              "elevators": 1,
+              "exits": ["Выход 1", "Выход 2", "Выход 3"]
+            }
+          },
+          {
+            "id": "METRO_101",
+            "name": "Черкизовская",
+            "x": 1658,
+            "y": 1298,
+            "textPosition": 7,
+            "neighbors": [
+              ["METRO_100", 3],
+              ["METRO_102", 3],
+              ["METRO_1506", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_102",
+            "name": "Преображенская площадь",
+            "x": 1658,
+            "y": 1376,
+            "textPosition": 3,
+            "neighbors": [
+              ["METRO_101", 3],
+              ["METRO_103", 3],
+              ["TRAM_T1_050", 3],
+              ["TRAM_T1_051", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 1,
+              "elevators": 0,
+              "exits": ["Выход 1"]
+            }
+          },
+          {
+            "id": "METRO_103",
+            "name": "Сокольники",
+            "x": 1628,
+            "y": 1520,
+            "textPosition": 7,
+            "neighbors": [
+              ["METRO_102", 3],
+              ["METRO_104", 3],
+              ["METRO_1226", 3],
+              ["METRO_2014", 3],
+              ["TRAM_T1_046", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_104",
+            "name": "Красносельская",
+            "x": 1592,
+            "y": 1558,
+            "textPosition": 3,
+            "neighbors": [
+              ["METRO_103", 3],
+              ["METRO_105", 3],
+              ["TRAM_T1_043", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_105",
+            "name": "Комсомольская",
+            "x": 1562,
+            "y": 1587,
+            "textPosition": 9,
+            "neighbors": [
+              ["METRO_104", 3],
+              ["METRO_106", 3],
+              ["METRO_1916", 3],
+              ["METRO_80", 3],
+              ["METRO_2123", 3],
+              ["TRAM_T1_041", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 4,
+              "elevators": 2,
+              "exits": ["Выход 1", "Выход 2", "Выход 3", "Выход 4"]
+            }
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "displayNumber": "2",
+        "displayShape": "CIRCLE",
+        "tariff": {
+          "type": "FlatRateTariff",
+          "price": 70
+        },
+        "name": "Замоскворецкая линия",
+        "color": "#00A550",
+        "isCircle": false,
+        "lineType": "single",
+        "stations": [
+          {
+            "id": "METRO_200",
+            "name": "Ховрино",
+            "x": 800,
+            "y": 500,
+            "textPosition": 1,
+            "neighbors": [
+              ["METRO_201", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 0,
+              "elevators": 1,
+              "exits": ["Выход 1", "Выход 2"]
+            }
+          },
+          {
+            "id": "METRO_201",
+            "name": "Беломорская",
+            "x": 850,
+            "y": 550,
+            "textPosition": 5,
+            "neighbors": [
+              ["METRO_200", 3],
+              ["METRO_202", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 1,
+              "elevators": 0,
+              "exits": []
+            }
+          },
+          {
+            "id": "METRO_202",
+            "name": "Речной вокзал",
+            "x": 900,
+            "y": 600,
+            "textPosition": 3,
+            "neighbors": [
+              ["METRO_201", 3],
+              ["METRO_203", 3]
+            ],
+            "facilities": {
+              "schedule": "5:30 - 0:00",
+              "escalators": 2,
+              "elevators": 1,
+              "exits": ["Выход 1"]
+            }
+          }
+        ]
+      }
+    ],
+    "transfers": [
+      {
+        "stations": ["METRO_105", "METRO_80"],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "id": "TR_1",
+        "stations": ["METRO_103", "METRO_1226", "METRO_2014"],
+        "time": 3,
+        "type": "default"
+      },
+      {
+        "stations": ["METRO_108", "METRO_711"],
+        "time": 3,
+        "type": "regular"
+      },
+      {
+        "id": "TR_2",
+        "stations": ["METRO_1916", "METRO_2123"],
+        "time": 3,
+        "type": "default"
+      }
+    ],
+    "intermediatePoints": [
+      {
+        "neighborsId": ["METRO_102", "METRO_103"],
+        "points": [
+          {
+            "x": 1657,
+            "y": 1480
+          },
+          {
+            "x": 1646,
+            "y": 1496
+          }
+        ]
+      },
+      {
+        "neighborsId": ["METRO_104", "METRO_105"],
+        "points": [
+          {
+            "x": 1577,
+            "y": 1572
+          },
+          {
+            "x": 1569,
+            "y": 1579
+          }
+        ]
+      }
+    ],
+    "rivers": [
+      {
+        "points": [
+          {
+            "x": 573,
+            "y": 1286
+          },
+          {
+            "x": 673,
+            "y": 1306
+          },
+          {
+            "x": 813,
+            "y": 1306
+          },
+          {
+            "x": 833,
+            "y": 1326
+          },
+          {
+            "x": 833,
+            "y": 1436
+          }
+        ]
+      }
+    ],
+    "objects": []
+  }
+}
+

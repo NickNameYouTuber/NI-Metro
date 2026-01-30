@@ -25,6 +25,8 @@ public class Station implements Parcelable {
     private int textPosition;
     private Integer labelX;
     private Integer labelY;
+    private Integer realX;
+    private Integer realY;
     private List<Neighbor> neighbors;
     private Map<Station, List<Point>> intermediatePoints;
     private double latitude; // Широта станции
@@ -148,6 +150,26 @@ public class Station implements Parcelable {
         this.labelY = labelY;
     }
 
+    public boolean hasRealCoordinates() {
+        return realX != null && realY != null;
+    }
+
+    public Integer getRealX() {
+        return realX;
+    }
+
+    public void setRealX(Integer realX) {
+        this.realX = realX;
+    }
+
+    public Integer getRealY() {
+        return realY;
+    }
+
+    public void setRealY(Integer realY) {
+        this.realY = realY;
+    }
+
     public List<Neighbor> getNeighbors() {
         if (neighbors == null) {
             neighbors = new ArrayList<>();
@@ -203,6 +225,8 @@ public class Station implements Parcelable {
         this.intermediatePoints = new HashMap<>();
         this.labelX = null;
         this.labelY = null;
+        this.realX = null;
+        this.realY = null;
         this.displayNumber = "";
     }
 
@@ -227,6 +251,16 @@ public class Station implements Parcelable {
             labelY = in.readInt();
         } else {
             labelY = null;
+        }
+        if (in.readByte() != 0) {
+            realX = in.readInt();
+        } else {
+            realX = null;
+        }
+        if (in.readByte() != 0) {
+            realY = in.readInt();
+        } else {
+            realY = null;
         }
 
         // Read only the essential neighbor data to avoid circular references
@@ -266,6 +300,18 @@ public class Station implements Parcelable {
         if (labelY != null) {
             dest.writeByte((byte) 1);
             dest.writeInt(labelY);
+        } else {
+            dest.writeByte((byte) 0);
+        }
+        if (realX != null) {
+            dest.writeByte((byte) 1);
+            dest.writeInt(realX);
+        } else {
+            dest.writeByte((byte) 0);
+        }
+        if (realY != null) {
+            dest.writeByte((byte) 1);
+            dest.writeInt(realY);
         } else {
             dest.writeByte((byte) 0);
         }

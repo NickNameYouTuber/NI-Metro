@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.nicorp'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // PostgreSQL
+    runtimeOnly 'org.postgresql:postgresql'
+    
+    // Flyway for database migrations
+    implementation 'org.flywaydb:flyway-core'
+    
+    // JSON handling
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // Lombok (optional but helpful)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// JAR task для Docker
+jar {
+    enabled = true
+    archiveBaseName = 'ni-metro-api'
+    archiveVersion = '1.0.0'
+}
+
+// Boot JAR task
+tasks.named('bootJar') {
+    archiveBaseName = 'ni-metro-api'
+    archiveVersion = '1.0.0'
+}
+
